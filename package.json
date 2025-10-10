@@ -1,0 +1,21 @@
+{
+  "name": "alboradakpi",
+  "version": "1.0.0",
+  "description": "Aplicación web para la gestión de pagos de mantenimiento en condominios.",
+  "main": "index.js",
+  "type": "commonjs",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:css": "node_modules\\.bin\\tailwindcss -i .\\src\\input.css -o .\\public\\output.css"
+  },
+  "author": "raul swanston",
+  "license": "ISC",
+  "devDependencies": {
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^4.1.14"
+  },
+  "dependencies": {
+    "@tailwindcss/cli": "^4.1.14"
+  }
+}

@@ -1,0 +1,29 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Los usuarios solo pueden leer/escribir su propio documento de perfil.
+    // Cualquiera puede crear un perfil de usuario (al registrarse).
+    match /users/{userId} {
+      allow read, update: if request.auth.uid == userId;
+      allow create: if request.auth != null;
+    }
+
+    // Un usuario puede leer la información de una propiedad si su ID de usuario
+    // está en la lista de dueños de esa propiedad.
+    match /properties/{propertyId} {
+      allow read: if request.auth.uid in resource.data.ownerUids;
+      // La escritura de propiedades se manejará desde el lado del servidor o por administradores en el futuro.
+      allow write: if false;
+    }
+
+    // Un usuario puede leer las transacciones que pertenecen a su propiedad.
+    match /transactions/{transactionId} {
+      // Se permite la lectura si el `propertyId` del perfil del usuario (obtenido con `get`)
+      // coincide con el `propertyId` de la transacción.
+      allow read: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.propertyId == resource.data.propertyId;
+      // Los usuarios no pueden crear, actualizar o borrar transacciones.
+      allow write: if false;
+    }
+  }
+}
