@@ -109,3 +109,96 @@ Para proteger los datos, se implementará la siguiente lógica en las reglas de 
 - **Colección `transactions`:**
     - Un usuario solo puede **leer** los documentos de transacciones cuyo `propertyId` coincida con el `propertyId` de su perfil de usuario.
     - Los usuarios **no pueden crear, actualizar ni borrar** transacciones. Estas operaciones serán exclusivas para administradores.
+---
+
+## 7. Paleta de Colores
+
+### Paletas Base
+
+'gurkha': {
+    '50': '#f6f5ef',
+    '100': '#eae9dd',
+    '200': '#d8d6be',
+    '300': '#bfbd97',
+    '400': '#9e9c68',
+    '500': '#8a8958',
+    '600': '#6d6d43',
+    '700': '#555536',
+    '800': '#44452f',
+    '900': '#3b3c2b',
+    '950': '#1f1f14',
+},
+'solid-pink': {
+    '50': '#fdf3f3',
+    '100': '#faeae9',
+    '200': '#f6d5d5',
+    '300': '#eeb3b3',
+    '400': '#e4888c',
+    '500': '#d55e65',
+    '600': '#c03e4c',
+    '700': '#a12f3e',
+    '800': '#842938',
+    '900': '#742736',
+    '950': '#401119',
+},
+'kaitoke-green': {
+    '50': '#f0fdf4',
+    '100': '#ddfbe8',
+    '200': '#bdf5d2',
+    '300': '#8aebaf',
+    '400': '#50d884',
+    '500': '#28bf63',
+    '600': '#1b9e4e',
+    '700': '#197c40',
+    '800': '#196236',
+    '900': '#175330',
+    '950': '#072c17',
+},
+
+### Paleta Expandida: "Condo-Fresh UI Kit"
+
+#### 1. Colores de Texto
+
+-   `text-primary`: `gurkha['900']` (#3b3c2b)
+-   `text-secondary`: `gurkha['700']` (#555536)
+-   `text-link`: `kaitoke-green['600']` (#1b9e4e)
+-   `text-on-primary`: `#FFFFFF`
+
+#### 2. Colores de Fondo (Backgrounds)
+
+-   `bg-canvas`: `gurkha['100']` (#eae9dd)
+-   `bg-surface`: `gurkha['50']` (#f6f5ef)
+-   `bg-hero`: `kaitoke-green['100']` (#ddfbe8)
+
+#### 3. Colores para Componentes de UI
+
+-   **Cards:**
+    -   `card-bg`: `bg-surface` (#f6f5ef)
+    -   `card-border`: `gurkha['200']` (#d8d6be)
+-   **Botones:**
+    -   `button-primary-bg`: `kaitoke-green['500']` (#28bf63)
+    -   `button-primary-hover-bg`: `kaitoke-green['600']` (#1b9e4e)
+    -   `button-accent-bg`: `solid-pink['500']` (#d55e65)
+    -   `button-accent-hover-bg`: `solid-pink['600']` (#c03e4c)
+-   **Inputs (Campos de formulario):**
+    -   `input-bg`: `bg-surface` (#f6f5ef)
+    -   `input-border`: `gurkha['300']` (#bfbd97)
+    -   `input-focus-border`: `kaitoke-green['500']` (#28bf63)
+
+#### 4. Colores Semánticos (Estados)
+
+-   `success`: `kaitoke-green['500']` (#28bf63)
+-   `warning`: `#FFC700`
+-   `error`: `solid-pink['600']` (#c03e4c)
+---
+
+## 8. Estándares de Documentación
+
+Se ha acordado aplicar documentación de forma continua durante el desarrollo para asegurar la claridad y mantenibilidad del código.
+
+-   **Para la Estructura HTML (`index.html`):**
+    -   Se utilizarán **comentarios HTML (`<!-- ... -->`)** para delimitar y describir las secciones lógicas principales de la interfaz (ej: `<!-- Sección de Login -->`). Esto proporciona un mapa estructural del documento.
+
+-   **Para la Lógica de JavaScript (en `<script>` o archivos `.js`):**
+    -   Se usará **JSDoc (`/** ... */`)** para documentar todas las funciones, explicando su propósito, parámetros (`@param`) y valores de retorno (`@returns`).
+    -   Se usarán comentarios de una línea (`//`) o multilínea (`/* ... */`) para aclaraciones puntuales dentro de las funciones, según sea el caso.

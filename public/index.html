@@ -8,7 +8,7 @@
 </head>
 <body class="bg-gray-100">
 
-    <!-- Contenedor de Autenticación -->
+    <!-- ====== Sección de Autenticación - Inicio ====== -->
     <div id="auth-container" class="flex items-center justify-center min-h-screen">
         <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-sm">
             <h1 class="text-2xl font-bold mb-6 text-center text-gray-800">Bienvenido</h1>
@@ -34,8 +34,10 @@
             <p id="error-message" class="text-red-500 text-xs italic mt-4 text-center"></p>
         </div>
     </div>
+    <!-- ====== Sección de Autenticación - Fin ====== -->
 
-    <!-- Contenedor del Dashboard (inicialmente oculto) -->
+
+    <!-- ====== Sección del Dashboard - Inicio ====== -->
     <div id="dashboard-container" class="hidden p-4 md:p-8">
         <header class="flex justify-between items-center mb-8">
             <h1 id="welcome-message" class="text-2xl md:text-3xl font-bold text-gray-800"></h1>
@@ -43,14 +45,15 @@
         </header>
 
         <main>
-            <!-- Resumen Financiero -->
+            <!-- ====== Sub-sección: Resumen Financiero - Inicio ====== -->
             <div class="bg-white p-6 rounded-lg shadow-md mb-8">
                 <h2 id="property-name" class="text-xl font-semibold text-gray-700 mb-2"></h2>
                 <p class="text-gray-600">Saldo Actual</p>
                 <p id="property-balance" class="text-4xl font-bold"></p>
             </div>
+            <!-- ====== Sub-sección: Resumen Financiero - Fin ====== -->
 
-            <!-- Historial de Transacciones -->
+            <!-- ====== Sub-sección: Historial de Transacciones - Inicio ====== -->
             <div class="bg-white p-6 rounded-lg shadow-md">
                 <h2 class="text-xl font-semibold text-gray-700 mb-4">Historial de Transacciones</h2>
                 <div class="overflow-x-auto">
@@ -68,8 +71,10 @@
                     </table>
                 </div>
             </div>
+            <!-- ====== Sub-sección: Historial de Transacciones - Fin ====== -->
         </main>
     </div>
+    <!-- ====== Sección del Dashboard - Fin ====== -->
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
@@ -104,6 +109,12 @@
         const errorMessageElement = document.getElementById('error-message');
 
         // --- Lógica Principal (Observador de Autenticación) ---
+        /**
+         * @summary Observador principal del estado de autenticación.
+         * @description Se activa cuando un usuario inicia o cierra sesión.
+         *              Controla qué contenedor principal se muestra (autenticación o dashboard).
+         * @param {firebase.User|null} user - El objeto de usuario de Firebase si está autenticado, o null si no lo está.
+         */
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 // Usuario ha iniciado sesión
@@ -119,6 +130,13 @@
         });
 
         // --- Funciones del Dashboard ---
+        /**
+         * @summary Carga y muestra los datos del dashboard para el usuario autenticado.
+         * @description Obtiene el perfil del usuario, la información de su propiedad (saldo, nombre)
+         *              y su historial de transacciones desde Firestore, y los renderiza en el DOM.
+         * @param {firebase.User} user - El objeto del usuario autenticado.
+         * @async
+         */
         async function loadDashboardData(user) {
             document.getElementById('welcome-message').textContent = `Bienvenido, ${user.displayName || user.email}`;
             
@@ -176,6 +194,11 @@
             }
         }
 
+        /**
+         * @summary Limpia los datos del dashboard.
+         * @description Se ejecuta al cerrar sesión para eliminar la información sensible
+         *              y resetear la interfaz del dashboard.
+         */
         function clearDashboardData() {
             document.getElementById('welcome-message').textContent = '';
             document.getElementById('property-name').textContent = '';
@@ -183,11 +206,20 @@
             document.getElementById('transactions-table-body').innerHTML = '';
         }
 
+        // Maneja el evento de clic para el botón de cerrar sesión.
         logoutButton.addEventListener('click', () => {
             signOut(auth).catch(error => console.error('Error al cerrar sesión:', error));
         });
 
         // --- Funciones de Autenticación ---
+        /**
+         * @summary Crea un documento de perfil de usuario en Firestore.
+         * @description Tras un registro exitoso (ya sea por email/contraseña o proveedor social),
+         *              esta función crea un documento en la colección 'users' con información básica
+         *              y un 'propertyId' pendiente de asignación.
+         * @param {firebase.User} user - El objeto de usuario recién creado por Firebase Auth.
+         * @async
+         */
         async function createUserProfile(user) {
             const userDocRef = doc(db, "users", user.uid);
             await setDoc(userDocRef, {
@@ -200,6 +232,7 @@
             console.log("Documento de usuario creado en Firestore.");
         }
 
+        // Maneja el evento de clic para el botón de registro.
         registerButton.addEventListener('click', () => {
             const email = emailInput.value;
             const password = passwordInput.value;
@@ -212,6 +245,7 @@
                 .catch((error) => { errorMessageElement.textContent = `Error: ${error.message}`; });
         });
 
+        // Maneja el evento de clic para el botón de inicio de sesión.
         loginButton.addEventListener('click', () => {
             const email = emailInput.value;
             const password = passwordInput.value;
@@ -220,6 +254,7 @@
                 .catch((error) => { errorMessageElement.textContent = `Error: ${error.message}`; });
         });
 
+        // Maneja el evento de clic para el botón de inicio de sesión con Google.
         googleLoginButton.addEventListener('click', () => {
             const provider = new GoogleAuthProvider();
             errorMessageElement.textContent = '';
