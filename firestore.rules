@@ -1,29 +1,74 @@
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Los usuarios solo pueden leer/escribir su propio documento de perfil.
-    // Cualquiera puede crear un perfil de usuario (al registrarse).
+    // --- Funciones de Ayuda ---
+    function isAdmin() {
+      // Verifica si el token de autenticación del usuario tiene el claim 'admin' como true.
+      return request.auth.token.admin == true;
+    }
+
+    function isOwner(userId) {
+      // Verifica si el usuario que hace la petición es el dueño del documento.
+      return request.auth.uid == userId;
+    }
+
+    function isResidentOfProperty(propertyId) {
+      // Verifica si el usuario que hace la petición pertenece a una propiedad específica.
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.propertyId == propertyId;
+    }
+
+    // --- Reglas para Colecciones ---
+
+    // Perfiles de Usuario
     match /users/{userId} {
-      allow read, update: if request.auth.uid == userId;
+      // Los admins pueden leer cualquier perfil. Los usuarios solo el suyo.
+      allow read: if isAdmin() || isOwner(userId);
+      // Los usuarios solo pueden actualizar su propio perfil.
+      allow update: if isOwner(userId);
+      // Cualquier usuario autenticado puede crear su perfil.
       allow create: if request.auth != null;
     }
 
-    // Un usuario puede leer la información de una propiedad si su ID de usuario
-    // está en la lista de dueños de esa propiedad.
+    // Propiedades
     match /properties/{propertyId} {
+      // Los admins tienen acceso total. Los residentes pueden leer si son dueños.
+      allow read, write: if isAdmin();
       allow read: if request.auth.uid in resource.data.ownerUids;
-      // La escritura de propiedades se manejará desde el lado del servidor o por administradores en el futuro.
+    }
+
+    // Transacciones (Historial Financiero)
+    match /transactions/{transactionId} {
+      // Los admins pueden leer todas. Los residentes solo las de su propiedad.
+      allow read: if isAdmin() || isResidentOfProperty(resource.data.propertyId);
+      // Nadie puede escribir directamente. Se crean por lógica del servidor/funciones.
       allow write: if false;
     }
 
-    // Un usuario puede leer las transacciones que pertenecen a su propiedad.
-    match /transactions/{transactionId} {
-      // Se permite la lectura si el `propertyId` del perfil del usuario (obtenido con `get`)
-      // coincide con el `propertyId` de la transacción.
-      allow read: if get(/databases/$(database)/documents/users/$(request.auth.uid)).data.propertyId == resource.data.propertyId;
-      // Los usuarios no pueden crear, actualizar o borrar transacciones.
-      allow write: if false;
+    // Conceptos de Cargo (Catálogo de Servicios)
+    match /chargeConcepts/{conceptId} {
+      // CUALQUIER usuario autenticado puede LEER el catálogo de servicios.
+      allow read: if request.auth != null;
+      // Solo los admins pueden modificar el catálogo.
+      allow write: if isAdmin();
+    }
+
+    // Solicitudes de Servicio
+    match /serviceRequests/{requestId} {
+      // Los admins pueden gestionar todas las solicitudes.
+      allow read, write: if isAdmin();
+      // Un residente solo puede CREAR una solicitud si tiene una propiedad asignada.
+      // La UI se encargará de ocultar el botón si no la tiene.
+      allow create: if isResidentOfProperty(request.resource.data.propertyId);
+    }
+
+    // Notificaciones de Pago
+    match /paymentNotifications/{notificationId} {
+      // Los admins pueden gestionar todas las notificaciones.
+      allow read, write: if isAdmin();
+      // Un residente solo puede CREAR una notificación si tiene una propiedad asignada.
+      allow create: if isResidentOfProperty(request.resource.data.propertyId);
     }
   }
 }

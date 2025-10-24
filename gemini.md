@@ -12,7 +12,6 @@ Este documento resume el entendimiento actual sobre los objetivos y la estrategi
 
 ## 2. Stack Tecnológico
 
-- **Framework CSS:** Tailwind CSS (para un desarrollo rápido y consistente de la interfaz de usuario).
 - **Backend as a Service (BaaS):** Google Firebase.
 - **Base de Datos:** Cloud Firestore (para almacenar información de usuarios, pagos, etc.).
 - **Autenticación:** Firebase Authentication (para gestionar el inicio de sesión de los residentes).
@@ -25,7 +24,8 @@ Este documento resume el entendimiento actual sobre los objetivos y la estrategi
 - **Claves de Cliente Públicas:** Se asume que la configuración de Firebase del lado del cliente (`firebaseConfig`) es pública y visible en el navegador. La seguridad no dependerá de ocultar estas claves.
 - **Seguridad Basada en Backend:** La protección de los datos se implementará en los servidores de Firebase mediante:
     - **Autenticación Obligatoria:** Solo los usuarios autenticados podrán interactuar con los datos.
-    - **Reglas de Seguridad (Security Rules):** Se definirán reglas estrictas en Firestore y Storage para asegurar que un usuario solo pueda acceder y modificar su propia información.
+    - **Gestión de Roles Segura (Custom Claims):** Los roles de usuario (ej: "admin") no se gestionan en la base de datos, sino a través de **Custom Claims** de Firebase Authentication. Estos claims se asignan desde un entorno seguro (como una Cloud Function o usando el Admin SDK) y se integran en el token de autenticación del usuario. Esto previene que un usuario pueda auto-asignarse privilegios elevados.
+    - **Reglas de Seguridad (Security Rules):** Se definirán reglas estrictas en Firestore y Storage para asegurar que un usuario solo pueda acceder y modificar su propia información, basándose en sus Custom Claims (ej: `request.auth.token.admin == true`).
     - **App Check:** Se habilitará para garantizar que las solicitudes provengan exclusivamente de la aplicación web autorizada.
 
 ---
@@ -56,9 +56,40 @@ Una vez que el MVP sea sólido, se podrán incorporar las funcionalidades invest
 
 ---
 
-## 5. Estructura de la Base de Datos (Firestore)
+## 5. Modelo de Funcionamiento y Flujos Clave
 
-Para cumplir con los requisitos del MVP, se ha definido la siguiente estructura de colecciones y documentos en Firestore.
+La aplicación ha evolucionado de un simple gestor de cobros a una **plataforma de servicios para el residente**, con dos interfaces de usuario distintas y flujos de trabajo definidos.
+
+### El Rol del Administrador (Panel de Control)
+El administrador tiene control total sobre la lógica de negocio del condominio a través de un panel de control privado. Sus funciones principales son:
+- **Gestión de Conceptos de Cargo:** Definir todos los servicios, cuotas o multas que existen en el condominio (ej: "Cuota de Mantenimiento", "Reserva de Salón"). Esto incluye establecer montos por defecto y si son recurrentes o si pueden ser solicitados por los residentes.
+- **Aprobación de Solicitudes:** Revisar y gestionar las solicitudes de servicios que los residentes inician desde su portal.
+- **Generación de Cargos Manuales:** Aplicar cargos únicos o extraordinarios a propiedades específicas.
+- **Supervisión de Automatización:** Monitorear los cargos recurrentes que el sistema genera automáticamente.
+
+### El Rol del Residente (Portal de Autogestión)
+El residente interactúa con la plataforma a través de un dashboard personal que le permite:
+- **Consultar un Estado de Cuenta Unificado:** Ver todos sus movimientos financieros: cuotas obligatorias, servicios solicitados, etc.
+- **Acceder a un Catálogo de Servicios:** Ver y solicitar los servicios opcionales que el administrador ha configurado.
+- **Gestionar sus Pagos:** Realizar acciones sobre sus saldos pendientes, como subir comprobantes de pago.
+
+### Flujo Clave 1: Solicitud de un Servicio (Ej: Reserva de Salón)
+1.  **Configuración:** El administrador crea un "Concepto de Cargo" llamado "Reserva Salón de Fiestas" y lo marca como "solicitable por el residente" y "requiere aprobación".
+2.  **Solicitud:** El residente ve este servicio en su portal y envía una solicitud.
+3.  **Registro:** El sistema crea un documento en `serviceRequests` con estado "pendiente_aprobacion". No se genera ningún cargo financiero aún.
+4.  **Aprobación:** El administrador recibe la notificación, revisa la solicitud y la aprueba en su panel.
+5.  **Generación del Cargo:** Tras la aprobación, el sistema actualiza la solicitud a "aprobada" y crea automáticamente el documento correspondiente en la colección `transactions`, impactando el saldo del residente.
+
+### Flujo Clave 2: Generación de Cuota Mensual (Automatizado)
+1.  **Configuración:** El administrador crea un "Concepto de Cargo" llamado "Cuota de Mantenimiento" y lo marca como "recurrente" con frecuencia "mensual".
+2.  **Ejecución:** Una Cloud Function programada se ejecuta el primer día de cada mes.
+3.  **Proceso:** La función busca todos los conceptos marcados como recurrentes/mensuales y genera las transacciones de cargo para todas las propiedades del condominio de forma masiva. El administrador no interviene en este proceso mensual.
+
+---
+
+## 6. Estructura de la Base de Datos (Firestore)
+
+Para cumplir con la visión de una plataforma de servicios flexible y automatizada, se ha definido la siguiente estructura de colecciones.
 
 ### Colección: `users`
 - **Propósito:** Almacena el perfil del residente y lo vincula a su propiedad.
@@ -67,7 +98,7 @@ Para cumplir con los requisitos del MVP, se ha definido la siguiente estructura 
     - `email` (Texto): Email de inicio de sesión.
     - `displayName` (Texto): Nombre completo del residente.
     - `propertyId` (Texto): ID del documento en la colección `properties`.
-    - `role` (Texto): Rol del usuario (ej: "resident", "admin").
+    - `role` (Texto): Rol del usuario (ej: "resident", "admin"). **Nota:** Este campo debe considerarse solo para fines informativos (ej: filtros en el panel de admin). La autorización real y los privilegios se determinan mediante Custom Claims seguros en el token de autenticación.
     - `createdAt` (Fecha y Hora): Fecha de creación del perfil.
 
 ### Colección: `properties`
@@ -80,16 +111,55 @@ Para cumplir con los requisitos del MVP, se ha definido la siguiente estructura 
     - `currency` (Texto): Moneda (ej: "USD").
     - `ownerUids` (Array): Lista de `userId` de los dueños/residentes de la propiedad.
 
+### Colección: `chargeConcepts`
+- **Propósito:** Almacena las plantillas o definiciones de todos los posibles cargos y servicios que pueden generarse en el condominio. Es el cerebro del módulo de cargos.
+- **ID del Documento:** ID auto-generado por Firestore.
+- **Campos:**
+    - `name` (Texto): Nombre descriptivo del concepto (ej: "Cuota de Mantenimiento", "Reserva Salón de Fiestas").
+    - `defaultAmount` (Número): Monto sugerido para el cargo.
+    - `isRecurring` (Booleano): `true` si el cargo se debe generar automáticamente de forma periódica.
+    - `billingFrequency` (Texto): Si es recurrente, la frecuencia (ej: "monthly", "yearly").
+    - `isRequestableByResident` (Booleano): `true` si los residentes pueden ver y solicitar este servicio desde su panel.
+    - `requiresApproval` (Booleano): `true` si la solicitud de un residente para este servicio requiere aprobación del administrador.
+
+### Colección: `serviceRequests`
+- **Propósito:** Registra cada solicitud de servicio hecha por un residente. Funciona como un paso intermedio de aprobación antes de que se cree un cargo financiero.
+- **ID del Documento:** ID auto-generado por Firestore.
+- **Campos:**
+    - `propertyId` (Texto): ID de la propiedad que solicita el servicio.
+    - `chargeConceptId` (Texto): Vínculo al documento en `chargeConcepts` que se está solicitando.
+    - `requestDate` (Fecha y Hora): Cuándo se hizo la solicitud.
+    - `status` (Texto): Estado del flujo de aprobación (ej: "pending_approval", "approved", "rejected").
+    - `residentNotes` (Texto): Comentarios opcionales del residente al hacer la solicitud.
+    - `adminNotes` (Texto): Comentarios del administrador al aprobar o rechazar.
+    - `finalAmount` (Número): El monto final del cargo, definido o confirmado por el administrador al aprobar.
+
 ### Colección: `transactions`
-- **Propósito:** Libro contable inmutable de todos los movimientos financieros.
+- **Propósito:** Libro contable inmutable de todos los movimientos financieros (cargos y pagos).
 - **ID del Documento:** ID auto-generado por Firestore.
 - **Campos:**
     - `propertyId` (Texto): ID de la propiedad a la que pertenece.
-    - `amount` (Número): Monto del movimiento. Negativo para cargos (cuotas), positivo para créditos (pagos).
-    - `type` (Texto): Tipo de transacción (ej: "FEE", "PAYMENT").
-    - `description` (Texto): Descripción legible.
-    - `createdAt` (Fecha y Hora): Fecha de registro.
-    - `effectiveDate` (Fecha): Fecha a la que corresponde el movimiento.
+    - `amount` (Número): Monto del movimiento. Negativo para cargos (débitos), positivo para créditos (pagos).
+    - `type` (Texto): Tipo de transacción (ej: "FEE", "PAYMENT", "FINE").
+    - `description` (Texto): Descripción legible del movimiento.
+    - `voucherType` (Texto): Tipo de comprobante asociado (ej: "Factura", "Recibo", "Nota de Crédito").
+    - `voucherNumber` (Texto): Número del comprobante.
+    - `serviceRequestId` (Texto, Opcional): Si la transacción se originó por una solicitud de servicio, se guarda el ID para trazabilidad.
+    - `createdAt` (Fecha y Hora): Fecha de registro en el sistema.
+    - `effectiveDate` (Fecha): Fecha a la que corresponde el movimiento contable.
+
+### Colección: `paymentNotifications`
+- **Propósito:** Almacena los reportes de pago enviados por los residentes, pendientes de verificación por parte del administrador.
+- **ID del Documento:** ID auto-generado por Firestore.
+- **Campos:**
+    - `propertyId` (Texto): ID de la propiedad que reporta el pago.
+    - `amount` (Número): Monto que el residente reporta haber pagado.
+    - `paymentDate` (Fecha): Fecha en que el residente realizó el pago.
+    - `reportDate` (Fecha y Hora): Fecha y hora en que se creó el reporte.
+    - `status` (Texto): Estado del flujo de verificación (ej: "pending_verification", "verified", "rejected").
+    - `receiptUrl` (Texto, Opcional): URL de la imagen del comprobante en Firebase Storage.
+    - `notes` (Texto, Opcional): Notas del residente sobre el pago.
+    - `adminNotes` (Texto, Opcional): Notas del administrador al verificar o rechazar.
 
 ---
 
@@ -202,3 +272,15 @@ Se ha acordado aplicar documentación de forma continua durante el desarrollo pa
 -   **Para la Lógica de JavaScript (en `<script>` o archivos `.js`):**
     -   Se usará **JSDoc (`/** ... */`)** para documentar todas las funciones, explicando su propósito, parámetros (`@param`) y valores de retorno (`@returns`).
     -   Se usarán comentarios de una línea (`//`) o multilínea (`/* ... */`) para aclaraciones puntuales dentro de las funciones, según sea el caso.
+
+-   **Para CSS (`public/style.css`):**
+    -   Se utilizarán comentarios de bloque (`/* --- Sección --- */`) para delimitar grandes secciones lógicas (ej: Fuentes, Variables de Color, Componentes).
+    -   Se utilizarán comentarios de una línea (`/* Comentario */`) o de múltiples líneas para explicar reglas CSS complejas o decisiones de diseño específicas.
+---
+
+## 9. Flujo de Trabajo de Git
+
+- **Doble Repositorio:** El proyecto se mantiene sincronizado en dos repositorios remotos: `github` y `gitlab`.
+- **Práctica de Actualización:** Al finalizar un conjunto de cambios, se debe realizar un `push` a **ambos** remotos para mantenerlos actualizados.
+  - `git push github main`
+  - `git push gitlab main`

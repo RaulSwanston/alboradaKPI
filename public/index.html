@@ -3,66 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestión de Condominio</title>
-    <link rel="stylesheet" href="/output.css">
+    <title>AlboradaKPI</title>
+    <link rel="icon" href="favicon.png" type="image/png">
+    <link rel="stylesheet" href="/style.css">
+    <!-- <script src="https://accounts.google.com/gsi/client" async defer></script> -->
+    <script type="module" src="./js/firebase.js"></script>
+    <script src="js/script.js"> </script>
 </head>
-<body class="bg-gray-100">
-
-    <!-- ====== Sección de Autenticación - Inicio ====== -->
-    <div id="auth-container" class="flex items-center justify-center min-h-screen">
-        <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-sm">
-            <h1 class="text-2xl font-bold mb-6 text-center text-gray-800">Bienvenido</h1>
-            <div class="mb-4">
-                <label for="email" class="block text-gray-700 text-sm font-bold mb-2">Correo Electrónico</label>
-                <input type="email" id="email" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="tu@email.com">
-            </div>
-            <div class="mb-6">
-                <label for="password" class="block text-gray-700 text-sm font-bold mb-2">Contraseña</label>
-                <input type="password" id="password" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight focus:outline-none focus:shadow-outline" placeholder="******************">
-            </div>
-            <div class="flex flex-col space-y-2">
-                <button id="loginButton" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Iniciar Sesión</button>
-                <button id="registerButton" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Registrarse</button>
-            </div>
-            <div class="relative flex py-5 items-center"><div class="flex-grow border-t border-gray-300"></div><span class="flex-shrink mx-4 text-gray-400 text-xs">O</span><div class="flex-grow border-t border-gray-300"></div></div>
-            <div class="flex flex-col">
-                 <button id="googleLoginButton" class="bg-white hover:bg-gray-100 text-gray-800 font-semibold py-2 px-4 border border-gray-300 rounded shadow flex items-center justify-center">
-                    <svg class="w-4 h-4 mr-2" aria-hidden="true" focusable="false" viewBox="0 0 488 512"><path fill="currentColor" d="M488 261.8C488 403.3 381.5 512 244 512 111.3 512 0 398.5 0 256S111.3 0 244 0c69.9 0 131.5 28.4 176.9 75.3L345 151.5C318.2 128.2 282.7 112 244 112c-88.6 0-160.1 71.7-160.1 160.1s71.4 160.1 160.1 160.1c97.4 0 134-60.3 138.6-93.1H244v-74.3h236.1c2.3 12.7 3.9 26.9 3.9 41.4z"></path></svg>
-                    Iniciar Sesión con Google
-                </button>
-            </div>
-            <p id="error-message" class="text-red-500 text-xs italic mt-4 text-center"></p>
+<body>
+  <section class="sectionView welcome hidden">
+    <header class="hero">
+      <!-- ====== Sección de bienvenida - Inicio ====== -->
+      <section>
+      <div class="logo">
+        <img src="img/alborada.svg" class="alboradaIllustration" alt="alborada illustration">
+        <div class="text">
+        <p class="appDescription">Administrador KPIs.</p>
+        <h1 class="title">Alborada</h1>
+        <p class="subTitle hidden">urbanización</p>
         </div>
-    </div>
-    <!-- ====== Sección de Autenticación - Fin ====== -->
+      </div>
+      <h2 class="subtitle">Bienvenido a nuestra plataforma digital para la gestión de tu hogar.</h2>
+      <p class="hero-description">Hemos creado este espacio pensando en ti. Consulta tus estados de cuenta, reporta pagos y mantente al día con el condominio de forma rápida, segura y transparente. Toda la información que necesitas, en un solo lugar.</p>
+      <div class="heroButtonContainer">
+        <button id="btnIngresar" class="cta">Ingresar</button>
+        <button id="start-button" class="info">Documentación</button>
+      </div>
+      </section>
+      <section>
+      <ul class="hero-advantages">
+        <li class="hidden-animation-element">
+        <svg class="advantage-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path></svg>
+        <div>
+          <span class="hidden-animation-element">Transparencia Financiera</span>
+          <p class="hidden-animation-element">Tu estado de cuenta, siempre claro y actualizado. Accede a tu historial de movimientos 24/7.</p>
+        </div>
+        </li>
+        <li class="hidden-animation-element">
+        <svg class="advantage-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+        <div>
+          <span class="hidden-animation-element">Gestión Simplificada</span>
+          <p class="hidden-animation-element">Crea reportes, agiliza el registro de tus transacciones o consulta el estado de tus solicitudes.</p>
+        </div>
+        </li>
+        <li class="hidden-animation-element">
+        <svg class="advantage-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+        <div>
+          <span class="hidden-animation-element">Comunicación Directa</span>
+          <p class="hidden-animation-element">Solicita servicios,  o contacta a la administración desde la palma de tu mano.</p>
+        </div>
+        </li>
+      </ul>
+      </section>
+      <!-- ====== Sección de bienvenida - Final ====== -->
+    </header>
+  </section>
 
 
-    <!-- ====== Sección del Dashboard - Inicio ====== -->
-    <div id="dashboard-container" class="hidden p-4 md:p-8">
-        <header class="flex justify-between items-center mb-8">
-            <h1 id="welcome-message" class="text-2xl md:text-3xl font-bold text-gray-800"></h1>
-            <button id="logoutButton" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">Cerrar Sesión</button>
-        </header>
 
-        <main>
+
+  <!-- ====== Sección de Autenticación - Inicio ====== -->
+  <section class="sectionView authentication hidden">
+    <section id="auth-container" class="auth-container">
+      <div class="auth-card">
+        <h1 class="auth-title">Bienvenido</h1>
+        <div class="form-group">
+          <label for="email" class="form-label">Correo Electrónico</label>
+          <div class="input-wrapper">
+            <input type="email" id="email" class="form-input" placeholder="tu@email.com" required pattern="^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$"><path fill="currentColor" d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414zM0 4.697v7.104l5.803-3.558zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586zm3.436-.586L16 11.801V4.697z"/>
+            <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+              <path d="M.05 3.555A2 2 0 0 1 2 2h12a2 2 0 0 1 1.95 1.555L8 8.414zM0 4.697v7.104l5.803-3.558zM6.761 8.83l-6.57 4.027A2 2 0 0 0 2 14h12a2 2 0 0 0 1.808-1.144l-6.57-4.027L8 9.586zm3.436-.586L16 11.801V4.697z"/>
+            </svg>
+          </div>
+        </div>
+          <div class="form-group">
+            <label for="password" class="form-label">Contraseña</label>
+            <div class="input-wrapper">
+              <input type="password" id="password" class="form-input" placeholder="******************">
+              <svg class="input-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M8 0c1.07 0 2.041.42 2.759 1.104l.14.14.062.08a.5.5 0 0 1-.71.675l-.076-.066-.216-.205A3 3 0 0 0 5 4v2h6.5A2.5 2.5 0 0 1 14 8.5v5a2.5 2.5 0 0 1-2.5 2.5h-7A2.5 2.5 0 0 1 2 13.5v-5a2.5 2.5 0 0 1 2-2.45V4a4 4 0 0 1 4-4"/>
+              </svg>
+            </div>
+          </div>
+          <div class="button-group">
+            <button id="loginButton" class="button principal">Iniciar Sesión</button>
+            <button id="registerButton" class="button secondary">Registrarse</button>
+          </div>
+          <div class="form-group" style="text-align: right; margin-top: -10px; margin-bottom: 20px;">
+              <a href="#" id="forgotPasswordLink" class="form-link">¿Olvidaste tu contraseña?</a>
+          </div>
+          <div class="separator"><span>O</span></div>
+          <div class="button-group">
+            <button id="googleSignInButton" class="button google-signin">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" style="margin-right: 10px;"><path fill="#4285F4" d="M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C8.36,19.27 5,16.25 5,12.43C5,8.61 8.36,5.59 12.19,5.59C14.03,5.59 15.69,6.15 16.95,7.24L19.05,5.14C17.22,3.44 15,2.5 12.19,2.5C7.03,2.5 3,6.58 3,12.43C3,18.28 7.03,22.36 12.19,22.36C17.6,22.36 21.7,18.46 21.7,12.68C21.7,12.06 21.54,11.57 21.35,11.1Z"></path></svg>
+                Continuar con Google
+            </button>
+          </div>
+          <p id="error-message" class="error-message"></p>
+        </div>
+    </section>
+  </section>
+  <!-- ====== Sección de Autenticación - Fin ====== -->
+
+
+
+
+
+
+
+
+  <!-- ====== Sección del Dashboard - Inicio ====== -->
+  <section class="sectionView dashboard hidden">
+    <header class="dashboard-header">
+      <h1 id="welcome-message" class="dashboard-welcome-message"></h1>
+      <button id="logoutButton" class="button button-accent">Cerrar Sesión</button>
+    </header>
+
+
+    <!-- ====== Menú de Opciones del Dashboard - Inicio ====== -->
+    <aside id="dashboard-menu" class="dashboard-menu">
+      <button>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#3b3c2b"><path d="M120-240v-80h720v80H120Zm0-200v-80h720v80H120Zm0-200v-80h720v80H120Z"/></svg>
+      </button>
+      <nav>
+        <ul>
+          <li class="menu-item resident-only"><a href="#" data-view="summary"><span>Resumen</span></a></li>
+          <li class="menu-item resident-only"><a href="#" data-view="residents"><span>Residentes</span></a></li>
+          <li class="menu-item resident-only"><a href="#" data-view="services"><span>Servicios</span></a></li>
+          <li class="menu-item resident-only"><a href="#" data-view="reports"><span>Reportes</span></a></li>
+          <li class="menu-item admin-only"><a href="#" data-view="payment"><span>Pagos</span></a></li>
+        </ul>
+       </nav>
+    </aside>
+    <!-- ====== Menú de Opciones del Dashboard - Fin ====== -->
+
+    <section id="dashboard-container" class="dashboard-container">
+        <main class="dashboard-main">
+            <!-- ====== Sub-sección: Resumen de Estadísticas - Inicio ====== -->
+            <div class="admin-stats-grid">
+                <div class="stat-card">
+                    <h3 class="stat-card-title">Residentes Registrados</h3>
+                    <p id="stat-total-residents" class="stat-card-number">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3 class="stat-card-title">Solicitudes Pendientes</h3>
+                    <p id="stat-pending-requests" class="stat-card-number">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3 class="stat-card-title">Pagos por Verificar</h3>
+                    <p id="stat-pending-payments" class="stat-card-number">0</p>
+                </div>
+                <div class="stat-card">
+                    <h3 class="stat-card-title">Saldo Vencido Total</h3>
+                    <p id="stat-overdue-balance" class="stat-card-number">$0.00</p>
+                </div>
+            </div>
+            <!-- ====== Sub-sección: Resumen de Estadísticas - Fin ====== -->
+
+
             <!-- ====== Sub-sección: Resumen Financiero - Inicio ====== -->
-            <div class="bg-white p-6 rounded-lg shadow-md mb-8">
-                <h2 id="property-name" class="text-xl font-semibold text-gray-700 mb-2"></h2>
-                <p class="text-gray-600">Saldo Actual</p>
-                <p id="property-balance" class="text-4xl font-bold"></p>
+            <div class="dashboard-summary-card">
+                <h2 id="property-name" class="dashboard-summary-title"></h2>
+                <p class="dashboard-summary-label">Saldo Actual</p>
+                <p id="property-balance" class="dashboard-summary-balance">0.00</p>
+                <div class="button-group" style="margin-top: 1.5rem;">
+                    <button id="report-payment-button" class="button button-primary">Reportar un Pago</button>
+                </div>
             </div>
             <!-- ====== Sub-sección: Resumen Financiero - Fin ====== -->
 
+            <!-- ====== Sub-sección: Catálogo de Servicios - Inicio ====== -->
+            <div class="dashboard-services-card">
+                <h2 class="dashboard-transactions-title">Solicitar Servicios</h2>
+                <div id="services-list-container">
+                    <!-- Los servicios solicitables se insertarán aquí -->
+                </div>
+            </div>
+            <!-- ====== Sub-sección: Catálogo de Servicios - Fin ====== -->
+
             <!-- ====== Sub-sección: Historial de Transacciones - Inicio ====== -->
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <h2 class="text-xl font-semibold text-gray-700 mb-4">Historial de Transacciones</h2>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full leading-normal">
+            <div class="dashboard-transactions-card">
+                <h2 class="dashboard-transactions-title">Historial de Transacciones</h2>
+                <div class="table-responsive">
+                    <table class="transactions-table">
                         <thead>
                             <tr>
-                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Fecha</th>
-                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-left text-xs font-semibold text-gray-600 uppercase tracking-wider">Descripción</th>
-                                <th class="px-5 py-3 border-b-2 border-gray-200 bg-gray-100 text-right text-xs font-semibold text-gray-600 uppercase tracking-wider">Monto</th>
+                                <th class="table-header">Fecha</th>
+                                <th class="table-header">Descripción</th>
+                                <th class="table-header">Comprobante</th>
+                                <th class="table-header">Nro.</th>
+                                <th class="table-header text-right">Débito (-)</th>
+                                <th class="table-header text-right">Crédito (+)</th>
+                                <th class="table-header text-right">Saldo</th>
                             </tr>
                         </thead>
                         <tbody id="transactions-table-body">
@@ -72,202 +204,130 @@
                 </div>
             </div>
             <!-- ====== Sub-sección: Historial de Transacciones - Fin ====== -->
+
+
+            <!-- Separador -->
+            <div class="separator"><span>Conceptos Existentes</span></div>
+
+            <!-- Tabla de conceptos existentes -->
+            <div class="table-responsive">
+                <table class="transactions-table">
+                    <thead>
+                        <tr>
+                            <th class="table-header">Nombre</th>
+                            <th class="table-header">Monto</th>
+                            <th class="table-header">Tipo</th>
+                            <th class="table-header">Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="concepts-table-body">
+                        <!-- Las filas se insertarán aquí -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- ====== Sub-sección: Gestión de Conceptos de Cargo - Fin ====== -->
+
+        <!-- ====== Sub-sección: Gestión de Conceptos de Cargo - Inicio ====== -->
+        <div class="admin-card">
+            <h2 class="admin-card-title">Gestión de Conceptos de Cargo</h2>
+            
+            <!-- Formulario para crear/editar -->
+            <form id="concept-form" class="concept-form">
+                <input type="hidden" id="concept-id">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="concept-name" class="form-label">Nombre del Concepto</label>
+                        <input type="text" id="concept-name" class="form-input" placeholder="Ej: Cuota de Mantenimiento" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="concept-amount" class="form-label">Monto por Defecto (USD)</label>
+                        <input type="number" id="concept-amount" class="form-input" placeholder="15.00" step="0.01" required>
+                    </div>
+                </div>
+                <div class="form-group-checkboxes">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="concept-recurring">
+                        ¿Es Recurrente?
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="concept-requestable">
+                        ¿Es Solicitable por Residente?
+                    </label>
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="concept-approval">
+                        ¿Requiere Aprobación?
+                    </label>
+                </div>
+                <div id="recurring-options" class="form-group hidden">
+                    <label for="concept-frequency" class="form-label">Frecuencia de Cobro</label>
+                    <select id="concept-frequency" class="form-input">
+                        <option value="monthly">Mensual</option>
+                        <option value="yearly">Anual</option>
+                    </select>
+                </div>
+                <div class="button-group">
+                    <button type="submit" class="button button-primary">Guardar Concepto</button>
+                    <button type="button" id="cancel-edit-button" class="button button-secondary hidden">Cancelar Edición</button>
+                </div>
+            </form>
         </main>
-    </div>
+    </section>
     <!-- ====== Sección del Dashboard - Fin ====== -->
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, getAdditionalUserInfo } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-        import { getFirestore, doc, getDoc, setDoc, collection, query, where, orderBy, getDocs, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+    <!-- ====== Sección de Administración - Inicio ====== -->
+    <div id="admin-container" class="hidden dashboard-container">
+        <header class="dashboard-header">
+            <h1 class="dashboard-welcome-message">Panel de Administración</h1>
+            <button id="adminLogoutButton" class="button button-accent">Cerrar Sesión</button>
+        </header>
 
-        // --- Configuración de Firebase ---
-        const firebaseConfig = {
-            apiKey: "AIzaSyAfb-hN3jJSaPHZ3JMVJyXIjkIc_-NPyGg",
-            authDomain: "alboradakpi.firebaseapp.com",
-            projectId: "alboradakpi",
-            storageBucket: "alboradakpi.appspot.com",
-            messagingSenderId: "137214990147",
-            appId: "1:137214990147:web:09ed9f77b6830a997601f6",
-            measurementId: "G-Y23MSYLH7B"
-        };
+        <main class="admin-main">
 
-        // --- Inicialización de Servicios ---
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
 
-        // --- Referencias al DOM ---
-        const authContainer = document.getElementById('auth-container');
-        const dashboardContainer = document.getElementById('dashboard-container');
-        const emailInput = document.getElementById('email');
-        const passwordInput = document.getElementById('password');
-        const loginButton = document.getElementById('loginButton');
-        const registerButton = document.getElementById('registerButton');
-        const googleLoginButton = document.getElementById('googleLoginButton');
-        const logoutButton = document.getElementById('logoutButton');
-        const errorMessageElement = document.getElementById('error-message');
 
-        // --- Lógica Principal (Observador de Autenticación) ---
-        /**
-         * @summary Observador principal del estado de autenticación.
-         * @description Se activa cuando un usuario inicia o cierra sesión.
-         *              Controla qué contenedor principal se muestra (autenticación o dashboard).
-         * @param {firebase.User|null} user - El objeto de usuario de Firebase si está autenticado, o null si no lo está.
-         */
-        onAuthStateChanged(auth, (user) => {
-            if (user) {
-                // Usuario ha iniciado sesión
-                authContainer.classList.add('hidden');
-                dashboardContainer.classList.remove('hidden');
-                loadDashboardData(user);
-            } else {
-                // Usuario ha cerrado sesión
-                authContainer.classList.remove('hidden');
-                dashboardContainer.classList.add('hidden');
-                clearDashboardData();
-            }
-        });
 
-        // --- Funciones del Dashboard ---
-        /**
-         * @summary Carga y muestra los datos del dashboard para el usuario autenticado.
-         * @description Obtiene el perfil del usuario, la información de su propiedad (saldo, nombre)
-         *              y su historial de transacciones desde Firestore, y los renderiza en el DOM.
-         * @param {firebase.User} user - El objeto del usuario autenticado.
-         * @async
-         */
-        async function loadDashboardData(user) {
-            document.getElementById('welcome-message').textContent = `Bienvenido, ${user.displayName || user.email}`;
-            
-            try {
-                // 1. Obtener el perfil del usuario para encontrar su propertyId
-                const userDocRef = doc(db, "users", user.uid);
-                const userDoc = await getDoc(userDocRef);
 
-                if (!userDoc.exists() || !userDoc.data().propertyId || userDoc.data().propertyId === 'PENDING_ASSIGNMENT') {
-                    document.getElementById('property-name').textContent = 'Propiedad no asignada';
-                    document.getElementById('property-balance').textContent = 'N/A';
-                    return;
-                }
-                const propertyId = userDoc.data().propertyId;
 
-                // 2. Obtener la información de la propiedad (saldo y nombre)
-                const propDocRef = doc(db, "properties", propertyId);
-                const propDoc = await getDoc(propDocRef);
 
-                if (propDoc.exists()) {
-                    const propertyData = propDoc.data();
-                    document.getElementById('property-name').textContent = propertyData.name || 'Mi Propiedad';
-                    const balance = propertyData.balance || 0;
-                    const balanceElement = document.getElementById('property-balance');
-                    balanceElement.textContent = new Intl.NumberFormat('es-PA', { style: 'currency', currency: 'USD' }).format(balance);
-                    balanceElement.className = balance >= 0 ? 'text-4xl font-bold text-green-600' : 'text-4xl font-bold text-red-600';
-                }
 
-                // 3. Obtener el historial de transacciones
-                const transactionsTableBody = document.getElementById('transactions-table-body');
-                const q = query(collection(db, "transactions"), where("propertyId", "==", propertyId), orderBy("createdAt", "desc"));
-                const querySnapshot = await getDocs(q);
-                
-                querySnapshot.forEach(doc => {
-                    const tx = doc.data();
-                    const row = transactionsTableBody.insertRow();
-                    row.className = 'border-b border-gray-200';
+        </main>
+    </div>
+    <!-- ====== Sección de Administración - Fin ====== -->
 
-                    const dateCell = row.insertCell(0);
-                    dateCell.className = 'px-5 py-5 text-sm';
-                    dateCell.textContent = tx.createdAt.toDate().toLocaleDateString('es-PA');
+    <!-- ====== Contenedor de Notificaciones Toast - Inicio ====== -->
+    <div id="toast-container"></div>
+    <!-- ====== Contenedor de Notificaciones Toast - Fin ====== -->
 
-                    const descCell = row.insertCell(1);
-                    descCell.className = 'px-5 py-5 text-sm';
-                    descCell.textContent = tx.description;
-
-                    const amountCell = row.insertCell(2);
-                    amountCell.className = `px-5 py-5 text-sm text-right font-semibold ${tx.amount >= 0 ? 'text-green-600' : 'text-red-600'}`;
-                    amountCell.textContent = new Intl.NumberFormat('es-PA', { style: 'currency', currency: 'USD' }).format(tx.amount);
-                });
-
-            } catch (error) {
-                console.error("Error cargando datos del dashboard:", error);
-                document.getElementById('property-name').textContent = 'Error al cargar datos.';
-            }
-        }
-
-        /**
-         * @summary Limpia los datos del dashboard.
-         * @description Se ejecuta al cerrar sesión para eliminar la información sensible
-         *              y resetear la interfaz del dashboard.
-         */
-        function clearDashboardData() {
-            document.getElementById('welcome-message').textContent = '';
-            document.getElementById('property-name').textContent = '';
-            document.getElementById('property-balance').textContent = '';
-            document.getElementById('transactions-table-body').innerHTML = '';
-        }
-
-        // Maneja el evento de clic para el botón de cerrar sesión.
-        logoutButton.addEventListener('click', () => {
-            signOut(auth).catch(error => console.error('Error al cerrar sesión:', error));
-        });
-
-        // --- Funciones de Autenticación ---
-        /**
-         * @summary Crea un documento de perfil de usuario en Firestore.
-         * @description Tras un registro exitoso (ya sea por email/contraseña o proveedor social),
-         *              esta función crea un documento en la colección 'users' con información básica
-         *              y un 'propertyId' pendiente de asignación.
-         * @param {firebase.User} user - El objeto de usuario recién creado por Firebase Auth.
-         * @async
-         */
-        async function createUserProfile(user) {
-            const userDocRef = doc(db, "users", user.uid);
-            await setDoc(userDocRef, {
-                email: user.email,
-                displayName: user.displayName || user.email.split('@')[0],
-                role: 'resident',
-                propertyId: 'PENDING_ASSIGNMENT',
-                createdAt: serverTimestamp()
-            });
-            console.log("Documento de usuario creado en Firestore.");
-        }
-
-        // Maneja el evento de clic para el botón de registro.
-        registerButton.addEventListener('click', () => {
-            const email = emailInput.value;
-            const password = passwordInput.value;
-            errorMessageElement.textContent = '';
-            createUserWithEmailAndPassword(auth, email, password)
-                .then(async (userCredential) => {
-                    await createUserProfile(userCredential.user);
-                    alert('¡Registro exitoso!');
-                })
-                .catch((error) => { errorMessageElement.textContent = `Error: ${error.message}`; });
-        });
-
-        // Maneja el evento de clic para el botón de inicio de sesión.
-        loginButton.addEventListener('click', () => {
-            const email = emailInput.value;
-            const password = passwordInput.value;
-            errorMessageElement.textContent = '';
-            signInWithEmailAndPassword(auth, email, password)
-                .catch((error) => { errorMessageElement.textContent = `Error: ${error.message}`; });
-        });
-
-        // Maneja el evento de clic para el botón de inicio de sesión con Google.
-        googleLoginButton.addEventListener('click', () => {
-            const provider = new GoogleAuthProvider();
-            errorMessageElement.textContent = '';
-            signInWithPopup(auth, provider)
-                .then(async (result) => {
-                    const additionalInfo = getAdditionalUserInfo(result);
-                    if (additionalInfo.isNewUser) {
-                        await createUserProfile(result.user);
-                    }
-                }).catch((error) => { errorMessageElement.textContent = `Error: ${error.message}`; });
-        });
-
-    </script>
-
+    <!-- ====== Modal de Reporte de Pago - Inicio ====== -->
+    <div id="payment-modal" class="modal-overlay hidden">
+        <div class="modal-card">
+            <h2 class="admin-card-title">Reportar Pago</h2>
+            <form id="payment-form">
+                <div class="form-group">
+                    <label for="payment-amount" class="form-label">Monto Pagado</label>
+                    <input type="number" id="payment-amount" class="form-input" step="0.01" placeholder="0.00" required>
+                </div>
+                <div class="form-group">
+                    <label for="payment-date" class="form-label">Fecha de Pago</label>
+                    <input type="date" id="payment-date" class="form-input" required>
+                </div>
+                <div class="form-group">
+                    <label for="payment-receipt" class="form-label">Comprobante (Opcional)</label>
+                    <input type="file" id="payment-receipt" class="form-input" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label for="payment-notes" class="form-label">Notas (Opcional)</label>
+                    <textarea id="payment-notes" class="form-input" rows="3" placeholder="Ej: Pago de la cuota de Octubre"></textarea>
+                </div>
+                <div class="button-group" style="flex-direction: row; justify-content: flex-end; gap: 1rem;">
+                    <button type="button" id="cancel-payment-button" class="button button-secondary">Cancelar</button>
+                    <button type="submit" class="button button-primary">Enviar Reporte</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- ====== Modal de Reporte de Pago - Fin ====== -->
+  </section>
 </body>
 </html>
