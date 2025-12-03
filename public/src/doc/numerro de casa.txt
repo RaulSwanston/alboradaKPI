@@ -1,0 +1,359 @@
+Calle	No. Casa	Nombre
+1RA OESTE	1	Rubén Araúz \ Elisa Indira Powel Rodriguez
+1RA OESTE	2	Omar Cueto
+1RA OESTE	3	Leonardo Small / Gilda Gavidia
+1RA OESTE	4	Carlos Garay
+1RA OESTE	5	Anselmo Forde
+1RA OESTE	6	Miguel Sanchez
+1RA CENTRO	7	Alex Paz
+1RA CENTRO	8	Darinka de Hoyos
+1RA CENTRO	9	Aura del Carmen Hurtado/ Tahimy Guadalupe 
+1RA CENTRO	10	Miozotis del Carmen Olmos
+1RA CENTRO	11	Mario Macías
+1RA CENTRO	12	Sheriska Escobar
+1RA CENTRO	13	Flia. Ceballos
+1RA CENTRO	14	María Montenegro
+1RA CENTRO	15	Susana Thachar
+1RA CENTRO	16	Victor de Jesus Castillo / Ciara Jimenez
+1RA ESTE	17	Daibelis Victoria
+1RA ESTE	18	Yaniza de Dreckett
+1RA ESTE	19	Querubi Nereida
+1RA ESTE	20	Vielka Cusati
+1RA ESTE	21	Hector Ibarguen
+1RA ESTE	22	Juan Cedeño
+1RA ESTE	23	Humberto Guevara
+2DA ESTE	24	Aikza Abrego
+2DA ESTE	25	Manuel de Jesus Medina
+2DA ESTE	26	Dionisio Jimenez
+2DA ESTE	27	James Mick
+2DA ESTE	28	Luis Sanchez
+2DA ESTE	29	Indira Patel
+2DA ESTE	30	Aliza Jimenez
+2DA CENTRO	31	Israel Santamaría
+2DA CENTRO	32	Roberto Rudy
+2DA CENTRO	33	Xenia Rosales de Betegon
+2DA CENTRO	34	Sonia Rodríguez de Murillo
+2DA CENTRO	35	Malibetza Ceballos
+2DA CENTRO	36	Yirabel Girado
+2DA CENTRO	37	Gladys Villanueva
+2DA CENTRO	38	Argelia Morris
+2DA CENTRO	39	Ernesto Small
+2DA CENTRO	40	Felicia Gittens
+1RA OESTE	41	Alberto Chambers / YARIBEL RUIZ
+1RA OESTE	42	Jasmin Johnson
+1RA OESTE	43	Roberto Rodríguez
+1RA OESTE	44	Otman Santamaría /BARBARA BENDIGO DE SANTAMARIA
+1RA OESTE	45	Fernando Cummings 
+1RA OESTE	46	Rafael Arnemann / SYAHMAR ORTIZ
+1RA OESTE	47	Luzmila de Quintero
+2DA OESTE	48	Analida Jordan
+2DA OESTE	49	Eric Lasonder
+2DA OESTE	50	Pablo y Noris de Mejía
+2DA OESTE	51	José Zurita
+2DA OESTE	52	Crisalida Solís
+2DA OESTE	53	Osvaldo Herrera
+2DA OESTE	54	Jerónimo Hernandez
+2DA OESTE	55	Alberto Benett
+2DA OESTE	56	Nitzia Aguilar
+2DA OESTE	57	Piedad de Cid
+2DA OESTE	58	Martín Meneses
+2DA OESTE	59	Ilka Mark
+2DA OESTE	60	Mario Mitchel
+2DA CENTRO	61	Armando Gittens
+2DA CENTRO	62	Armando Lee/ Mirna Reed de Lee
+2DA CENTRO	63	Nidia de Martinez
+2DA CENTRO	64	Iliana Lee
+2DA CENTRO	65	César López
+2DA CENTRO	66	Dhayanara Mendoza
+2DA CENTRO	67	Emilio Lovet
+2DA CENTRO	68	Wilfredo Pacheco/ EMELINA CATUY
+2DA CENTRO	69	Celina de Laurdes
+2DA CENTRO	70	Damaris Jackson
+2DA CENTRO	71	Carlos Valdez
+2DA CENTRO	72	Damian Montenegro
+2DA CENTRO	73	Yira de Morales
+2DA CENTRO	74	Victor Rozette
+2DA ESTE	75	Vanessa Luzcando
+2DA ESTE	76	Oscar Gomez
+2DA ESTE	77	Enrique Herrera
+2DA ESTE	78	Antonio Brooks
+2DA ESTE	79	Moises Gonzalez / Kaisha Rivas
+2DA ESTE	80	Juan Alvarado / VANESSA PARNTHER
+2DA ESTE	81	Yomaira Avila
+3RA ESTE	82	Reynaldo Angarita
+3RA ESTE	83	Amarilis Mata S.
+3RA ESTE	84	Javier Campo
+3RA ESTE	85	Wilma de Escobar
+3RA ESTE	86	Georgiana Gaviria
+3RA ESTE	87	Eduardo Villarreal
+3RA ESTE	88	Gisela Gonzalez
+3RA CENTRO	89	Lorraine Alexander
+3RA CENTRO	90	Angel deL Valle
+3RA CENTRO	91	Zaida Jimenez / Ligia Adles
+3RA CENTRO	92	Ivonne Roberts
+3RA CENTRO	93	Glenda de Davis
+3RA CENTRO	94	Juan Ramos
+3RA CENTRO	95	Raul Murdock
+3RA CENTRO	96	Carlos Tuñon
+3RA CENTRO	97	Karen de Gonzalez
+3RA CENTRO	98	Oriel Avila
+3RA CENTRO	99	Carlos Gonzalez
+3RA CENTRO	100	Yanitsha Harris/ Jairo Buitrago
+3RA CENTRO	101	Flor Aparicio
+3RA CENTRO	102	Harkishin Chugani
+3RA CENTRO	103	Manuel Villarreal
+3RA OESTE	104	James  Peters
+3RA OESTE	105	Cesar Estrada
+3ra OESTE	106	ARELIS OSSA 
+3ra OESTE	107	Miguel Taylor
+3ra OESTE	108	Carlos Brown
+3ra OESTE	109	Alfredo Cebrian
+3ra OESTE	110	Carlos Sierra
+3ra OESTE	111	Aldo Hamilton
+3ra OESTE	112	Yuri Bethancourt
+3ra OESTE	113	Mario Gondola
+3ra OESTE	114	Maria Thomhill
+3ra OESTE	115	Kizaida Obregon
+3ra OESTE	116	Erika Jimenez
+3ra OESTE	117	Jorge Velasquez
+3ra OESTE	118	Antonio Taylor/ MADELEIN TAYLOR
+3ra OESTE	119	Mario Small
+3RA OESTE	120	Jaime Lawrence
+3RA CENTRO	121	Dalia Peters
+3RA CENTRO	122	Eliezer Espinosa/ yamileth sanchez
+3ra CENTRO	123	Jose Espinosa
+3ra CENTRO	124	Juan Garibaldi
+3ra CENTRO	125	Abdiel Hassan
+3ra CENTRO	126	Gustavo Montalvan
+3ra CENTRO	127	Raglin Robinson
+3ra CENTRO	128	Luis Pacheco
+3ra CENTRO	129	Erc Rosillo
+3ra CENTRO	130	Enrique Marcano
+3ra CENTRO	131	Ana Castro
+3ra CENTRO	132	Natzury reina bernal /Amed Algandona
+3ra CENTRO	133	Ada Chong
+3RA ESTE	134	Lucas Cortes
+3RA ESTE	135	Nilka del Castillo
+3RA ESTE	136	Sumaykira Grenald
+3RA ESTE	137	Jose Tuñon
+3RA ESTE	138	Diovana Griffith
+3RA ESTE	139	Ernesto Galvan
+3RA ESTE	140	Aracelis Tud de Rosales
+4TA ESTE	141	Luis Coronel
+4TA ESTE	142	Daniel Isaac
+4TA ESTE	143	Hernando Valle / Daiza Bru
+4TA ESTE	144	Doris Marrugo
+4TA ESTE	145	Magaly de Vivero
+4TA ESTE	146	Jurgen Weller
+4TA ESTE	147	Jaime Ceballos
+4TA CENTRO	148	Dennis Barnes
+4TA CENTRO	149	Ricardo Long
+4TA CENTRO	150	Ezequiel Lewis / KASHMAH CADOGAN 
+4TA CENTRO	151	Anakharina Kandrin 
+4TA CENTRO	152	Jasmina Cardenas
+4TA CENTRO	153	Nancy Machado / joel padilla
+4TA CENTRO	154	Jose Barrows
+4TA CENTRO	155	Yolanda Forbes
+4TA CENTRO	156	Yisel Bonet Altamiranda de Yard
+4TA CENTRO	157	Yaneth Badilla
+4TA CENTRO	158	Orlando Reyna
+4TA CENTRO	159	Everaldo Percival
+4TA CENTRO	160	Rolando Pacheco
+4TA OESTE	161	Eduardo McLaughilin
+4TA OESTE	162	Yazmin Soto
+4ta OESTE	163	Jose Saladino
+4ta OESTE	164	Nidia Silgado Leon
+4ta OESTE	165	Sabina Lawrence
+4ta OESTE	166	Yanina Gonzalez
+4ta OESTE	167	Iluminada Bonilla
+4ta OESTE	168	Odilka Ruiloba
+4ta OESTE	169	Fernado Penas
+4ta OESTE	170	Jazmin  Mendoza
+4ta OESTE	171	Katiana Castro
+4ta OESTE	172	Jaime Anderson
+4ta OESTE	173	Mariela de Robinson
+4ta OESTE	174	Rolando Fitzroy
+4ta OESTE	175	Aubrey Forbes \ NATIVIDAD SANCHEZ DE FORBES
+4ta OESTE	176	Vielka Arauz
+4ta OESTE	177	Pamela Peters
+4ta OESTE	178	Dalis Bandini
+4ta OESTE	179	Alma Ifil
+4ta OESTE	180	Generoso Perez
+4TA OESTE	181	Marlene Boyce
+4TA CENTRO	182	Roseme Servillus
+4TA CENTRO	183	Marco Pault
+4TA CENTRO	184	Eduardo Villalta
+4TA CENTRO	185	Eloisa Jaen
+4TA CENTRO	186	Roger y Kristiany Oglivie
+4TA CENTRO	187	Yaviritzel Panay
+4TA CENTRO	188	Fabiola Alvey
+4TA CENTRO	189	Anibal Amaya
+4TA CENTRO	190	Nizam Alikham/ desire herrera
+4TA CENTRO	191	ERICK SELLES
+4TA CENTRO	192	Angel Cedeño
+4TA CENTRO	193	Nuria Jimenez
+4TA CENTRO	194	Francisco De Nicolo / Lisseth de la Espada
+4TA CENTRO	195	Luis Amador
+4TA CENTRO	196	Santos Chávez
+4TA ESTE	197	Amado Hau
+4TA ESTE	198	Cecilio Arosemena
+4TA ESTE	199	Sharyn Delgado
+4TA ESTE	200	Catalina Sander
+4TA ESTE	201	Romelia Hall
+4TA ESTE	202	Silvina Chifundo
+4TA ESTE	203	Eduardo Cortes
+5TA ESTE	204	Betzaida de Forbes
+5TA ESTE	205	Yeysil Diaz
+5TA ESTE	206	Flia Scott
+5TA ESTE	207	Flia Brown Movilla
+5TA ESTE	208	Iris Griffin
+5TA ESTE	209	Flia Sotomayor Medina
+5TA ESTE	210	Yesica de Prestan 
+5TA CENTRO	211	Aldo Medina
+5TA CENTRO	212	Alejandro Bermúdez
+5TA CENTRO	213	Sixta Maria Cardales De Rios
+5TA CENTRO	214	Deyka Hernández
+5TA CENTRO	215	Belgis Cedeño
+5TA CENTRO	216	Ariel Andrade
+5TA CENTRO	217	Yadira Bustamante/Antonio Alcedo
+5TA CENTRO	218	Julio  Bejarano
+5TA CENTRO	219	Linda Lajón
+5TA CENTRO	220	Susana Delgado
+5TA CENTRO	221	Estela Escobar \ MAUREL MARIAM MIER de ESCOBAR
+5TA CENTRO	222	Gimara Magallón
+5TA CENTRO	223	Carlos Lambert
+5TA CENTRO	224	Carol de Ibarra
+5TA CENTRO	225	Takicha Campos
+5TA OESTE	226	Ursula de Gaskin
+5TA OESTE	227	Vielka Tuñon
+5TA OESTE	228	Maria Jaén / zenaida jean valencia
+5TA OESTE	229	Aldo Bovell
+5TA OESTE	230	Zais Costarelos
+5TA OESTE	231	Jaime Anderson
+5TA OESTE	232	Jose Ochoa
+5TA OESTE	233	Daniel Cumberbatch
+5TA OESTE	234	Vielka Levy
+5TA OESTE	235	Rivera Magallon/Jair Jimenez
+5TA OESTE	236	Eric Villanueva
+5TA OESTE	237	Maximo Pinto
+5TA OESTE	238	Pedro Avila
+5TA OESTE	239	Isaias Tate
+5TA OESTE	240	Dayra Canales
+5TA OESTE	241	Yashira Ramos de Prescott
+5TA OESTE	242	Gabriel Bumham
+5TA OESTE	243	Regino Martinez
+5TA OESTE	244	Coriel Mendoza
+5TA OESTE	245	Luz Martinez
+5TA OESTE	246	Sergio de Castro
+5TA OESTE	247	Jose Gonzalez
+5TA OESTE	248	Jessica Hoy
+5TA OESTE	249	Zayira Rochell
+5TA OESTE	250	Guillermo Chalhoub
+5TA OESTE	251	Carlos Moran
+5TA CENTRO	252	Eishka Periñan/flia aciego
+5TA CENTRO	253	Evaristo Cuervo
+5TA CENTRO	254	Yazaret de Molinar
+5TA CENTRO	255	Alfredo Guerra
+5TA CENTRO	256	Melis Carrasco
+5TA CENTRO	257	Girly Robinson - Flia Icasa
+5TA CENTRO	258	Aralis Camira / EDWIN CEDEÑO
+5TA CENTRO	259	Humberto Kentish / Okianis Robinson
+5TA CENTRO	260	Luis Mitchell /OFELIA MITCHELL
+5TA CENTRO	261	Alvaro Everly / Yenitza Ashaw
+5TA CENTRO	262	Luis Sinclair
+5TA CENTRO	263	Anibal Cortez / flia Mckenzie
+5TA CENTRO	264	José Luis  de Gracia
+5TA CENTRO	265	Cecilio Simpson / Gyselle Grant
+5TA CENTRO	266	José Martínez
+5TA ESTE	267	Nidia Rodriguez
+5TA ESTE	268	Oscar Ureña
+5TA ESTE	269	Katherine Bennett
+5TA ESTE	270	Ofelia Ida cema Jackson Sa
+5TA ESTE	271	Dagoberto Paris
+5TA ESTE	272	Stephany  de Vasquez
+5TA ESTE	273	Aniutka y  Isaac Silvera
+6TA ESTE	274	Luz Maria Betegon
+6TA ESTE	275	Noel E. Jenisel Gondola
+6ta ESTE	276	Keicha  Brown
+6ta ESTE	277	Aristides Luque / Isabel Riquelme
+6ta ESTE	278	Karin Yamilka Parris
+6ta ESTE	279	Janina Borelly
+6ta ESTE	280	Jovette C. Padilla  ó Aidhair FLORES
+6TA CENTRO A	281	Carlos Loara Leoteau
+6TA CENTRO A	282	Ubaldo Castillo
+6ta CENTRO A	283	Katiria Ortega
+6ta CENTRO A	284	Constancia Shellon
+6ta CENTRO A	285	Delano Saunders
+6ta CENTRO A	286	Ninoshka Parris
+6ta CENTRO A	287	Domingo Rodriguez
+6ta CENTRO A	288	Isaacs Francis
+6ta CENTRO A	289	Porfirio Justavino
+6ta CENTRO A	290	Ivan Arias
+6ta CENTRO A	291	Julio Mejia
+6ta CENTRO A	292	Idalberto Chiu
+6ta CENTRO A	293	Yomaira Ashaw
+6ta CENTRO A	294	FAMILIA LAGUNA
+6ta CENTRO A	295	Bolivar Rodriguez
+6TA OESTE	296	Maribel de Vega - Flia Vega Arispe
+6TA OESTE	297	Aikza Hernandez
+6ta OESTE	298	Jacqueline Villamil
+6ta OESTE	299	Mario Chiari
+6ta OESTE	300	Eriberto Quiñones
+6ta OESTE	301	Gilberto Garcia
+6ta OESTE	302	Irina Lewis
+6ta OESTE	303	Patricia Jones - YARABY ORQUIDIA JIMENEZ JONES DE ABRAHAM
+6ta OESTE	304	Yolanda Campos
+6ta OESTE	305	Itzel Maria
+6ta OESTE	306	Roberto Jenkins
+6ta OESTE	307	George Corbin
+6ta OESTE	308	Azonery de Hawkins
+6ta OESTE	309	Vicente Rook Fruto
+6ta OESTE	310	Nelson Moreno
+6ta CENTRO B	311	Fernando de Castro
+6ta CENTRO B	312	Etilcia Evans
+6ta CENTRO B	313	Orlando Arguelles
+6ta CENTRO B	314	Melisa Martinez
+6ta CENTRO B	315	Nudia Morales
+6ta CENTRO B	316	Ignacio Dreckett
+6ta CENTRO B	317	Fernando Chaverra
+6ta CENTRO B	318	Yelitza Norse
+6ta CENTRO B	319	Ariel Corpas
+6ta CENTRO B	320	Mariela Adames
+6ta CENTRO B	321	Luis Demera Velkis
+6ta CENTRO B	322	Grecor Selles
+6ta CENTRO B	323	Edgar P. Ortega
+6ta CENTRO B	324	Flia Valdes / Damaris Sarmiento
+6ta CENTRO B	325	Juan Salazar
+6ta CENTRO B	326	Jose L. Diaz
+6ta CENTRO B	327	Jossua E. Williams
+6ta CENTRO B	328	Jazmina Vega
+6TA ESTE	329	Edgardo Chiari V.
+6TA ESTE	330	Yemil Rodriguez
+6ta ESTE	331	Antonio Marbelis Hall
+6ta ESTE	332	Ricardo Toulier    Lilian Tuñon
+6ta ESTE	333	Maria Avila
+6ta ESTE	334	Maykelys Y. Castillo  Joab
+D	D-01	Ricardo Moreno
+D	D-02	Maritza de Mora
+D	D-03	Benito Pacheco
+D	D-04	Héctor Ayarza
+D	D-05	Tomás Betegón
+D	D-06	Marcela de Lajon
+D	D-07	Inelda Maria Ariano - Diego Pitalua
+D	D-08	Karen Amaya
+D	D-09	Ricardo Rodríguez / Adelsa Aguilar
+D	D-10	Flia Smith / Pastor Camarena
+D	D-11	Miguel Romero
+D	D-12	Carlos de León
+D	D-13	Nimia Martínez
+D	D-14	José Bonilla
+D	D-15	Edwin Levin
+D	D-16	Edi Henry / Maribel Ashborn
+D	D-17	Willison Tovar
+D	D-18	Dr. Menchaca / Nedelka Blandon
+D	D-19	Carmen de Tamayo
+D	D-20	Oscar Corredeira
+D	D-21	Oscar Ecleston
+D	D-22	HILDA AMORES GUZMAN
+D	D-23	Erick Vasquez
+D	D-24	Juan Pastor Vega / Diana Sanchez

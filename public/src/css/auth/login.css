@@ -1,0 +1,140 @@
+.module.login {
+    margin: 0 auto;
+    min-height: 100vh;
+    padding: 1rem;
+}
+
+/* Aquí van los estilos específicos para pantallas pequeñas (mobile first) */
+.login-form {
+    height: auto;
+    margin: 0 auto;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.login-form .field {
+    width: 100%;
+    min-height: 3rem;
+    padding: .5em;
+    border-radius: .5rem;
+    margin-bottom: 1.5em;
+    border: 1px solid var(--color-border);
+    box-shadow:
+        -1px 1px 1px 1px var(--color-gurkha-100) inset;
+    display: flex;
+    flex-direction: row-reverse;
+    align-items: center;
+
+    & .icon {
+        flex: 1 0 30px;
+        padding: 0em .5em;
+        fill: var(--color-gurkha-400);
+        /* var(--icon-color); */
+    }
+
+    & input {
+        flex: 0 1 100%;
+        border: none;
+        outline: none;
+        vertical-align: baseline;
+        background-color: transparent;
+    }
+}
+
+.login-form .field:focus-within {
+    outline: none;
+    border-color: transparent;
+    box-shadow: 0 0 0 2px var(--color-kaitoke-green-500), 0 0 0 4px var(--color-kaitoke-green-200);
+}
+
+.login-form .button-group {
+    gap: 2em;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    margin-top: 1.5em;
+
+    & .primary {
+        width: 40cqb;
+        color: var(--color-gurkha-50);
+        background-color: var(--color-kaitoke-green-700);
+    }
+
+    & .secondary {
+        background-color: var(--color-secondary);
+    }
+
+    & .primary,
+    .secondary {
+        border: none;
+        outline: none;
+        cursor: pointer;
+        border-radius: .5em;
+    }
+}
+
+#loginModule .link-group {
+    gap: 2em;
+    display: flex;
+    flex-direction: row-reverse;
+    justify-content: space-between;
+    margin-top: 1.5em;
+}
+
+#loginModule .link-group a {
+    color: var(--color-gurkha-900);
+    font-weight: bold;
+    font-size: 1em;
+}
+
+.error-message {
+    margin: 0;
+    color: var(--color-error);
+    font-size: 0.875rem;
+    text-align: center;
+    font-weight: 500;
+}
+
+.google-signin {
+    gap: 1em;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: -1px 1px 2px .2px var(--color-gurkha-200);
+
+    & svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+.separator {
+    display: flex;
+    align-items: center;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+}
+
+.separator::before,
+.separator::after {
+    content: '';
+    flex-grow: 1;
+    border-top: 1px solid var(--color-gurkha-300);
+}
+
+.separator span {
+    flex-shrink: 0;
+    margin-left: 1rem;
+    margin-right: 1rem;
+    color: var(--color-gurkha-500);
+    font-size: 0.875rem;
+}
+
+/* Aquí van los estilos específicos para pantallas grandes (laptops y PC) */
+@media (min-width: 1024px) {
+    .module.login {
+        max-width: 35vw;
+    }
+}

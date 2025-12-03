@@ -92,24 +92,41 @@ El residente interactúa con la plataforma a través de un dashboard personal qu
 Para cumplir con la visión de una plataforma de servicios flexible y automatizada, se ha definido la siguiente estructura de colecciones.
 
 ### Colección: `users`
-- **Propósito:** Almacena el perfil del residente y lo vincula a su propiedad.
+- **Propósito:** Almacena el perfil de la persona que **inicia sesión en la aplicación**.
 - **ID del Documento:** UID de Firebase Authentication.
 - **Campos:**
-    - `email` (Texto): Email de inicio de sesión.
-    - `displayName` (Texto): Nombre completo del residente.
-    - `propertyId` (Texto): ID del documento en la colección `properties`.
-    - `role` (Texto): Rol del usuario (ej: "resident", "admin"). **Nota:** Este campo debe considerarse solo para fines informativos (ej: filtros en el panel de admin). La autorización real y los privilegios se determinan mediante Custom Claims seguros en el token de autenticación.
+    - `email` (Texto): El email de login. No editable por el usuario directamente desde el perfil.
+    - `displayName` (Texto): Nombre público del usuario en la app.
+    - `photoUrl` (Texto, Opcional): URL a la imagen de perfil en Firebase Storage.
+    - `mobile` (Texto, Opcional): Número de teléfono celular.
+    - `phone` (Texto, Opcional): Número de teléfono de casa.
+    - `propertyIds` (Array de Strings): IDs de las propiedades asociadas. **Gestionado solo por administradores.**
+    - `role` (Texto): Rol del usuario (ej: "resident", "admin"). **La autorización real se determina mediante Custom Claims.**
     - `createdAt` (Fecha y Hora): Fecha de creación del perfil.
+    - `emergencyContact` (Objeto, Opcional): Información de contacto en caso de emergencia.
+        - `name` (Texto)
+        - `phone` (Texto)
+        - `relationship` (Texto)
+    - `communicationPreferences` (Objeto, Opcional): Preferencias del usuario para recibir comunicaciones.
+        - `email` (Booleano)
+        - `sms` (Booleano)
 
 ### Colección: `properties`
-- **Propósito:** Representa cada unidad del condominio y su estado financiero.
-- **ID del Documento:** ID único y legible (ej: "APT-101").
+- **Propósito:** Representa cada unidad del condominio, su estado financiero y la información del propietario legal.
+- **ID del Documento:** `propertyId` único y legible (ej: "101", "D-15").
 - **Campos:**
-    - `name` (Texto): Nombre de la propiedad (ej: "Apartamento 101").
-    - `address` (Texto): Dirección de la unidad.
+    - `name` (Texto): Nombre descriptivo de la propiedad (ej: "Casa 101").
+    - `address` (Objeto): Dirección estructurada de la propiedad.
+        - `street` (Texto): Nombre de la calle (ej: "1RA OESTE").
+        - `fullAddress` (Texto, Opcional): Dirección completa para referencia.
     - `balance` (Número): Saldo actual. Negativo si el residente debe, positivo si tiene saldo a favor.
     - `currency` (Texto): Moneda (ej: "USD").
-    - `ownerUids` (Array): Lista de `userId` de los dueños/residentes de la propiedad.
+    - `ownerInfo` (Objeto): Información del propietario principal según los listados del cliente.
+        - `name` (Texto): Nombre del propietario.
+        - `phone` (Texto): Teléfono fijo.
+        - `mobile` (Texto): Teléfono móvil.
+        - `email` (Texto): Email de contacto principal (no necesariamente el de la app).
+    - `residentUids` (Array de Strings): Lista de los `userId` (UIDs de Firebase Auth) de los usuarios de la app que están autorizados a ver esta propiedad.
 
 ### Colección: `chargeConcepts`
 - **Propósito:** Almacena las plantillas o definiciones de todos los posibles cargos y servicios que pueden generarse en el condominio. Es el cerebro del módulo de cargos.
@@ -173,11 +190,11 @@ Para proteger los datos, se implementará la siguiente lógica en las reglas de 
     - Un usuario puede **crear** su propio documento al registrarse.
 
 - **Colección `properties`:**
-    - Un usuario solo puede **leer** un documento de propiedad si su `userId` está presente en el campo `ownerUids` de dicho documento.
+    - Un usuario solo puede **leer** un documento de propiedad si su `userId` está presente en el campo `residentUids` de dicho documento.
     - La escritura (crear/actualizar) de propiedades será, inicialmente, solo para administradores (a definir en Fase 2).
 
 - **Colección `transactions`:**
-    - Un usuario solo puede **leer** los documentos de transacciones cuyo `propertyId` coincida con el `propertyId` de su perfil de usuario.
+    - Un usuario solo puede **leer** los documentos de transacciones si el `propertyId` de la transacción está incluido en el array `propertyIds` de su propio perfil de usuario (`/users/{request.auth.uid}`).
     - Los usuarios **no pueden crear, actualizar ni borrar** transacciones. Estas operaciones serán exclusivas para administradores.
 ---
 
@@ -284,3 +301,5 @@ Se ha acordado aplicar documentación de forma continua durante el desarrollo pa
 - **Práctica de Actualización:** Al finalizar un conjunto de cambios, se debe realizar un `push` a **ambos** remotos para mantenerlos actualizados.
   - `git push github main`
   - `git push gitlab main`
+---
+El usuario prefiere respuestas cortas y completas.

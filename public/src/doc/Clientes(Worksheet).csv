@@ -1,0 +1,371 @@
+Nombre;Razón social;Dirección física;Ciudad;Estado;País;Código postal;Teléfono;Correo electrónico;Archivos adjuntos;Saldo pendiente
+001;Rubén Araúz;;Cativá;Colón;Panama;;442-5584;;0;90,00
+002;Omar Cueto;;Cativá;Colón;Panama;;6954-8782;;0;60,00
+003;Leonardo Small;;Cativá;Colón;Panama;;442-3422;;0;60,00
+004;Carlos Garay;;Cativá;Colón;Panama;;442-7904;;0;30,00
+005;Anselmo Forde;;Cativá;Colón;Panama;;442-0423;;0;15,00
+006;Miguel Sanchez;;Cativá;Colón;Panama;;6616-8465;;0;15,00
+007;Alex paz;;Cativá;Colón;Panama;;6669-6365;;0;105,00
+008;Darinka de Hoyos;;Cativá;Colón;Panama;;6669-6365;;0;15,00
+009;Aura del Carmen Hurtado;;Cativá;Colón;Panama;;474-0366;;0;45,00
+010;Miozotis del Carmen Olmos;;Cativá;Colón;Panama;;442-8782;;0;15,00
+011;Mario Macías;;Cativá;Colón;Panama;;474-0028;;0;15,00
+012;Hector Escobar;;Cativá;Colón;Panama;;474-2407;;0;75,00
+013;Domitila ceballos;;Cativá;Colón;Panama;;6425-8445;;0;45,00
+014;María Montenegro;;Cativá;Colón;Panama;;442-8600;;0;30,00
+015;Susana Thachar;;Cativá;Colón;Panama;;472-2959;;0;90,00
+016;Victor Castillo;;Cativá;Colón;Panama;;6999-0137;;0;30,00
+017;Daibelis Victoria;;Cativá;Colón;Panama;;6947-1022;;0;75,00
+018;Yaniza de Jimenez;;Cativá;Colón;Panama;;;;0;0,00
+019;Miguel Nereida;;Cativá;Colón;Panama;;474-1884;;0;45,00
+020;Vielka de Caballero;;Cativá;Colón;Panama;;6466-0667;;0;20,00
+021;Hector Ibarguen;;Cativá;Colón;Panama;;6735-6237;;0;30,00
+022;Juan Cedeño;;Cativá;Colón;Panama;;474-0322;;0;75,00
+023;Humberto Guevara;;Cativá;Colón;Panama;;442-8252;;0;30,00
+024;Aikza Abrego;;Cativá;Colón;Panama;;474-4130;;0;75,00
+025;Elsa de Medina;Calle 2da Este;Cativá;Colón;Panama;;442-6575;medinamanuel720mm@gmail.com;0;0,00
+026;Dionisio Jimenez;Calle 2da Este;Cativá;Colón;Panama;;442-4835;natykathy@hotmail.com;0;15,00
+027;Leonardo Machado;Calle 2da Este;Cativá;Colón;Panama;;;;0;75,00
+028;Vanessa Beltrán;Calle 2da Este;Cativá;Colón;Panama;;442-4351;vanessa.beltran26@outlook.com;0;45,00
+029;Indira Patel;Calle 2da Este;Cativá;Colón;Panama;;474-4117;;0;15,00
+030;katherin LEE;Calle 2da Este;Cativá;Colón;Panama;;474-0680;alizj18@gmail.com;0;30,00
+031;Israel Santamaría;;Cativá;Colón;Panama;;6916-6382;;0;75,00
+032;Roberto Rudy;;Cativá;Colón;Panama;;;;0;60,00
+033;Xenia Rosales;;Cativá;Colón;Panama;addis rodriguez;442-8956;;0;75,00
+034;Sonia Rodríguez;;Cativá;Colón;Panama;;;;0;90,00
+035;Maribetza Ceballos;;Cativá;Colón;Panama;;430-9638;;0;60,00
+036;Yirabel Girado;;Cativá;Colón;Panama;;474-1013;;0;30,00
+037;Gladys Villanueva;;Cativá;Colón;Panama;;;;0;60,00
+038;Argelia Morris;;Cativá;Colón;Panama;;6731-0039;;0;75,00
+039;Ernesto Small;;Cativá;Colón;Panama;;6662-8883;;0;45,00
+040;Felicia Gittens;;Cativá;Colón;Panama;;442-8561;;0;0,00
+041;Ivan Betegón;;Cativá;Colón;Panama;;442-5780;;0;75,00
+042;Hernán Delgado;;Cativá;Colón;Panama;;;;0;45,00
+043;Roberto Rodríguez;;Cativá;Colón;Panama;;442-7091;;0;15,00
+044;Otman Santamaría;;Cativá;Colón;Panama;;442-8290;;0;30,00
+045;Eduardo Muñoz;;Cativá;Colón;Panama;;6054-1468;;0;75,00
+046;Rafael Arnemann;;Cativá;Colón;Panama;;442-3329;;0;30,00
+047;Luzmila de Quintero;;Cativá;Colón;Panama;;442-0228;;0;0,00
+048;Ernesto Galván;;Cativá;Colón;Panama;;442-1026;;0;75,00
+049;Nicolas Young;;Cativá;Colón;Panama;;442-5865;;0;45,00
+050;Noris de Mejía;;Cativá;Colón;Panama;;6055-9061;;0;30,00
+051;José Zurita;;Cativá;Colón;Panama;;442-0276;;0;60,00
+052;Crisalida Solís;;Cativá;Colón;Panama;;442-6177;;0;30,00
+053;Osvaldo Herrera;;Cativá;Colón;Panama;;442-1011;;0;45,00
+054;Jerónimo Hernandez;;Cativá;Colón;Panama;;474-0355;;0;30,00
+055;Alberto Benett;;Cativá;Colón;Panama;;6684-2507;;0;30,00
+056;Nitzia Aguilar;;Cativá;Colón;Panama;;442-3835;;0;45,00
+057;Piedad de Cid;;Cativá;Colón;Panama;;442-8064;;0;30,00
+058;Martín Meneses;;Cativá;Colón;Panama;;474-4536;;0;15,00
+059;Ilka Hoy;;Cativá;Colón;Panama;;442-2015;;0;15,00
+060;Mario Mitchel;;Cativá;Colón;Panama;;;;0;75,00
+061;Armando Gittens;;Cativá;Colón;Panama;;;;0;75,00
+062;Armando Lee;;Cativá;Colón;Panama;;442-8865;;0;60,00
+063;Ricardo Martínez;;Cativá;Colón;Panama;;442-0051;;0;45,00
+064;Iliana Lee;;Cativá;Colón;Panama;;6803-1440;;0;15,00
+065;César López;;Cativá;Colón;Panama;;442-8613;;0;15,00
+066;Dhayanara Mendoza;;Cativá;Colón;Panama;;474-0656;;0;75,00
+067;Amilio Lovet;;Cativá;Colón;Panama;;6112-8878;;0;15,00
+068;Wilfredo Pacheco;;Cativá;Colón;Panama;;442-8804;;0;45,00
+069;Celina de Laurdes;;Cativá;Colón;Panama;;;;0;75,00
+070;Damaris Jackson;;Cativá;Colón;Panama;;;;0;75,00
+071;Carlos Valdez;;Cativá;Colón;Panama;;442-8702;;0;60,00
+072;Damian Montenegro;;Cativá;Colón;Panama;;6668-0959;;0;75,00
+073;Yira de Morales;;Cativá;Colón;Panama;;6316-0857;;0;75,00
+074;Victor Rozette;;Cativá;Colón;Panama;;442-7133;;0;75,00
+075;Vanessa Parnther;Calle 2da Este;Cativá;Colón;Panama;;474-1123;vanessaparnther564@gmail.com;0;45,00
+076;Oscar Gomez;Calle 2da Este;Cativá;Colón;Panama;;;;0;75,00
+077;Enrique Herrera;Calle 2da Este;Cativá;Colón;Panama;;;kiko04@hotmail.com;0;75,00
+078;Antonio Brooks;Calle 2da Este;Cativá;Colón;Panama;;442-5671;idalinasalamancatv@gmail.com;0;45,00
+079;Kaisha Rivas;Calle 2da Este;Cativá;Colón;Panama;;;rivaskaisha@gmail.com;0;30,00
+080;florencia sinclier;Calle 2da Este;Cativá;Colón;Panama;;442-3736;;0;60,00
+081;Yomaira Avila;Calle 2da Este;Cativá;Colón;Panama;;6936-4462;yomiavila2605@gmail.com;0;75,00
+082;Reynaldo Angarita;Calle 3a Este;Cativá;Colón;Panama;;472-6302;rei.angarita@gmail.com;0;75,00
+083;Amarilis Mata S.;Calle 3a Este;Cativá;Colón;Panama;;6880-6439;mataamarilis07@gmail.com;0;75,00
+084;Javier Campo;Calle 3a Este;Cativá;Colón;Panama;;6752-4640;campojavier949@gmail.com;0;60,00
+085;Luis Escobar;Calle 3a Este;Cativá;Colón;Panama;;6452-8268;wylma3121@gmail.com;0;60,00
+086;Georgiana Gaviria;Calle 3a Este;Cativá;Colón;Panama;;6414-3804;ggaviria.04@gmail.com;0;0,00
+087;Eduardo Villarreal;Calle 3a Este;Cativá;Colón;Panama;;6819-7691;m-el04@hotmail.com;0;75,00
+088;Elkin Rodriguez;;Cativá;Colón;Panama;;;;0;15,00
+089;Ralph Alexander;;Cativá;Colón;Panama;;;;0;75,00
+090;Angel deL Valle;;Cativá;Colón;Panama;;474-0583;;0;90,00
+091;Zaida Jimenez;;Cativá;Colón;Panama;;474-0254;;0;75,00
+092;Ivonne Margerie;;Cativá;Colón;Panama;;442-7767;;0;90,00
+093;Glenda de Davis;;Cativá;Colón;Panama;;6875-7223;;0;75,00
+094;Juan Ramos;;Cativá;Colón;Panama;;;;0;75,00
+095;Raul Murdock;;Cativá;Colón;Panama;;6675-3775;;0;30,00
+096;Carlos Tuñon;;Cativá;Colón;Panama;;;;0;90,00
+097;Eduard Gonzalez;;Cativá;Colón;Panama;;442-0340;;0;75,00
+098;Oriel Avila;;Cativá;Colón;Panama;;6716-3420;;0;75,00
+099;Carlos Gonzalez;;Cativá;Colón;Panama;;;;0;75,00
+10;;;;;;;;;0;0,00
+100;Yanitsha Harris;;Cativá;Colón;Panama;;6677-9405;;0;90,00
+101;Flor de Escapa;;Cativá;Colón;Panama;;;;0;15,00
+102;Harkishin Chugani;;Cativá;Colón;Panama;;;;0;75,00
+103;Manuel Villarreal;;Cativá;Colón;Panama;;;;0;45,00
+104;James  Peters;;Cativá;Colón;Panama;;442-1553;;0;30,00
+105;Cesar Estrada;;Cativá;Colón;Panama;;6289-9382;;0;30,00
+106;Rogelio Aguirre;;Cativá;Colón;Panama;;6414-3990;;0;60,00
+107;Miguel Taylor;;Cativá;Colón;Panama;;6730-3039;;0;15,00
+108;Carlos Brows;;Cativá;Colón;Panama;;442-8975;;0;75,00
+109;Alfredo Cebrian;;Cativá;Colón;Panama;;474-2619;;0;75,00
+11;;;;;;;;;0;0,00
+110;Carlos Sierra;;Cativá;Colón;Panama;;442-4612;;0;60,00
+111;Aldo Hamilton;;Cativá;Colón;Panama;;474-1031;;0;15,00
+112;Yuri Bethancourt;;Cativá;Colón;Panama;;474-1334;;0;75,00
+113;Mario Gondola;;Cativá;Colón;Panama;;442-2478;;0;45,00
+114;Maria Thomhill;;Cativá;Colón;Panama;;;;0;75,00
+115;Ana de Hernadez;;Cativá;Colón;Panama;;;;0;45,00
+116;Erika Jimenez;;Cativá;Colón;Panama;;6556-3671;;0;75,00
+117;Jorge Velasquez;;Cativá;Colón;Panama;;442-5729;;0;0,00
+118;Antonio Taylor;;Cativá;Colón;Panama;;;;0;60,00
+119;Mario Small;;Cativá;Colón;Panama;;6252-1835;;0;15,00
+120;Jaime Lawrence;;Cativá;Colón;Panama;;442-8284;;0;45,00
+121;Dalia Peters;;Cativá;Colón;Panama;;474-0822;;0;30,00
+122;Eliezer Espinosa;;Cativá;Colón;Panama;;;;0;15,00
+123;Jose Espinosa;;Cativá;Colón;Panama;;474-0980;;0;75,00
+124;Juan Garibaldi;;Cativá;Colón;Panama;;6733-2040;;0;75,00
+125;Abdiel Hassan;;Cativá;Colón;Panama;;442-0411;;0;75,00
+126;Gustavo Montalvan;;Cativá;Colón;Panama;;6717-5082;;0;75,00
+127;Raglin Robinson;;Cativá;Colón;Panama;;6039-6701;;0;75,00
+128;Luis Pacheco;;Cativá;Colón;Panama;;442-0211;;0;75,00
+129;Irazema posso;;Cativá;Colón;Panama;;474-1107;;0;75,00
+130;Angelica del Carmen De Chiari;;Cativá;Colón;Panama;;442-8595;;0;90,00
+131;Ana Castro;;Cativá;Colón;Panama;;;;0;75,00
+132;Cristian Sanchez;;Cativá;Colón;Panama;;6531-3342;;0;0,00
+133;Ada Chong;;Cativá;Colón;Panama;;;;0;90,00
+134;Lucas Cortes;Calle 3a Este;Cativá;Colón;Panama;;474-4302;yazdara_29@hotmail.com;0;60,00
+135;Milla del Castillo;Calle 3a Este;Cativá;Colón;Panama;;6750-8398;rosaz031@hotmail.com;0;30,00
+136;Sumaykira Grenald;Calle 3a Este;Cativá;Colón;Panama;;442-7556;sumaykira-26@hotmail.es;0;30,00
+137;Jose Tuñon;Calle 3a Este;Cativá;Colón;Panama;;474-0137;Josetunon_65@gmail.com;0;45,00
+138;Diovana Griffith;Calle 3a Este;Cativá;Colón;Panama;;;diovanag2015@gmail.com;0;75,00
+139;Viola de Bell;Calle 3a Este;Cativá;Colón;Panama;;442-1771;keyrazurita587@gmail.com;0;60,00
+140;Aracelis Tud de Rosales;Calle 3a Este;Cativá;Colón;Panama;;474-1771;nhohah.rosales21@gmail.com;0;75,00
+141;Luis Coronel;;Cativá;Colón;Panama;;6964-3087;;0;75,00
+142;Daniel Isaac;;Cativá;Colón;Panama;;;;0;75,00
+143;Hernando Valle;;Cativá;Colón;Panama;;6664-5530;;0;60,00
+144;Doris Marrugo;;Cativá;Colón;Panama;;474-1148;;0;75,00
+145;Magaly de Vivero;;Cativá;Colón;Panama;;442-4909;;0;15,00
+146;Jurgen Weller;;Cativá;Colón;Panama;;474-0030;;0;60,00
+147;Jaime Ceballos;;Cativá;Colón;Panama;;;;0;15,00
+148;Dennis Barnes;Calle 4ta Centro;Cativá;Colón;Panama;;442-2658;dsagitario@aol.com;0;0,00
+149;Carleni;Calle 4ta Centro;Cativá;Colón;Panama;;474-1469;carleclop@gmail.com;0;60,00
+150;Ezequiel Lewis;Calle 4ta Centro;Cativá;Colón;Panama;;474-0244;todakeitlin@hotmail.com;0;15,00
+151;Anakharina Kandrin;Calle 4ta Centro;Cativá;Colón;Panama;;;;0;75,00
+152;Jasmina Cruz;Calle 4ta Centro;Cativá;Colón;Panama;;442-7297;Jasminacruz@hotmail.com;0;75,00
+153;Nancy Machado;Calle 4ta Centro;Cativá;Colón;Panama;;474-1534;ncrizettem@hotmail.com;0;75,00
+154;Jose Barrows;Calle 4ta Centro;Cativá;Colón;Panama;;474-0878;barrows29@hormail.com;0;30,00
+155;Yolanda Forbes;Calle 4ta Centro;Cativá;Colón;Panama;;6738-2222;Yolandaforbes2662@gmail.com;0;15,00
+156;Gisel Altamirano;Calle 4ta Centro;Cativá;Colón;Panama;;474-1540;gisel21@hotmail.com;0;30,00
+157;Yaneth Badilla;Calle 4ta Centro;Cativá;Colón;Panama;;474-0312;Yaneth.badilla@hotmail.com;0;30,00
+158;Orlando Reyna;Calle 4ta Centro;Cativá;Colón;Panama;;;;0;75,00
+159;Everaldo Percival;Calle 4ta Centro;Cativá;Colón;Panama;;442-4522;;0;75,00
+160;Rolando Pacheco;Calle 4ta Centro;Cativá;Colón;Panama;;442-5524;Rpachecobennett@gmail.com;0;15,00
+161;Eduardo McLaughilin;;Cativá;Colón;Panama;;6743-7962;;0;45,00
+162;Aurelio Brown;;Cativá;Colón;Panama;;6218-9331;;0;15,00
+163;Jose Saladino;;Cativá;Colón;Panama;;6747-1858;;0;75,00
+164;Nidia Leon;;Cativá;Colón;Panama;;442-7358;;0;30,00
+165;Hector Beckford;;Cativá;Colón;Panama;;474-1989;;0;75,00
+166;Yanina Gonzalez;;Cativá;Colón;Panama;;442-1567;;0;45,00
+167;Luis Erskine;;Cativá;Colón;Panama;;442-5731;;0;15,00
+168;Odilka Ruiloba;;Cativá;Colón;Panama;;474-0039;;0;75,00
+169;Fernado Penas;;Cativá;Colón;Panama;;6150-1235;;0;75,00
+170;Jazmin  Mendoza;;Cativá;Colón;Panama;;442-5909;;0;75,00
+171;kahiana castro;;Cativá;Colón;Panama;;442-7088;;0;75,00
+172;Jaime Anderson;;Cativá;Colón;Panama;;442-0588;;0;45,00
+173;Mariela de Robinson;;Cativá;Colón;Panama;;442-5870;;0;75,00
+174;Rolando Fitzroy;;Cativá;Colón;Panama;;442-1160;;0;15,00
+175;Aubrey Forbes;;Cativá;Colón;Panama;;442-6840;;0;30,00
+176;Vielka Arauz;;Cativá;Colón;Panama;;474-4269;;0;90,00
+177;Pamela Peters;;Cativá;Colón;Panama;;442-2427;;0;15,00
+178;Dalis Bandini;;Cativá;Colón;Panama;;442-7970;;0;15,00
+179;Alma Ifil;;Cativá;Colón;Panama;;;;0;45,00
+180;Generoso Perez;;Cativá;Colón;Panama;;442-6406;;0;75,00
+181;Marlene Boyce;;Cativá;Colón;Panama;;442-0518;;0;30,00
+182;Jean Servillus;Calle 4ta Centro;Cativá;Colón;Panama;;6023-6713;Medser45@hotmail.com;0;75,00
+183;Celia;Calle 4ta Centro;Cativá;Colón;Panama;;442-3937;Salazar2727@hotmail.com;0;45,00
+184;Eduardo Villalta;Calle 4ta Centro;Cativá;Colón;Panama;;6981-2404;;0;75,00
+185;Eloisa;Calle 4ta Centro;Cativá;Colón;Panama;;442-8531;Eeloisa882@gmail.com;0;30,00
+186;Roger Oglivie;Calle 4ta Centro;Cativá;Colón;Panama;;442-3411;Kristianyoglivie09@gmail.com;0;45,00
+187;Laura Palacio;Calle 4ta Centro;Cativá;Colón;Panama;;442-6306;Yavipanay29@gmail.com;0;15,00
+188;Fabiola Alvey;Calle 4ta Centro;Cativá;Colón;Panama;;442-2527;alveymabel@yahoo.com;0;60,00
+189;Ada de amaya;Calle 4ta Centro;Cativá;Colón;Panama;;442-3859;;0;75,00
+190;Desiree Herrera;Calle 4ta Centro;Cativá;Colón;Panama;;6931-4736;Desire.herrera@organijudicial.gob.pa;0;75,00
+191;Cointa;Calle 4ta Centro;Cativá;Colón;Panama;;442-7879;coinfernandez@gmail.com;0;75,00
+192;Yumitzie Harwood;Calle 4ta Centro;Cativá;Colón;Panama;;474-2079;yumitzie_harwood@hotmail.com;0;30,00
+193;Nuria Jimenez;Calle 4ta Centro;Cativá;Colón;Panama;;442-6107;njimenez@coopcristobal.com;0;30,00
+194;Francisco De Nicolo;Calle 4ta Centro;Cativá;Colón;Panama;;474-1097;lisseth2609@gmail.com;0;45,00
+195;Luis Amador;Calle 4ta Centro;Cativá;Colón;Panama;;6804-8669;Geac1017@gmail.com;0;15,00
+196;Heidy bryan;Calle 4ta Centro;Cativá;Colón;Panama;;474-1258;heidibryan1921@gmail.com;0;15,00
+197;Amado Hoy;;Cativá;Colón;Panama;;442-5079;;0;75,00
+198;Cecilio Arosemena;;Cativá;Colón;Panama;;6204-1954;;0;30,00
+199;Sharyn Delgado;;Cativá;Colón;Panama;;6090-7660;;0;45,00
+2;;;;;;;;;0;0,00
+200;Catalina Sander;;Cativá;Colón;Panama;;6949-7249;;0;0,00
+201;Romelia Hall;;Cativá;Colón;Panama;;;;0;30,00
+202;Silvina Chifundo;;Cativá;Colón;Panama;;6524-6058;;0;30,00
+2021;;;;;;;;;0;0,00
+203;Eduardo Cortes;;Cativá;Colón;Panama;;474-4489;;0;75,00
+204;Betzaida de Forbes;;Cativá;Colón;Panama;;6919-2122;;0;30,00
+205;Jaime Perez;;Cativá;Colón;Panama;;474-1583;;0;30,00
+206;Williams Scott;;;;;;6767-7402;scott_745@hotmail.com;0;75,00
+207;Lancin Brown;;;;;;6030-7500;nataliemovilla16@gmail.com;0;75,00
+208;Amable Herrera;;;;;;6677-1515;iris_08@hotmail.com;0;45,00
+209;Gerardo Sotomayor;;;;;;6785-6585;luzmedina06@gmail.com;0;15,00
+210;YESICA CHIFUNDO;;;;;;;;0;30,00
+211;Aldo;;Cativá;Colón;Panama;;;;0;75,00
+212;Alejandro Bermúdez;;Cativá;Colón;Panama;;474-1728;;0;30,00
+213;Sixta M. De Ríos;;Cativá;Colón;Panama;;442-8861;;0;60,00
+214;Deyka Hernández;;Cativá;Colón;Panama;;6694-6750;;0;75,00
+215;Belgis Cedeño;;Cativá;Colón;Panama;;442-6212;;0;75,00
+216;Ariel Andrade;;Cativá;Colón;Panama;;6699-5404;;0;60,00
+217;Yadira Bustamante;;Cativá;Colón;Panama;;474-2985;;0;15,00
+218;Julio  Bejarano;;Cativá;Colón;Panama;;6679-3368;;0;30,00
+219;Linda Lajón;;Cativá;Colón;Panama;;6612-7145;;0;15,00
+220;Susana Delgado;;Cativá;Colón;Panama;;442-4179;;0;75,00
+221;Estela Escobar;;Cativá;Colón;Panama;;6316-1765;;0;60,00
+222;Gimara Magallón;;Cativá;Colón;Panama;;442-6972;;0;75,00
+223;Joel Walford;;Cativá;Colón;Panama;;;;0;45,00
+2239;;;;;;;;;0;0,00
+224;Carol de Ibarra;;Cativá;Colón;Panama;;;;0;90,00
+225;Takicha Campos;;Cativá;Colón;Panama;;6501-2252;;0;75,00
+226;Edgar Gaskin;Calle 5ta Oeste;Cativá;Colón;Panama;;;ergaskin@gmail.com;0;75,00
+227;Eneida Galvan;Calle 5ta Oeste;Cativá;Colón;Panama;;474-0169;;0;30,00
+228;Maria Jaén;Calle 5ta Oeste;Cativá;Colón;Panama;;474-3173;;0;45,00
+229;Luz Bovel;Calle 5ta Oeste;Cativá;Colón;Panama;;;lpardo91@gmail.com;0;90,00
+230;Zais Costarelos;Calle 5ta Oeste;Cativá;Colón;Panama;;442-6827;;0;75,00
+231;Jaime Anderson;Calle 5ta Oeste;Cativá;Colón;Panama;;;;0;90,00
+232;Jose Ochoa;Calle 5ta Oeste;Cativá;Colón;Panama;;;;0;90,00
+233;Daniel Cumberbatch;Calle 5ta Oeste;Cativá;Colón;Panama;;;;0;75,00
+234;Vielka Levy;Calle 5ta Oeste;Cativá;Colón;Panama;;;;0;60,00
+235;Génesis Magallón;Calle 5ta Oeste;Cativá;Colón;Panama;;;jahir0541@gmail.com;0;75,00
+236;Eric Villanueva;Calle 5ta Oeste;Cativá;Colón;Panama;;;eeliecer1974@yahoo.com;0;15,00
+237;Maximo Pinto;Calle 5ta Oeste;Cativá;Colón;Panama;;;;0;75,00
+238;Pedro Avila;Calle 5ta Oeste;Cativá;Colón;Panama;;474-0633;;0;75,00
+239;Isaias Tate;Calle 5ta Oeste;Cativá;Colón;Panama;;;isaias14a@gmail.com;0;45,00
+240;Dayra Canales;Calle 5ta Oeste;Cativá;Colón;Panama;;;dayra.canales@hotmail.com;0;17,00
+241;Yashira Ramos de Prescott;Calle 5ta Oeste;Cativá;Colón;Panama;;474-0233;yashiraramos3079@gmail.com;0;30,00
+242;Gabriel Bumham;Calle 5ta Oeste;Cativá;Colón;Panama;;474-1094;williebur08@hotmail.com;0;60,00
+243;Regino Martinez;Calle 5ta Oeste;Cativá;Colón;Panama;;6316-0796;;0;75,00
+244;Yiria Soto;Calle 5ta Oeste;Cativá;Colón;Panama;;;ysoto23@hotmail.com;0;0,00
+245;Luz de Sarmiento;Calle 5ta Oeste;Cativá;Colón;Panama;;442-7139;lucecita30ms@hotmail.com;0;60,00
+246;Sergio Castro;Calle 5ta Oeste;Cativá;Colón;Panama;;442-8909;sdkstro@hotmail.com;0;30,00
+247;Jose Gonzalez;Calle 5ta Oeste;Cativá;Colón;Panama;;442-3249;;0;30,00
+248;Jessica Hoy;Calle 5ta Oeste;Cativá;Colón;Panama;;;;0;75,00
+249;Zayira Echeverría;Calle 5ta Oeste;Cativá;Colón;Panama;;;leonelecheverriap1@hotmail.com;0;45,00
+250;Guillermo Chalhoub;Calle 5ta Oeste;Cativá;Colón;Panama;;;;0;15,00
+251;Carlos Moran;Calle 5ta Oeste;Cativá;Colón;Panama;;474-1680;;0;45,00
+252;Eishka Periñan;;Cativá;Colón;Panama;;6675-4127;;0;75,00
+253;Evaristo Cuero;;Cativá;Colón;Panama;;6009-6985;;0;45,00
+254;Yazaret de Molinar;;Cativá;Colón;Panama;;474-5991;;0;45,00
+255;Alfredo Guerra;;Cativá;Colón;Panama;;;;0;75,00
+256;Melis Carrasco;;Cativá;Colón;Panama;;442-2286;;0;75,00
+257;Girly Robinson;;Cativá;Colón;Panama;;442-6032;;0;15,00
+258;Aralis Camira;;Cativá;Colón;Panama;;6441-6888;;0;75,00
+259;Humberto Kentish;;Cativá;Colón;Panama;;;;0;0,00
+26;;;;;;;;;0;0,00
+260;Luis Mitchell;;Cativá;Colón;Panama;;6510-3826;;0;75,00
+261;Alvaro Everly;;Cativá;Colón;Panama;;6457-9984;;0;30,00
+262;Luis Sinclair;;Cativá;Colón;Panama;;;;0;75,00
+263;Anibal Cortez;;Cativá;Colón;Panama;;442-8073;;0;75,00
+264;José Luis  de Gracia;;Cativá;Colón;Panama;;6756-8175;;0;75,00
+265;Cecilio Simpson;;Cativá;Colón;Panama;;442-6442;;0;45,00
+266;José Martínez;;Cativá;Colón;Panama;;6734-5239;;0;75,00
+267;Nidia Rodriguez;;Cativá;Colón;Panama;;442-6764;;0;45,00
+268;Oscar Ureña;;Cativá;Colón;Panama;;474-4469;;0;75,00
+269;Katherine Bennett;;Cativá;Colón;Panama;;6378-2696;;0;60,00
+270;Ofelia Idacema Jackson Salazar;;Cativá;Colón;Panama;;;;0;45,00
+271;Dagoberto Paris;;Cativá;Colón;Panama;;6142-9307;;0;50,00
+272;Stephany  de Vasquez;;Cativá;Colón;Panama;;6770-8330;;0;15,00
+273;Aniulka y  Isaac Rivera;;Cativá;Colón;Panama;;;;0;75,00
+274;Luz Maria Betegon;;Cativá;Colón;Panama;;474-8119;luzmariabetegon04@gmail.com;0;45,00
+275;Noel E. Jenisel Gondola;;Cativá;Colón;Panama;;447-8067;jeniselhoyte@gmail.com;0;75,00
+276;Keicha  Brown;;Cativá;Colón;Panama;;6454-8080;keishya.brown@hotmail.com;0;75,00
+277;Aristides Luke;;Cativá;Colón;Panama;;6230-6346;Isabel80rm@gmail.com;0;15,00
+278;Karin Yamilka Parris;;Cativá;Colón;Panama;;442-4805;yamilka041981@gmail.com;0;45,00
+279;David Melo;;Cativá;Colón;Panama;;442-1648;Jdemelo-1911@hotmail.com;0;75,00
+28;;;;;;;;;0;0,00
+280;Jovette C. Padilla  ó Aidhair Valiente;;Cativá;Colón;Panama;;6868-0484;Jovettepadilla@gmail.com;0;45,00
+281;Carlos Loara Leotau;;Cativá;Colón;Panama;;474-5427;;0;75,00
+282;Ubaldo Castillo;;Cativá;Colón;Panama;;;;0;75,00
+283;Katricia Y. Ortega;;Cativá;Colón;Panama;;6737-9025;Kortegalata@gmail.com;0;45,00
+284;Constancia Shellon;;Cativá;Colón;Panama;;6252-5020;;0;90,00
+285;Jaime Legal L.;;Cativá;Colón;Panama;;6480-2808;;0;15,00
+286;Minoshka Parris;;Cativá;Colón;Panama;;6666-0992;parrissn@hotmail.com;0;75,00
+287;Domingo Rodriguez;;Cativá;Colón;Panama;;6679-3932;;0;60,00
+288;Issacs Francis;;Cativá;Colón;Panama;;474-1639;;0;45,00
+289;Porfirio Justino;;Cativá;Colón;Panama;;;yazcubilla@gmail.com;0;0,00
+290;Ivan Arias;;Cativá;Colón;Panama;;6704-2428;rocioaparicio13@hotmail.com;0;75,00
+291;Julio Mejia;;Cativá;Colón;Panama;;6673-4492;mnino08@hotmail.com;0;45,00
+292;Idalberto Chiru;;Cativá;Colón;Panama;;;shani.sn46@gmail.com;0;45,00
+293;Omaira Achao;;Cativá;Colón;Panama;;;;0;60,00
+294;Yolanda Soto;;Cativá;Colón;Panama;;6981-3017;mlaguna@hotmail.es;0;15,00
+295;Bolivar Rodriguez;;Cativá;Colón;Panama;;474-1594;akiraleer@gmail.com;0;75,00
+296;Maribel de Vega;;Cativá;Colón;Panama;;474-0509;;0;45,00
+297;Aikza Hernandez;;Cativá;Colón;Panama;;474-5341;;0;75,00
+298;Jacqueline Villamil;;Cativá;Colón;Panama;;6755-9625;;0;60,00
+299;Mario Chiari;;Cativá;Colón;Panama;;6681-1117;;0;75,00
+300;Eriberto Quiñones;;Cativá;Colón;Panama;;474-1572;;0;75,00
+301;Gilberto Garcia;;Cativá;Colón;Panama;;6687-5001;;0;75,00
+302;Irina Lewis;;Cativá;Colón;Panama;;442-8095;;0;45,00
+303;Patricia Jones;;Cativá;Colón;Panama;;6493-1335;;0;15,00
+304;Yolanda Campos;;Cativá;Colón;Panama;;442-7251;;0;45,00
+305;Itzel Maria;;Cativá;Colón;Panama;;6682-9684;;0;75,00
+306;Roberto Jenkins;;Cativá;Colón;Panama;;6747-0737;;0;0,00
+307;George Corbin;;Cativá;Colón;Panama;;442-7509;;0;30,00
+308;Azonery de Hawkins;;Cativá;Colón;Panama;;;;0;60,00
+309;Vicente Fruto;;Cativá;Colón;Panama;;442-7006;;0;45,00
+310;Nelson Moreno;;Cativá;Colón;Panama;;474-0610;;0;15,00
+311;Fernando de Castro;;Cativá;Colón;Panama;;442-3181;;0;30,00
+312;Etilcia Evans;;Cativá;Colón;Panama;;474-1360;Tilcia-14morena@hotmail.com;0;45,00
+313;Mireya del Carmen Ortega;;Cativá;Colón;Panama;;474-5663;;0;60,00
+314;Melisa Martinez;;Cativá;Colón;Panama;;442-5321;;0;45,00
+315;Nuria Morales;;Cativá;Colón;Panama;;442-3523;Nudia24@gmail.com;0;30,00
+316;Ignacio Dreckett;;Cativá;Colón;Panama;;474-2077;twiraalleyne@gmail.com;0;75,00
+317;Fernando Chaverra;;Cativá;Colón;Panama;;;;0;15,00
+318;Yelitza Norse;;Cativá;Colón;Panama;;474-4071;yelitza.norse@gmail.com;0;60,00
+319;Ariel Corpas;;Cativá;Colón;Panama;;6747-8943;qmilvia@gmail.com;0;30,00
+320;Mariela Adames;;Cativá;Colón;Panama;;474-3802;edithkm26@gmail.com;0;75,00
+321;Luis Demera Velkis;;Cativá;Colón;Panama;;6008-3341;;0;75,00
+322;Grecor Selles;;Cativá;Colón;Panama;;;;0;75,00
+323;Edgar P. Ortega;;Cativá;Colón;Panama;;6201-8597;edgarpaulpty@gmail.com;0;15,00
+324;Victor Martinez;;Cativá;Colón;Panama;;474-1708;;0;60,00
+325;Juan Salazar;;Cativá;Colón;Panama;;;;0;75,00
+326;Jose L. Diaz;;Cativá;Colón;Panama;;;;0;45,00
+327;Jossue E. Williams;;Cativá;Colón;Panama;;6340-6702;jossua.wiliamsr@outlook.com;0;45,00
+328;Jazmina Vega;;Cativá;Colón;Panama;;474-4162;Arhaz1322@gmail.com;0;30,00
+328/;;;;;;;;;0;0,00
+329;Edgardo Chiari V.;;Cativá;Colón;Panama;;;;0;0,00
+330;Yemil Rodriguez;;Cativá;Colón;Panama;;6821-3093;yemil2114@hotmail.com;0;60,00
+331;Antonio Marbelis Hall;;Cativá;Colón;Panama;;6550-7091;marbi20@hotmail.com;0;60,00
+332;Ricardo Toulier    Lilian Tuno;;Cativá;Colón;Panama;;;;0;15,00
+333;Maria Avila;;Cativá;Colón;Panama;;474-0782;;0;75,00
+334;Maykelys Y. Castillo  Joab Caballero;;Cativá;Colón;Panama;;6666-6372;joab507caballero@gmail.com;0;15,00
+335;;;;;;;;;0;0,00
+365;;;;;;;;;0;0,00
+391;;;;;;;;;0;0,00
+90;;;;;;;;;0;0,00
+D-01;Ricardo Moreno;;Cativá;Colón;Panama;;474-0891;;0;30,00
+D-02;Maritza de Mora;;Cativá;Colón;Panama;;6232-6339;;0;75,00
+D-03;Benito Pacheco;;Cativá;Colón;Panama;;442-8460;;0;15,00
+D-04;Héctor Ayarza;;Cativá;Colón;Panama;;474-0361;;0;0,00
+D-05;Tomás Betegón;;Cativá;Colón;Panama;;;;0;30,00
+D-06;Lorenzo Lajón;;Cativá;Colón;Panama;;6229-1709;;0;15,00
+D-07;Inelda Maria Ariano;;Cativá;Colón;Panama;;6698-6569;;0;75,00
+D-08;Agustín Molinar;;Cativá;Colón;Panama;;;;0;75,00
+D-09;Ricardo Rodríguez;;Cativá;Colón;Panama;;6257-0642;;0;45,00
+D-10;Pastor Camarena;;Cativá;Colón;Panama;;6745-3714;;0;45,00
+D-11;Miguel Moreno;;Cativá;Colón;Panama;;;;0;75,00
+D-12;Carlos de León;;Cativá;Colón;Panama;;;;0;15,00
+D-13;Nimia Martínez;;Cativá;Colón;Panama;;;;0;75,00
+D-14;José Bonilla;;Cativá;Colón;Panama;;;;0;60,00
+D-15;Edwin Levin;;Cativá;Colón;Panama;;442-2010;;0;75,00
+D-16;Edi Henry;;Cativá;Colón;Panama;;;;0;75,00
+D-17;Willison Tovar;;Cativá;Colón;Panama;;6916-2329;;0;75,00
+D-18;Dr. Menchaca;;Cativá;Colón;Panama;;442-3230;;0;75,00
+D-19;Carmen de Tamayo;;Cativá;Colón;Panama;;474-0662;;0;45,00
+D-20;Oscar Corredeira;;Cativá;Colón;Panama;;442-9199;;0;75,00
+D-21;Oscar Ecleston;;Cativá;Colón;Panama;;6620-7540;;0;75,00
+D-22;A. Osorio;;Cativá;Colón;Panama;;6110-0155;;0;75,00
+D-23;Erick Vasquez;;Cativá;Colón;Panama;;474-7067;;0;60,00
+D-24;Juan Pastor Vega;;Cativá;Colón;Panama;;6090-8648;;0;75,00

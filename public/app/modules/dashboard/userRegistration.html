@@ -1,0 +1,52 @@
+<section id="admin-user-registration-section" class="admin-card">
+  <h2 class="admin-card-title">Registro de Nuevos Residentes</h2>
+  <form id="admin-user-form">
+
+    <!-- Parte 1: Registro Manual -->
+    <fieldset class="form-fieldset">
+      <legend class="fieldset-legend">Registro Manual de Residente</legend>
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="new-user-name" class="form-label">Nombre Completo</label>
+          <input type="text" id="new-user-name" class="form-input" placeholder="Ej: John Doe" required>
+        </div>
+        <div class="form-group">
+          <label for="new-user-property-id" class="form-label">ID de Propiedad</label>
+          <input type="text" id="new-user-property-id" class="form-input" placeholder="Ej: APT-101" required>
+        </div>
+      </div>
+      <div class.form-group>
+        <label for="new-user-email" class="form-label">Correo Electrónico</label>
+        <input type="email" id="new-user-email" class="form-input" placeholder="residente@email.com" required>
+        <p class="form-helper-text">Se asignará una contraseña genérica. El residente deberá cambiarla en su primer inicio de sesión.</p>
+      </div>
+      <div class="button-group" style="margin-top: 1.5rem; justify-content: flex-end;">
+        <button type="submit" class="button button-primary">Registrar Residente</button>
+      </div>
+    </fieldset>
+
+    <!-- Parte 2: Registro Masivo -->
+    <fieldset class="form-fieldset">
+      <legend class="fieldset-legend">Registro Masivo desde Archivo</legend>
+      <div class="form-group">
+        <label for="user-bulk-upload" class="form-label">Subir Archivo (.csv, .xlsx)</label>
+        <div class="file-upload-wrapper">
+          <input type="file" id="user-bulk-upload" class="file-upload-input" accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel">
+          <div class="file-upload-display">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+            <p>Arrastra y suelta un archivo aquí, o haz clic para seleccionarlo.</p>
+            <span id="file-name-display"></span>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <p class="form-helper-text">
+          <strong>Instrucciones:</strong> El archivo debe contener las columnas "Nombre", "Email" y "PropiedadID". La contraseña será la genérica por defecto.
+        </p>
+      </div>
+      <div class="button-group" style="margin-top: 1.5rem; justify-content: flex-end;">
+        <button type="button" id="bulk-upload-button" class="button button-primary">Subir y Procesar Archivo</button>
+      </div>
+    </fieldset>
+  </form>
+</section>

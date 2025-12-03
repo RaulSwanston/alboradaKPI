@@ -1,0 +1,51 @@
+<div id="profileModule" class="modu">
+  <div class="admin-card">
+    <h2 class="admin-card-title">Mi Perfil</h2>
+    <p class="text-secondary mb-6">Aquí puedes ver y actualizar tu información personal. Mantener tus datos al día ayuda a una mejor gestión.</p>
+
+      <form id="profileForm">
+        <!-- Sección de Foto de Perfil -->
+        <div class="flex items-center gap-4 mb-8">
+          <!-- <img id="profileImagePreview" src="https://via.placeholder.com/96" alt="Foto de perfil" class="w-24 h-24 rounded-full object-cover border-2 border-gray-300"> -->
+          <div>
+            <label for="profileImageInput" class="button secondary text-sm">Cambiar Foto</label>
+            <input type="file" id="profileImageInput" class="hidden" accept="image/*">
+            <p class="text-xs text-gray-500 mt-1">JPG, PNG o GIF. Máx 2MB.</p>
+          </div>
+        </div>
+
+        <!-- Campos del Formulario -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Columna Izquierda -->
+          <div>
+            <div class="form-group">
+              <label for="profileDisplayName" class="form-label">Nombre a Mostrar</label>
+              <input type="text" id="profileDisplayName" class="form-input" placeholder="Ej: Juan Pérez">
+            </div>
+            <div class="form-group">
+              <label for="profileEmail" class="form-label">Correo Electrónico</label>
+              <input type="email" id="profileEmail" class="form-input" disabled>
+              <p class="text-xs text-gray-500 mt-1">El email de inicio de sesión no se puede cambiar desde aquí.</p>
+            </div>
+          </div>
+          <!-- Columna Derecha -->
+          <div>
+            <div class="form-group">
+              <label for="profileMobile" class="form-label">Teléfono Celular</label>
+              <input type="tel" id="profileMobile" class="form-input" placeholder="Ej: 6677-8899">
+            </div>
+            <div class="form-group">
+              <label for="profilePhone" class="form-label">Teléfono de Casa</label>
+              <input type="tel" id="profilePhone" class="form-input" placeholder="Ej: 2233-4455">
+            </div>
+          </div>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="flex justify-end gap-4 mt-8">
+            <button type="button" id="profileCancelButton" class="button secondary">Cancelar</button>
+            <button type="submit" id="profileSaveButton" class="button primary">Guardar Cambios</button>
+        </div>
+      </form>
+    </div>
+  </div>

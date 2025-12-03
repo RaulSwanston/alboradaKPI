@@ -1,0 +1,60 @@
+<div class="dashboard-transactions-card">
+  <h2 class="dashboard-transactions-title">Historial de Transacciones</h2>
+  <div class="table-responsive">
+    <table class="transactions-table">
+      <thead>
+        <tr>
+          <th class="table-header">Fecha</th>
+          <th class="table-header">Descripción</th>
+          <th class="table-header">Comprobante</th>
+          <th class="table-header">Nro.</th>
+          <th class="table-header text-right">Débito (-)</th>
+          <th class="table-header text-right">Crédito (+)</th>
+          <th class="table-header text-right">Saldo</th>
+        </tr>
+      </thead>
+      <tbody id="transactions-table-body">
+        <!-- Fila de ejemplo 1: Cargo -->
+        <tr>
+          <td>01/10/2025</td>
+          <td>Cuota de Mantenimiento Octubre</td>
+          <td>FEE</td>
+          <td>102025</td>
+          <td class="text-right">$-55.00</td>
+          <td class="text-right">$0.00</td>
+          <td class="text-right">$-55.00</td>
+        </tr>
+        <!-- Fila de ejemplo 2: Pago -->
+        <tr>
+            <td>05/10/2025</td>
+            <td>Pago de cuota de Septiembre</td>
+            <td>PAYMENT</td>
+            <td>AB4598</td>
+            <td class="text-right">$0.00</td>
+            <td class="text-right">$55.00</td>
+            <td class="text-right">$0.00</td>
+        </tr>
+        <!-- Fila de ejemplo 3: Cargo -->
+        <tr>
+          <td>01/09/2025</td>
+          <td>Cuota de Mantenimiento Septiembre</td>
+          <td>FEE</td>
+          <td>092025</td>
+          <td class="text-right">$-55.00</td>
+          <td class="text-right">$0.00</td>
+          <td class="text-right">$-55.00</td>
+        </tr>
+        <!-- Fila de ejemplo 4: Saldo inicial (puede ser un ajuste) -->
+        <tr>
+          <td>31/08/2025</td>
+          <td>Saldo anterior</td>
+          <td>ADJUST</td>
+          <td>$0.00</td>
+          <td class="text-right">$0.00</td>
+          <td class="text-right">$0.00</td>
+          <td class="text-right">$0.00</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

@@ -1,0 +1,306 @@
+/* --- Base Styles --- */
+header.hero {
+    width: 100%;
+    height: auto;
+    min-height: 100vh;
+    padding: 1em 6em;
+    gap: 1em;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    align-items: center;
+    /* justify-items: center; */
+    /* justify-content: space-around; */
+    background-color: var(--colorDeFondoDeLaSeccionHero);
+}
+
+header.hero section {
+    width: fit-content;
+    /* background-color: var(--color-gurkha-300); */
+}
+
+.logo {
+    margin-bottom: 6em;
+    width: 232px;
+    position: relative;
+
+    & .alboradaIllustration {
+        width: 100px;
+        /* width: 1248px; */
+        height: auto;
+        /* height: 832px; */
+        position: absolute;
+        left: 1.4em;
+        bottom: -1em;
+    }
+}
+
+.logo::before {
+    content: '';
+    width: 100%;
+    height: 300px;
+    position: absolute;
+    top: -6.2em;
+    left: -.8%;
+    border-radius: 50%;
+    border: solid 8px var(--color-solid-pink-700);
+    clip-path: polygon(0 0, 100% 0, 100% 40%, 0 40%);
+}
+
+.logo .title,
+.logo .subTitle,
+.logo .appDescription {
+    margin: 0;
+    position: absolute;
+}
+
+.logo .title {
+    color: var(--colorPrimarioDelLogo);
+    font-size: 2rem;
+    font-family: "Arial Black", Arial, Helvetica, sans-serif;
+    text-transform: uppercase;
+    left: 1rem;
+    top: .2rem;
+}
+
+.logo .subTitle {
+    color: var(--color-gurkha-100);
+    padding: .2em;
+    font-size: 1.9em;
+    line-height: 1em;
+    letter-spacing: .2px;
+    background-color: var(--color-solid-pink-700);
+    font-family: "Arial Black", Arial, Helvetica, sans-serif;
+    text-transform: uppercase;
+    left: 0%;
+    bottom: -2.95em;
+}
+
+.logo .appDescription {
+    color: #444;
+    font-weight: bold;
+    font-style: italic;
+    left: 6.6em;
+    bottom: -4.2em;
+}
+
+.hero .subtitle {
+    font-size: 2.2em;
+    /* text-xl */
+    font-weight: 900;
+    /* font-semibold */
+    font-family: "Inter", sans-serif;
+    font-style: normal;
+    color: var(--color-text-secondary);
+    margin: 0;
+}
+
+.hero-description {
+    font-size: 1.125rem;
+    color: var(--color-text-secondary);
+    line-height: 1.2;
+}
+
+/* --- Hidden animation elements --- */
+.hidden-animation-element {
+    opacity: 0;
+}
+
+.hero-advantages {
+    padding: 1.7em;
+    margin: 2em;
+    overflow: hidden;
+    list-style: none;
+    margin-bottom: 3rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.hero-advantages li {
+    gap: .5em;
+    display: flex;
+
+    & p {
+        margin: 0;
+    }
+
+    & span {
+        font-size: 1.1em;
+        font-weight: bolder;
+    }
+
+    & div {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        /* background-color: var(--color-gurkha-300); */
+    }
+}
+
+.advantage-icon {
+    height: 3.5rem;
+    flex: 0 0 3.5rem;
+    padding: 1em;
+    border-radius: 50%;
+    border: solid 2px var(--color-kaitoke-green-600);
+    color: var(--color-kaitoke-green-600);
+}
+
+.heroButtonContainer {
+    gap: 1em;
+    display: flex;
+    flex-wrap: wrap;
+
+    & .cta,
+    .info {
+        width: 15cqw;
+        min-width: 200px;
+        font-size: 1em;
+    }
+
+    & .cta {
+        color: var(--color-text-on-primary);
+        background-color: var(--color-kaitoke-green-600);
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        font-weight: bold;
+        letter-spacing: .5px;
+
+        &:hover {
+            background-color: var(--color-kaitoke-green-900);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+
+        &:focus {
+            outline: none;
+            box-shadow: 0 0 0 2px var(--color-primary), 0 0 0 4px var(--color-kaitoke-green-200);
+        }
+    }
+
+    & .info {
+        color: var(--color-gurkha-700);
+        ;
+        box-shadow: -1px 1px 3px var(--color-gurkha-500);
+        background-color: transparent;
+    }
+}
+
+@media (max-width: 768px) {
+    header.hero {
+        margin-top: 8em;
+        padding: 1em;
+    }
+
+    .heroButtonContainer {
+        gap: 1.5em;
+        flex-direction: column;
+        margin-top: 2em;
+
+        & .cta,
+        .info {
+            align-self: center;
+            width: 80%;
+        }
+    }
+
+    .hero-advantages {
+        padding: 0;
+    }
+}
+
+@-webkit-keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+.fadeIn {
+    -webkit-animation-name: fadeIn;
+    animation-name: fadeIn;
+}
+
+@-webkit-keyframes fadeInUp {
+    from {
+        opacity: 0;
+        -webkit-transform: translate3d(0, 100%, 0);
+        transform: translate3d(0, 100%, 0);
+    }
+
+    to {
+        opacity: 1;
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        -webkit-transform: translate3d(0, 100%, 0);
+        transform: translate3d(0, 100%, 0);
+    }
+
+    to {
+        opacity: 1;
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+.fadeInUp {
+    -webkit-animation-name: fadeInUp;
+    animation-name: fadeInUp;
+}
+
+@-webkit-keyframes fadeInDown {
+    from {
+        opacity: 0;
+        -webkit-transform: translate3d(0, -100%, 0);
+        transform: translate3d(0, -100%, 0);
+    }
+
+    to {
+        opacity: 1;
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        -webkit-transform: translate3d(0, -100%, 0);
+        transform: translate3d(0, -100%, 0);
+    }
+
+    to {
+        opacity: 1;
+        -webkit-transform: translate3d(0, 0, 0);
+        transform: translate3d(0, 0, 0);
+    }
+}
+
+.fadeInDown {
+    -webkit-animation-name: fadeInDown;
+    animation-name: fadeInDown;
+}
+
+.animated {
+    -webkit-animation-duration: 1s;
+    animation-duration: 1s;
+    -webkit-animation-fill-mode: both;
+    animation-fill-mode: both;
+}

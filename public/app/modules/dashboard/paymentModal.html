@@ -1,0 +1,27 @@
+<div id="payment-modal" class="modal-overlay hidden">
+    <div class="modal-card">
+        <h2 class="admin-card-title">Reportar Pago</h2>
+        <form id="payment-form">
+            <div class="form-group">
+                <label for="payment-amount" class="form-label">Monto Pagado</label>
+                <input type="number" id="payment-amount" class="form-input" step="0.01" placeholder="0.00" required>
+            </div>
+            <div class="form-group">
+                <label for="payment-date" class="form-label">Fecha de Pago</label>
+                <input type="date" id="payment-date" class="form-input" required>
+            </div>
+            <div class="form-group">
+                <label for="payment-receipt" class="form-label">Comprobante (Opcional)</label>
+                <input type="file" id="payment-receipt" class="form-input" accept="image/*">
+            </div>
+            <div class="form-group">
+                <label for="payment-notes" class="form-label">Notas (Opcional)</label>
+                <textarea id="payment-notes" class="form-input" rows="3" placeholder="Ej: Pago de la cuota de Octubre"></textarea>
+            </div>
+            <div class="button-group" style="flex-direction: row; justify-content: flex-end; gap: 1rem;">
+                <button type="button" id="cancel-payment-button" class="button button-secondary">Cancelar</button>
+                <button type="submit" class="button button-primary">Enviar Reporte</button>
+            </div>
+        </form>
+    </div>
+</div>
