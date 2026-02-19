@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Portal Alborada - Nuevo Concepto de Cargo</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2563eb",
+                        "gurkha-50": "#ffffff",
+                        "gurkha-100": "#f3f4f6",
+                        "gurkha-700": "#374151",
+                        "gurkha-900": "#111827",
+                        "danger": "#dc2626",
+                        "success": "#16a34a",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "3xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-gurkha-100 font-display text-gurkha-900">
+<div class="relative flex min-h-screen w-full flex-col overflow-hidden bg-gurkha-100">
+<header class="sticky top-0 z-20 flex items-center gap-3 bg-gurkha-100/90 px-4 py-4 backdrop-blur-md">
+<button class="flex h-10 w-10 items-center justify-center rounded-full bg-white text-gurkha-700 shadow-sm transition-colors hover:bg-gray-50 border border-gray-100">
+<span class="material-symbols-outlined text-2xl">arrow_back</span>
+</button>
+<div class="flex flex-col">
+<h1 class="text-xl font-bold text-gurkha-900 leading-tight">Nuevo Concepto</h1>
+<span class="text-xs font-medium text-gurkha-700">Configuración de Cargos</span>
+</div>
+</header>
+<main class="flex flex-1 flex-col gap-6 px-4 py-2 pb-28">
+<div class="rounded-2xl bg-gurkha-50 p-5 shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-gray-100">
+<h2 class="mb-4 text-base font-bold text-gurkha-900 flex items-center gap-2">
+<span class="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-primary">
+<span class="material-symbols-outlined text-lg">edit_note</span>
+</span>
+                    Información Básica
+                </h2>
+<form class="flex flex-col gap-5">
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-semibold text-gurkha-700" for="concept-name">Nombre del Concepto</label>
+<input class="w-full rounded-xl border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gurkha-900 placeholder:text-gray-400 focus:border-primary focus:ring-primary shadow-sm" id="concept-name" placeholder="Ej. Cuota de Mantenimiento Enero" type="text"/>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-semibold text-gurkha-700" for="charge-type">Tipo de Cargo</label>
+<div class="relative">
+<select class="w-full appearance-none rounded-xl border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gurkha-900 focus:border-primary focus:ring-primary shadow-sm" id="charge-type">
+<option disabled="" selected="" value="">Selecciona un tipo</option>
+<option value="ordinary">Cuota Ordinaria</option>
+<option value="extraordinary">Cuota Extraordinaria</option>
+<option value="fine">Multa</option>
+<option value="service">Servicio</option>
+<option value="reservation">Reserva de Amenidad</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-4 text-gurkha-700">
+<span class="material-symbols-outlined text-xl">expand_more</span>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-semibold text-gurkha-700" for="amount">Monto Predeterminado</label>
+<div class="relative">
+<div class="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-4 text-gurkha-700">
+<span class="text-base font-bold">$</span>
+</div>
+<input class="w-full rounded-xl border-gray-200 bg-white pl-8 pr-4 py-3 text-sm font-medium text-gurkha-900 placeholder:text-gray-400 focus:border-primary focus:ring-primary shadow-sm" id="amount" placeholder="0.00" step="0.01" type="number"/>
+</div>
+</div>
+</form>
+</div>
+<div class="rounded-2xl bg-gurkha-50 p-5 shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-gray-100">
+<h2 class="mb-4 text-base font-bold text-gurkha-900 flex items-center gap-2">
+<span class="flex h-8 w-8 items-center justify-center rounded-lg bg-orange-50 text-orange-600">
+<span class="material-symbols-outlined text-lg">tune</span>
+</span>
+                    Configuración
+                </h2>
+<div class="flex flex-col gap-4">
+<div class="flex items-center justify-between rounded-xl bg-gray-50/50 p-3 border border-gray-100">
+<div class="flex items-center gap-3">
+<div class="flex h-10 w-10 items-center justify-center rounded-full bg-white text-gurkha-700 shadow-sm border border-gray-100">
+<span class="material-symbols-outlined">update</span>
+</div>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-gurkha-900">Cargo Recurrente</span>
+<span class="text-xs text-gurkha-700">Se genera automáticamente cada mes</span>
+</div>
+</div>
+<label class="relative inline-flex cursor-pointer items-center">
+<input class="peer sr-only" type="checkbox"/>
+<div class="peer h-6 w-11 rounded-full bg-gray-200 after:absolute after:left-[2px] after:top-[2px] after:h-5 after:w-5 after:rounded-full after:border after:border-gray-300 after:bg-white after:transition-all after:content-[''] peer-checked:bg-primary peer-checked:after:translate-x-full peer-checked:after:border-white peer-focus:outline-none"></div>
+</label>
+</div>
+<div class="flex flex-col gap-2">
+<label class="text-sm font-semibold text-gurkha-700">Aplicable a</label>
+<div class="grid grid-cols-2 gap-3">
+<label class="cursor-pointer">
+<input checked="" class="peer sr-only" name="applicable_to" type="radio"/>
+<div class="rounded-xl border border-gray-200 bg-white p-3 text-center transition-all hover:bg-gray-50 peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary">
+<span class="block text-sm font-bold">Todas las Unidades</span>
+</div>
+</label>
+<label class="cursor-pointer">
+<input class="peer sr-only" name="applicable_to" type="radio"/>
+<div class="rounded-xl border border-gray-200 bg-white p-3 text-center transition-all hover:bg-gray-50 peer-checked:border-primary peer-checked:bg-primary/5 peer-checked:text-primary">
+<span class="block text-sm font-bold">Selección Manual</span>
+</div>
+</label>
+</div>
+</div>
+</div>
+</div>
+<div class="rounded-2xl bg-gurkha-50 p-5 shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-gray-100">
+<div class="flex flex-col gap-1.5">
+<label class="text-sm font-semibold text-gurkha-700" for="description">Descripción / Notas (Opcional)</label>
+<textarea class="w-full rounded-xl border-gray-200 bg-white px-4 py-3 text-sm font-medium text-gurkha-900 placeholder:text-gray-400 focus:border-primary focus:ring-primary shadow-sm" id="description" placeholder="Detalles adicionales para el recibo..." rows="3"></textarea>
+</div>
+</div>
+</main>
+<div class="fixed bottom-0 left-0 z-50 w-full bg-gurkha-50 border-t border-gray-200 px-4 py-4 pb-8 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+<button class="w-full flex items-center justify-center gap-2 rounded-xl bg-primary py-4 text-base font-bold text-white shadow-lg shadow-blue-500/30 transition-transform active:scale-[0.98] hover:bg-blue-700">
+<span class="material-symbols-outlined">add_circle</span>
+                Crear Concepto
+            </button>
+</div>
+</div>
+
+</body></html>

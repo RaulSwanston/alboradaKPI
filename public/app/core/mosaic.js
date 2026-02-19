@@ -10,7 +10,8 @@ export class Mosaic {
       THEME: 'theme',
       MODULE: 'module',
       CONTENT: 'content',
-      CSS: 'css'
+      CSS: 'css',
+      CONTROLLER: 'controller' // NUEVO: Añadimos la directiva del controlador.
     };
 
     // Pre-compilamos las expresiones regulares para eficiencia
@@ -18,136 +19,120 @@ export class Mosaic {
       theme: new RegExp(`<!-- ::${this.directives.THEME}\\.([\\w\\.]+) -->`),
       module: new RegExp(`<!-- ::${this.directives.MODULE}\\.([\\w\\.]+) -->`, 'g'),
       content: new RegExp(`<!-- ::${this.directives.CONTENT} -->`),
-      css: new RegExp(`<!-- ::${this.directives.CSS}\\.([\\w\\.]+) -->`, 'g')
+      css: new RegExp(`<!-- ::${this.directives.CSS}\\.([\\w\\.]+) -->`, 'g'),
+      controller: new RegExp(`<!-- ::${this.directives.CONTROLLER}\\.([\\w\\.]+) -->`, 'g') // CORREGIDO: Añadido el flag global 'g'
     };
   }
 
   /**
-   * Carga y procesa una vista (receta) y sus directivas (theme, module, css) usando un enfoque de "texto primero".
-   * Ensambla el HTML final como texto y realiza un único parseo al final para mayor eficiencia.
-   * @param {string} viewUrl La URL de la receta de la vista a cargar.
+   * Compone una vista de forma recursiva, procesando todas las directivas anidadas (`::module`, `::css`, `::controller`)
+   * hasta que no queden más. Al final, aplica el tema principal.
+   * @param {string} viewUrl La URL de la receta inicial de la vista.
+   * @returns {object} Un "paquete de renderizado" con { finalHtml, cssUrls, controllerNames }.
    */
-  async loadAndProcessView(viewUrl) {
+  async composeView(viewUrl) {
     try {
-      // 1. Leer la "Receta" de la vista
-      const viewResponse = await fetch(viewUrl);
-      if (!viewResponse.ok) throw new Error(`Error al cargar la receta de vista: ${viewUrl}`);
-      const viewRecipeText = await viewResponse.text();
+      let viewRecipeText = await (await fetch(viewUrl)).text();
 
-      // 2. Extraer Instrucciones (Tema, Módulos y CSS) de la receta
-      const themeMatch = viewRecipeText.match(this.regex.theme);
-      if (!themeMatch) throw new Error(`La vista ${viewUrl} no define un tema (::theme).`);
+      const cssUrls = new Set();
+      const controllerPaths = new Set(); // <--- De nombres a rutas
+      let themeUrl = null;
+      let currentHtml;
 
-      const themePath = themeMatch[1].replace(/\./g, '/');
-      const themeUrl = `views/theme/${themePath}.html`;
-
-      const moduleMatches = [...viewRecipeText.matchAll(this.regex.module)];
-      const moduleUrls = moduleMatches.map(match => {
-        const modulePath = match[1].replace(/\./g, '/');
-        return `app/modules/${modulePath}.html`;
-      });
-
+      // 1. Recopilación de directivas globales (CSS, Controller, Theme)
       const cssMatches = [...viewRecipeText.matchAll(this.regex.css)];
-      const cssUrls = cssMatches.map(match => {
-        const cssPath = match[1].replace(/\./g, '/');
-        return `src/css/${cssPath}.css`;
-      });
-
-      // 3. Cargar Recursos en Paralelo (Tema y todos los Módulos)
-      const [themeResponse, ...moduleResponses] = await Promise.all([
-        fetch(themeUrl),
-        ...moduleUrls.map(url => fetch(url))
-      ]);
-
-      if (!themeResponse.ok) throw new Error(`No se pudo cargar el tema: ${themeUrl}`);
-      const themeHtml = await themeResponse.text();
-
-      const modulesHtmlPromises = moduleResponses.map((res, i) => {
-        if (!res.ok) console.error(`Módulo no encontrado: ${moduleUrls[i]}`);
-        return res.ok ? res.text() : `<!-- Módulo no encontrado: ${moduleUrls[i]} -->`;
-      });
-      const modulesHtml = (await Promise.all(modulesHtmlPromises)).join('\n');
-
-      // 4. Ensamblar la vista final: Reemplazar ::content en el tema con los módulos
-      const finalHtml = themeHtml.replace(this.regex.content, modulesHtml);
-
-      // 5. Parseo FINAL: Convertir el string HTML ensamblado a un documento DOM
-      const parser = new DOMParser();
-      const finalDoc = parser.parseFromString(finalHtml, 'text/html');
-
-      // 6. Fusionar <head> y actualizar <body> y título
-      // Inyectar CSS definidos en la receta
-      cssUrls.forEach(url => {
-        const link = finalDoc.createElement('link');
-        link.rel = 'stylesheet';
-        link.href = url;
-        finalDoc.head.appendChild(link);
-      });
-
-      await this.mergeHeadElements(finalDoc.head);
-
-      if (this.appView) {
-        this.appView.innerHTML = finalDoc.body.innerHTML;
+      if (cssMatches.length > 0) {
+        cssMatches.forEach(match => cssUrls.add(`src/css/${match[1].replace(/\./g, '/')}.css`));
+        viewRecipeText = viewRecipeText.replace(this.regex.css, '');
       }
 
-      document.title = finalDoc.title || document.title;
+      const controllerMatches = [...viewRecipeText.matchAll(this.regex.controller)];
+      if (controllerMatches.length > 0) {
+        controllerMatches.forEach(match => controllerPaths.add(`/app/controllers/${match[1]}.js`)); // Añadir ruta completa
+        viewRecipeText = viewRecipeText.replace(this.regex.controller, '');
+      }
+      
+      const themeMatch = viewRecipeText.match(this.regex.theme);
+      if (themeMatch) {
+        const themePath = themeMatch[1].replace(/\./g, '/');
+        themeUrl = `views/theme/${themePath}.html`;
+        viewRecipeText = viewRecipeText.replace(this.regex.theme, '');
+      }
 
-      console.log(`✅ Vista ${viewUrl} cargada y ensamblada eficientemente.`);
+      // 2. Análisis estructural de la vista con DOMParser
+      const parser = new DOMParser();
+      const viewDoc = parser.parseFromString(viewRecipeText, 'text/html');
+      const namedContentBlocks = {};
+      
+      const children = Array.from(viewDoc.body.children);
+      for (const child of children) {
+        if (child.dataset.content) {
+          namedContentBlocks[child.dataset.content] = child.outerHTML;
+          child.remove();
+        }
+      }
+      const defaultContentHtml = viewDoc.body.innerHTML;
+
+      // 3. Obtener HTML del tema o usar base
+      let themeHtml = themeUrl ? await (await fetch(themeUrl)).text() : '<!-- ::content -->';
+
+      // 4. Pre-inyección de contenido en el tema
+      currentHtml = themeHtml;
+      for (const key in namedContentBlocks) {
+        currentHtml = currentHtml.replace(new RegExp(`<!-- ::content\\.${key} -->`, 'g'), namedContentBlocks[key]);
+      }
+      currentHtml = currentHtml.replace(/<!-- ::content -->/g, defaultContentHtml);
+
+      // 5. Bucle de composición de módulos (con auto-descubrimiento de assets)
+      const MAX_ITERATIONS = 50;
+      let iterations = 0;
+      while (iterations < MAX_ITERATIONS) {
+        iterations++;
+        const moduleMatches = [...currentHtml.matchAll(this.regex.module)];
+        if (moduleMatches.length === 0) break;
+
+        const modulePromises = moduleMatches.map(async (match) => {
+          const moduleName = match[1].split('.').pop(); // 'dashboard.summary' -> 'summary'
+          const moduleBasePath = `app/modules/${moduleName}`;
+          
+          const htmlPath = `/${moduleBasePath}/${moduleName}.html`;
+          const cssPath = `/${moduleBasePath}/${moduleName}.css`;
+          const controllerPath = `/${moduleBasePath}/${moduleName}.controller.js`;
+
+          const [htmlResponse, cssCheck, controllerCheck] = await Promise.all([
+            fetch(htmlPath),
+            fetch(cssPath, { method: 'HEAD' }),
+            fetch(controllerPath, { method: 'HEAD' })
+          ]);
+
+          if (cssCheck.ok) cssUrls.add(cssPath);
+          if (controllerCheck.ok) controllerPaths.add(controllerPath);
+
+          if (!htmlResponse.ok) return `<!-- Error: Módulo ${match[1]} no encontrado en ${htmlPath} -->`;
+          return await htmlResponse.text();
+        });
+        
+        const moduleContents = await Promise.all(modulePromises);
+        let replacementIndex = 0;
+        currentHtml = currentHtml.replace(this.regex.module, () => moduleContents[replacementIndex++]);
+      }
+
+      if (iterations === MAX_ITERATIONS) {
+        console.warn('Mosaic: Se alcanzó el límite máximo de iteraciones.');
+      }
+      
+      console.log(`✅ Vista ${viewUrl} compuesta exitosamente (con auto-discovery).`);
+
+      // 6. Devolver paquete de renderizado final
+      return {
+        finalHtml: currentHtml,
+        cssUrls: [...cssUrls],
+        controllerPaths: [...controllerPaths] // <--- Devolver rutas
+      };
 
     } catch (error) {
-      console.error(`⚠️ Fallo al procesar la vista ${viewUrl}:`, error);
-      if (this.appView) {
-        this.appView.innerHTML = `<p>Error al cargar el contenido. Por favor, intente de nuevo.</p>`;
-      }
+      console.error(`⚠️ Fallo al componer la vista ${viewUrl}:`, error);
+      return null;
     }
-  }
-
-  /**
-   * Fusiona los elementos de un <head> de una vista parcial en el <head> del documento principal.
-   * Evita duplicados y recrea scripts para su ejecución, esperando a que se carguen.
-   * @param {HTMLHeadElement} newHead El elemento <head> del documento parseado.
-   * @returns {Promise<void>} Una promesa que se resuelve cuando todos los scripts se han cargado.
-   */
-  async mergeHeadElements(newHead) {
-    const mainHead = document.head;
-    const scriptPromises = [];
-
-    Array.from(newHead.children).forEach(newNode => {
-      const tag = newNode.tagName;
-      let isDuplicate = false;
-
-      // Evita duplicar links y scripts con el mismo src
-      if (tag === 'LINK' && newNode.href) {
-        isDuplicate = !!mainHead.querySelector(`link[href="${newNode.href}"]`);
-      } else if (tag === 'SCRIPT' && newNode.src) {
-        isDuplicate = !!mainHead.querySelector(`script[src="${newNode.src}"]`);
-      }
-
-      if (isDuplicate) return;
-
-      if (tag === 'SCRIPT') {
-        const script = document.createElement('script');
-        Array.from(newNode.attributes).forEach(attr => {
-          script.setAttribute(attr.name, attr.value);
-        });
-        script.textContent = newNode.textContent;
-
-        // Si el script es externo (tiene src), envuélvelo en una promesa
-        if (newNode.src) {
-          const promise = new Promise((resolve, reject) => {
-            script.onload = () => resolve();
-            script.onerror = () => reject(new Error(`Falló la carga del script: ${newNode.src}`));
-          });
-          scriptPromises.push(promise);
-        }
-
-        mainHead.appendChild(script);
-      } else {
-        mainHead.appendChild(newNode.cloneNode(true));
-      }
-    });
-
-    // Espera a que todas las promesas de los scripts se completen
-    await Promise.all(scriptPromises);
   }
 }

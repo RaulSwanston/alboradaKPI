@@ -1,15 +1,21 @@
-import { Router } from './app/core/router.js'; // Importa la clase Router
-import * as controller from './app/controllers/index.js';
+import { Router } from './app/core/router.js'; // Importa la CLASE Router
+import { logMiddleware } from './app/middleware/log.middleware.js'; // Importa nuestro primer middleware
 
 // --- Definición de Rutas ---
 // Se definen las rutas utilizando el nuevo formato para Mosaic, relativo a /app/views.
-const router = new Router();
+export const router = new Router(); // CREA y EXPORTA la instancia del router
 router
-  .get('/', controller.home, 'inicio')
-  .get('/login', controller.login, 'auth/login')
-  .get('/signup', controller.signup, 'auth/signup')
-  .get('/recovery', controller.recovery, 'auth/recovery')
-  .get('/summary', controller.summary, 'dashboard/summary');
+  .get('/', 'inicio', [logMiddleware]) // Se aplica el middleware a la ruta raíz
+  .get('/login', 'auth/login')
+  .get('/signup', 'auth/signup')
+  .get('/recovery', 'auth/recovery')
+  .get('/summary', 'dashboard/summary')
+  .get('/services', 'dashboard/services')
+  .get('/services-new', 'dashboard/services-new')
+  .get('/notifications', 'dashboard/notifications')
+  .get('/residents', 'dashboard/residents')
+  .get('/import-residents', 'dashboard/importResidents')
+  .get('/import-properties', 'dashboard/importProperties');
 
 // La función que se exporta para ser llamada desde el script principal.
 export function initRouter() {

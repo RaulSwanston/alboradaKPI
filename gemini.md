@@ -102,6 +102,7 @@ Para cumplir con la visión de una plataforma de servicios flexible y automatiza
     - `phone` (Texto, Opcional): Número de teléfono de casa.
     - `propertyIds` (Array de Strings): IDs de las propiedades asociadas. **Gestionado solo por administradores.**
     - `role` (Texto): Rol del usuario (ej: "resident", "admin"). **La autorización real se determina mediante Custom Claims.**
+    - `isActive` (Booleano): `true` si el usuario ha sido aprobado por un admin y puede operar en la app, `false` si está pendiente o ha sido desactivado.
     - `createdAt` (Fecha y Hora): Fecha de creación del perfil.
     - `emergencyContact` (Objeto, Opcional): Información de contacto en caso de emergencia.
         - `name` (Texto)
@@ -177,6 +178,24 @@ Para cumplir con la visión de una plataforma de servicios flexible y automatiza
     - `receiptUrl` (Texto, Opcional): URL de la imagen del comprobante en Firebase Storage.
     - `notes` (Texto, Opcional): Notas del residente sobre el pago.
     - `adminNotes` (Texto, Opcional): Notas del administrador al verificar o rechazar.
+
+### Colección: `activities`
+- **Propósito:** Un registro unificado y cronológico de todos los eventos y acciones importantes que ocurren en el sistema, optimizado para la visualización de un feed de "actividades recientes".
+- **ID del Documento:** ID auto-generado por Firestore.
+- **Campos:**
+    - `timestamp` (Fecha y Hora): Fecha y hora exacta en que ocurrió la actividad, para ordenar el feed.
+    - `type` (Texto): Un código que describe el tipo de evento (ej: "PAYMENT_REPORTED", "SERVICE_REQUESTED", "MONTHLY_FEE_GENERATED", "USER_REGISTERED", "PROPERTY_UPDATED").
+    - `description` (Texto): Una breve descripción legible por humanos de la actividad (ej: "Residente de Casa 101 reportó un pago").
+    - `initiator` (Objeto, Opcional): Información sobre quién o qué inició la actividad.
+        - `type` (Texto): "USER" o "SYSTEM".
+        - `id` (Texto): UID del usuario o identificador del sistema.
+        - `name` (Texto): Nombre del usuario o del proceso del sistema (para mostrar directamente).
+    - `target` (Objeto): Información sobre la entidad principal afectada por la actividad.
+        - `type` (Texto): "PROPERTY", "USER", "SERVICEREQUEST", "TRANSACTION", etc.
+        - `id` (Texto): ID de la entidad afectada (ej: `propertyId`, `userId`, `serviceRequestId`).
+        - `name` (Texto, Opcional): Nombre o identificador de la entidad (ej: "Casa 101", "Ana García").
+    - `details` (Objeto, Opcional): Un objeto flexible para almacenar datos adicionales relevantes para el tipo de actividad (ej: `{ amount: 150, currency: 'USD', paymentNotificationId: 'abc' }` para un pago).
+    - `visibility` (Array de Strings, Opcional): Define quién puede ver esta actividad (ej: `["admin"]`, `["admin", "resident_UID"]`).
 
 ---
 
@@ -303,3 +322,63 @@ Se ha acordado aplicar documentación de forma continua durante el desarrollo pa
   - `git push gitlab main`
 ---
 El usuario prefiere respuestas cortas y completas.
+
+---
+
+## 10. Arquitectura de Renderizado y Navegación
+
+La aplicación utiliza una arquitectura desacoplada y de alta cohesión para gestionar la navegación y el renderizado de vistas. Se basa en cuatro componentes principales con responsabilidades claramente definidas.
+
+### 1. El Orquestador (`Router`)
+
+*   **Archivo:** `public/app/core/router.js`
+*   **Responsabilidad:** Actuar como el "director de orquesta". Es el punto de entrada para cualquier cambio de navegación.
+*   **Flujo de Trabajo:**
+    1.  Escucha los cambios de URL (por clics, historial del navegador o llamadas programáticas a `navigate()`).
+    2.  Identifica la ruta correspondiente y crea un objeto `contexto` (`{ params, data }`).
+    3.  Ejecuta el *pipeline* de `Middlewares` asociados a la ruta, pasándoles el `contexto` para que puedan validarlo o enriquecerlo.
+    4.  Si los middlewares tienen éxito, llama a `Mosaic` para componer la vista.
+    5.  Finalmente, llama a `RenderView` para que "anime" la vista en el DOM.
+
+### 2. El Compositor (`Mosaic`)
+
+*   **Archivo:** `public/app/core/mosaic.js`
+*   **Responsabilidad:** Actuar como un "maestro albañil". Su único trabajo es construir un "paquete de renderizado" en memoria, sin tocar nunca el DOM.
+*   **Flujo de Trabajo (`composeView`):**
+    1.  Recibe la URL de una "receta" de vista.
+    2.  Inicia un bucle de composición que busca recursivamente todas las directivas anidadas (`::module`, `::css`, `::controller`).
+    3.  Acumula todas las URLs de CSS y nombres de controladores en listas.
+    4.  Reemplaza las directivas `::module` con su contenido HTML, repitiendo el proceso hasta que no queden más.
+    5.  Aplica el tema principal al HTML ya compuesto.
+    6.  Devuelve un objeto final: `{ finalHtml, cssUrls, controllerNames }`.
+
+### 3. El Renderizador (`RenderView`)
+
+*   **Archivo:** `public/app/core/RenderView.js`
+*   **Responsabilidad:** Dar vida a la vista en el DOM. Es el único componente que interactúa directamente con el `document`.
+*   **Flujo de Trabajo (`anima`):**
+    1.  Recibe el "paquete de renderizado" de `Mosaic` y el `contexto` del `Router`.
+    2.  Llama a su método `mergeHeadElements`, que añade los `<link>` de CSS y otros assets al `<head>` y **espera** a que se carguen para evitar FOUC (Flash of Unstyled Content).
+    3.  Inyecta el `finalHtml` en el contenedor principal `#app-view`.
+    4.  Itera sobre la lista de `controllerNames`, los importa y los ejecuta en secuencia, pasándoles el `contexto` enriquecido.
+
+### 4. Los Filtros (`Middlewares`)
+
+*   **Ubicación:** `public/app/middleware/`
+*   **Responsabilidad:** Actuar como filtros o puntos de control en el proceso de navegación.
+*   **Capacidades:**
+    *   **Validación:** Pueden bloquear la navegación (ej. `authMiddleware`) devolviendo `false`.
+    *   **Enriquecimiento:** Pueden realizar llamadas a APIs o bases de datos y añadir la información al objeto `contexto.data` para que el controlador la utilice.
+
+---
+### Ejemplo de Flujo Completo
+
+1.  Usuario navega a `/users/123`.
+2.  **Router** crea el `contexto`: `{ params: { id: '123' }, data: {} }`.
+3.  **Router** ejecuta el middleware `fetchUserMiddleware(contexto)`.
+4.  **Middleware** busca el usuario y modifica el contexto: `contexto.data.user = { name: 'Ana' }`. Devuelve `true`.
+5.  **Router** llama a `mosaic.composeView('views/user-profile.html')`.
+6.  **Mosaic** procesa la vista y sus módulos de forma recursiva, y devuelve: `{ finalHtml: "...", cssUrls: [...], controllerNames: ["userProfileController"] }`.
+7.  **Router** llama a `renderView.anima(composedView, contexto)`.
+8.  **RenderView** carga el CSS, espera, inyecta el HTML y ejecuta `userProfileController(contexto)`.
+9.  El **Controller** usa `contexto.data.user.name` para mostrar "Ana" en la página.

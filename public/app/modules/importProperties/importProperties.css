@@ -1,0 +1,140 @@
+/* ============================================= */
+/* --- Módulo: Importar Propiedades --- */
+/* ============================================= */
+
+/* --- Contenedor Principal --- */
+.import-properties-container {
+    padding: 1.5rem;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.import-properties-container h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--color-text-primary);
+    margin-bottom: 1rem;
+}
+
+/* --- Navegación (Breadcrumb) --- */
+.breadcrumb-nav {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    margin: 0 0 1.5rem 0;
+    font-size: 0.9rem;
+}
+
+.breadcrumb-nav li {
+    color: var(--color-text-secondary);
+}
+
+.breadcrumb-nav li:not(:last-child)::after {
+    content: '/';
+    margin: 0 0.5rem;
+    color: var(--color-gurkha-400);
+}
+
+.breadcrumb-nav a {
+    color: var(--color-text-link);
+    text-decoration: none;
+}
+
+.breadcrumb-nav a:hover {
+    text-decoration: underline;
+}
+
+/* --- Tarjeta de Importación --- */
+.import-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.75rem;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    overflow: hidden; /* Para que el header redondeado funcione bien */
+}
+
+.import-card-header {
+    background-color: var(--color-gurkha-100);
+    padding: 1rem 1.5rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    border-bottom: 1px solid var(--color-border);
+}
+
+.import-card-body {
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.import-card-body p {
+    margin: 0;
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+}
+
+/* --- Pasos del Formulario --- */
+.form-step {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.form-label {
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+.file-input {
+    padding: 0.75rem;
+    border: 2px dashed var(--color-border);
+    border-radius: 0.5rem;
+    background-color: var(--color-gurkha-50);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.file-input:hover {
+    border-color: var(--color-primary);
+    background-color: var(--color-gurkha-100);
+}
+
+/* --- Botón de Importación --- */
+.import-button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-on-primary);
+    background-color: var(--color-primary);
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+    align-self: flex-start; /* Para que no ocupe todo el ancho */
+}
+
+.import-button:hover:not(:disabled) {
+    background-color: var(--color-primary-hover);
+}
+
+.import-button:disabled {
+    background-color: var(--color-gurkha-300);
+    color: var(--color-gurkha-500);
+    cursor: not-allowed;
+}
+
+/* --- Visor de Logs --- */
+.log-viewer {
+    background-color: var(--color-gurkha-950);
+    color: var(--color-gurkha-200);
+    font-family: 'Consolas', 'Monaco', 'Andale Mono', 'Ubuntu Mono', monospace;
+    font-size: 0.9rem;
+    line-height: 1.5;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-gurkha-800);
+    white-space: pre-wrap;
+    word-break: break-all;
+}

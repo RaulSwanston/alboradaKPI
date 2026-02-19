@@ -1,0 +1,40 @@
+<div class="upload-card">
+  <h2 class="upload-card-title">Carga Masiva de Residentes</h2>
+  <p class="upload-card-description">
+      Sube uno o varios archivos en formato .csv, .xls o .txt para procesar y crear los perfiles de los residentes de forma automática.
+  </p>
+  
+  <div class="dropzone-container">
+    <label for="dropzone-file" class="dropzone-label">
+      <!-- Estado inicial: Pedir al usuario que suba un archivo -->
+      <div id="dropzone-prompt" class="dropzone-content">
+        <svg class="dropzone-icon" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2"/>
+        </svg>
+        <p class="dropzone-text"><span class="font-semibold">Haz clic para subir</span> o arrastra y suelta</p>
+        <p class="dropzone-hint">CSV, XLS, o TXT (MAX. 5MB por archivo)</p>
+      </div>
+
+      <!-- Estado de vista previa: Mostrar la lista de archivos seleccionados -->
+      <div id="file-preview-list" class="file-preview-list-container" style="display: none;">
+        <!-- El contenido se generará dinámicamente con JS -->
+      </div>
+
+      <input id="dropzone-file" type="file" class="dropzone-file-input" accept=".csv, .xls, .xlsx, .doc, .docx, .pdf, .txt, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/msword, application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/pdf" multiple />
+    </label>
+  </div> 
+
+  <div id="file-upload-feedback" class="feedback-container"><!-- Mensajes de estado de la carga --></div>
+
+  <div class="process-button-container">
+    <button id="process-file-btn" class="process-button" disabled>Procesar Archivos</button>
+  </div>
+</div>
+
+<div id="processing-results" class="results-card">
+  <h3 class="results-title">Resultados del Procesamiento</h3>
+  <p id="processing-summary" class="results-summary"></p>
+  <div id="results-table-container">
+    <!-- La tabla de resultados se insertará aquí -->
+  </div>
+</div>

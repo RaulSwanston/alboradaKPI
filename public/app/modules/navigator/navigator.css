@@ -1,0 +1,389 @@
+/*=============================================
+|     SECTION: DYNAMIC DASHBOARD MENU       |
+=============================================
+*/
+
+/* --- Estilos de los items del menú (igual que antes) --- */
+.dashboard-menu ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+@media only screen and (max-width: 768px){
+/* --- Estilos Base del Menú (Mobile-First: Botón Flotante) --- */
+.dashboard-menu {
+  width: 100dvw;
+  height: auto;
+  position: fixed;
+  bottom: 0rem;
+  padding: 1em;
+  gap: .5em;
+  display: grid;
+  grid-template-columns: 3fr 1fr;
+  justify-content: space-between;
+  background-color: white;
+}
+
+/* Estilos para TU botón flotante */
+.dashboard-menu #button-menu {
+  width: 20cqw;
+  cursor: pointer;
+  padding: .5em;
+  justify-self: flex-end;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+}
+
+.dashboard-menu #button-menu svg {
+  width: 2rem;
+  height: 2rem;
+  fill: var(--color-gurkha-900);
+}
+
+#dashboard-menu #button-menu:hover {background-color: var(--color-gurkha-200)}
+#dashboard-menu #button-menu.open{background-color: var(--color-gurkha-200)}
+
+.dashboard-menu nav ul{
+  display: flex;
+  justify-content: space-between;
+}
+  
+.dashboard-menu nav .dropdown {
+  display: block; 
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px) scale(0.95); /* Empieza un poco abajo y más pequeño */
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); /* Curva de velocidad profesional */
+  pointer-events: none; /* Evita clics cuando está oculto */
+
+  width: auto;
+  min-width: 200px; /* Recomendado para que no se vea colapsado */
+  max-width: 75cqw;
+  max-height: 75vh;
+  position: absolute;
+  overflow: hidden;
+  right: 1em;
+  bottom: 18vh;
+  padding: 0;
+  border-radius: 1em;
+  box-shadow: 0 2px 5px -1px rgba(0, 0, 0, 0.1);
+  background-color: var(--color-surface);
+}
+
+.dashboard-menu .menu-divider{
+  border-radius: 1em;
+  flex: 0 0 20cqw;
+  padding: .5em;
+  min-width: 0;
+  overflow: hidden;
+  position: relative;
+  /* background-color: #dedede; */
+}
+
+.dashboard-menu .menu-divider a{
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-decoration: none;
+}
+
+.dashboard-menu .menu-divider a::before{
+  content: "";
+  position: relative;
+  top: -.5em;
+  left: 0;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background-color: var(--color-gurkha-100);
+  transition: all .2s ease;
+}
+
+.dashboard-menu .menu-divider a:hover::before,
+.dashboard-menu .menu-divider.selected a::before{
+  width: 5cqw;
+  border-radius: 1em;
+  background-color: var(--color-kaitoke-green-800);
+}
+
+.dashboard-menu .menu-divider.selected + .dropdown{
+  display: inline-block;
+}
+
+.dashboard-menu .menu-divider svg{
+  width: 2rem;
+  height: 2rem;
+  display: block;
+}
+.dashboard-menu .menu-divider span,
+.dashboard-menu>button span{
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  text-align: center;
+  max-width: 100%;
+  display: block;
+}
+
+
+.dashboard-menu .menu-item a {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.75rem 1rem;
+  color: var(--color-text-secondary);
+  text-decoration: none;
+  border-radius: 0.5rem;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.dashboard-menu .menu-item a{
+  border-left: 4px solid transparent;
+  transition: border-left 0.3s ease;
+}
+.dashboard-menu .menu-item a:hover {
+  background-color: var(--color-gurkha-100);
+  color: var(--color-text-primary);
+  border-left: 4px solid var(--color-gurkha-400);
+}
+
+.dashboard-menu .menu-icon {
+  width: 20px;
+  height: 20px;
+}
+
+nav:has(+ #button-menu.open) .menu-divider.selected + .dropdown{
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0) scale(1); /* Sube a su posición original */
+  pointer-events: auto; /* Habilita clics */
+  padding: 1.5em 0em; /* Ajusté el padding para que no se vea pegado */
+}
+}
+
+/* --- Estilos para Escritorio (Media Query) --- */
+@media (min-width: 768px) {
+  /* Ocultamos el botón de menú flotante de móvil */
+  .dashboard-menu #button-menu {display: none;}
+
+  /* Reseteamos el contenedor principal a una barra lateral clásica */
+  .dashboard-menu {
+    width: 260px; /* Ancho fijo para la barra lateral */
+    height: 100vh; /* Altura completa */
+    position: fixed; /* Fijo en la pantalla */
+    top: 0; left: 0; bottom: auto; /* Anulamos el 'bottom' de móvil */
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem 1rem;
+    gap: 1.5rem;
+    background-color: var(--color-surface);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    border-right: 1px solid var(--color-gurkha-200);
+    grid-template-columns: none; /* Anulamos el grid de móvil */
+  }
+
+
+
+
+
+
+
+  /* Hacemos que la navegación ocupe todo el espacio disponible */
+
+  .dashboard-menu nav {
+
+    height: 100%;
+
+    overflow-y: auto; /* Permitir scroll si hay muchos ítems */
+
+    overflow-x: hidden;
+
+  }
+
+
+
+  /* Organizamos los elementos principales del menú verticalmente */
+
+  .dashboard-menu nav ul {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 0.5rem;
+
+  }
+
+
+
+  /* Los divisores de menú ya no necesitan ser flexibles ni tener un tamaño fijo */
+
+  .dashboard-menu .menu-divider {
+
+    flex: 0 0 auto;
+
+    padding: 0;
+
+    border-radius: 0.5rem;
+
+  }
+
+
+
+  .dashboard-menu .menu-divider a {
+
+    flex-direction: row; /* Ícono y texto en fila */
+
+    justify-content: flex-start;
+
+    align-items: center;
+
+    gap: 1rem;
+
+    padding: 0.75rem 1rem;
+
+    text-decoration: none;
+
+    color: var(--color-text-secondary);
+
+  }
+
+  
+
+  .dashboard-menu .menu-divider svg {
+
+      width: 20px;
+
+      height: 20px;
+
+      fill: var(--color-text-secondary);
+
+      flex-shrink: 0;
+
+  }
+
+
+
+  .dashboard-menu .menu-divider span {
+
+    white-space: normal;
+
+    text-align: left;
+
+  }
+
+
+
+  .dashboard-menu .menu-divider a::before {
+
+      display: none; /* Ocultamos el indicador de punto/línea de móvil */
+
+  }
+
+  
+
+  .dashboard-menu .menu-divider:hover a,
+
+  .dashboard-menu .menu-divider.selected a {
+
+    background-color: var(--color-gurkha-100);
+
+    color: var(--color-text-primary);
+
+  }
+
+
+
+  .dashboard-menu .menu-divider.selected a svg{
+
+    fill: var(--color-text-primary);
+
+  }
+
+
+
+  /* Resetamos el estilo del dropdown para que sea parte del flujo normal */
+
+  .dashboard-menu nav .dropdown {
+
+    opacity: 1;
+
+    visibility: visible;
+
+    position: static;
+
+    transform: none;
+
+    pointer-events: auto;
+
+    background-color: transparent;
+
+    box-shadow: none;
+
+    padding: 0;
+
+    padding-left: 1.5rem; /* Indentación para mostrar jerarquía */
+
+    max-width: none;
+
+    max-height: none;
+
+    border-radius: 0;
+
+    margin-top: 0.5rem;
+
+    display: none; /* Ocultamos por defecto */
+
+  }
+
+
+
+  /* Mostramos el dropdown que sigue a un divisor seleccionado */
+
+  .dashboard-menu .menu-divider.selected + .dropdown {
+
+      display: block;
+
+  }
+
+
+
+  /* Los items dentro del dropdown */
+
+  .dashboard-menu .dropdown .menu-item a {
+
+    padding: 0.5rem 1rem;
+
+  }
+
+  .dashboard-menu .dropdown .menu-item a:hover {
+
+    border-left-color: var(--color-kaitoke-green-500);
+
+  }
+
+
+
+  /* --- MUY IMPORTANTE: Ajustar el contenido principal de la aplicación --- */
+
+  #app-view {
+
+    margin-left: 260px; /* Mismo ancho que .dashboard-menu */
+
+    width: calc(100% - 260px);
+
+    height: 100vh;
+
+    padding: 1.5rem;
+
+    overflow-y: auto;
+
+  }
+
+}

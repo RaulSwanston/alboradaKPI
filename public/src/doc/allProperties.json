@@ -1,0 +1,6088 @@
+[
+  {
+    "id": "001",
+    "name": "Casa 001",
+    "address": {
+      "street": "1RA OESTE",
+      "fullAddress": "1RA OESTE, Casa 001"
+    },
+    "balance": -90,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Rubén Araúz / Elisa Indira Powel Rodriguez",
+      "phone": "442-5584",
+      "mobile": "6677-6130",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "002",
+    "name": "Casa 002",
+    "address": {
+      "street": "1RA OESTE",
+      "fullAddress": "1RA OESTE, Casa 002"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Omar Cueto",
+      "phone": "6954-8782",
+      "mobile": "6843-4283",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "003",
+    "name": "Casa 003",
+    "address": {
+      "street": "1RA OESTE",
+      "fullAddress": "1RA OESTE, Casa 003"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Leonardo Small / Gilda Gavidia",
+      "phone": "442-3422",
+      "mobile": "6913-5737",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "004",
+    "name": "Casa 004",
+    "address": {
+      "street": "1RA OESTE",
+      "fullAddress": "1RA OESTE, Casa 004"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Carlos Garay",
+      "phone": "442-7904",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "005",
+    "name": "Casa 005",
+    "address": {
+      "street": "1RA OESTE",
+      "fullAddress": "1RA OESTE, Casa 005"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Anselmo Forde",
+      "phone": "442-0423",
+      "mobile": "6956-0708",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "006",
+    "name": "Casa 006",
+    "address": {
+      "street": "1RA OESTE",
+      "fullAddress": "1RA OESTE, Casa 006"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Miguel Sanchez",
+      "phone": "6616-8465",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "007",
+    "name": "Casa 007",
+    "address": {
+      "street": "1RA CENTRO",
+      "fullAddress": "1RA CENTRO, Casa 007"
+    },
+    "balance": -105,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Alex Paz",
+      "phone": "6669-6365",
+      "mobile": "6618-4403",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "008",
+    "name": "Casa 008",
+    "address": {
+      "street": "1RA CENTRO",
+      "fullAddress": "1RA CENTRO, Casa 008"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Darinka De Hoyos",
+      "phone": "6669-6365",
+      "mobile": "6618-4403",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "009",
+    "name": "Casa 009",
+    "address": {
+      "street": "1RA CENTRO",
+      "fullAddress": "1RA CENTRO, Casa 009"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Aura Del Carmen Hurtado / Tahimy Guadalupe",
+      "phone": "474-0366",
+      "mobile": "6409-4805",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "010",
+    "name": "Casa 010",
+    "address": {
+      "street": "1RA CENTRO",
+      "fullAddress": "1RA CENTRO, Casa 010"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Miozotis Del Carmen Olmos",
+      "phone": "442-8782",
+      "mobile": "6747-0777",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "011",
+    "name": "Casa 011",
+    "address": {
+      "street": "1RA CENTRO",
+      "fullAddress": "1RA CENTRO, Casa 011"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Mario Macías",
+      "phone": "474-0028",
+      "mobile": "6747-1440",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "012",
+    "name": "Casa 012",
+    "address": {
+      "street": "1RA CENTRO",
+      "fullAddress": "1RA CENTRO, Casa 012"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Hector Escobar / Sheriska Escobar",
+      "phone": "474-2407",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "013",
+    "name": "Casa 013",
+    "address": {
+      "street": "1RA CENTRO",
+      "fullAddress": "1RA CENTRO, Casa 013"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Domitila Ceballos",
+      "phone": "6425-8445",
+      "mobile": "474-2597",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "014",
+    "name": "Casa 014",
+    "address": {
+      "street": "1RA CENTRO",
+      "fullAddress": "1RA CENTRO, Casa 014"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "María Montenegro",
+      "phone": "442-8600",
+      "mobile": "6545-9584",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "015",
+    "name": "Casa 015",
+    "address": {
+      "street": "1RA CENTRO",
+      "fullAddress": "1RA CENTRO, Casa 015"
+    },
+    "balance": -90,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Susana Thachar",
+      "phone": "472-2959",
+      "mobile": "6615-0661",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "016",
+    "name": "Casa 016",
+    "address": {
+      "street": "1RA CENTRO",
+      "fullAddress": "1RA CENTRO, Casa 016"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Victor Castillo / Victor De Jesus Castillo / Ciara Jimenez",
+      "phone": "6999-0137",
+      "mobile": "6567-7421",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "017",
+    "name": "Casa 017",
+    "address": {
+      "street": "1RA ESTE",
+      "fullAddress": "1RA ESTE, Casa 017"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Daibelis Victoria",
+      "phone": "6947-1022",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "018",
+    "name": "Casa 018",
+    "address": {
+      "street": "1RA ESTE",
+      "fullAddress": "1RA ESTE, Casa 018"
+    },
+    "balance": 0,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Yaniza De Jimenez / Yaniza De Dreckett",
+      "phone": "6233-5382",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "019",
+    "name": "Casa 019",
+    "address": {
+      "street": "1RA ESTE",
+      "fullAddress": "1RA ESTE, Casa 019"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Miguel Nereida / Querubi Nereida",
+      "phone": "474-1884",
+      "mobile": "6085-6846",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "020",
+    "name": "Casa 020",
+    "address": {
+      "street": "1RA ESTE",
+      "fullAddress": "1RA ESTE, Casa 020"
+    },
+    "balance": -20,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Vielka De Caballero / Vielka Cusati",
+      "phone": "6466-0667",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "021",
+    "name": "Casa 021",
+    "address": {
+      "street": "1RA ESTE",
+      "fullAddress": "1RA ESTE, Casa 021"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Hector Ibarguen",
+      "phone": "6735-6237",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "022",
+    "name": "Casa 022",
+    "address": {
+      "street": "1RA ESTE",
+      "fullAddress": "1RA ESTE, Casa 022"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Juan Cedeño",
+      "phone": "474-0322",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "023",
+    "name": "Casa 023",
+    "address": {
+      "street": "1RA ESTE",
+      "fullAddress": "1RA ESTE, Casa 023"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Humberto Guevara",
+      "phone": "442-8252",
+      "mobile": "6839-5290",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "024",
+    "name": "Casa 024",
+    "address": {
+      "street": "2DA ESTE",
+      "fullAddress": "2DA ESTE, Casa 024"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Aikza Abrego",
+      "phone": "474-4130",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "025",
+    "name": "Casa 025",
+    "address": {
+      "street": "2DA ESTE",
+      "fullAddress": "2DA ESTE, Casa 025"
+    },
+    "balance": 0,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Elsa De Medina / Manuel De Jesus Medina",
+      "phone": "442-6575",
+      "mobile": "",
+      "email": "medinamanuel720mm@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "026",
+    "name": "Casa 026",
+    "address": {
+      "street": "2DA ESTE",
+      "fullAddress": "2DA ESTE, Casa 026"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Dionisio Jimenez",
+      "phone": "442-4835",
+      "mobile": "6651-2582",
+      "email": "natykathy@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "027",
+    "name": "Casa 027",
+    "address": {
+      "street": "2DA ESTE",
+      "fullAddress": "2DA ESTE, Casa 027"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Leonardo Machado / James Mick",
+      "phone": "6474-0413",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "028",
+    "name": "Casa 028",
+    "address": {
+      "street": "2DA ESTE",
+      "fullAddress": "2DA ESTE, Casa 028"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Vanessa Beltrán / Luis Sanchez",
+      "phone": "442-4351",
+      "mobile": "6474-0413",
+      "email": "vanessa.beltran26@outlook.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "029",
+    "name": "Casa 029",
+    "address": {
+      "street": "2DA ESTE",
+      "fullAddress": "2DA ESTE, Casa 029"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Indira Patel",
+      "phone": "474-4117",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "030",
+    "name": "Casa 030",
+    "address": {
+      "street": "2DA ESTE",
+      "fullAddress": "2DA ESTE, Casa 030"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Katherin Lee / Aliza Jimenez",
+      "phone": "474-0680",
+      "mobile": "6105-7393",
+      "email": "alizj18@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "031",
+    "name": "Casa 031",
+    "address": {
+      "street": "2DA CENTRO",
+      "fullAddress": "2DA CENTRO, Casa 031"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Israel Santamaría",
+      "phone": "6916-6382",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "032",
+    "name": "Casa 032",
+    "address": {
+      "street": "2DA CENTRO",
+      "fullAddress": "2DA CENTRO, Casa 032"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Roberto Rudy",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "033",
+    "name": "Casa 033",
+    "address": {
+      "street": "2DA CENTRO",
+      "fullAddress": "2DA CENTRO, Casa 033"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Xenia Rosales / Xenia Rosales De Betegon",
+      "phone": "442-8956",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "034",
+    "name": "Casa 034",
+    "address": {
+      "street": "2DA CENTRO",
+      "fullAddress": "2DA CENTRO, Casa 034"
+    },
+    "balance": -90,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Sonia Rodríguez / Sonia Rodríguez De Murillo",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "035",
+    "name": "Casa 035",
+    "address": {
+      "street": "2DA CENTRO",
+      "fullAddress": "2DA CENTRO, Casa 035"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Maribetza Ceballos / Malibetza Ceballos",
+      "phone": "430-9638",
+      "mobile": "442-6708",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "036",
+    "name": "Casa 036",
+    "address": {
+      "street": "2DA CENTRO",
+      "fullAddress": "2DA CENTRO, Casa 036"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Yirabel Girado",
+      "phone": "474-1013",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "037",
+    "name": "Casa 037",
+    "address": {
+      "street": "2DA CENTRO",
+      "fullAddress": "2DA CENTRO, Casa 037"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Gladys Villanueva",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "038",
+    "name": "Casa 038",
+    "address": {
+      "street": "2DA CENTRO",
+      "fullAddress": "2DA CENTRO, Casa 038"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Argelia Morris",
+      "phone": "6731-0039",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "039",
+    "name": "Casa 039",
+    "address": {
+      "street": "2DA CENTRO",
+      "fullAddress": "2DA CENTRO, Casa 039"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Ernesto Small",
+      "phone": "6662-8883",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "040",
+    "name": "Casa 040",
+    "address": {
+      "street": "2DA CENTRO",
+      "fullAddress": "2DA CENTRO, Casa 040"
+    },
+    "balance": 0,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Felicia Gittens",
+      "phone": "442-8561",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "041",
+    "name": "Casa 041",
+    "address": {
+      "street": "1RA OESTE",
+      "fullAddress": "1RA OESTE, Casa 041"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Ivan Betegón / Alberto Chambers / Yaribel Ruiz",
+      "phone": "442-5780",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "042",
+    "name": "Casa 042",
+    "address": {
+      "street": "1RA OESTE",
+      "fullAddress": "1RA OESTE, Casa 042"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Hernán Delgado / Jasmin Johnson",
+      "phone": "6677-3947",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "043",
+    "name": "Casa 043",
+    "address": {
+      "street": "1RA OESTE",
+      "fullAddress": "1RA OESTE, Casa 043"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Roberto Rodríguez",
+      "phone": "442-7091",
+      "mobile": "6663-1423",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "044",
+    "name": "Casa 044",
+    "address": {
+      "street": "1RA OESTE",
+      "fullAddress": "1RA OESTE, Casa 044"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Otman Santamaría / Barbara Bendigo De Santamaria",
+      "phone": "442-8290",
+      "mobile": "6767-3594",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "045",
+    "name": "Casa 045",
+    "address": {
+      "street": "1RA OESTE",
+      "fullAddress": "1RA OESTE, Casa 045"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Eduardo Muñoz / Fernando Cummings",
+      "phone": "6054-1468",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "046",
+    "name": "Casa 046",
+    "address": {
+      "street": "1RA OESTE",
+      "fullAddress": "1RA OESTE, Casa 046"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Rafael Arnemann / Syahmar Ortiz",
+      "phone": "442-3329",
+      "mobile": "6612-0986",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "047",
+    "name": "Casa 047",
+    "address": {
+      "street": "1RA OESTE",
+      "fullAddress": "1RA OESTE, Casa 047"
+    },
+    "balance": 0,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Luzmila De Quintero",
+      "phone": "442-0228",
+      "mobile": "6636-5159",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "048",
+    "name": "Casa 048",
+    "address": {
+      "street": "2DA OESTE",
+      "fullAddress": "2DA OESTE, Casa 048"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Ernesto Galván / Analida Jordan",
+      "phone": "442-1026",
+      "mobile": "6703-2368",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "049",
+    "name": "Casa 049",
+    "address": {
+      "street": "2DA OESTE",
+      "fullAddress": "2DA OESTE, Casa 049"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Nicolas Young / Eric Lasonder",
+      "phone": "442-5865",
+      "mobile": "6718-8355",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "050",
+    "name": "Casa 050",
+    "address": {
+      "street": "2DA OESTE",
+      "fullAddress": "2DA OESTE, Casa 050"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Noris De Mejía / Pablo Y Noris De Mejía",
+      "phone": "6055-9061",
+      "mobile": "6689-2089",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "051",
+    "name": "Casa 051",
+    "address": {
+      "street": "2DA OESTE",
+      "fullAddress": "2DA OESTE, Casa 051"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "José Zurita",
+      "phone": "442-0276",
+      "mobile": "6536-9809",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "052",
+    "name": "Casa 052",
+    "address": {
+      "street": "2DA OESTE",
+      "fullAddress": "2DA OESTE, Casa 052"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Crisalida Solís",
+      "phone": "442-6177",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "053",
+    "name": "Casa 053",
+    "address": {
+      "street": "2DA OESTE",
+      "fullAddress": "2DA OESTE, Casa 053"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Osvaldo Herrera",
+      "phone": "442-1011",
+      "mobile": "6797-7223",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "054",
+    "name": "Casa 054",
+    "address": {
+      "street": "2DA OESTE",
+      "fullAddress": "2DA OESTE, Casa 054"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Jerónimo Hernandez",
+      "phone": "474-0355",
+      "mobile": "6756-5449",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "055",
+    "name": "Casa 055",
+    "address": {
+      "street": "2DA OESTE",
+      "fullAddress": "2DA OESTE, Casa 055"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Alberto Benett",
+      "phone": "6684-2507",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "056",
+    "name": "Casa 056",
+    "address": {
+      "street": "2DA OESTE",
+      "fullAddress": "2DA OESTE, Casa 056"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Nitzia Aguilar",
+      "phone": "442-3835",
+      "mobile": "6707-9405",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "057",
+    "name": "Casa 057",
+    "address": {
+      "street": "2DA OESTE",
+      "fullAddress": "2DA OESTE, Casa 057"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Piedad De Cid",
+      "phone": "442-8064",
+      "mobile": "6684-4888",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "058",
+    "name": "Casa 058",
+    "address": {
+      "street": "2DA OESTE",
+      "fullAddress": "2DA OESTE, Casa 058"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Martín Meneses",
+      "phone": "474-4536",
+      "mobile": "6858-2606",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "059",
+    "name": "Casa 059",
+    "address": {
+      "street": "2DA OESTE",
+      "fullAddress": "2DA OESTE, Casa 059"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Ilka Hoy / Ilka Mark",
+      "phone": "442-2015",
+      "mobile": "6485-9953",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "060",
+    "name": "Casa 060",
+    "address": {
+      "street": "2DA OESTE",
+      "fullAddress": "2DA OESTE, Casa 060"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Mario Mitchel",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "061",
+    "name": "Casa 061",
+    "address": {
+      "street": "2DA CENTRO",
+      "fullAddress": "2DA CENTRO, Casa 061"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Armando Gittens",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "062",
+    "name": "Casa 062",
+    "address": {
+      "street": "2DA CENTRO",
+      "fullAddress": "2DA CENTRO, Casa 062"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Armando Lee / Mirna Reed De Lee",
+      "phone": "442-8865",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "063",
+    "name": "Casa 063",
+    "address": {
+      "street": "2DA CENTRO",
+      "fullAddress": "2DA CENTRO, Casa 063"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Ricardo Martínez / Nidia De Martinez",
+      "phone": "442-0051",
+      "mobile": "6747-2234",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "064",
+    "name": "Casa 064",
+    "address": {
+      "street": "2DA CENTRO",
+      "fullAddress": "2DA CENTRO, Casa 064"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Iliana Lee",
+      "phone": "6803-1440",
+      "mobile": "6403-1440",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "065",
+    "name": "Casa 065",
+    "address": {
+      "street": "2DA CENTRO",
+      "fullAddress": "2DA CENTRO, Casa 065"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "César López",
+      "phone": "442-8613",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "066",
+    "name": "Casa 066",
+    "address": {
+      "street": "2DA CENTRO",
+      "fullAddress": "2DA CENTRO, Casa 066"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Dhayanara Mendoza",
+      "phone": "474-0656",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "067",
+    "name": "Casa 067",
+    "address": {
+      "street": "2DA CENTRO",
+      "fullAddress": "2DA CENTRO, Casa 067"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Amilio Lovet / Emilio Lovet",
+      "phone": "6112-8878",
+      "mobile": "474-0172",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "068",
+    "name": "Casa 068",
+    "address": {
+      "street": "2DA CENTRO",
+      "fullAddress": "2DA CENTRO, Casa 068"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Wilfredo Pacheco / Emelina Catuy",
+      "phone": "442-8804",
+      "mobile": "6940-7375",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "069",
+    "name": "Casa 069",
+    "address": {
+      "street": "2DA CENTRO",
+      "fullAddress": "2DA CENTRO, Casa 069"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Celina De Laurdes",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "070",
+    "name": "Casa 070",
+    "address": {
+      "street": "2DA CENTRO",
+      "fullAddress": "2DA CENTRO, Casa 070"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Damaris Jackson",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "071",
+    "name": "Casa 071",
+    "address": {
+      "street": "2DA CENTRO",
+      "fullAddress": "2DA CENTRO, Casa 071"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Carlos Valdez",
+      "phone": "442-8702",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "072",
+    "name": "Casa 072",
+    "address": {
+      "street": "2DA CENTRO",
+      "fullAddress": "2DA CENTRO, Casa 072"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Damian Montenegro",
+      "phone": "6668-0959",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "073",
+    "name": "Casa 073",
+    "address": {
+      "street": "2DA CENTRO",
+      "fullAddress": "2DA CENTRO, Casa 073"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Yira De Morales",
+      "phone": "6316-0857",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "074",
+    "name": "Casa 074",
+    "address": {
+      "street": "2DA CENTRO",
+      "fullAddress": "2DA CENTRO, Casa 074"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Victor Rozette",
+      "phone": "442-7133",
+      "mobile": "6436-6064",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "075",
+    "name": "Casa 075",
+    "address": {
+      "street": "2DA ESTE",
+      "fullAddress": "2DA ESTE, Casa 075"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Vanessa Parnther / Vanessa Luzcando",
+      "phone": "474-1123",
+      "mobile": "6820-6037",
+      "email": "vanessaparnther564@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "076",
+    "name": "Casa 076",
+    "address": {
+      "street": "2DA ESTE",
+      "fullAddress": "2DA ESTE, Casa 076"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Oscar Gomez",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "077",
+    "name": "Casa 077",
+    "address": {
+      "street": "2DA ESTE",
+      "fullAddress": "2DA ESTE, Casa 077"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Enrique Herrera",
+      "phone": "6215-1010",
+      "mobile": "",
+      "email": "kiko04@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "078",
+    "name": "Casa 078",
+    "address": {
+      "street": "2DA ESTE",
+      "fullAddress": "2DA ESTE, Casa 078"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Antonio Brooks",
+      "phone": "442-5671",
+      "mobile": "6535-2622",
+      "email": "idalinasalamancatv@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "079",
+    "name": "Casa 079",
+    "address": {
+      "street": "2DA ESTE",
+      "fullAddress": "2DA ESTE, Casa 079"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Kaisha Rivas / Moises Gonzalez",
+      "phone": "6529-4931",
+      "mobile": "",
+      "email": "rivaskaisha@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "080",
+    "name": "Casa 080",
+    "address": {
+      "street": "2DA ESTE",
+      "fullAddress": "2DA ESTE, Casa 080"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Florencia Sinclier / Juan Alvarado / Vanessa Parnther",
+      "phone": "442-3736",
+      "mobile": "6798-1093",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "081",
+    "name": "Casa 081",
+    "address": {
+      "street": "2DA ESTE",
+      "fullAddress": "2DA ESTE, Casa 081"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Yomaira Avila",
+      "phone": "6936-4462",
+      "mobile": "",
+      "email": "yomiavila2605@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "082",
+    "name": "Casa 082",
+    "address": {
+      "street": "3RA ESTE",
+      "fullAddress": "3RA ESTE, Casa 082"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Reynaldo Angarita",
+      "phone": "472-6302",
+      "mobile": "6997-4717",
+      "email": "rei.angarita@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "083",
+    "name": "Casa 083",
+    "address": {
+      "street": "3RA ESTE",
+      "fullAddress": "3RA ESTE, Casa 083"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Amarilis Mata S.",
+      "phone": "6880-6439",
+      "mobile": "6812-3241",
+      "email": "mataamarilis07@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "084",
+    "name": "Casa 084",
+    "address": {
+      "street": "3RA ESTE",
+      "fullAddress": "3RA ESTE, Casa 084"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Javier Campo",
+      "phone": "6752-4640",
+      "mobile": "",
+      "email": "campojavier949@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "085",
+    "name": "Casa 085",
+    "address": {
+      "street": "3RA ESTE",
+      "fullAddress": "3RA ESTE, Casa 085"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Luis Escobar / Wilma De Escobar",
+      "phone": "6452-8268",
+      "mobile": "6842-9334",
+      "email": "wylma3121@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "086",
+    "name": "Casa 086",
+    "address": {
+      "street": "3RA ESTE",
+      "fullAddress": "3RA ESTE, Casa 086"
+    },
+    "balance": 0,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Georgiana Gaviria",
+      "phone": "6414-3804",
+      "mobile": "442-4737",
+      "email": "ggaviria.04@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "087",
+    "name": "Casa 087",
+    "address": {
+      "street": "3RA ESTE",
+      "fullAddress": "3RA ESTE, Casa 087"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Eduardo Villarreal",
+      "phone": "6819-7691",
+      "mobile": "6623-3648",
+      "email": "m-el04@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "088",
+    "name": "Casa 088",
+    "address": {
+      "street": "3RA ESTE",
+      "fullAddress": "3RA ESTE, Casa 088"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Elkin Rodriguez / Gisela Gonzalez",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "089",
+    "name": "Casa 089",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 089"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Ralph Alexander / Lorraine Alexander",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "090",
+    "name": "Casa 090",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 090"
+    },
+    "balance": -90,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Angel Del Valle",
+      "phone": "474-0583",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "091",
+    "name": "Casa 091",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 091"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Zaida Jimenez / Ligia Adles",
+      "phone": "474-0254",
+      "mobile": "6945-3014",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "092",
+    "name": "Casa 092",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 092"
+    },
+    "balance": -90,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Ivonne Margerie / Ivonne Roberts",
+      "phone": "442-7767",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "093",
+    "name": "Casa 093",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 093"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Glenda De Davis",
+      "phone": "6875-7223",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "094",
+    "name": "Casa 094",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 094"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Juan Ramos",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "095",
+    "name": "Casa 095",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 095"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Raul Murdock",
+      "phone": "6675-3775",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "096",
+    "name": "Casa 096",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 096"
+    },
+    "balance": -90,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Carlos Tuñon",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "097",
+    "name": "Casa 097",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 097"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Eduard Gonzalez / Karen De Gonzalez",
+      "phone": "442-0340",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "098",
+    "name": "Casa 098",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 098"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Oriel Avila",
+      "phone": "6716-3420",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "099",
+    "name": "Casa 099",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 099"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Carlos Gonzalez",
+      "phone": "6206-2900",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "100",
+    "name": "Casa 100",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 100"
+    },
+    "balance": -90,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Yanitsha Harris / Jairo Buitrago",
+      "phone": "6677-9405",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "101",
+    "name": "Casa 101",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 101"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Flor De Escapa / Flor Aparicio",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "102",
+    "name": "Casa 102",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 102"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Harkishin Chugani",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "103",
+    "name": "Casa 103",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 103"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Manuel Villarreal",
+      "phone": "6614-3727",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "104",
+    "name": "Casa 104",
+    "address": {
+      "street": "3RA OESTE",
+      "fullAddress": "3RA OESTE, Casa 104"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "James Peters",
+      "phone": "442-1553",
+      "mobile": "6613-3174",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "105",
+    "name": "Casa 105",
+    "address": {
+      "street": "3RA OESTE",
+      "fullAddress": "3RA OESTE, Casa 105"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Cesar Estrada",
+      "phone": "6289-9382",
+      "mobile": "6326-6272",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "106",
+    "name": "Casa 106",
+    "address": {
+      "street": "3RA OESTE",
+      "fullAddress": "3RA OESTE, Casa 106"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Rogelio Aguirre / Arelis Ossa",
+      "phone": "6414-3990",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "107",
+    "name": "Casa 107",
+    "address": {
+      "street": "3RA OESTE",
+      "fullAddress": "3RA OESTE, Casa 107"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Miguel Taylor",
+      "phone": "6730-3039",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "108",
+    "name": "Casa 108",
+    "address": {
+      "street": "3RA OESTE",
+      "fullAddress": "3RA OESTE, Casa 108"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Carlos Brows / Carlos Brown",
+      "phone": "442-8975",
+      "mobile": "6681-3042",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "109",
+    "name": "Casa 109",
+    "address": {
+      "street": "3RA OESTE",
+      "fullAddress": "3RA OESTE, Casa 109"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Alfredo Cebrian",
+      "phone": "474-2619",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "110",
+    "name": "Casa 110",
+    "address": {
+      "street": "3RA OESTE",
+      "fullAddress": "3RA OESTE, Casa 110"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Carlos Sierra",
+      "phone": "442-4612",
+      "mobile": "6935-2426",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "111",
+    "name": "Casa 111",
+    "address": {
+      "street": "3RA OESTE",
+      "fullAddress": "3RA OESTE, Casa 111"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Aldo Hamilton",
+      "phone": "474-1031",
+      "mobile": "6283-3545",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "112",
+    "name": "Casa 112",
+    "address": {
+      "street": "3RA OESTE",
+      "fullAddress": "3RA OESTE, Casa 112"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Yuri Bethancourt",
+      "phone": "474-1334",
+      "mobile": "6786-1297",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "113",
+    "name": "Casa 113",
+    "address": {
+      "street": "3RA OESTE",
+      "fullAddress": "3RA OESTE, Casa 113"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Mario Gondola",
+      "phone": "442-2478",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "114",
+    "name": "Casa 114",
+    "address": {
+      "street": "3RA OESTE",
+      "fullAddress": "3RA OESTE, Casa 114"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Maria Thomhill",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "115",
+    "name": "Casa 115",
+    "address": {
+      "street": "3RA OESTE",
+      "fullAddress": "3RA OESTE, Casa 115"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Ana De Hernadez / Kizaida Obregon",
+      "phone": "6775-2150",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "116",
+    "name": "Casa 116",
+    "address": {
+      "street": "3RA OESTE",
+      "fullAddress": "3RA OESTE, Casa 116"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Erika Jimenez",
+      "phone": "6556-3671",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "117",
+    "name": "Casa 117",
+    "address": {
+      "street": "3RA OESTE",
+      "fullAddress": "3RA OESTE, Casa 117"
+    },
+    "balance": 0,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Jorge Velasquez",
+      "phone": "442-5729",
+      "mobile": "6634-8163",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "118",
+    "name": "Casa 118",
+    "address": {
+      "street": "3RA OESTE",
+      "fullAddress": "3RA OESTE, Casa 118"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Antonio Taylor / Madelein Taylor",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "119",
+    "name": "Casa 119",
+    "address": {
+      "street": "3RA OESTE",
+      "fullAddress": "3RA OESTE, Casa 119"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Mario Small",
+      "phone": "6252-1835",
+      "mobile": "6852-1835",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "120",
+    "name": "Casa 120",
+    "address": {
+      "street": "3RA OESTE",
+      "fullAddress": "3RA OESTE, Casa 120"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Jaime Lawrence",
+      "phone": "442-8284",
+      "mobile": "6716-7621",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "121",
+    "name": "Casa 121",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 121"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Dalia Peters",
+      "phone": "474-0822",
+      "mobile": "6673-4211",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "122",
+    "name": "Casa 122",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 122"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Eliezer Espinosa / Yamileth Sanchez",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "123",
+    "name": "Casa 123",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 123"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Jose Espinosa",
+      "phone": "474-0980",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "124",
+    "name": "Casa 124",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 124"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Juan Garibaldi",
+      "phone": "6733-2040",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "125",
+    "name": "Casa 125",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 125"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Abdiel Hassan",
+      "phone": "442-0411",
+      "mobile": "6242-7180",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "126",
+    "name": "Casa 126",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 126"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Gustavo Montalvan",
+      "phone": "6717-5082",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "127",
+    "name": "Casa 127",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 127"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Raglin Robinson",
+      "phone": "6039-6701",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "128",
+    "name": "Casa 128",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 128"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Luis Pacheco",
+      "phone": "442-0211",
+      "mobile": "6068-4338",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "129",
+    "name": "Casa 129",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 129"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Irazema Posso / Erc Rosillo",
+      "phone": "474-1107",
+      "mobile": "6662-4939",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "130",
+    "name": "Casa 130",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 130"
+    },
+    "balance": -90,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Angelica Del Carmen De Chiari / Enrique Marcano",
+      "phone": "442-8595",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "131",
+    "name": "Casa 131",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 131"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Ana Castro",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "132",
+    "name": "Casa 132",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 132"
+    },
+    "balance": 0,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Cristian Sanchez / Natzury Reina Bernal / Amed Algandona",
+      "phone": "6531-3342",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "133",
+    "name": "Casa 133",
+    "address": {
+      "street": "3RA CENTRO",
+      "fullAddress": "3RA CENTRO, Casa 133"
+    },
+    "balance": -90,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Ada Chong",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "134",
+    "name": "Casa 134",
+    "address": {
+      "street": "3RA ESTE",
+      "fullAddress": "3RA ESTE, Casa 134"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Lucas Cortes",
+      "phone": "474-4302",
+      "mobile": "6508-1432",
+      "email": "yazdara_29@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "135",
+    "name": "Casa 135",
+    "address": {
+      "street": "3RA ESTE",
+      "fullAddress": "3RA ESTE, Casa 135"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Milla Del Castillo / Nilka Del Castillo",
+      "phone": "6750-8398",
+      "mobile": "",
+      "email": "rosaz031@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "136",
+    "name": "Casa 136",
+    "address": {
+      "street": "3RA ESTE",
+      "fullAddress": "3RA ESTE, Casa 136"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Sumaykira Grenald",
+      "phone": "442-7556",
+      "mobile": "6694-1785",
+      "email": "sumaykira-26@hotmail.es"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "137",
+    "name": "Casa 137",
+    "address": {
+      "street": "3RA ESTE",
+      "fullAddress": "3RA ESTE, Casa 137"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Jose Tuñon",
+      "phone": "474-0137",
+      "mobile": "6747-4836",
+      "email": "Josetunon_65@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "138",
+    "name": "Casa 138",
+    "address": {
+      "street": "3RA ESTE",
+      "fullAddress": "3RA ESTE, Casa 138"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Diovana Griffith",
+      "phone": "6872-6599",
+      "mobile": "",
+      "email": "diovanag2015@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "139",
+    "name": "Casa 139",
+    "address": {
+      "street": "3RA ESTE",
+      "fullAddress": "3RA ESTE, Casa 139"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Viola De Bell / Ernesto Galvan",
+      "phone": "442-1771",
+      "mobile": "6956-9568",
+      "email": "keyrazurita587@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "140",
+    "name": "Casa 140",
+    "address": {
+      "street": "3RA ESTE",
+      "fullAddress": "3RA ESTE, Casa 140"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Aracelis Tud De Rosales",
+      "phone": "474-1771",
+      "mobile": "6638-3334",
+      "email": "nhohah.rosales21@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "141",
+    "name": "Casa 141",
+    "address": {
+      "street": "4TA ESTE",
+      "fullAddress": "4TA ESTE, Casa 141"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Luis Coronel",
+      "phone": "6964-3087",
+      "mobile": "6969-4313",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "142",
+    "name": "Casa 142",
+    "address": {
+      "street": "4TA ESTE",
+      "fullAddress": "4TA ESTE, Casa 142"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Daniel Isaac",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "143",
+    "name": "Casa 143",
+    "address": {
+      "street": "4TA ESTE",
+      "fullAddress": "4TA ESTE, Casa 143"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Hernando Valle / Daiza Bru",
+      "phone": "6664-5530",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "144",
+    "name": "Casa 144",
+    "address": {
+      "street": "4TA ESTE",
+      "fullAddress": "4TA ESTE, Casa 144"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Doris Marrugo",
+      "phone": "474-1148",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "145",
+    "name": "Casa 145",
+    "address": {
+      "street": "4TA ESTE",
+      "fullAddress": "4TA ESTE, Casa 145"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Magaly De Vivero",
+      "phone": "442-4909",
+      "mobile": "6672-1025",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "146",
+    "name": "Casa 146",
+    "address": {
+      "street": "4TA ESTE",
+      "fullAddress": "4TA ESTE, Casa 146"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Jurgen Weller",
+      "phone": "474-0030",
+      "mobile": "6948-2516",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "147",
+    "name": "Casa 147",
+    "address": {
+      "street": "4TA ESTE",
+      "fullAddress": "4TA ESTE, Casa 147"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Jaime Ceballos",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "148",
+    "name": "Casa 148",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 148"
+    },
+    "balance": 0,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Dennis Barnes",
+      "phone": "442-2658",
+      "mobile": "6754-2626",
+      "email": "dsagitario@aol.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "149",
+    "name": "Casa 149",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 149"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Carleni / Ricardo Long",
+      "phone": "474-1469",
+      "mobile": "6236-2213",
+      "email": "carleclop@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "150",
+    "name": "Casa 150",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 150"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Ezequiel Lewis / Kashmah Cadogan",
+      "phone": "474-0244",
+      "mobile": "6974-6915",
+      "email": "todakeitlin@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "151",
+    "name": "Casa 151",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 151"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Anakharina Kandrin",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "152",
+    "name": "Casa 152",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 152"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Jasmina Cruz / Jasmina Cardenas",
+      "phone": "442-7297",
+      "mobile": "6881-9419",
+      "email": "Jasminacruz@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "153",
+    "name": "Casa 153",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 153"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Nancy Machado / Joel Padilla",
+      "phone": "474-1534",
+      "mobile": "6208-1834",
+      "email": "ncrizettem@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "154",
+    "name": "Casa 154",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 154"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Jose Barrows",
+      "phone": "474-0878",
+      "mobile": "6551-8451",
+      "email": "barrows29@hormail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "155",
+    "name": "Casa 155",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 155"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Yolanda Forbes",
+      "phone": "6738-2222",
+      "mobile": "442-1581",
+      "email": "Yolandaforbes2662@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "156",
+    "name": "Casa 156",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 156"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Gisel Altamirano / Yisel Bonet Altamiranda De Yard",
+      "phone": "474-1540",
+      "mobile": "6747-6540",
+      "email": "gisel21@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "157",
+    "name": "Casa 157",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 157"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Yaneth Badilla",
+      "phone": "474-0312",
+      "mobile": "6835-3443",
+      "email": "Yaneth.badilla@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "158",
+    "name": "Casa 158",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 158"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Orlando Reyna",
+      "phone": "6379-5452",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "159",
+    "name": "Casa 159",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 159"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Everaldo Percival",
+      "phone": "442-4522",
+      "mobile": "6639-9388",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "160",
+    "name": "Casa 160",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 160"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Rolando Pacheco",
+      "phone": "442-5524",
+      "mobile": "6613-4016",
+      "email": "Rpachecobennett@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "161",
+    "name": "Casa 161",
+    "address": {
+      "street": "4TA OESTE",
+      "fullAddress": "4TA OESTE, Casa 161"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Eduardo Mclaughilin",
+      "phone": "6743-7962",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "162",
+    "name": "Casa 162",
+    "address": {
+      "street": "4TA OESTE",
+      "fullAddress": "4TA OESTE, Casa 162"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Aurelio Brown / Yazmin Soto",
+      "phone": "6218-9331",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "163",
+    "name": "Casa 163",
+    "address": {
+      "street": "4TA OESTE",
+      "fullAddress": "4TA OESTE, Casa 163"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Jose Saladino",
+      "phone": "6747-1858",
+      "mobile": "442-6245",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "164",
+    "name": "Casa 164",
+    "address": {
+      "street": "4TA OESTE",
+      "fullAddress": "4TA OESTE, Casa 164"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Nidia Leon / Nidia Silgado Leon",
+      "phone": "442-7358",
+      "mobile": "6236-3138",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "165",
+    "name": "Casa 165",
+    "address": {
+      "street": "4TA OESTE",
+      "fullAddress": "4TA OESTE, Casa 165"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Hector Beckford / Sabina Lawrence",
+      "phone": "474-1989",
+      "mobile": "6763-8877",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "166",
+    "name": "Casa 166",
+    "address": {
+      "street": "4TA OESTE",
+      "fullAddress": "4TA OESTE, Casa 166"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Yanina Gonzalez",
+      "phone": "442-1567",
+      "mobile": "6980-8945",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "167",
+    "name": "Casa 167",
+    "address": {
+      "street": "4TA OESTE",
+      "fullAddress": "4TA OESTE, Casa 167"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Luis Erskine / Iluminada Bonilla",
+      "phone": "442-5731",
+      "mobile": "6500-4500",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "168",
+    "name": "Casa 168",
+    "address": {
+      "street": "4TA OESTE",
+      "fullAddress": "4TA OESTE, Casa 168"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Odilka Ruiloba",
+      "phone": "474-0039",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "169",
+    "name": "Casa 169",
+    "address": {
+      "street": "4TA OESTE",
+      "fullAddress": "4TA OESTE, Casa 169"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Fernado Penas",
+      "phone": "6150-1235",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "170",
+    "name": "Casa 170",
+    "address": {
+      "street": "4TA OESTE",
+      "fullAddress": "4TA OESTE, Casa 170"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Jazmin Mendoza",
+      "phone": "442-5909",
+      "mobile": "6874-7275",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "171",
+    "name": "Casa 171",
+    "address": {
+      "street": "4TA OESTE",
+      "fullAddress": "4TA OESTE, Casa 171"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Kahiana Castro / Katiana Castro",
+      "phone": "442-7088",
+      "mobile": "6747-5320",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "172",
+    "name": "Casa 172",
+    "address": {
+      "street": "4TA OESTE",
+      "fullAddress": "4TA OESTE, Casa 172"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Jaime Anderson",
+      "phone": "442-0588",
+      "mobile": "6106-4804",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "173",
+    "name": "Casa 173",
+    "address": {
+      "street": "4TA OESTE",
+      "fullAddress": "4TA OESTE, Casa 173"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Mariela De Robinson",
+      "phone": "442-5870",
+      "mobile": "6690-4178",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "174",
+    "name": "Casa 174",
+    "address": {
+      "street": "4TA OESTE",
+      "fullAddress": "4TA OESTE, Casa 174"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Rolando Fitzroy",
+      "phone": "442-1160",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "175",
+    "name": "Casa 175",
+    "address": {
+      "street": "4TA OESTE",
+      "fullAddress": "4TA OESTE, Casa 175"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Aubrey Forbes / Natividad Sanchez De Forbes",
+      "phone": "442-6840",
+      "mobile": "6635-6317",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "176",
+    "name": "Casa 176",
+    "address": {
+      "street": "4TA OESTE",
+      "fullAddress": "4TA OESTE, Casa 176"
+    },
+    "balance": -90,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Vielka Arauz",
+      "phone": "474-4269",
+      "mobile": "6969-5878",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "177",
+    "name": "Casa 177",
+    "address": {
+      "street": "4TA OESTE",
+      "fullAddress": "4TA OESTE, Casa 177"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Pamela Peters",
+      "phone": "442-2427",
+      "mobile": "6603-8766",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "178",
+    "name": "Casa 178",
+    "address": {
+      "street": "4TA OESTE",
+      "fullAddress": "4TA OESTE, Casa 178"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Dalis Bandini",
+      "phone": "442-7970",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "179",
+    "name": "Casa 179",
+    "address": {
+      "street": "4TA OESTE",
+      "fullAddress": "4TA OESTE, Casa 179"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Alma Ifil",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "180",
+    "name": "Casa 180",
+    "address": {
+      "street": "4TA OESTE",
+      "fullAddress": "4TA OESTE, Casa 180"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Generoso Perez",
+      "phone": "442-6406",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "181",
+    "name": "Casa 181",
+    "address": {
+      "street": "4TA OESTE",
+      "fullAddress": "4TA OESTE, Casa 181"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Marlene Boyce",
+      "phone": "442-0518",
+      "mobile": "6266-4698",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "182",
+    "name": "Casa 182",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 182"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Jean Servillus / Roseme Servillus",
+      "phone": "6023-6713",
+      "mobile": "442-2044",
+      "email": "Medser45@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "183",
+    "name": "Casa 183",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 183"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Celia / Marco Pault",
+      "phone": "442-3937",
+      "mobile": "6708-2287",
+      "email": "Salazar2727@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "184",
+    "name": "Casa 184",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 184"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Eduardo Villalta",
+      "phone": "6981-2404",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "185",
+    "name": "Casa 185",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 185"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Eloisa / Eloisa Jaen",
+      "phone": "442-8531",
+      "mobile": "6461-0914",
+      "email": "Eeloisa882@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "186",
+    "name": "Casa 186",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 186"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Roger Oglivie / Roger Y Kristiany Oglivie",
+      "phone": "442-3411",
+      "mobile": "6734-5448",
+      "email": "Kristianyoglivie09@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "187",
+    "name": "Casa 187",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 187"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Laura Palacio / Yaviritzel Panay",
+      "phone": "442-6306",
+      "mobile": "6271-8218",
+      "email": "Yavipanay29@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "188",
+    "name": "Casa 188",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 188"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Fabiola Alvey",
+      "phone": "442-2527",
+      "mobile": "6514-3246",
+      "email": "alveymabel@yahoo.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "189",
+    "name": "Casa 189",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 189"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Ada De Amaya / Anibal Amaya",
+      "phone": "442-3859",
+      "mobile": "6530-3597",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "190",
+    "name": "Casa 190",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 190"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Desiree Herrera / Nizam Alikham",
+      "phone": "6931-4736",
+      "mobile": "",
+      "email": "Desire.herrera@organijudicial.gob.pa"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "191",
+    "name": "Casa 191",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 191"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Cointa / Erick Selles",
+      "phone": "442-7879",
+      "mobile": "6468-5569",
+      "email": "coinfernandez@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "192",
+    "name": "Casa 192",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 192"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Yumitzie Harwood / Angel Cedeño",
+      "phone": "474-2079",
+      "mobile": "6635-3933",
+      "email": "yumitzie_harwood@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "193",
+    "name": "Casa 193",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 193"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Nuria Jimenez",
+      "phone": "442-6107",
+      "mobile": "6306-2233",
+      "email": "njimenez@coopcristobal.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "194",
+    "name": "Casa 194",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 194"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Francisco De Nicolo / Lisseth De La Espada",
+      "phone": "474-1097",
+      "mobile": "6238-5410",
+      "email": "lisseth2609@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "195",
+    "name": "Casa 195",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 195"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Luis Amador",
+      "phone": "6804-8669",
+      "mobile": "6668-7615",
+      "email": "Geac1017@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "196",
+    "name": "Casa 196",
+    "address": {
+      "street": "4TA CENTRO",
+      "fullAddress": "4TA CENTRO, Casa 196"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Heidy Bryan / Santos Chávez",
+      "phone": "474-1258",
+      "mobile": "6690-0365",
+      "email": "heidibryan1921@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "197",
+    "name": "Casa 197",
+    "address": {
+      "street": "4TA ESTE",
+      "fullAddress": "4TA ESTE, Casa 197"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Amado Hoy / Amado Hau",
+      "phone": "442-5079",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "198",
+    "name": "Casa 198",
+    "address": {
+      "street": "4TA ESTE",
+      "fullAddress": "4TA ESTE, Casa 198"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Cecilio Arosemena",
+      "phone": "6204-1954",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "199",
+    "name": "Casa 199",
+    "address": {
+      "street": "4TA ESTE",
+      "fullAddress": "4TA ESTE, Casa 199"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Sharyn Delgado",
+      "phone": "6090-7660",
+      "mobile": "442-2049",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "200",
+    "name": "Casa 200",
+    "address": {
+      "street": "4TA ESTE",
+      "fullAddress": "4TA ESTE, Casa 200"
+    },
+    "balance": 0,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Catalina Sander",
+      "phone": "6949-7249",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "201",
+    "name": "Casa 201",
+    "address": {
+      "street": "4TA ESTE",
+      "fullAddress": "4TA ESTE, Casa 201"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Romelia Hall",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "202",
+    "name": "Casa 202",
+    "address": {
+      "street": "4TA ESTE",
+      "fullAddress": "4TA ESTE, Casa 202"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Silvina Chifundo",
+      "phone": "6524-6058",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "203",
+    "name": "Casa 203",
+    "address": {
+      "street": "4TA ESTE",
+      "fullAddress": "4TA ESTE, Casa 203"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Eduardo Cortes",
+      "phone": "474-4489",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "204",
+    "name": "Casa 204",
+    "address": {
+      "street": "5TA ESTE",
+      "fullAddress": "5TA ESTE, Casa 204"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Betzaida De Forbes",
+      "phone": "6919-2122",
+      "mobile": "6723-6359",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "205",
+    "name": "Casa 205",
+    "address": {
+      "street": "5TA ESTE",
+      "fullAddress": "5TA ESTE, Casa 205"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Jaime Perez / Yeysil Diaz",
+      "phone": "474-1583",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "206",
+    "name": "Casa 206",
+    "address": {
+      "street": "5TA ESTE",
+      "fullAddress": "5TA ESTE, Casa 206"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Williams Scott",
+      "phone": "6767-7402",
+      "mobile": "6502-6602",
+      "email": "scott_745@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "207",
+    "name": "Casa 207",
+    "address": {
+      "street": "5TA ESTE",
+      "fullAddress": "5TA ESTE, Casa 207"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Lancin Brown",
+      "phone": "6030-7500",
+      "mobile": "6056-3352",
+      "email": "nataliemovilla16@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "208",
+    "name": "Casa 208",
+    "address": {
+      "street": "5TA ESTE",
+      "fullAddress": "5TA ESTE, Casa 208"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Amable Herrera / Iris Griffin",
+      "phone": "6677-1515",
+      "mobile": "",
+      "email": "iris_08@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "209",
+    "name": "Casa 209",
+    "address": {
+      "street": "5TA ESTE",
+      "fullAddress": "5TA ESTE, Casa 209"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Gerardo Sotomayor",
+      "phone": "6785-6585",
+      "mobile": "6980-4085",
+      "email": "luzmedina06@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "210",
+    "name": "Casa 210",
+    "address": {
+      "street": "5TA ESTE",
+      "fullAddress": "5TA ESTE, Casa 210"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Yesica Chifundo / Yesica De Prestan",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "211",
+    "name": "Casa 211",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 211"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Aldo / Aldo Medina",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "212",
+    "name": "Casa 212",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 212"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Alejandro Bermúdez",
+      "phone": "474-1728",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "213",
+    "name": "Casa 213",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 213"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Sixta M. De Ríos / Sixta Maria Cardales De Rios",
+      "phone": "442-8861",
+      "mobile": "6520-3917",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "214",
+    "name": "Casa 214",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 214"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Deyka Hernández",
+      "phone": "6694-6750",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "215",
+    "name": "Casa 215",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 215"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Belgis Cedeño",
+      "phone": "442-6212",
+      "mobile": "6663-1330",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "216",
+    "name": "Casa 216",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 216"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Ariel Andrade",
+      "phone": "6699-5404",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "217",
+    "name": "Casa 217",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 217"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Yadira Bustamante / Antonio Alcedo",
+      "phone": "474-2985",
+      "mobile": "6949-2668",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "218",
+    "name": "Casa 218",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 218"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Julio Bejarano",
+      "phone": "6679-3368",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "219",
+    "name": "Casa 219",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 219"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Linda Lajón",
+      "phone": "6612-7145",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "220",
+    "name": "Casa 220",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 220"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Susana Delgado",
+      "phone": "442-4179",
+      "mobile": "6582-2963",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "221",
+    "name": "Casa 221",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 221"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Estela Escobar / Maurel Mariam Mier De Escobar",
+      "phone": "6316-1765",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "222",
+    "name": "Casa 222",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 222"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Gimara Magallón",
+      "phone": "442-6972",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "223",
+    "name": "Casa 223",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 223"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Joel Walford / Carlos Lambert",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "224",
+    "name": "Casa 224",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 224"
+    },
+    "balance": -90,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Carol De Ibarra",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "225",
+    "name": "Casa 225",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 225"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Takicha Campos",
+      "phone": "6501-2252",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "226",
+    "name": "Casa 226",
+    "address": {
+      "street": "5TA OESTE",
+      "fullAddress": "5TA OESTE, Casa 226"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Edgar Gaskin / Ursula De Gaskin",
+      "phone": "6617-7436",
+      "mobile": "",
+      "email": "ergaskin@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "227",
+    "name": "Casa 227",
+    "address": {
+      "street": "5TA OESTE",
+      "fullAddress": "5TA OESTE, Casa 227"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Eneida Galvan / Vielka Tuñon",
+      "phone": "474-0169",
+      "mobile": "6370-8902",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "228",
+    "name": "Casa 228",
+    "address": {
+      "street": "5TA OESTE",
+      "fullAddress": "5TA OESTE, Casa 228"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Maria Jaén / Zenaida Jean Valencia",
+      "phone": "474-3173",
+      "mobile": "6149-4164",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "229",
+    "name": "Casa 229",
+    "address": {
+      "street": "5TA OESTE",
+      "fullAddress": "5TA OESTE, Casa 229"
+    },
+    "balance": -90,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Luz Bovel / Aldo Bovell",
+      "phone": "6645-3942",
+      "mobile": "",
+      "email": "lpardo91@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "230",
+    "name": "Casa 230",
+    "address": {
+      "street": "5TA OESTE",
+      "fullAddress": "5TA OESTE, Casa 230"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Zais Costarelos",
+      "phone": "442-6827",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "231",
+    "name": "Casa 231",
+    "address": {
+      "street": "5TA OESTE",
+      "fullAddress": "5TA OESTE, Casa 231"
+    },
+    "balance": -90,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Jaime Anderson",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "232",
+    "name": "Casa 232",
+    "address": {
+      "street": "5TA OESTE",
+      "fullAddress": "5TA OESTE, Casa 232"
+    },
+    "balance": -90,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Jose Ochoa",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "233",
+    "name": "Casa 233",
+    "address": {
+      "street": "5TA OESTE",
+      "fullAddress": "5TA OESTE, Casa 233"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Daniel Cumberbatch",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "234",
+    "name": "Casa 234",
+    "address": {
+      "street": "5TA OESTE",
+      "fullAddress": "5TA OESTE, Casa 234"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Vielka Levy",
+      "phone": "6664-7847",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "235",
+    "name": "Casa 235",
+    "address": {
+      "street": "5TA OESTE",
+      "fullAddress": "5TA OESTE, Casa 235"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Génesis Magallón / Rivera Magallon / Jair Jimenez",
+      "phone": "6427-2556",
+      "mobile": "",
+      "email": "jahir0541@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "236",
+    "name": "Casa 236",
+    "address": {
+      "street": "5TA OESTE",
+      "fullAddress": "5TA OESTE, Casa 236"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Eric Villanueva",
+      "phone": "6910-8091",
+      "mobile": "",
+      "email": "eeliecer1974@yahoo.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "237",
+    "name": "Casa 237",
+    "address": {
+      "street": "5TA OESTE",
+      "fullAddress": "5TA OESTE, Casa 237"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Maximo Pinto",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "238",
+    "name": "Casa 238",
+    "address": {
+      "street": "5TA OESTE",
+      "fullAddress": "5TA OESTE, Casa 238"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Pedro Avila",
+      "phone": "474-0633",
+      "mobile": "6446-1446",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "239",
+    "name": "Casa 239",
+    "address": {
+      "street": "5TA OESTE",
+      "fullAddress": "5TA OESTE, Casa 239"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Isaias Tate",
+      "phone": "6246-4354",
+      "mobile": "",
+      "email": "isaias14a@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "240",
+    "name": "Casa 240",
+    "address": {
+      "street": "5TA OESTE",
+      "fullAddress": "5TA OESTE, Casa 240"
+    },
+    "balance": -17,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Dayra Canales",
+      "phone": "6254-0105",
+      "mobile": "",
+      "email": "dayra.canales@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "241",
+    "name": "Casa 241",
+    "address": {
+      "street": "5TA OESTE",
+      "fullAddress": "5TA OESTE, Casa 241"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Yashira Ramos De Prescott",
+      "phone": "474-0233",
+      "mobile": "6671-1558",
+      "email": "yashiraramos3079@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "242",
+    "name": "Casa 242",
+    "address": {
+      "street": "5TA OESTE",
+      "fullAddress": "5TA OESTE, Casa 242"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Gabriel Bumham",
+      "phone": "474-1094",
+      "mobile": "6500-7960",
+      "email": "williebur08@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "243",
+    "name": "Casa 243",
+    "address": {
+      "street": "5TA OESTE",
+      "fullAddress": "5TA OESTE, Casa 243"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Regino Martinez",
+      "phone": "6316-0796",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "244",
+    "name": "Casa 244",
+    "address": {
+      "street": "5TA OESTE",
+      "fullAddress": "5TA OESTE, Casa 244"
+    },
+    "balance": 0,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Yiria Soto / Coriel Mendoza",
+      "phone": "6584-6063",
+      "mobile": "",
+      "email": "ysoto23@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "245",
+    "name": "Casa 245",
+    "address": {
+      "street": "5TA OESTE",
+      "fullAddress": "5TA OESTE, Casa 245"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Luz De Sarmiento / Luz Martinez",
+      "phone": "442-7139",
+      "mobile": "6238-0868",
+      "email": "lucecita30ms@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "246",
+    "name": "Casa 246",
+    "address": {
+      "street": "5TA OESTE",
+      "fullAddress": "5TA OESTE, Casa 246"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Sergio Castro / Sergio De Castro",
+      "phone": "442-8909",
+      "mobile": "6726-8039",
+      "email": "sdkstro@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "247",
+    "name": "Casa 247",
+    "address": {
+      "street": "5TA OESTE",
+      "fullAddress": "5TA OESTE, Casa 247"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Jose Gonzalez",
+      "phone": "442-3249",
+      "mobile": "6010-8570",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "248",
+    "name": "Casa 248",
+    "address": {
+      "street": "5TA OESTE",
+      "fullAddress": "5TA OESTE, Casa 248"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Jessica Hoy",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "249",
+    "name": "Casa 249",
+    "address": {
+      "street": "5TA OESTE",
+      "fullAddress": "5TA OESTE, Casa 249"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Zayira Echeverría / Zayira Rochell",
+      "phone": "6127-3317",
+      "mobile": "",
+      "email": "leonelecheverriap1@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "250",
+    "name": "Casa 250",
+    "address": {
+      "street": "5TA OESTE",
+      "fullAddress": "5TA OESTE, Casa 250"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Guillermo Chalhoub",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "251",
+    "name": "Casa 251",
+    "address": {
+      "street": "5TA OESTE",
+      "fullAddress": "5TA OESTE, Casa 251"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Carlos Moran",
+      "phone": "474-1680",
+      "mobile": "6057-3206",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "252",
+    "name": "Casa 252",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 252"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Eishka Periñan",
+      "phone": "6675-4127",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "253",
+    "name": "Casa 253",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 253"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Evaristo Cuero / Evaristo Cuervo",
+      "phone": "6009-6985",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "254",
+    "name": "Casa 254",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 254"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Yazaret De Molinar",
+      "phone": "474-5991",
+      "mobile": "6981-8925",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "255",
+    "name": "Casa 255",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 255"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Alfredo Guerra",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "256",
+    "name": "Casa 256",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 256"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Melis Carrasco",
+      "phone": "442-2286",
+      "mobile": "6627-5262",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "257",
+    "name": "Casa 257",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 257"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Girly Robinson",
+      "phone": "442-6032",
+      "mobile": "6522-1155",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "258",
+    "name": "Casa 258",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 258"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Aralis Camira / Edwin Cedeño",
+      "phone": "6441-6888",
+      "mobile": "6535-6089",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "259",
+    "name": "Casa 259",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 259"
+    },
+    "balance": 0,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Humberto Kentish / Okianis Robinson",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "260",
+    "name": "Casa 260",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 260"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Luis Mitchell / Ofelia Mitchell",
+      "phone": "6510-3826",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "261",
+    "name": "Casa 261",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 261"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Alvaro Everly / Yenitza Ashaw",
+      "phone": "6457-9984",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "262",
+    "name": "Casa 262",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 262"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Luis Sinclair",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "263",
+    "name": "Casa 263",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 263"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Anibal Cortez",
+      "phone": "442-8073",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "264",
+    "name": "Casa 264",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 264"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "José Luis De Gracia",
+      "phone": "6756-8175",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "265",
+    "name": "Casa 265",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 265"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Cecilio Simpson / Gyselle Grant",
+      "phone": "442-6442",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "266",
+    "name": "Casa 266",
+    "address": {
+      "street": "5TA CENTRO",
+      "fullAddress": "5TA CENTRO, Casa 266"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "José Martínez",
+      "phone": "6734-5239",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "267",
+    "name": "Casa 267",
+    "address": {
+      "street": "5TA ESTE",
+      "fullAddress": "5TA ESTE, Casa 267"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Nidia Rodriguez",
+      "phone": "442-6764",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "268",
+    "name": "Casa 268",
+    "address": {
+      "street": "5TA ESTE",
+      "fullAddress": "5TA ESTE, Casa 268"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Oscar Ureña",
+      "phone": "474-4469",
+      "mobile": "6527-8780",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "269",
+    "name": "Casa 269",
+    "address": {
+      "street": "5TA ESTE",
+      "fullAddress": "5TA ESTE, Casa 269"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Katherine Bennett",
+      "phone": "6378-2696",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "270",
+    "name": "Casa 270",
+    "address": {
+      "street": "5TA ESTE",
+      "fullAddress": "5TA ESTE, Casa 270"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Ofelia Idacema Jackson Salazar / Ofelia Ida Cema Jackson Sa",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "271",
+    "name": "Casa 271",
+    "address": {
+      "street": "5TA ESTE",
+      "fullAddress": "5TA ESTE, Casa 271"
+    },
+    "balance": -50,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Dagoberto Paris",
+      "phone": "6142-9307",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "272",
+    "name": "Casa 272",
+    "address": {
+      "street": "5TA ESTE",
+      "fullAddress": "5TA ESTE, Casa 272"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Stephany De Vasquez",
+      "phone": "6770-8330",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "273",
+    "name": "Casa 273",
+    "address": {
+      "street": "5TA ESTE",
+      "fullAddress": "5TA ESTE, Casa 273"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Aniulka Y Isaac Rivera / Aniutka Y Isaac Silvera",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "274",
+    "name": "Casa 274",
+    "address": {
+      "street": "6TA ESTE",
+      "fullAddress": "6TA ESTE, Casa 274"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Luz Maria Betegon",
+      "phone": "474-8119",
+      "mobile": "6713-2498",
+      "email": "luzmariabetegon04@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "275",
+    "name": "Casa 275",
+    "address": {
+      "street": "6TA ESTE",
+      "fullAddress": "6TA ESTE, Casa 275"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Noel E. Jenisel Gondola",
+      "phone": "447-8067",
+      "mobile": "6981-2036",
+      "email": "jeniselhoyte@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "276",
+    "name": "Casa 276",
+    "address": {
+      "street": "6TA ESTE",
+      "fullAddress": "6TA ESTE, Casa 276"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Keicha Brown",
+      "phone": "6454-8080",
+      "mobile": "",
+      "email": "keishya.brown@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "277",
+    "name": "Casa 277",
+    "address": {
+      "street": "6TA ESTE",
+      "fullAddress": "6TA ESTE, Casa 277"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Aristides Luke / Aristides Luque / Isabel Riquelme",
+      "phone": "6230-6346",
+      "mobile": "",
+      "email": "Isabel80rm@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "278",
+    "name": "Casa 278",
+    "address": {
+      "street": "6TA ESTE",
+      "fullAddress": "6TA ESTE, Casa 278"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Karin Yamilka Parris",
+      "phone": "442-4805",
+      "mobile": "6053-1556",
+      "email": "yamilka041981@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "279",
+    "name": "Casa 279",
+    "address": {
+      "street": "6TA ESTE",
+      "fullAddress": "6TA ESTE, Casa 279"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "David Melo / Janina Borelly",
+      "phone": "442-1648",
+      "mobile": "6958-7716",
+      "email": "Jdemelo-1911@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "280",
+    "name": "Casa 280",
+    "address": {
+      "street": "6TA ESTE",
+      "fullAddress": "6TA ESTE, Casa 280"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Jovette C. Padilla / Aidhair Valiente / Aidhair Flores",
+      "phone": "6868-0484",
+      "mobile": "6268-6026",
+      "email": "Jovettepadilla@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "281",
+    "name": "Casa 281",
+    "address": {
+      "street": "6TA CENTRO A",
+      "fullAddress": "6TA CENTRO A, Casa 281"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Carlos Loara Leotau / Carlos Loara Leoteau",
+      "phone": "474-5427",
+      "mobile": "6493-8893",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "282",
+    "name": "Casa 282",
+    "address": {
+      "street": "6TA CENTRO A",
+      "fullAddress": "6TA CENTRO A, Casa 282"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Ubaldo Castillo",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "283",
+    "name": "Casa 283",
+    "address": {
+      "street": "6TA CENTRO A",
+      "fullAddress": "6TA CENTRO A, Casa 283"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Katricia Y. Ortega / Katiria Ortega",
+      "phone": "6737-9025",
+      "mobile": "",
+      "email": "Kortegalata@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "284",
+    "name": "Casa 284",
+    "address": {
+      "street": "6TA CENTRO A",
+      "fullAddress": "6TA CENTRO A, Casa 284"
+    },
+    "balance": -90,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Constancia Shellon",
+      "phone": "6252-5020",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "285",
+    "name": "Casa 285",
+    "address": {
+      "street": "6TA CENTRO A",
+      "fullAddress": "6TA CENTRO A, Casa 285"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Jaime Legal L. / Delano Saunders",
+      "phone": "6480-2808",
+      "mobile": "474-3388",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "286",
+    "name": "Casa 286",
+    "address": {
+      "street": "6TA CENTRO A",
+      "fullAddress": "6TA CENTRO A, Casa 286"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Minoshka Parris / Ninoshka Parris",
+      "phone": "6666-0992",
+      "mobile": "442-2217",
+      "email": "parrissn@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "287",
+    "name": "Casa 287",
+    "address": {
+      "street": "6TA CENTRO A",
+      "fullAddress": "6TA CENTRO A, Casa 287"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Domingo Rodriguez",
+      "phone": "6679-3932",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "288",
+    "name": "Casa 288",
+    "address": {
+      "street": "6TA CENTRO A",
+      "fullAddress": "6TA CENTRO A, Casa 288"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Issacs Francis",
+      "phone": "474-1639",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "289",
+    "name": "Casa 289",
+    "address": {
+      "street": "6TA CENTRO A",
+      "fullAddress": "6TA CENTRO A, Casa 289"
+    },
+    "balance": 0,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Porfirio Justino / Porfirio Justavino",
+      "phone": "",
+      "mobile": "",
+      "email": "yazcubilla@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "290",
+    "name": "Casa 290",
+    "address": {
+      "street": "6TA CENTRO A",
+      "fullAddress": "6TA CENTRO A, Casa 290"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Ivan Arias",
+      "phone": "6704-2428",
+      "mobile": "",
+      "email": "rocioaparicio13@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "291",
+    "name": "Casa 291",
+    "address": {
+      "street": "6TA CENTRO A",
+      "fullAddress": "6TA CENTRO A, Casa 291"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Julio Mejia",
+      "phone": "6673-4492",
+      "mobile": "",
+      "email": "mnino08@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "292",
+    "name": "Casa 292",
+    "address": {
+      "street": "6TA CENTRO A",
+      "fullAddress": "6TA CENTRO A, Casa 292"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Idalberto Chiru / Idalberto Chiu",
+      "phone": "",
+      "mobile": "",
+      "email": "shani.sn46@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "293",
+    "name": "Casa 293",
+    "address": {
+      "street": "6TA CENTRO A",
+      "fullAddress": "6TA CENTRO A, Casa 293"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Omaira Achao / Yomaira Ashaw",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "294",
+    "name": "Casa 294",
+    "address": {
+      "street": "6TA CENTRO A",
+      "fullAddress": "6TA CENTRO A, Casa 294"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Yolanda Soto",
+      "phone": "6981-3017",
+      "mobile": "",
+      "email": "mlaguna@hotmail.es"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "295",
+    "name": "Casa 295",
+    "address": {
+      "street": "6TA CENTRO A",
+      "fullAddress": "6TA CENTRO A, Casa 295"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Bolivar Rodriguez",
+      "phone": "474-1594",
+      "mobile": "6130-3204",
+      "email": "akiraleer@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "296",
+    "name": "Casa 296",
+    "address": {
+      "street": "6TA OESTE",
+      "fullAddress": "6TA OESTE, Casa 296"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Maribel De Vega",
+      "phone": "474-0509",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "297",
+    "name": "Casa 297",
+    "address": {
+      "street": "6TA OESTE",
+      "fullAddress": "6TA OESTE, Casa 297"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Aikza Hernandez",
+      "phone": "474-5341",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "298",
+    "name": "Casa 298",
+    "address": {
+      "street": "6TA OESTE",
+      "fullAddress": "6TA OESTE, Casa 298"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Jacqueline Villamil",
+      "phone": "6755-9625",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "299",
+    "name": "Casa 299",
+    "address": {
+      "street": "6TA OESTE",
+      "fullAddress": "6TA OESTE, Casa 299"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Mario Chiari",
+      "phone": "6681-1117",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "300",
+    "name": "Casa 300",
+    "address": {
+      "street": "6TA OESTE",
+      "fullAddress": "6TA OESTE, Casa 300"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Eriberto Quiñones",
+      "phone": "474-1572",
+      "mobile": "6711-5151",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "301",
+    "name": "Casa 301",
+    "address": {
+      "street": "6TA OESTE",
+      "fullAddress": "6TA OESTE, Casa 301"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Gilberto Garcia",
+      "phone": "6687-5001",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "302",
+    "name": "Casa 302",
+    "address": {
+      "street": "6TA OESTE",
+      "fullAddress": "6TA OESTE, Casa 302"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Irina Lewis",
+      "phone": "442-8095",
+      "mobile": "6613-9026",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "303",
+    "name": "Casa 303",
+    "address": {
+      "street": "6TA OESTE",
+      "fullAddress": "6TA OESTE, Casa 303"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Patricia Jones",
+      "phone": "6493-1335",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "304",
+    "name": "Casa 304",
+    "address": {
+      "street": "6TA OESTE",
+      "fullAddress": "6TA OESTE, Casa 304"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Yolanda Campos",
+      "phone": "442-7251",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "305",
+    "name": "Casa 305",
+    "address": {
+      "street": "6TA OESTE",
+      "fullAddress": "6TA OESTE, Casa 305"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Itzel Maria",
+      "phone": "6682-9684",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "306",
+    "name": "Casa 306",
+    "address": {
+      "street": "6TA OESTE",
+      "fullAddress": "6TA OESTE, Casa 306"
+    },
+    "balance": 0,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Roberto Jenkins",
+      "phone": "6747-0737",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "307",
+    "name": "Casa 307",
+    "address": {
+      "street": "6TA OESTE",
+      "fullAddress": "6TA OESTE, Casa 307"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "George Corbin",
+      "phone": "442-7509",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "308",
+    "name": "Casa 308",
+    "address": {
+      "street": "6TA OESTE",
+      "fullAddress": "6TA OESTE, Casa 308"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Azonery De Hawkins",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "309",
+    "name": "Casa 309",
+    "address": {
+      "street": "6TA OESTE",
+      "fullAddress": "6TA OESTE, Casa 309"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Vicente Fruto / Vicente Rook Fruto",
+      "phone": "442-7006",
+      "mobile": "6719-9189",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "310",
+    "name": "Casa 310",
+    "address": {
+      "street": "6TA OESTE",
+      "fullAddress": "6TA OESTE, Casa 310"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Nelson Moreno",
+      "phone": "474-0610",
+      "mobile": "6781-6610",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "311",
+    "name": "Casa 311",
+    "address": {
+      "street": "6TA CENTRO B",
+      "fullAddress": "6TA CENTRO B, Casa 311"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Fernando De Castro",
+      "phone": "442-3181",
+      "mobile": "6616-8028",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "312",
+    "name": "Casa 312",
+    "address": {
+      "street": "6TA CENTRO B",
+      "fullAddress": "6TA CENTRO B, Casa 312"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Etilcia Evans",
+      "phone": "474-1360",
+      "mobile": "",
+      "email": "Tilcia-14morena@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "313",
+    "name": "Casa 313",
+    "address": {
+      "street": "6TA CENTRO B",
+      "fullAddress": "6TA CENTRO B, Casa 313"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Mireya Del Carmen Ortega / Orlando Arguelles",
+      "phone": "474-5663",
+      "mobile": "6378-4167",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "314",
+    "name": "Casa 314",
+    "address": {
+      "street": "6TA CENTRO B",
+      "fullAddress": "6TA CENTRO B, Casa 314"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Melisa Martinez",
+      "phone": "442-5321",
+      "mobile": "6519-2594",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "315",
+    "name": "Casa 315",
+    "address": {
+      "street": "6TA CENTRO B",
+      "fullAddress": "6TA CENTRO B, Casa 315"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Nuria Morales / Nudia Morales",
+      "phone": "442-3523",
+      "mobile": "6786-1879",
+      "email": "Nudia24@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "316",
+    "name": "Casa 316",
+    "address": {
+      "street": "6TA CENTRO B",
+      "fullAddress": "6TA CENTRO B, Casa 316"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Ignacio Dreckett",
+      "phone": "474-2077",
+      "mobile": "6550-1360",
+      "email": "twiraalleyne@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "317",
+    "name": "Casa 317",
+    "address": {
+      "street": "6TA CENTRO B",
+      "fullAddress": "6TA CENTRO B, Casa 317"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Fernando Chaverra",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "318",
+    "name": "Casa 318",
+    "address": {
+      "street": "6TA CENTRO B",
+      "fullAddress": "6TA CENTRO B, Casa 318"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Yelitza Norse",
+      "phone": "474-4071",
+      "mobile": "",
+      "email": "yelitza.norse@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "319",
+    "name": "Casa 319",
+    "address": {
+      "street": "6TA CENTRO B",
+      "fullAddress": "6TA CENTRO B, Casa 319"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Ariel Corpas",
+      "phone": "6747-8943",
+      "mobile": "6669-5505",
+      "email": "qmilvia@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "320",
+    "name": "Casa 320",
+    "address": {
+      "street": "6TA CENTRO B",
+      "fullAddress": "6TA CENTRO B, Casa 320"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Mariela Adames",
+      "phone": "474-3802",
+      "mobile": "6223-4795",
+      "email": "edithkm26@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "321",
+    "name": "Casa 321",
+    "address": {
+      "street": "6TA CENTRO B",
+      "fullAddress": "6TA CENTRO B, Casa 321"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Luis Demera Velkis",
+      "phone": "6008-3341",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "322",
+    "name": "Casa 322",
+    "address": {
+      "street": "6TA CENTRO B",
+      "fullAddress": "6TA CENTRO B, Casa 322"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Grecor Selles",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "323",
+    "name": "Casa 323",
+    "address": {
+      "street": "6TA CENTRO B",
+      "fullAddress": "6TA CENTRO B, Casa 323"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Edgar P. Ortega",
+      "phone": "6201-8597",
+      "mobile": "6234-1886",
+      "email": "edgarpaulpty@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "324",
+    "name": "Casa 324",
+    "address": {
+      "street": "6TA CENTRO B",
+      "fullAddress": "6TA CENTRO B, Casa 324"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Victor Martinez",
+      "phone": "474-1708",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "325",
+    "name": "Casa 325",
+    "address": {
+      "street": "6TA CENTRO B",
+      "fullAddress": "6TA CENTRO B, Casa 325"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Juan Salazar",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "326",
+    "name": "Casa 326",
+    "address": {
+      "street": "6TA CENTRO B",
+      "fullAddress": "6TA CENTRO B, Casa 326"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Jose L. Diaz",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "327",
+    "name": "Casa 327",
+    "address": {
+      "street": "6TA CENTRO B",
+      "fullAddress": "6TA CENTRO B, Casa 327"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Jossue E. Williams / Jossua E. Williams",
+      "phone": "6340-6702",
+      "mobile": "6717-0741",
+      "email": "jossua.wiliamsr@outlook.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "328",
+    "name": "Casa 328",
+    "address": {
+      "street": "6TA CENTRO B",
+      "fullAddress": "6TA CENTRO B, Casa 328"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Jazmina Vega",
+      "phone": "474-4162",
+      "mobile": "6640-2416",
+      "email": "Arhaz1322@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "329",
+    "name": "Casa 329",
+    "address": {
+      "street": "6TA ESTE",
+      "fullAddress": "6TA ESTE, Casa 329"
+    },
+    "balance": 0,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Edgardo Chiari V.",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "330",
+    "name": "Casa 330",
+    "address": {
+      "street": "6TA ESTE",
+      "fullAddress": "6TA ESTE, Casa 330"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Yemil Rodriguez",
+      "phone": "6821-3093",
+      "mobile": "",
+      "email": "yemil2114@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "331",
+    "name": "Casa 331",
+    "address": {
+      "street": "6TA ESTE",
+      "fullAddress": "6TA ESTE, Casa 331"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Antonio Marbelis Hall",
+      "phone": "6550-7091",
+      "mobile": "6949-5524",
+      "email": "marbi20@hotmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "332",
+    "name": "Casa 332",
+    "address": {
+      "street": "6TA ESTE",
+      "fullAddress": "6TA ESTE, Casa 332"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Ricardo Toulier Lilian Tuno / Ricardo Toulier Lilian Tuñon",
+      "phone": "6910-2477",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "333",
+    "name": "Casa 333",
+    "address": {
+      "street": "6TA ESTE",
+      "fullAddress": "6TA ESTE, Casa 333"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Maria Avila",
+      "phone": "474-0782",
+      "mobile": "6153-7056",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "334",
+    "name": "Casa 334",
+    "address": {
+      "street": "6TA ESTE",
+      "fullAddress": "6TA ESTE, Casa 334"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Maykelys Y. Castillo / Joab Caballero",
+      "phone": "6666-6372",
+      "mobile": "6676-0753",
+      "email": "joab507caballero@gmail.com"
+    },
+    "residentUids": []
+  },
+  {
+    "id": "D-01",
+    "name": "Casa D-01",
+    "address": {
+      "street": "D",
+      "fullAddress": "D, Casa D-01"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Ricardo Moreno",
+      "phone": "474-0891",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "D-02",
+    "name": "Casa D-02",
+    "address": {
+      "street": "D",
+      "fullAddress": "D, Casa D-02"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Maritza De Mora",
+      "phone": "6232-6339",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "D-03",
+    "name": "Casa D-03",
+    "address": {
+      "street": "D",
+      "fullAddress": "D, Casa D-03"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Benito Pacheco",
+      "phone": "442-8460",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "D-04",
+    "name": "Casa D-04",
+    "address": {
+      "street": "D",
+      "fullAddress": "D, Casa D-04"
+    },
+    "balance": 0,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Héctor Ayarza",
+      "phone": "474-0361",
+      "mobile": "442-1603",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "D-05",
+    "name": "Casa D-05",
+    "address": {
+      "street": "D",
+      "fullAddress": "D, Casa D-05"
+    },
+    "balance": -30,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Tomás Betegón",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "D-06",
+    "name": "Casa D-06",
+    "address": {
+      "street": "D",
+      "fullAddress": "D, Casa D-06"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Lorenzo Lajón / Marcela De Lajon",
+      "phone": "6229-1709",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "D-07",
+    "name": "Casa D-07",
+    "address": {
+      "street": "D",
+      "fullAddress": "D, Casa D-07"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Inelda Maria Ariano / Diego Pitalua",
+      "phone": "6698-6569",
+      "mobile": "474-0569",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "D-08",
+    "name": "Casa D-08",
+    "address": {
+      "street": "D",
+      "fullAddress": "D, Casa D-08"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Agustín Molinar / Karen Amaya",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "D-09",
+    "name": "Casa D-09",
+    "address": {
+      "street": "D",
+      "fullAddress": "D, Casa D-09"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Ricardo Rodríguez / Adelsa Aguilar",
+      "phone": "6257-0642",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "D-10",
+    "name": "Casa D-10",
+    "address": {
+      "street": "D",
+      "fullAddress": "D, Casa D-10"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Pastor Camarena",
+      "phone": "6745-3714",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "D-11",
+    "name": "Casa D-11",
+    "address": {
+      "street": "D",
+      "fullAddress": "D, Casa D-11"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Miguel Moreno / Miguel Romero",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "D-12",
+    "name": "Casa D-12",
+    "address": {
+      "street": "D",
+      "fullAddress": "D, Casa D-12"
+    },
+    "balance": -15,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Carlos De León",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "D-13",
+    "name": "Casa D-13",
+    "address": {
+      "street": "D",
+      "fullAddress": "D, Casa D-13"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Nimia Martínez",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "D-14",
+    "name": "Casa D-14",
+    "address": {
+      "street": "D",
+      "fullAddress": "D, Casa D-14"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "José Bonilla",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "D-15",
+    "name": "Casa D-15",
+    "address": {
+      "street": "D",
+      "fullAddress": "D, Casa D-15"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Edwin Levin",
+      "phone": "442-2010",
+      "mobile": "6780-9408",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "D-16",
+    "name": "Casa D-16",
+    "address": {
+      "street": "D",
+      "fullAddress": "D, Casa D-16"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Edi Henry / Maribel Ashborn",
+      "phone": "",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "D-17",
+    "name": "Casa D-17",
+    "address": {
+      "street": "D",
+      "fullAddress": "D, Casa D-17"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Willison Tovar",
+      "phone": "6916-2329",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "D-18",
+    "name": "Casa D-18",
+    "address": {
+      "street": "D",
+      "fullAddress": "D, Casa D-18"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Dr. Menchaca / Nedelka Blandon",
+      "phone": "442-3230",
+      "mobile": "6988-3113",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "D-19",
+    "name": "Casa D-19",
+    "address": {
+      "street": "D",
+      "fullAddress": "D, Casa D-19"
+    },
+    "balance": -45,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Carmen De Tamayo",
+      "phone": "474-0662",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "D-20",
+    "name": "Casa D-20",
+    "address": {
+      "street": "D",
+      "fullAddress": "D, Casa D-20"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Oscar Corredeira",
+      "phone": "442-9199",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "D-21",
+    "name": "Casa D-21",
+    "address": {
+      "street": "D",
+      "fullAddress": "D, Casa D-21"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Oscar Ecleston",
+      "phone": "6620-7540",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "D-22",
+    "name": "Casa D-22",
+    "address": {
+      "street": "D",
+      "fullAddress": "D, Casa D-22"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "A. Osorio / Hilda Amores Guzman",
+      "phone": "6110-0155",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "D-23",
+    "name": "Casa D-23",
+    "address": {
+      "street": "D",
+      "fullAddress": "D, Casa D-23"
+    },
+    "balance": -60,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Erick Vasquez",
+      "phone": "474-7067",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  },
+  {
+    "id": "D-24",
+    "name": "Casa D-24",
+    "address": {
+      "street": "D",
+      "fullAddress": "D, Casa D-24"
+    },
+    "balance": -75,
+    "currency": "USD",
+    "ownerInfo": {
+      "name": "Juan Pastor Vega / Diana Sanchez",
+      "phone": "6090-8648",
+      "mobile": "",
+      "email": ""
+    },
+    "residentUids": []
+  }
+]

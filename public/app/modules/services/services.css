@@ -1,0 +1,45 @@
+/* --- Estilos del Módulo de Servicios --- */
+.fab-button {
+  position: fixed;
+  bottom: 8rem;
+  right: 6.5vw;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background-color:var(--color-gurkha-50);
+  color:var(--color-gurkha-950);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  border: none;
+  cursor: pointer;
+  &:hover{
+    background-color: var(--color-kaitoke-green-900);
+    fill: var(--color-gurkha-50);
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+  }
+}
+
+
+.fab-button:active {
+    transform: scale(0.95);
+}
+
+.fab-button svg {
+    width: 28px;
+    height: 28px;
+}
+
+/* Control de visibilidad por rol */
+.fab-button[admin] {
+    display: none;
+}
+
+/* Esta clase será gestionada por el controlador tras verificar el Custom Claim */
+.fab-button[admin].is-admin {
+    display: flex;
+}

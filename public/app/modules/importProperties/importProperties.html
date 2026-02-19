@@ -1,0 +1,33 @@
+<div class="import-properties-container">
+    <h1>Importar Propiedades</h1>
+    <ol class="breadcrumb-nav">
+        <li><a href="#/dashboard/summary">Dashboard</a></li>
+        <li>Importar Propiedades</li>
+    </ol>
+
+    <div class="import-card">
+        <div class="import-card-header">
+            Herramienta de Importación de Datos
+        </div>
+        <div class="import-card-body">
+            <p>Esta herramienta te permite poblar la colección de <strong>Propiedades</strong> en Firestore desde un archivo JSON formateado.</p>
+            
+            <div class="form-step">
+                <label for="jsonFileInput" class="form-label"><strong>Paso 1:</strong> Selecciona el archivo <code>allProperties.json</code>.</label>
+                <input type="file" id="jsonFileInput" class="file-input" accept=".json">
+            </div>
+
+            <div class="form-step">
+                 <p><strong>Paso 2:</strong> Comienza la importación. Los documentos existentes con el mismo ID serán sobreescritos.</p>
+                <button id="importBtn" class="import-button" disabled>
+                    Comenzar Importación
+                </button>
+            </div>
+            
+            <hr>
+
+            <h5>Registro de Actividad</h5>
+            <pre id="logOutput" class="log-viewer" style="max-height: 400px; overflow-y: auto;"></pre>
+        </div>
+    </div>
+</div>

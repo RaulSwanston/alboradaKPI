@@ -1,0 +1,237 @@
+/*
+  Hoja de estilos para la página de Importación de Residentes.
+*/
+
+/* Tarjeta de Carga */
+.upload-card-title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+}
+
+.upload-card-description {
+    color: #4b5563;
+}
+
+/* Zona para soltar archivos (Dropzone) */
+.dropzone-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.dropzone-label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-height: 16rem; /* h-64 */
+    border-width: 2px;
+    border-color: #d1d5db;
+    border-style: dashed;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    background-color: #f9fafb;
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+    padding: 1rem;
+}
+.dropzone-label:hover {
+    background-color: #f3f4f6;
+}
+
+/* Estilo para cuando se arrastra un archivo sobre la zona */
+.dropzone-label.dragover {
+    border-color: #2563eb;
+    background-color: #eff6ff;
+}
+
+.dropzone-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding-top: 1.25rem;
+    padding-bottom: 1.5rem;
+}
+
+.dropzone-icon {
+    width: 2rem;
+    height: 2rem;
+    margin-bottom: 1rem;
+    color: #6b7280;
+}
+
+.dropzone-text {
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    color: #6b7280;
+}
+.dropzone-text .font-semibold {
+    font-weight: 600;
+}
+
+.dropzone-hint {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.dropzone-file-input {
+    display: none;
+}
+
+/* Vista previa de la lista de archivos */
+.file-preview-list-container {
+    width: 100%;
+    max-height: 14rem;
+    overflow-y: auto;
+}
+
+.file-preview-item {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem;
+    border-bottom: 1px solid #e5e7eb;
+    background-color: #f9fafb;
+}
+.file-preview-item:last-child {
+    border-bottom: none;
+}
+
+.file-preview-item-icon {
+    width: 48px;
+    height: 48px;
+    flex-shrink: 0;
+    margin-right: 0.75rem;
+    color: #3b82f6;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.file-preview-item-icon svg, 
+.file-preview-item-icon img {
+    /* 4. Mantiene la proporción sin estirar */
+    width: 100%;
+    height: 100%;
+    object-fit: contain; 
+}
+
+.file-preview-item-details {
+    flex-grow: 1;
+    min-width: 0;
+    text-align: left;
+}
+
+.file-preview-item-name {
+    font-weight: 500;
+    color: #111827;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 0.875rem;
+}
+
+.file-preview-item-size {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.file-preview-item-remove {
+    background: none;
+    border: none;
+    cursor: pointer;
+    margin-left: 1rem;
+    color: #9ca3af;
+    padding: 0.25rem;
+}
+.file-preview-item-remove:hover {
+    color: #ef4444; /* red-500 */
+}
+
+
+/* Feedback y Botones */
+.feedback-container {
+    margin-top: 1rem;
+    position: relative;
+    padding-left: 0; /* Por defecto no hay espacio */
+    transition: padding-left 0.3s;
+}
+
+/* Estilos para el indicador de carga (spinner) */
+.feedback-container.is-loading {
+    padding-left: 28px; /* Espacio para el spinner cuando está activo */
+}
+
+.feedback-container.is-loading::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    margin-top: -8px; /* Mitad de la altura para centrar verticalmente */
+    width: 16px;
+    height: 16px;
+    border: 2px solid #d1d5db; /* Color gris claro */
+    border-top-color: #3b82f6; /* Color azul */
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+
+.process-button-container {
+    margin-top: 1.5rem;
+}
+
+.process-button {
+    width: 100%;
+    color: #ffffff;
+    background-color: #1d4ed8;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    padding: 0.625rem 1.25rem;
+    text-align: center;
+    border: none;
+}
+.process-button:hover {
+    background-color: #1e40af;
+}
+.process-button:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.5);
+}
+.process-button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Resultados */
+.results-card {
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+    padding: 1.5rem;
+    margin-top: 1rem;
+    display: none;
+}
+
+.results-title {
+    font-size: 1.125rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.5rem;
+}
+
+.results-summary {
+    font-size: 0.875rem;
+    color: #4b5563;
+    margin-bottom: 1rem;
+}

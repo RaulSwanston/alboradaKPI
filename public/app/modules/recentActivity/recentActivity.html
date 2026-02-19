@@ -1,0 +1,27 @@
+<section id="recent-activity-module" class="container">
+  <h2>Actividad Reciente</h2>
+  
+  <!-- Contenedor para los items de actividad -->
+  <div id="activity-feed">
+    <p class="loading-message">Cargando actividades...</p>
+  </div>
+
+  <!-- Mensaje para cuando no hay actividades -->
+  <div id="no-activity-message" class="empty-state" style="display: none;">
+    <p>Aún no hay actividad para mostrar.</p>
+    <span>Cuando los residentes reporten pagos o se generen cargos, aparecerán aquí.</span>
+  </div>
+
+  <!-- Plantilla para un solo item de actividad -->
+  <template id="activity-item-template">
+    <div class="activity-item">
+      <div class="activity-icon">
+        <!-- El icono se establecerá desde el controlador -->
+      </div>
+      <div class="activity-content">
+        <p class="activity-description"></p>
+        <span class="activity-timestamp"></span>
+      </div>
+    </div>
+  </template>
+</section>

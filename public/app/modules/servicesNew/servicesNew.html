@@ -1,0 +1,137 @@
+<div class="new-concept-container">
+  <header class="new-concept-header">
+    <button class="btn-back" onclick="history.back()">
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+      </svg>
+    </button>
+    <div class="header-titles">
+      <h1>Nuevo Concepto</h1>
+      <span>Configuración de Cargos</span>
+    </div>
+  </header>
+
+  <main class="new-concept-content">
+    <form id="form-new-concept" novalidate>
+      <!-- Sección: Información Básica -->
+      <section class="form-section">
+        <h2 class="section-title">
+          <span class="icon-wrapper blue">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+            </svg>
+          </span>
+          Información Básica
+        </h2>
+        
+        <div class="field-group">
+          <label for="concept-name">Nombre del Concepto e Icono</label>
+          <div class="input-icon-group">
+            <input type="text" id="concept-name" name="name" placeholder="Ej. Cuota de Mantenimiento Enero" required autocomplete="off">
+            <button type="button" id="btn-select-icon" class="btn-icon-trigger" title="Seleccionar Icono">
+              <div id="selected-icon-preview" class="selected-icon-preview">
+                <!-- Icono seleccionado o puntos suspensivos -->
+                <span>...</span>
+              </div>
+            </button>
+          </div>
+          <input type="hidden" id="selected-icon-url" name="iconUrl" required>
+        </div>
+
+        <!-- Panel de Sugerencias de Iconos (Inicialmente oculto) -->
+        <div id="icon-results-panel" class="icon-results-panel hidden">
+            <div class="panel-header">
+                <span id="search-status-text">Escribe para buscar iconos...</span>
+                <button type="button" class="btn-close-panel" id="btn-close-icon-panel">×</button>
+            </div>
+            <div id="icon-results-grid" class="icon-results-grid">
+                <!-- Resultados de Lordicon -->
+            </div>
+        </div>
+
+        <div class="field-group">
+          <label for="charge-type">Tipo de Cargo</label>
+          <div class="select-wrapper">
+            <select id="charge-type" name="type" required>
+              <option disabled selected value="">Selecciona un tipo</option>
+              <option value="ordinary">Cuota Ordinaria</option>
+              <option value="extraordinary">Cuota Extraordinaria</option>
+              <option value="fine">Multa</option>
+              <option value="service">Servicio</option>
+              <option value="reservation">Reserva de Amenidad</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="amount">Monto Predeterminado</label>
+          <div class="input-prefix-wrapper">
+            <span class="prefix">$</span>
+            <input type="number" id="amount" name="defaultAmount" placeholder="0.00" step="0.01" required>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sección: Configuración -->
+      <section class="form-section">
+        <h2 class="section-title">
+          <span class="icon-wrapper orange">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+          </span>
+          Configuración
+        </h2>
+
+        <div class="toggle-card">
+          <div class="toggle-info">
+            <div class="icon-circle">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.3"/>
+              </svg>
+            </div>
+            <div class="text-content">
+              <strong>Cargo Recurrente</strong>
+              <p>Se genera automáticamente cada mes</p>
+            </div>
+          </div>
+          <label class="switch">
+            <input type="checkbox" name="isRecurring">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <div class="field-group">
+          <label>Aplicable a</label>
+          <div class="radio-grid">
+            <label class="radio-card">
+              <input type="radio" name="applicableTo" value="all" checked>
+              <div class="card-content">Todas las Unidades</div>
+            </label>
+            <label class="radio-card">
+              <input type="radio" name="applicableTo" value="manual">
+              <div class="card-content">Selección Manual</div>
+            </label>
+          </div>
+        </div>
+      </section>
+
+      <!-- Sección: Descripción -->
+      <section class="form-section">
+        <div class="field-group">
+          <label for="description">Descripción / Notas</label>
+          <textarea id="description" name="description" placeholder="Proporcione detalles importantes sobre este cargo..." rows="3" required></textarea>
+        </div>
+      </section>
+
+      <div class="form-actions-fixed">
+        <button type="submit" class="btn-submit" id="btn-submit-concept" disabled>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/>
+          </svg>
+          Crear Concepto
+        </button>
+      </div>
+    </form>
+  </main>
+</div>

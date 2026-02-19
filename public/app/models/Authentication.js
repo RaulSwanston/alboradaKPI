@@ -1,5 +1,5 @@
 import { auth, GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, getAdditionalUserInfo } from "../core/firebase.js";
-import { createUserProfile } from "./User.js";
+import { createUserProfile } from "./Profile.js";
 
 export async function handleGoogleAuthentication() {
   const provider = new GoogleAuthProvider();

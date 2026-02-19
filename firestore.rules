@@ -70,5 +70,12 @@ service cloud.firestore {
       // Un residente solo puede CREAR una notificación si tiene una propiedad asignada.
       allow create: if isResidentOfProperty(request.resource.data.propertyId);
     }
+
+    // Colección de Actividades: Log inmutable de eventos.
+    match /activities/{activityId} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null;
+      allow update, delete: if false; // Nadie puede modificar o borrar.
+    }
   }
 }

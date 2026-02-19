@@ -1,0 +1,3375 @@
+{
+  "entities": [
+    {
+      "propertyId": "001",
+      "ownerName": "Rubén Araúz / Elisa Indira Powel Rodriguez",
+      "phones": [
+        "442-5584",
+        "6677-6130"
+      ],
+      "outstandingBalance": 90.00,
+      "address": "1RA OESTE"
+    },
+    {
+      "propertyId": "002",
+      "ownerName": "Omar Cueto",
+      "phones": [
+        "6954-8782",
+        "6843-4283"
+      ],
+      "outstandingBalance": 60.00,
+      "address": "1RA OESTE"
+    },
+    {
+      "propertyId": "003",
+      "ownerName": "Leonardo Small / Gilda Gavidia",
+      "phones": [
+        "442-3422",
+        "6913-5737"
+      ],
+      "outstandingBalance": 60.00,
+      "address": "1RA OESTE"
+    },
+    {
+      "propertyId": "004",
+      "ownerName": "Carlos Garay",
+      "phones": [
+        "442-7904"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "1RA OESTE"
+    },
+    {
+      "propertyId": "005",
+      "ownerName": "Anselmo Forde",
+      "phones": [
+        "442-0423",
+        "6956-0708"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "1RA OESTE"
+    },
+    {
+      "propertyId": "006",
+      "ownerName": "Miguel Sanchez",
+      "phones": [
+        "6616-8465"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "1RA OESTE"
+    },
+    {
+      "propertyId": "007",
+      "ownerName": "Alex Paz",
+      "phones": [
+        "6669-6365",
+        "6618-4403"
+      ],
+      "outstandingBalance": 105.00,
+      "address": "1RA CENTRO"
+    },
+    {
+      "propertyId": "008",
+      "ownerName": "Darinka De Hoyos",
+      "phones": [
+        "6669-6365",
+        "6618-4403"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "1RA CENTRO"
+    },
+    {
+      "propertyId": "009",
+      "ownerName": "Aura Del Carmen Hurtado / Tahimy Guadalupe",
+      "phones": [
+        "474-0366",
+        "6409-4805"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "1RA CENTRO"
+    },
+    {
+      "propertyId": "010",
+      "ownerName": "Miozotis Del Carmen Olmos",
+      "phones": [
+        "442-8782",
+        "6747-0777"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "1RA CENTRO"
+    },
+    {
+      "propertyId": "011",
+      "ownerName": "Mario Macías",
+      "phones": [
+        "474-0028",
+        "6747-1440"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "1RA CENTRO"
+    },
+    {
+      "propertyId": "012",
+      "ownerName": "Hector Escobar / Sheriska Escobar",
+      "phones": [
+        "474-2407"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "1RA CENTRO"
+    },
+    {
+      "propertyId": "013",
+      "ownerName": "Domitila Ceballos",
+      "phones": [
+        "6425-8445",
+        "474-2597"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "1RA CENTRO",
+      "notes": "Flia. Ceballos"
+    },
+    {
+      "propertyId": "014",
+      "ownerName": "María Montenegro",
+      "phones": [
+        "442-8600",
+        "6545-9584"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "1RA CENTRO"
+    },
+    {
+      "propertyId": "015",
+      "ownerName": "Susana Thachar",
+      "phones": [
+        "472-2959",
+        "6615-0661"
+      ],
+      "outstandingBalance": 90.00,
+      "address": "1RA CENTRO"
+    },
+    {
+      "propertyId": "016",
+      "ownerName": "Victor Castillo / Victor De Jesus Castillo / Ciara Jimenez",
+      "phones": [
+        "6999-0137",
+        "6567-7421"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "1RA CENTRO"
+    },
+    {
+      "propertyId": "017",
+      "ownerName": "Daibelis Victoria",
+      "phones": [
+        "6947-1022"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "1RA ESTE"
+    },
+    {
+      "propertyId": "018",
+      "ownerName": "Yaniza De Jimenez / Yaniza De Dreckett",
+      "phones": [
+        "6233-5382"
+      ],
+      "outstandingBalance": 0.00,
+      "address": "1RA ESTE"
+    },
+    {
+      "propertyId": "019",
+      "ownerName": "Miguel Nereida / Querubi Nereida",
+      "phones": [
+        "474-1884",
+        "6085-6846"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "1RA ESTE"
+    },
+    {
+      "propertyId": "020",
+      "ownerName": "Vielka De Caballero / Vielka Cusati",
+      "phones": [
+        "6466-0667"
+      ],
+      "outstandingBalance": 20.00,
+      "address": "1RA ESTE"
+    },
+    {
+      "propertyId": "021",
+      "ownerName": "Hector Ibarguen",
+      "phones": [
+        "6735-6237"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "1RA ESTE"
+    },
+    {
+      "propertyId": "022",
+      "ownerName": "Juan Cedeño",
+      "phones": [
+        "474-0322"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "1RA ESTE"
+    },
+    {
+      "propertyId": "023",
+      "ownerName": "Humberto Guevara",
+      "phones": [
+        "442-8252",
+        "6839-5290"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "1RA ESTE"
+    },
+    {
+      "propertyId": "024",
+      "ownerName": "Aikza Abrego",
+      "phones": [
+        "474-4130"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "2DA ESTE"
+    },
+    {
+      "propertyId": "025",
+      "ownerName": "Elsa De Medina / Manuel De Jesus Medina",
+      "phones": [
+        "442-6575"
+      ],
+      "email": "medinamanuel720mm@gmail.com",
+      "outstandingBalance": 0.00,
+      "address": "2DA ESTE",
+      "notes": "manuel y mahogani medina"
+    },
+    {
+      "propertyId": "026",
+      "ownerName": "Dionisio Jimenez",
+      "phones": [
+        "442-4835",
+        "6651-2582"
+      ],
+      "email": "natykathy@hotmail.com",
+      "outstandingBalance": 15.00,
+      "address": "2DA ESTE"
+    },
+    {
+      "propertyId": "027",
+      "ownerName": "Leonardo Machado / James Mick",
+      "phones": [
+        "6474-0413"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "2DA ESTE"
+    },
+    {
+      "propertyId": "028",
+      "ownerName": "Vanessa Beltrán / Luis Sanchez",
+      "phones": [
+        "442-4351",
+        "6474-0413"
+      ],
+      "email": "vanessa.beltran26@outlook.com",
+      "outstandingBalance": 45.00,
+      "address": "2DA ESTE"
+    },
+    {
+      "propertyId": "029",
+      "ownerName": "Indira Patel",
+      "phones": [
+        "474-4117"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "2DA ESTE"
+    },
+    {
+      "propertyId": "030",
+      "ownerName": "Katherin Lee / Aliza Jimenez",
+      "phones": [
+        "474-0680",
+        "6105-7393"
+      ],
+      "email": "alizj18@gmail.com",
+      "outstandingBalance": 30.00,
+      "address": "2DA ESTE"
+    },
+    {
+      "propertyId": "031",
+      "ownerName": "Israel Santamaría",
+      "phones": [
+        "6916-6382"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "2DA CENTRO"
+    },
+    {
+      "propertyId": "032",
+      "ownerName": "Roberto Rudy",
+      "phones": [],
+      "outstandingBalance": 60.00,
+      "address": "2DA CENTRO"
+    },
+    {
+      "propertyId": "033",
+      "ownerName": "Xenia Rosales / Xenia Rosales De Betegon",
+      "phones": [
+        "442-8956"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "2DA CENTRO"
+    },
+    {
+      "propertyId": "034",
+      "ownerName": "Sonia Rodríguez / Sonia Rodríguez De Murillo",
+      "phones": [],
+      "outstandingBalance": 90.00,
+      "address": "2DA CENTRO"
+    },
+    {
+      "propertyId": "035",
+      "ownerName": "Maribetza Ceballos / Malibetza Ceballos",
+      "phones": [
+        "430-9638",
+        "442-6708"
+      ],
+      "outstandingBalance": 60.00,
+      "address": "2DA CENTRO"
+    },
+    {
+      "propertyId": "036",
+      "ownerName": "Yirabel Girado",
+      "phones": [
+        "474-1013"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "2DA CENTRO"
+    },
+    {
+      "propertyId": "037",
+      "ownerName": "Gladys Villanueva",
+      "phones": [],
+      "outstandingBalance": 60.00,
+      "address": "2DA CENTRO"
+    },
+    {
+      "propertyId": "038",
+      "ownerName": "Argelia Morris",
+      "phones": [
+        "6731-0039"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "2DA CENTRO"
+    },
+    {
+      "propertyId": "039",
+      "ownerName": "Ernesto Small",
+      "phones": [
+        "6662-8883"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "2DA CENTRO"
+    },
+    {
+      "propertyId": "040",
+      "ownerName": "Felicia Gittens",
+      "phones": [
+        "442-8561"
+      ],
+      "outstandingBalance": 0.00,
+      "address": "2DA CENTRO"
+    },
+    {
+      "propertyId": "041",
+      "ownerName": "Ivan Betegón / Alberto Chambers / Yaribel Ruiz",
+      "phones": [
+        "442-5780"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "1RA OESTE"
+    },
+    {
+      "propertyId": "042",
+      "ownerName": "Hernán Delgado / Jasmin Johnson",
+      "phones": [
+        "6677-3947"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "1RA OESTE"
+    },
+    {
+      "propertyId": "043",
+      "ownerName": "Roberto Rodríguez",
+      "phones": [
+        "442-7091",
+        "6663-1423"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "1RA OESTE"
+    },
+    {
+      "propertyId": "044",
+      "ownerName": "Otman Santamaría / Barbara Bendigo De Santamaria",
+      "phones": [
+        "442-8290",
+        "6767-3594"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "1RA OESTE"
+    },
+    {
+      "propertyId": "045",
+      "ownerName": "Eduardo Muñoz / Fernando Cummings",
+      "phones": [
+        "6054-1468"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "1RA OESTE"
+    },
+    {
+      "propertyId": "046",
+      "ownerName": "Rafael Arnemann / Syahmar Ortiz",
+      "phones": [
+        "442-3329",
+        "6612-0986"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "1RA OESTE"
+    },
+    {
+      "propertyId": "047",
+      "ownerName": "Luzmila De Quintero",
+      "phones": [
+        "442-0228",
+        "6636-5159"
+      ],
+      "outstandingBalance": 0.00,
+      "address": "1RA OESTE"
+    },
+    {
+      "propertyId": "048",
+      "ownerName": "Ernesto Galván / Analida Jordan",
+      "phones": [
+        "442-1026",
+        "6703-2368"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "2DA OESTE"
+    },
+    {
+      "propertyId": "049",
+      "ownerName": "Nicolas Young / Eric Lasonder",
+      "phones": [
+        "442-5865",
+        "6718-8355"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "2DA OESTE"
+    },
+    {
+      "propertyId": "050",
+      "ownerName": "Noris De Mejía / Pablo Y Noris De Mejía",
+      "phones": [
+        "6055-9061",
+        "6689-2089"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "2DA OESTE"
+    },
+    {
+      "propertyId": "051",
+      "ownerName": "José Zurita",
+      "phones": [
+        "442-0276",
+        "6536-9809"
+      ],
+      "outstandingBalance": 60.00,
+      "address": "2DA OESTE"
+    },
+    {
+      "propertyId": "052",
+      "ownerName": "Crisalida Solís",
+      "phones": [
+        "442-6177"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "2DA OESTE"
+    },
+    {
+      "propertyId": "053",
+      "ownerName": "Osvaldo Herrera",
+      "phones": [
+        "442-1011",
+        "6797-7223"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "2DA OESTE"
+    },
+    {
+      "propertyId": "054",
+      "ownerName": "Jerónimo Hernandez",
+      "phones": [
+        "474-0355",
+        "6756-5449"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "2DA OESTE"
+    },
+    {
+      "propertyId": "055",
+      "ownerName": "Alberto Benett",
+      "phones": [
+        "6684-2507"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "2DA OESTE"
+    },
+    {
+      "propertyId": "056",
+      "ownerName": "Nitzia Aguilar",
+      "phones": [
+        "442-3835",
+        "6707-9405"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "2DA OESTE"
+    },
+    {
+      "propertyId": "057",
+      "ownerName": "Piedad De Cid",
+      "phones": [
+        "442-8064",
+        "6684-4888"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "2DA OESTE"
+    },
+    {
+      "propertyId": "058",
+      "ownerName": "Martín Meneses",
+      "phones": [
+        "474-4536",
+        "6858-2606"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "2DA OESTE"
+    },
+    {
+      "propertyId": "059",
+      "ownerName": "Ilka Hoy / Ilka Mark",
+      "phones": [
+        "442-2015",
+        "6485-9953"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "2DA OESTE"
+    },
+    {
+      "propertyId": "060",
+      "ownerName": "Mario Mitchel",
+      "phones": [],
+      "outstandingBalance": 75.00,
+      "address": "2DA OESTE"
+    },
+    {
+      "propertyId": "061",
+      "ownerName": "Armando Gittens",
+      "phones": [],
+      "outstandingBalance": 75.00,
+      "address": "2DA CENTRO"
+    },
+    {
+      "propertyId": "062",
+      "ownerName": "Armando Lee / Mirna Reed De Lee",
+      "phones": [
+        "442-8865"
+      ],
+      "outstandingBalance": 60.00,
+      "address": "2DA CENTRO"
+    },
+    {
+      "propertyId": "063",
+      "ownerName": "Ricardo Martínez / Nidia De Martinez",
+      "phones": [
+        "442-0051",
+        "6747-2234"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "2DA CENTRO"
+    },
+    {
+      "propertyId": "064",
+      "ownerName": "Iliana Lee",
+      "phones": [
+        "6803-1440",
+        "6403-1440"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "2DA CENTRO"
+    },
+    {
+      "propertyId": "065",
+      "ownerName": "César López",
+      "phones": [
+        "442-8613"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "2DA CENTRO"
+    },
+    {
+      "propertyId": "066",
+      "ownerName": "Dhayanara Mendoza",
+      "phones": [
+        "474-0656"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "2DA CENTRO"
+    },
+    {
+      "propertyId": "067",
+      "ownerName": "Amilio Lovet / Emilio Lovet",
+      "phones": [
+        "6112-8878",
+        "474-0172"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "2DA CENTRO"
+    },
+    {
+      "propertyId": "068",
+      "ownerName": "Wilfredo Pacheco / Emelina Catuy",
+      "phones": [
+        "442-8804",
+        "6940-7375"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "2DA CENTRO"
+    },
+    {
+      "propertyId": "069",
+      "ownerName": "Celina De Laurdes",
+      "phones": [],
+      "outstandingBalance": 75.00,
+      "address": "2DA CENTRO"
+    },
+    {
+      "propertyId": "070",
+      "ownerName": "Damaris Jackson",
+      "phones": [],
+      "outstandingBalance": 75.00,
+      "address": "2DA CENTRO"
+    },
+    {
+      "propertyId": "071",
+      "ownerName": "Carlos Valdez",
+      "phones": [
+        "442-8702"
+      ],
+      "outstandingBalance": 60.00,
+      "address": "2DA CENTRO"
+    },
+    {
+      "propertyId": "072",
+      "ownerName": "Damian Montenegro",
+      "phones": [
+        "6668-0959"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "2DA CENTRO"
+    },
+    {
+      "propertyId": "073",
+      "ownerName": "Yira De Morales",
+      "phones": [
+        "6316-0857"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "2DA CENTRO"
+    },
+    {
+      "propertyId": "074",
+      "ownerName": "Victor Rozette",
+      "phones": [
+        "442-7133",
+        "6436-6064"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "2DA CENTRO"
+    },
+    {
+      "propertyId": "075",
+      "ownerName": "Vanessa Parnther / Vanessa Luzcando",
+      "phones": [
+        "474-1123",
+        "6820-6037"
+      ],
+      "email": "vanessaparnther564@gmail.com",
+      "outstandingBalance": 45.00,
+      "address": "2DA ESTE"
+    },
+    {
+      "propertyId": "076",
+      "ownerName": "Oscar Gomez",
+      "phones": [],
+      "outstandingBalance": 75.00,
+      "address": "2DA ESTE"
+    },
+    {
+      "propertyId": "077",
+      "ownerName": "Enrique Herrera",
+      "phones": [
+        "6215-1010"
+      ],
+      "email": "kiko04@hotmail.com",
+      "outstandingBalance": 75.00,
+      "address": "2DA ESTE"
+    },
+    {
+      "propertyId": "078",
+      "ownerName": "Antonio Brooks",
+      "phones": [
+        "442-5671",
+        "6535-2622"
+      ],
+      "email": "idalinasalamancatv@gmail.com",
+      "outstandingBalance": 45.00,
+      "address": "2DA ESTE"
+    },
+    {
+      "propertyId": "079",
+      "ownerName": "Kaisha Rivas / Moises Gonzalez",
+      "phones": [
+        "6529-4931"
+      ],
+      "email": "rivaskaisha@gmail.com",
+      "outstandingBalance": 30.00,
+      "address": "2DA ESTE"
+    },
+    {
+      "propertyId": "080",
+      "ownerName": "Florencia Sinclier / Juan Alvarado / Vanessa Parnther",
+      "phones": [
+        "442-3736",
+        "6798-1093"
+      ],
+      "outstandingBalance": 60.00,
+      "address": "2DA ESTE"
+    },
+    {
+      "propertyId": "081",
+      "ownerName": "Yomaira Avila",
+      "phones": [
+        "6936-4462"
+      ],
+      "email": "yomiavila2605@gmail.com",
+      "outstandingBalance": 75.00,
+      "address": "2DA ESTE"
+    },
+    {
+      "propertyId": "082",
+      "ownerName": "Reynaldo Angarita",
+      "phones": [
+        "472-6302",
+        "6997-4717"
+      ],
+      "email": "rei.angarita@gmail.com",
+      "outstandingBalance": 75.00,
+      "address": "3RA ESTE"
+    },
+    {
+      "propertyId": "083",
+      "ownerName": "Amarilis Mata S.",
+      "phones": [
+        "6880-6439",
+        "6812-3241"
+      ],
+      "email": "mataamarilis07@gmail.com",
+      "outstandingBalance": 75.00,
+      "address": "3RA ESTE"
+    },
+    {
+      "propertyId": "084",
+      "ownerName": "Javier Campo",
+      "phones": [
+        "6752-4640"
+      ],
+      "email": "campojavier949@gmail.com",
+      "outstandingBalance": 60.00,
+      "address": "3RA ESTE"
+    },
+    {
+      "propertyId": "085",
+      "ownerName": "Luis Escobar / Wilma De Escobar",
+      "phones": [
+        "6452-8268",
+        "6842-9334"
+      ],
+      "email": "wylma3121@gmail.com",
+      "outstandingBalance": 60.00,
+      "address": "3RA ESTE"
+    },
+    {
+      "propertyId": "086",
+      "ownerName": "Georgiana Gaviria",
+      "phones": [
+        "6414-3804",
+        "442-4737"
+      ],
+      "email": "ggaviria.04@gmail.com",
+      "outstandingBalance": 0.00,
+      "address": "3RA ESTE"
+    },
+    {
+      "propertyId": "087",
+      "ownerName": "Eduardo Villarreal",
+      "phones": [
+        "6819-7691",
+        "6623-3648"
+      ],
+      "email": "m-el04@hotmail.com",
+      "outstandingBalance": 75.00,
+      "address": "3RA ESTE"
+    },
+    {
+      "propertyId": "088",
+      "ownerName": "Elkin Rodriguez / Gisela Gonzalez",
+      "phones": [],
+      "outstandingBalance": 15.00,
+      "address": "3RA ESTE"
+    },
+    {
+      "propertyId": "089",
+      "ownerName": "Ralph Alexander / Lorraine Alexander",
+      "phones": [],
+      "outstandingBalance": 75.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "090",
+      "ownerName": "Angel Del Valle",
+      "phones": [
+        "474-0583"
+      ],
+      "outstandingBalance": 90.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "091",
+      "ownerName": "Zaida Jimenez / Ligia Adles",
+      "phones": [
+        "474-0254",
+        "6945-3014"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "092",
+      "ownerName": "Ivonne Margerie / Ivonne Roberts",
+      "phones": [
+        "442-7767"
+      ],
+      "outstandingBalance": 90.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "093",
+      "ownerName": "Glenda De Davis",
+      "phones": [
+        "6875-7223"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "094",
+      "ownerName": "Juan Ramos",
+      "phones": [],
+      "outstandingBalance": 75.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "095",
+      "ownerName": "Raul Murdock",
+      "phones": [
+        "6675-3775"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "096",
+      "ownerName": "Carlos Tuñon",
+      "phones": [],
+      "outstandingBalance": 90.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "097",
+      "ownerName": "Eduard Gonzalez / Karen De Gonzalez",
+      "phones": [
+        "442-0340"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "098",
+      "ownerName": "Oriel Avila",
+      "phones": [
+        "6716-3420"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "099",
+      "ownerName": "Carlos Gonzalez",
+      "phones": [
+        "6206-2900"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "100",
+      "ownerName": "Yanitsha Harris / Jairo Buitrago",
+      "phones": [
+        "6677-9405"
+      ],
+      "outstandingBalance": 90.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "101",
+      "ownerName": "Flor De Escapa / Flor Aparicio",
+      "phones": [],
+      "outstandingBalance": 15.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "102",
+      "ownerName": "Harkishin Chugani",
+      "phones": [],
+      "outstandingBalance": 75.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "103",
+      "ownerName": "Manuel Villarreal",
+      "phones": [
+        "6614-3727"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "104",
+      "ownerName": "James Peters",
+      "phones": [
+        "442-1553",
+        "6613-3174"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "3RA OESTE"
+    },
+    {
+      "propertyId": "105",
+      "ownerName": "Cesar Estrada",
+      "phones": [
+        "6289-9382",
+        "6326-6272"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "3RA OESTE"
+    },
+    {
+      "propertyId": "106",
+      "ownerName": "Rogelio Aguirre / Arelis Ossa",
+      "phones": [
+        "6414-3990"
+      ],
+      "outstandingBalance": 60.00,
+      "address": "3RA OESTE"
+    },
+    {
+      "propertyId": "107",
+      "ownerName": "Miguel Taylor",
+      "phones": [
+        "6730-3039"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "3RA OESTE"
+    },
+    {
+      "propertyId": "108",
+      "ownerName": "Carlos Brows / Carlos Brown",
+      "phones": [
+        "442-8975",
+        "6681-3042"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "3RA OESTE"
+    },
+    {
+      "propertyId": "109",
+      "ownerName": "Alfredo Cebrian",
+      "phones": [
+        "474-2619"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "3RA OESTE"
+    },
+    {
+      "propertyId": "110",
+      "ownerName": "Carlos Sierra",
+      "phones": [
+        "442-4612",
+        "6935-2426"
+      ],
+      "outstandingBalance": 60.00,
+      "address": "3RA OESTE"
+    },
+    {
+      "propertyId": "111",
+      "ownerName": "Aldo Hamilton",
+      "phones": [
+        "474-1031",
+        "6283-3545"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "3RA OESTE"
+    },
+    {
+      "propertyId": "112",
+      "ownerName": "Yuri Bethancourt",
+      "phones": [
+        "474-1334",
+        "6786-1297"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "3RA OESTE"
+    },
+    {
+      "propertyId": "113",
+      "ownerName": "Mario Gondola",
+      "phones": [
+        "442-2478"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "3RA OESTE"
+    },
+    {
+      "propertyId": "114",
+      "ownerName": "Maria Thomhill",
+      "phones": [],
+      "outstandingBalance": 75.00,
+      "address": "3RA OESTE"
+    },
+    {
+      "propertyId": "115",
+      "ownerName": "Ana De Hernadez / Kizaida Obregon",
+      "phones": [
+        "6775-2150"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "3RA OESTE"
+    },
+    {
+      "propertyId": "116",
+      "ownerName": "Erika Jimenez",
+      "phones": [
+        "6556-3671"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "3RA OESTE"
+    },
+    {
+      "propertyId": "117",
+      "ownerName": "Jorge Velasquez",
+      "phones": [
+        "442-5729",
+        "6634-8163"
+      ],
+      "outstandingBalance": 0.00,
+      "address": "3RA OESTE"
+    },
+    {
+      "propertyId": "118",
+      "ownerName": "Antonio Taylor / Madelein Taylor",
+      "phones": [],
+      "outstandingBalance": 60.00,
+      "address": "3RA OESTE"
+    },
+    {
+      "propertyId": "119",
+      "ownerName": "Mario Small",
+      "phones": [
+        "6252-1835",
+        "6852-1835"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "3RA OESTE"
+    },
+    {
+      "propertyId": "120",
+      "ownerName": "Jaime Lawrence",
+      "phones": [
+        "442-8284",
+        "6716-7621"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "3RA OESTE"
+    },
+    {
+      "propertyId": "121",
+      "ownerName": "Dalia Peters",
+      "phones": [
+        "474-0822",
+        "6673-4211"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "122",
+      "ownerName": "Eliezer Espinosa / Yamileth Sanchez",
+      "phones": [],
+      "outstandingBalance": 15.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "123",
+      "ownerName": "Jose Espinosa",
+      "phones": [
+        "474-0980"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "124",
+      "ownerName": "Juan Garibaldi",
+      "phones": [
+        "6733-2040"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "125",
+      "ownerName": "Abdiel Hassan",
+      "phones": [
+        "442-0411",
+        "6242-7180"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "126",
+      "ownerName": "Gustavo Montalvan",
+      "phones": [
+        "6717-5082"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "127",
+      "ownerName": "Raglin Robinson",
+      "phones": [
+        "6039-6701"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "128",
+      "ownerName": "Luis Pacheco",
+      "phones": [
+        "442-0211",
+        "6068-4338"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "129",
+      "ownerName": "Irazema Posso / Erc Rosillo",
+      "phones": [
+        "474-1107",
+        "6662-4939"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "130",
+      "ownerName": "Angelica Del Carmen De Chiari / Enrique Marcano",
+      "phones": [
+        "442-8595"
+      ],
+      "outstandingBalance": 90.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "131",
+      "ownerName": "Ana Castro",
+      "phones": [],
+      "outstandingBalance": 75.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "132",
+      "ownerName": "Cristian Sanchez / Natzury Reina Bernal / Amed Algandona",
+      "phones": [
+        "6531-3342"
+      ],
+      "outstandingBalance": 0.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "133",
+      "ownerName": "Ada Chong",
+      "phones": [],
+      "outstandingBalance": 90.00,
+      "address": "3RA CENTRO"
+    },
+    {
+      "propertyId": "134",
+      "ownerName": "Lucas Cortes",
+      "phones": [
+        "474-4302",
+        "6508-1432"
+      ],
+      "email": "yazdara_29@hotmail.com",
+      "outstandingBalance": 60.00,
+      "address": "3RA ESTE"
+    },
+    {
+      "propertyId": "135",
+      "ownerName": "Milla Del Castillo / Nilka Del Castillo",
+      "phones": [
+        "6750-8398"
+      ],
+      "email": "rosaz031@hotmail.com",
+      "outstandingBalance": 30.00,
+      "address": "3RA ESTE"
+    },
+    {
+      "propertyId": "136",
+      "ownerName": "Sumaykira Grenald",
+      "phones": [
+        "442-7556",
+        "6694-1785"
+      ],
+      "email": "sumaykira-26@hotmail.es",
+      "outstandingBalance": 30.00,
+      "address": "3RA ESTE"
+    },
+    {
+      "propertyId": "137",
+      "ownerName": "Jose Tuñon",
+      "phones": [
+        "474-0137",
+        "6747-4836"
+      ],
+      "email": "Josetunon_65@gmail.com",
+      "outstandingBalance": 45.00,
+      "address": "3RA ESTE"
+    },
+    {
+      "propertyId": "138",
+      "ownerName": "Diovana Griffith",
+      "phones": [
+        "6872-6599"
+      ],
+      "email": "diovanag2015@gmail.com",
+      "outstandingBalance": 75.00,
+      "address": "3RA ESTE"
+    },
+    {
+      "propertyId": "139",
+      "ownerName": "Viola De Bell / Ernesto Galvan",
+      "phones": [
+        "442-1771",
+        "6956-9568"
+      ],
+      "email": "keyrazurita587@gmail.com",
+      "outstandingBalance": 60.00,
+      "address": "3RA ESTE"
+    },
+    {
+      "propertyId": "140",
+      "ownerName": "Aracelis Tud De Rosales",
+      "phones": [
+        "474-1771",
+        "6638-3334"
+      ],
+      "email": "nhohah.rosales21@gmail.com",
+      "outstandingBalance": 75.00,
+      "address": "3RA ESTE"
+    },
+    {
+      "propertyId": "141",
+      "ownerName": "Luis Coronel",
+      "phones": [
+        "6964-3087",
+        "6969-4313"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "4TA ESTE"
+    },
+    {
+      "propertyId": "142",
+      "ownerName": "Daniel Isaac",
+      "phones": [],
+      "outstandingBalance": 75.00,
+      "address": "4TA ESTE"
+    },
+    {
+      "propertyId": "143",
+      "ownerName": "Hernando Valle / Daiza Bru",
+      "phones": [
+        "6664-5530"
+      ],
+      "outstandingBalance": 60.00,
+      "address": "4TA ESTE"
+    },
+    {
+      "propertyId": "144",
+      "ownerName": "Doris Marrugo",
+      "phones": [
+        "474-1148"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "4TA ESTE"
+    },
+    {
+      "propertyId": "145",
+      "ownerName": "Magaly De Vivero",
+      "phones": [
+        "442-4909",
+        "6672-1025"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "4TA ESTE"
+    },
+    {
+      "propertyId": "146",
+      "ownerName": "Jurgen Weller",
+      "phones": [
+        "474-0030",
+        "6948-2516"
+      ],
+      "outstandingBalance": 60.00,
+      "address": "4TA ESTE"
+    },
+    {
+      "propertyId": "147",
+      "ownerName": "Jaime Ceballos",
+      "phones": [],
+      "outstandingBalance": 15.00,
+      "address": "4TA ESTE"
+    },
+    {
+      "propertyId": "148",
+      "ownerName": "Dennis Barnes",
+      "phones": [
+        "442-2658",
+        "6754-2626"
+      ],
+      "email": "dsagitario@aol.com",
+      "outstandingBalance": 0.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "149",
+      "ownerName": "Carleni / Ricardo Long",
+      "phones": [
+        "474-1469",
+        "6236-2213"
+      ],
+      "email": "carleclop@gmail.com",
+      "outstandingBalance": 60.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "150",
+      "ownerName": "Ezequiel Lewis / Kashmah Cadogan",
+      "phones": [
+        "474-0244",
+        "6974-6915"
+      ],
+      "email": "todakeitlin@hotmail.com",
+      "outstandingBalance": 15.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "151",
+      "ownerName": "Anakharina Kandrin",
+      "phones": [],
+      "outstandingBalance": 75.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "152",
+      "ownerName": "Jasmina Cruz / Jasmina Cardenas",
+      "phones": [
+        "442-7297",
+        "6881-9419"
+      ],
+      "email": "Jasminacruz@hotmail.com",
+      "outstandingBalance": 75.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "153",
+      "ownerName": "Nancy Machado / Joel Padilla",
+      "phones": [
+        "474-1534",
+        "6208-1834"
+      ],
+      "email": "ncrizettem@hotmail.com",
+      "outstandingBalance": 75.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "154",
+      "ownerName": "Jose Barrows",
+      "phones": [
+        "474-0878",
+        "6551-8451"
+      ],
+      "email": "barrows29@hormail.com",
+      "outstandingBalance": 30.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "155",
+      "ownerName": "Yolanda Forbes",
+      "phones": [
+        "6738-2222",
+        "442-1581"
+      ],
+      "email": "Yolandaforbes2662@gmail.com",
+      "outstandingBalance": 15.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "156",
+      "ownerName": "Gisel Altamirano / Yisel Bonet Altamiranda De Yard",
+      "phones": [
+        "474-1540",
+        "6747-6540"
+      ],
+      "email": "gisel21@hotmail.com",
+      "outstandingBalance": 30.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "157",
+      "ownerName": "Yaneth Badilla",
+      "phones": [
+        "474-0312",
+        "6835-3443"
+      ],
+      "email": "Yaneth.badilla@hotmail.com",
+      "outstandingBalance": 30.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "158",
+      "ownerName": "Orlando Reyna",
+      "phones": [
+        "6379-5452"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "159",
+      "ownerName": "Everaldo Percival",
+      "phones": [
+        "442-4522",
+        "6639-9388"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "160",
+      "ownerName": "Rolando Pacheco",
+      "phones": [
+        "442-5524",
+        "6613-4016"
+      ],
+      "email": "Rpachecobennett@gmail.com",
+      "outstandingBalance": 15.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "161",
+      "ownerName": "Eduardo Mclaughilin",
+      "phones": [
+        "6743-7962"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "4TA OESTE"
+    },
+    {
+      "propertyId": "162",
+      "ownerName": "Aurelio Brown / Yazmin Soto",
+      "phones": [
+        "6218-9331"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "4TA OESTE"
+    },
+    {
+      "propertyId": "163",
+      "ownerName": "Jose Saladino",
+      "phones": [
+        "6747-1858",
+        "442-6245"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "4TA OESTE"
+    },
+    {
+      "propertyId": "164",
+      "ownerName": "Nidia Leon / Nidia Silgado Leon",
+      "phones": [
+        "442-7358",
+        "6236-3138"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "4TA OESTE"
+    },
+    {
+      "propertyId": "165",
+      "ownerName": "Hector Beckford / Sabina Lawrence",
+      "phones": [
+        "474-1989",
+        "6763-8877"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "4TA OESTE"
+    },
+    {
+      "propertyId": "166",
+      "ownerName": "Yanina Gonzalez",
+      "phones": [
+        "442-1567",
+        "6980-8945"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "4TA OESTE"
+    },
+    {
+      "propertyId": "167",
+      "ownerName": "Luis Erskine / Iluminada Bonilla",
+      "phones": [
+        "442-5731",
+        "6500-4500"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "4TA OESTE"
+    },
+    {
+      "propertyId": "168",
+      "ownerName": "Odilka Ruiloba",
+      "phones": [
+        "474-0039"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "4TA OESTE"
+    },
+    {
+      "propertyId": "169",
+      "ownerName": "Fernado Penas",
+      "phones": [
+        "6150-1235"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "4TA OESTE"
+    },
+    {
+      "propertyId": "170",
+      "ownerName": "Jazmin Mendoza",
+      "phones": [
+        "442-5909",
+        "6874-7275"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "4TA OESTE"
+    },
+    {
+      "propertyId": "171",
+      "ownerName": "Kahiana Castro / Katiana Castro",
+      "phones": [
+        "442-7088",
+        "6747-5320"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "4TA OESTE"
+    },
+    {
+      "propertyId": "172",
+      "ownerName": "Jaime Anderson",
+      "phones": [
+        "442-0588",
+        "6106-4804"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "4TA OESTE"
+    },
+    {
+      "propertyId": "173",
+      "ownerName": "Mariela De Robinson",
+      "phones": [
+        "442-5870",
+        "6690-4178"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "4TA OESTE"
+    },
+    {
+      "propertyId": "174",
+      "ownerName": "Rolando Fitzroy",
+      "phones": [
+        "442-1160"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "4TA OESTE"
+    },
+    {
+      "propertyId": "175",
+      "ownerName": "Aubrey Forbes / Natividad Sanchez De Forbes",
+      "phones": [
+        "442-6840",
+        "6635-6317"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "4TA OESTE"
+    },
+    {
+      "propertyId": "176",
+      "ownerName": "Vielka Arauz",
+      "phones": [
+        "474-4269",
+        "6969-5878"
+      ],
+      "outstandingBalance": 90.00,
+      "address": "4TA OESTE"
+    },
+    {
+      "propertyId": "177",
+      "ownerName": "Pamela Peters",
+      "phones": [
+        "442-2427",
+        "6603-8766"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "4TA OESTE"
+    },
+    {
+      "propertyId": "178",
+      "ownerName": "Dalis Bandini",
+      "phones": [
+        "442-7970"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "4TA OESTE"
+    },
+    {
+      "propertyId": "179",
+      "ownerName": "Alma Ifil",
+      "phones": [],
+      "outstandingBalance": 45.00,
+      "address": "4TA OESTE"
+    },
+    {
+      "propertyId": "180",
+      "ownerName": "Generoso Perez",
+      "phones": [
+        "442-6406"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "4TA OESTE"
+    },
+    {
+      "propertyId": "181",
+      "ownerName": "Marlene Boyce",
+      "phones": [
+        "442-0518",
+        "6266-4698"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "4TA OESTE"
+    },
+    {
+      "propertyId": "182",
+      "ownerName": "Jean Servillus / Roseme Servillus",
+      "phones": [
+        "6023-6713",
+        "442-2044"
+      ],
+      "email": "Medser45@hotmail.com",
+      "outstandingBalance": 75.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "183",
+      "ownerName": "Celia / Marco Pault",
+      "phones": [
+        "442-3937",
+        "6708-2287"
+      ],
+      "email": "Salazar2727@hotmail.com",
+      "outstandingBalance": 45.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "184",
+      "ownerName": "Eduardo Villalta",
+      "phones": [
+        "6981-2404"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "185",
+      "ownerName": "Eloisa / Eloisa Jaen",
+      "phones": [
+        "442-8531",
+        "6461-0914"
+      ],
+      "email": "Eeloisa882@gmail.com",
+      "outstandingBalance": 30.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "186",
+      "ownerName": "Roger Oglivie / Roger Y Kristiany Oglivie",
+      "phones": [
+        "442-3411",
+        "6734-5448"
+      ],
+      "email": "Kristianyoglivie09@gmail.com",
+      "outstandingBalance": 45.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "187",
+      "ownerName": "Laura Palacio / Yaviritzel Panay",
+      "phones": [
+        "442-6306",
+        "6271-8218"
+      ],
+      "email": "Yavipanay29@gmail.com",
+      "outstandingBalance": 15.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "188",
+      "ownerName": "Fabiola Alvey",
+      "phones": [
+        "442-2527",
+        "6514-3246"
+      ],
+      "email": "alveymabel@yahoo.com",
+      "outstandingBalance": 60.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "189",
+      "ownerName": "Ada De Amaya / Anibal Amaya",
+      "phones": [
+        "442-3859",
+        "6530-3597"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "190",
+      "ownerName": "Desiree Herrera / Nizam Alikham",
+      "phones": [
+        "6931-4736"
+      ],
+      "email": "Desire.herrera@organijudicial.gob.pa",
+      "outstandingBalance": 75.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "191",
+      "ownerName": "Cointa / Erick Selles",
+      "phones": [
+        "442-7879",
+        "6468-5569"
+      ],
+      "email": "coinfernandez@gmail.com",
+      "outstandingBalance": 75.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "192",
+      "ownerName": "Yumitzie Harwood / Angel Cedeño",
+      "phones": [
+        "474-2079",
+        "6635-3933"
+      ],
+      "email": "yumitzie_harwood@hotmail.com",
+      "outstandingBalance": 30.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "193",
+      "ownerName": "Nuria Jimenez",
+      "phones": [
+        "442-6107",
+        "6306-2233"
+      ],
+      "email": "njimenez@coopcristobal.com",
+      "outstandingBalance": 30.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "194",
+      "ownerName": "Francisco De Nicolo / Lisseth De La Espada",
+      "phones": [
+        "474-1097",
+        "6238-5410"
+      ],
+      "email": "lisseth2609@gmail.com",
+      "outstandingBalance": 45.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "195",
+      "ownerName": "Luis Amador",
+      "phones": [
+        "6804-8669",
+        "6668-7615"
+      ],
+      "email": "Geac1017@gmail.com",
+      "outstandingBalance": 15.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "196",
+      "ownerName": "Heidy Bryan / Santos Chávez",
+      "phones": [
+        "474-1258",
+        "6690-0365"
+      ],
+      "email": "heidibryan1921@gmail.com",
+      "outstandingBalance": 15.00,
+      "address": "4TA CENTRO"
+    },
+    {
+      "propertyId": "197",
+      "ownerName": "Amado Hoy / Amado Hau",
+      "phones": [
+        "442-5079"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "4TA ESTE"
+    },
+    {
+      "propertyId": "198",
+      "ownerName": "Cecilio Arosemena",
+      "phones": [
+        "6204-1954"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "4TA ESTE"
+    },
+    {
+      "propertyId": "199",
+      "ownerName": "Sharyn Delgado",
+      "phones": [
+        "6090-7660",
+        "442-2049"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "4TA ESTE"
+    },
+    {
+      "propertyId": "200",
+      "ownerName": "Catalina Sander",
+      "phones": [
+        "6949-7249"
+      ],
+      "outstandingBalance": 0.00,
+      "address": "4TA ESTE"
+    },
+    {
+      "propertyId": "201",
+      "ownerName": "Romelia Hall",
+      "phones": [],
+      "outstandingBalance": 30.00,
+      "address": "4TA ESTE"
+    },
+    {
+      "propertyId": "202",
+      "ownerName": "Silvina Chifundo",
+      "phones": [
+        "6524-6058"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "4TA ESTE"
+    },
+    {
+      "propertyId": "203",
+      "ownerName": "Eduardo Cortes",
+      "phones": [
+        "474-4489"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "4TA ESTE"
+    },
+    {
+      "propertyId": "204",
+      "ownerName": "Betzaida De Forbes",
+      "phones": [
+        "6919-2122",
+        "6723-6359"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "5TA ESTE"
+    },
+    {
+      "propertyId": "205",
+      "ownerName": "Jaime Perez / Yeysil Diaz",
+      "phones": [
+        "474-1583"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "5TA ESTE"
+    },
+    {
+      "propertyId": "206",
+      "ownerName": "Williams Scott",
+      "phones": [
+        "6767-7402",
+        "6502-6602"
+      ],
+      "email": "scott_745@hotmail.com",
+      "outstandingBalance": 75.00,
+      "address": "5TA ESTE",
+      "notes": "Flia Scott"
+    },
+    {
+      "propertyId": "207",
+      "ownerName": "Lancin Brown",
+      "phones": [
+        "6030-7500",
+        "6056-3352"
+      ],
+      "email": "nataliemovilla16@gmail.com",
+      "outstandingBalance": 75.00,
+      "address": "5TA ESTE",
+      "notes": "Flia Brown Movilla"
+    },
+    {
+      "propertyId": "208",
+      "ownerName": "Amable Herrera / Iris Griffin",
+      "phones": [
+        "6677-1515"
+      ],
+      "email": "iris_08@hotmail.com",
+      "outstandingBalance": 45.00,
+      "address": "5TA ESTE"
+    },
+    {
+      "propertyId": "209",
+      "ownerName": "Gerardo Sotomayor",
+      "phones": [
+        "6785-6585",
+        "6980-4085"
+      ],
+      "email": "luzmedina06@gmail.com",
+      "outstandingBalance": 15.00,
+      "address": "5TA ESTE",
+      "notes": "Flia Sotomayor Medina"
+    },
+    {
+      "propertyId": "210",
+      "ownerName": "Yesica Chifundo / Yesica De Prestan",
+      "phones": [],
+      "outstandingBalance": 30.00,
+      "address": "5TA ESTE"
+    },
+    {
+      "propertyId": "211",
+      "ownerName": "Aldo / Aldo Medina",
+      "phones": [],
+      "outstandingBalance": 75.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "212",
+      "ownerName": "Alejandro Bermúdez",
+      "phones": [
+        "474-1728"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "213",
+      "ownerName": "Sixta M. De Ríos / Sixta Maria Cardales De Rios",
+      "phones": [
+        "442-8861",
+        "6520-3917"
+      ],
+      "outstandingBalance": 60.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "214",
+      "ownerName": "Deyka Hernández",
+      "phones": [
+        "6694-6750"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "215",
+      "ownerName": "Belgis Cedeño",
+      "phones": [
+        "442-6212",
+        "6663-1330"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "216",
+      "ownerName": "Ariel Andrade",
+      "phones": [
+        "6699-5404"
+      ],
+      "outstandingBalance": 60.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "217",
+      "ownerName": "Yadira Bustamante / Antonio Alcedo",
+      "phones": [
+        "474-2985",
+        "6949-2668"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "218",
+      "ownerName": "Julio Bejarano",
+      "phones": [
+        "6679-3368"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "219",
+      "ownerName": "Linda Lajón",
+      "phones": [
+        "6612-7145"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "220",
+      "ownerName": "Susana Delgado",
+      "phones": [
+        "442-4179",
+        "6582-2963"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "221",
+      "ownerName": "Estela Escobar / Maurel Mariam Mier De Escobar",
+      "phones": [
+        "6316-1765"
+      ],
+      "outstandingBalance": 60.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "222",
+      "ownerName": "Gimara Magallón",
+      "phones": [
+        "442-6972"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "223",
+      "ownerName": "Joel Walford / Carlos Lambert",
+      "phones": [],
+      "outstandingBalance": 45.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "224",
+      "ownerName": "Carol De Ibarra",
+      "phones": [],
+      "outstandingBalance": 90.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "225",
+      "ownerName": "Takicha Campos",
+      "phones": [
+        "6501-2252"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "226",
+      "ownerName": "Edgar Gaskin / Ursula De Gaskin",
+      "phones": [
+        "6617-7436"
+      ],
+      "email": "ergaskin@gmail.com",
+      "outstandingBalance": 75.00,
+      "address": "5TA OESTE"
+    },
+    {
+      "propertyId": "227",
+      "ownerName": "Eneida Galvan / Vielka Tuñon",
+      "phones": [
+        "474-0169",
+        "6370-8902"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "5TA OESTE"
+    },
+    {
+      "propertyId": "228",
+      "ownerName": "Maria Jaén / Zenaida Jean Valencia",
+      "phones": [
+        "474-3173",
+        "6149-4164"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "5TA OESTE"
+    },
+    {
+      "propertyId": "229",
+      "ownerName": "Luz Bovel / Aldo Bovell",
+      "phones": [
+        "6645-3942"
+      ],
+      "email": "lpardo91@gmail.com",
+      "outstandingBalance": 90.00,
+      "address": "5TA OESTE"
+    },
+    {
+      "propertyId": "230",
+      "ownerName": "Zais Costarelos",
+      "phones": [
+        "442-6827"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "5TA OESTE"
+    },
+    {
+      "propertyId": "231",
+      "ownerName": "Jaime Anderson",
+      "phones": [],
+      "outstandingBalance": 90.00,
+      "address": "5TA OESTE"
+    },
+    {
+      "propertyId": "232",
+      "ownerName": "Jose Ochoa",
+      "phones": [],
+      "outstandingBalance": 90.00,
+      "address": "5TA OESTE"
+    },
+    {
+      "propertyId": "233",
+      "ownerName": "Daniel Cumberbatch",
+      "phones": [],
+      "outstandingBalance": 75.00,
+      "address": "5TA OESTE"
+    },
+    {
+      "propertyId": "234",
+      "ownerName": "Vielka Levy",
+      "phones": [
+        "6664-7847"
+      ],
+      "outstandingBalance": 60.00,
+      "address": "5TA OESTE"
+    },
+    {
+      "propertyId": "235",
+      "ownerName": "Génesis Magallón / Rivera Magallon / Jair Jimenez",
+      "phones": [
+        "6427-2556"
+      ],
+      "email": "jahir0541@gmail.com",
+      "outstandingBalance": 75.00,
+      "address": "5TA OESTE"
+    },
+    {
+      "propertyId": "236",
+      "ownerName": "Eric Villanueva",
+      "phones": [
+        "6910-8091"
+      ],
+      "email": "eeliecer1974@yahoo.com",
+      "outstandingBalance": 15.00,
+      "address": "5TA OESTE"
+    },
+    {
+      "propertyId": "237",
+      "ownerName": "Maximo Pinto",
+      "phones": [],
+      "outstandingBalance": 75.00,
+      "address": "5TA OESTE"
+    },
+    {
+      "propertyId": "238",
+      "ownerName": "Pedro Avila",
+      "phones": [
+        "474-0633",
+        "6446-1446"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "5TA OESTE"
+    },
+    {
+      "propertyId": "239",
+      "ownerName": "Isaias Tate",
+      "phones": [
+        "6246-4354"
+      ],
+      "email": "isaias14a@gmail.com",
+      "outstandingBalance": 45.00,
+      "address": "5TA OESTE"
+    },
+    {
+      "propertyId": "240",
+      "ownerName": "Dayra Canales",
+      "phones": [
+        "6254-0105"
+      ],
+      "email": "dayra.canales@hotmail.com",
+      "outstandingBalance": 17.00,
+      "address": "5TA OESTE"
+    },
+    {
+      "propertyId": "241",
+      "ownerName": "Yashira Ramos De Prescott",
+      "phones": [
+        "474-0233",
+        "6671-1558"
+      ],
+      "email": "yashiraramos3079@gmail.com",
+      "outstandingBalance": 30.00,
+      "address": "5TA OESTE"
+    },
+    {
+      "propertyId": "242",
+      "ownerName": "Gabriel Bumham",
+      "phones": [
+        "474-1094",
+        "6500-7960"
+      ],
+      "email": "williebur08@hotmail.com",
+      "outstandingBalance": 60.00,
+      "address": "5TA OESTE"
+    },
+    {
+      "propertyId": "243",
+      "ownerName": "Regino Martinez",
+      "phones": [
+        "6316-0796"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "5TA OESTE"
+    },
+    {
+      "propertyId": "244",
+      "ownerName": "Yiria Soto / Coriel Mendoza",
+      "phones": [
+        "6584-6063"
+      ],
+      "email": "ysoto23@hotmail.com",
+      "outstandingBalance": 0.00,
+      "address": "5TA OESTE"
+    },
+    {
+      "propertyId": "245",
+      "ownerName": "Luz De Sarmiento / Luz Martinez",
+      "phones": [
+        "442-7139",
+        "6238-0868"
+      ],
+      "email": "lucecita30ms@hotmail.com",
+      "outstandingBalance": 60.00,
+      "address": "5TA OESTE"
+    },
+    {
+      "propertyId": "246",
+      "ownerName": "Sergio Castro / Sergio De Castro",
+      "phones": [
+        "442-8909",
+        "6726-8039"
+      ],
+      "email": "sdkstro@hotmail.com",
+      "outstandingBalance": 30.00,
+      "address": "5TA OESTE"
+    },
+    {
+      "propertyId": "247",
+      "ownerName": "Jose Gonzalez",
+      "phones": [
+        "442-3249",
+        "6010-8570"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "5TA OESTE"
+    },
+    {
+      "propertyId": "248",
+      "ownerName": "Jessica Hoy",
+      "phones": [],
+      "outstandingBalance": 75.00,
+      "address": "5TA OESTE"
+    },
+    {
+      "propertyId": "249",
+      "ownerName": "Zayira Echeverría / Zayira Rochell",
+      "phones": [
+        "6127-3317"
+      ],
+      "email": "leonelecheverriap1@hotmail.com",
+      "outstandingBalance": 45.00,
+      "address": "5TA OESTE"
+    },
+    {
+      "propertyId": "250",
+      "ownerName": "Guillermo Chalhoub",
+      "phones": [],
+      "outstandingBalance": 15.00,
+      "address": "5TA OESTE"
+    },
+    {
+      "propertyId": "251",
+      "ownerName": "Carlos Moran",
+      "phones": [
+        "474-1680",
+        "6057-3206"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "5TA OESTE"
+    },
+    {
+      "propertyId": "252",
+      "ownerName": "Eishka Periñan",
+      "phones": [
+        "6675-4127"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "5TA CENTRO",
+      "notes": "Flia Aciego"
+    },
+    {
+      "propertyId": "253",
+      "ownerName": "Evaristo Cuero / Evaristo Cuervo",
+      "phones": [
+        "6009-6985"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "254",
+      "ownerName": "Yazaret De Molinar",
+      "phones": [
+        "474-5991",
+        "6981-8925"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "255",
+      "ownerName": "Alfredo Guerra",
+      "phones": [],
+      "outstandingBalance": 75.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "256",
+      "ownerName": "Melis Carrasco",
+      "phones": [
+        "442-2286",
+        "6627-5262"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "257",
+      "ownerName": "Girly Robinson",
+      "phones": [
+        "442-6032",
+        "6522-1155"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "5TA CENTRO",
+      "notes": "Flia Icasa"
+    },
+    {
+      "propertyId": "258",
+      "ownerName": "Aralis Camira / Edwin Cedeño",
+      "phones": [
+        "6441-6888",
+        "6535-6089"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "259",
+      "ownerName": "Humberto Kentish / Okianis Robinson",
+      "phones": [],
+      "outstandingBalance": 0.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "260",
+      "ownerName": "Luis Mitchell / Ofelia Mitchell",
+      "phones": [
+        "6510-3826"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "261",
+      "ownerName": "Alvaro Everly / Yenitza Ashaw",
+      "phones": [
+        "6457-9984"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "262",
+      "ownerName": "Luis Sinclair",
+      "phones": [],
+      "outstandingBalance": 75.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "263",
+      "ownerName": "Anibal Cortez",
+      "phones": [
+        "442-8073"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "5TA CENTRO",
+      "notes": "Flia Mckenzie"
+    },
+    {
+      "propertyId": "264",
+      "ownerName": "José Luis De Gracia",
+      "phones": [
+        "6756-8175"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "265",
+      "ownerName": "Cecilio Simpson / Gyselle Grant",
+      "phones": [
+        "442-6442"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "266",
+      "ownerName": "José Martínez",
+      "phones": [
+        "6734-5239"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "5TA CENTRO"
+    },
+    {
+      "propertyId": "267",
+      "ownerName": "Nidia Rodriguez",
+      "phones": [
+        "442-6764"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "5TA ESTE"
+    },
+    {
+      "propertyId": "268",
+      "ownerName": "Oscar Ureña",
+      "phones": [
+        "474-4469",
+        "6527-8780"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "5TA ESTE"
+    },
+    {
+      "propertyId": "269",
+      "ownerName": "Katherine Bennett",
+      "phones": [
+        "6378-2696"
+      ],
+      "outstandingBalance": 60.00,
+      "address": "5TA ESTE"
+    },
+    {
+      "propertyId": "270",
+      "ownerName": "Ofelia Idacema Jackson Salazar / Ofelia Ida Cema Jackson Sa",
+      "phones": [],
+      "outstandingBalance": 45.00,
+      "address": "5TA ESTE"
+    },
+    {
+      "propertyId": "271",
+      "ownerName": "Dagoberto Paris",
+      "phones": [
+        "6142-9307"
+      ],
+      "outstandingBalance": 50.00,
+      "address": "5TA ESTE"
+    },
+    {
+      "propertyId": "272",
+      "ownerName": "Stephany De Vasquez",
+      "phones": [
+        "6770-8330"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "5TA ESTE"
+    },
+    {
+      "propertyId": "273",
+      "ownerName": "Aniulka Y Isaac Rivera / Aniutka Y Isaac Silvera",
+      "phones": [],
+      "outstandingBalance": 75.00,
+      "address": "5TA ESTE"
+    },
+    {
+      "propertyId": "274",
+      "ownerName": "Luz Maria Betegon",
+      "phones": [
+        "474-8119",
+        "6713-2498"
+      ],
+      "email": "luzmariabetegon04@gmail.com",
+      "outstandingBalance": 45.00,
+      "address": "6TA ESTE"
+    },
+    {
+      "propertyId": "275",
+      "ownerName": "Noel E. Jenisel Gondola",
+      "phones": [
+        "447-8067",
+        "6981-2036"
+      ],
+      "email": "jeniselhoyte@gmail.com",
+      "outstandingBalance": 75.00,
+      "address": "6TA ESTE"
+    },
+    {
+      "propertyId": "276",
+      "ownerName": "Keicha Brown",
+      "phones": [
+        "6454-8080"
+      ],
+      "email": "keishya.brown@hotmail.com",
+      "outstandingBalance": 75.00,
+      "address": "6TA ESTE"
+    },
+    {
+      "propertyId": "277",
+      "ownerName": "Aristides Luke / Aristides Luque / Isabel Riquelme",
+      "phones": [
+        "6230-6346"
+      ],
+      "email": "Isabel80rm@gmail.com",
+      "outstandingBalance": 15.00,
+      "address": "6TA ESTE"
+    },
+    {
+      "propertyId": "278",
+      "ownerName": "Karin Yamilka Parris",
+      "phones": [
+        "442-4805",
+        "6053-1556"
+      ],
+      "email": "yamilka041981@gmail.com",
+      "outstandingBalance": 45.00,
+      "address": "6TA ESTE"
+    },
+    {
+      "propertyId": "279",
+      "ownerName": "David Melo / Janina Borelly",
+      "phones": [
+        "442-1648",
+        "6958-7716"
+      ],
+      "email": "Jdemelo-1911@hotmail.com",
+      "outstandingBalance": 75.00,
+      "address": "6TA ESTE"
+    },
+    {
+      "propertyId": "280",
+      "ownerName": "Jovette C. Padilla / Aidhair Valiente / Aidhair Flores",
+      "phones": [
+        "6868-0484",
+        "6268-6026"
+      ],
+      "email": "Jovettepadilla@gmail.com",
+      "outstandingBalance": 45.00,
+      "address": "6TA ESTE"
+    },
+    {
+      "propertyId": "281",
+      "ownerName": "Carlos Loara Leotau / Carlos Loara Leoteau",
+      "phones": [
+        "474-5427",
+        "6493-8893"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "6TA CENTRO A"
+    },
+    {
+      "propertyId": "282",
+      "ownerName": "Ubaldo Castillo",
+      "phones": [],
+      "outstandingBalance": 75.00,
+      "address": "6TA CENTRO A"
+    },
+    {
+      "propertyId": "283",
+      "ownerName": "Katricia Y. Ortega / Katiria Ortega",
+      "phones": [
+        "6737-9025"
+      ],
+      "email": "Kortegalata@gmail.com",
+      "outstandingBalance": 45.00,
+      "address": "6TA CENTRO A"
+    },
+    {
+      "propertyId": "284",
+      "ownerName": "Constancia Shellon",
+      "phones": [
+        "6252-5020"
+      ],
+      "outstandingBalance": 90.00,
+      "address": "6TA CENTRO A"
+    },
+    {
+      "propertyId": "285",
+      "ownerName": "Jaime Legal L. / Delano Saunders",
+      "phones": [
+        "6480-2808",
+        "474-3388"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "6TA CENTRO A"
+    },
+    {
+      "propertyId": "286",
+      "ownerName": "Minoshka Parris / Ninoshka Parris",
+      "phones": [
+        "6666-0992",
+        "442-2217"
+      ],
+      "email": "parrissn@hotmail.com",
+      "outstandingBalance": 75.00,
+      "address": "6TA CENTRO A"
+    },
+    {
+      "propertyId": "287",
+      "ownerName": "Domingo Rodriguez",
+      "phones": [
+        "6679-3932"
+      ],
+      "outstandingBalance": 60.00,
+      "address": "6TA CENTRO A"
+    },
+    {
+      "propertyId": "288",
+      "ownerName": "Issacs Francis",
+      "phones": [
+        "474-1639"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "6TA CENTRO A"
+    },
+    {
+      "propertyId": "289",
+      "ownerName": "Porfirio Justino / Porfirio Justavino",
+      "phones": [],
+      "email": "yazcubilla@gmail.com",
+      "outstandingBalance": 0.00,
+      "address": "6TA CENTRO A",
+      "notes": "Yasmin Cubulla"
+    },
+    {
+      "propertyId": "290",
+      "ownerName": "Ivan Arias",
+      "phones": [
+        "6704-2428"
+      ],
+      "email": "rocioaparicio13@hotmail.com",
+      "outstandingBalance": 75.00,
+      "address": "6TA CENTRO A"
+    },
+    {
+      "propertyId": "291",
+      "ownerName": "Julio Mejia",
+      "phones": [
+        "6673-4492"
+      ],
+      "email": "mnino08@hotmail.com",
+      "outstandingBalance": 45.00,
+      "address": "6TA CENTRO A",
+      "notes": "Maria Niño"
+    },
+    {
+      "propertyId": "292",
+      "ownerName": "Idalberto Chiru / Idalberto Chiu",
+      "phones": [],
+      "email": "shani.sn46@gmail.com",
+      "outstandingBalance": 45.00,
+      "address": "6TA CENTRO A"
+    },
+    {
+      "propertyId": "293",
+      "ownerName": "Omaira Achao / Yomaira Ashaw",
+      "phones": [],
+      "outstandingBalance": 60.00,
+      "address": "6TA CENTRO A"
+    },
+    {
+      "propertyId": "294",
+      "ownerName": "Yolanda Soto",
+      "phones": [
+        "6981-3017"
+      ],
+      "email": "mlaguna@hotmail.es",
+      "outstandingBalance": 15.00,
+      "address": "6TA CENTRO A",
+      "notes": "FAMILIA LAGUNA"
+    },
+    {
+      "propertyId": "295",
+      "ownerName": "Bolivar Rodriguez",
+      "phones": [
+        "474-1594",
+        "6130-3204"
+      ],
+      "email": "akiraleer@gmail.com",
+      "outstandingBalance": 75.00,
+      "address": "6TA CENTRO A"
+    },
+    {
+      "propertyId": "296",
+      "ownerName": "Maribel De Vega",
+      "phones": [
+        "474-0509"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "6TA OESTE",
+      "notes": "Flia Vega Arispe"
+    },
+    {
+      "propertyId": "297",
+      "ownerName": "Aikza Hernandez",
+      "phones": [
+        "474-5341"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "6TA OESTE"
+    },
+    {
+      "propertyId": "298",
+      "ownerName": "Jacqueline Villamil",
+      "phones": [
+        "6755-9625"
+      ],
+      "outstandingBalance": 60.00,
+      "address": "6TA OESTE"
+    },
+    {
+      "propertyId": "299",
+      "ownerName": "Mario Chiari",
+      "phones": [
+        "6681-1117"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "6TA OESTE"
+    },
+    {
+      "propertyId": "300",
+      "ownerName": "Eriberto Quiñones",
+      "phones": [
+        "474-1572",
+        "6711-5151"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "6TA OESTE"
+    },
+    {
+      "propertyId": "301",
+      "ownerName": "Gilberto Garcia",
+      "phones": [
+        "6687-5001"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "6TA OESTE"
+    },
+    {
+      "propertyId": "302",
+      "ownerName": "Irina Lewis",
+      "phones": [
+        "442-8095",
+        "6613-9026"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "6TA OESTE"
+    },
+    {
+      "propertyId": "303",
+      "ownerName": "Patricia Jones",
+      "phones": [
+        "6493-1335"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "6TA OESTE",
+      "notes": "YARABY ORQUIDIA JIMENEZ JONES DE ABRAHAM"
+    },
+    {
+      "propertyId": "304",
+      "ownerName": "Yolanda Campos",
+      "phones": [
+        "442-7251"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "6TA OESTE"
+    },
+    {
+      "propertyId": "305",
+      "ownerName": "Itzel Maria",
+      "phones": [
+        "6682-9684"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "6TA OESTE"
+    },
+    {
+      "propertyId": "306",
+      "ownerName": "Roberto Jenkins",
+      "phones": [
+        "6747-0737"
+      ],
+      "outstandingBalance": 0.00,
+      "address": "6TA OESTE"
+    },
+    {
+      "propertyId": "307",
+      "ownerName": "George Corbin",
+      "phones": [
+        "442-7509"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "6TA OESTE"
+    },
+    {
+      "propertyId": "308",
+      "ownerName": "Azonery De Hawkins",
+      "phones": [],
+      "outstandingBalance": 60.00,
+      "address": "6TA OESTE"
+    },
+    {
+      "propertyId": "309",
+      "ownerName": "Vicente Fruto / Vicente Rook Fruto",
+      "phones": [
+        "442-7006",
+        "6719-9189"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "6TA OESTE"
+    },
+    {
+      "propertyId": "310",
+      "ownerName": "Nelson Moreno",
+      "phones": [
+        "474-0610",
+        "6781-6610"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "6TA OESTE"
+    },
+    {
+      "propertyId": "311",
+      "ownerName": "Fernando De Castro",
+      "phones": [
+        "442-3181",
+        "6616-8028"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "6TA CENTRO B"
+    },
+    {
+      "propertyId": "312",
+      "ownerName": "Etilcia Evans",
+      "phones": [
+        "474-1360"
+      ],
+      "email": "Tilcia-14morena@hotmail.com",
+      "outstandingBalance": 45.00,
+      "address": "6TA CENTRO B"
+    },
+    {
+      "propertyId": "313",
+      "ownerName": "Mireya Del Carmen Ortega / Orlando Arguelles",
+      "phones": [
+        "474-5663",
+        "6378-4167"
+      ],
+      "outstandingBalance": 60.00,
+      "address": "6TA CENTRO B"
+    },
+    {
+      "propertyId": "314",
+      "ownerName": "Melisa Martinez",
+      "phones": [
+        "442-5321",
+        "6519-2594"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "6TA CENTRO B"
+    },
+    {
+      "propertyId": "315",
+      "ownerName": "Nuria Morales / Nudia Morales",
+      "phones": [
+        "442-3523",
+        "6786-1879"
+      ],
+      "email": "Nudia24@gmail.com",
+      "outstandingBalance": 30.00,
+      "address": "6TA CENTRO B"
+    },
+    {
+      "propertyId": "316",
+      "ownerName": "Ignacio Dreckett",
+      "phones": [
+        "474-2077",
+        "6550-1360"
+      ],
+      "email": "twiraalleyne@gmail.com",
+      "outstandingBalance": 75.00,
+      "address": "6TA CENTRO B"
+    },
+    {
+      "propertyId": "317",
+      "ownerName": "Fernando Chaverra",
+      "phones": [],
+      "outstandingBalance": 15.00,
+      "address": "6TA CENTRO B"
+    },
+    {
+      "propertyId": "318",
+      "ownerName": "Yelitza Norse",
+      "phones": [
+        "474-4071"
+      ],
+      "email": "yelitza.norse@gmail.com",
+      "outstandingBalance": 60.00,
+      "address": "6TA CENTRO B"
+    },
+    {
+      "propertyId": "319",
+      "ownerName": "Ariel Corpas",
+      "phones": [
+        "6747-8943",
+        "6669-5505"
+      ],
+      "email": "qmilvia@gmail.com",
+      "outstandingBalance": 30.00,
+      "address": "6TA CENTRO B"
+    },
+    {
+      "propertyId": "320",
+      "ownerName": "Mariela Adames",
+      "phones": [
+        "474-3802",
+        "6223-4795"
+      ],
+      "email": "edithkm26@gmail.com",
+      "outstandingBalance": 75.00,
+      "address": "6TA CENTRO B"
+    },
+    {
+      "propertyId": "321",
+      "ownerName": "Luis Demera Velkis",
+      "phones": [
+        "6008-3341"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "6TA CENTRO B"
+    },
+    {
+      "propertyId": "322",
+      "ownerName": "Grecor Selles",
+      "phones": [],
+      "outstandingBalance": 75.00,
+      "address": "6TA CENTRO B"
+    },
+    {
+      "propertyId": "323",
+      "ownerName": "Edgar P. Ortega",
+      "phones": [
+        "6201-8597",
+        "6234-1886"
+      ],
+      "email": "edgarpaulpty@gmail.com",
+      "outstandingBalance": 15.00,
+      "address": "6TA CENTRO B"
+    },
+    {
+      "propertyId": "324",
+      "ownerName": "Victor Martinez",
+      "phones": [
+        "474-1708"
+      ],
+      "outstandingBalance": 60.00,
+      "address": "6TA CENTRO B",
+      "notes": "Flia Valdes / Damaris Sarmiento"
+    },
+    {
+      "propertyId": "325",
+      "ownerName": "Juan Salazar",
+      "phones": [],
+      "outstandingBalance": 75.00,
+      "address": "6TA CENTRO B"
+    },
+    {
+      "propertyId": "326",
+      "ownerName": "Jose L. Diaz",
+      "phones": [],
+      "outstandingBalance": 45.00,
+      "address": "6TA CENTRO B"
+    },
+    {
+      "propertyId": "327",
+      "ownerName": "Jossue E. Williams / Jossua E. Williams",
+      "phones": [
+        "6340-6702",
+        "6717-0741"
+      ],
+      "email": "jossua.wiliamsr@outlook.com",
+      "outstandingBalance": 45.00,
+      "address": "6TA CENTRO B"
+    },
+    {
+      "propertyId": "328",
+      "ownerName": "Jazmina Vega",
+      "phones": [
+        "474-4162",
+        "6640-2416"
+      ],
+      "email": "Arhaz1322@gmail.com",
+      "outstandingBalance": 30.00,
+      "address": "6TA CENTRO B"
+    },
+    {
+      "propertyId": "329",
+      "ownerName": "Edgardo Chiari V.",
+      "phones": [],
+      "outstandingBalance": 0.00,
+      "address": "6TA ESTE"
+    },
+    {
+      "propertyId": "330",
+      "ownerName": "Yemil Rodriguez",
+      "phones": [
+        "6821-3093"
+      ],
+      "email": "yemil2114@hotmail.com",
+      "outstandingBalance": 60.00,
+      "address": "6TA ESTE"
+    },
+    {
+      "propertyId": "331",
+      "ownerName": "Antonio Marbelis Hall",
+      "phones": [
+        "6550-7091",
+        "6949-5524"
+      ],
+      "email": "marbi20@hotmail.com",
+      "outstandingBalance": 60.00,
+      "address": "6TA ESTE"
+    },
+    {
+      "propertyId": "332",
+      "ownerName": "Ricardo Toulier Lilian Tuno / Ricardo Toulier Lilian Tuñon",
+      "phones": [
+        "6910-2477"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "6TA ESTE"
+    },
+    {
+      "propertyId": "333",
+      "ownerName": "Maria Avila",
+      "phones": [
+        "474-0782",
+        "6153-7056"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "6TA ESTE"
+    },
+    {
+      "propertyId": "334",
+      "ownerName": "Maykelys Y. Castillo / Joab Caballero",
+      "phones": [
+        "6666-6372",
+        "6676-0753"
+      ],
+      "email": "joab507caballero@gmail.com",
+      "outstandingBalance": 15.00,
+      "address": "6TA ESTE"
+    },
+    {
+      "propertyId": "D-01",
+      "ownerName": "Ricardo Moreno",
+      "phones": [
+        "474-0891"
+      ],
+      "outstandingBalance": 30.00,
+      "address": "D"
+    },
+    {
+      "propertyId": "D-02",
+      "ownerName": "Maritza De Mora",
+      "phones": [
+        "6232-6339"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "D"
+    },
+    {
+      "propertyId": "D-03",
+      "ownerName": "Benito Pacheco",
+      "phones": [
+        "442-8460"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "D"
+    },
+    {
+      "propertyId": "D-04",
+      "ownerName": "Héctor Ayarza",
+      "phones": [
+        "474-0361",
+        "442-1603"
+      ],
+      "outstandingBalance": 0.00,
+      "address": "D"
+    },
+    {
+      "propertyId": "D-05",
+      "ownerName": "Tomás Betegón",
+      "phones": [],
+      "outstandingBalance": 30.00,
+      "address": "D"
+    },
+    {
+      "propertyId": "D-06",
+      "ownerName": "Lorenzo Lajón / Marcela De Lajon",
+      "phones": [
+        "6229-1709"
+      ],
+      "outstandingBalance": 15.00,
+      "address": "D"
+    },
+    {
+      "propertyId": "D-07",
+      "ownerName": "Inelda Maria Ariano / Diego Pitalua",
+      "phones": [
+        "6698-6569",
+        "474-0569"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "D"
+    },
+    {
+      "propertyId": "D-08",
+      "ownerName": "Agustín Molinar / Karen Amaya",
+      "phones": [],
+      "outstandingBalance": 75.00,
+      "address": "D"
+    },
+    {
+      "propertyId": "D-09",
+      "ownerName": "Ricardo Rodríguez / Adelsa Aguilar",
+      "phones": [
+        "6257-0642"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "D"
+    },
+    {
+      "propertyId": "D-10",
+      "ownerName": "Pastor Camarena",
+      "phones": [
+        "6745-3714"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "D",
+      "notes": "Flia Smith"
+    },
+    {
+      "propertyId": "D-11",
+      "ownerName": "Miguel Moreno / Miguel Romero",
+      "phones": [],
+      "outstandingBalance": 75.00,
+      "address": "D"
+    },
+    {
+      "propertyId": "D-12",
+      "ownerName": "Carlos De León",
+      "phones": [],
+      "outstandingBalance": 15.00,
+      "address": "D"
+    },
+    {
+      "propertyId": "D-13",
+      "ownerName": "Nimia Martínez",
+      "phones": [],
+      "outstandingBalance": 75.00,
+      "address": "D"
+    },
+    {
+      "propertyId": "D-14",
+      "ownerName": "José Bonilla",
+      "phones": [],
+      "outstandingBalance": 60.00,
+      "address": "D"
+    },
+    {
+      "propertyId": "D-15",
+      "ownerName": "Edwin Levin",
+      "phones": [
+        "442-2010",
+        "6780-9408"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "D"
+    },
+    {
+      "propertyId": "D-16",
+      "ownerName": "Edi Henry / Maribel Ashborn",
+      "phones": [],
+      "outstandingBalance": 75.00,
+      "address": "D"
+    },
+    {
+      "propertyId": "D-17",
+      "ownerName": "Willison Tovar",
+      "phones": [
+        "6916-2329"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "D"
+    },
+    {
+      "propertyId": "D-18",
+      "ownerName": "Dr. Menchaca / Nedelka Blandon",
+      "phones": [
+        "442-3230",
+        "6988-3113"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "D"
+    },
+    {
+      "propertyId": "D-19",
+      "ownerName": "Carmen De Tamayo",
+      "phones": [
+        "474-0662"
+      ],
+      "outstandingBalance": 45.00,
+      "address": "D"
+    },
+    {
+      "propertyId": "D-20",
+      "ownerName": "Oscar Corredeira",
+      "phones": [
+        "442-9199"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "D"
+    },
+    {
+      "propertyId": "D-21",
+      "ownerName": "Oscar Ecleston",
+      "phones": [
+        "6620-7540"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "D"
+    },
+    {
+      "propertyId": "D-22",
+      "ownerName": "A. Osorio / Hilda Amores Guzman",
+      "phones": [
+        "6110-0155"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "D"
+    },
+    {
+      "propertyId": "D-23",
+      "ownerName": "Erick Vasquez",
+      "phones": [
+        "474-7067"
+      ],
+      "outstandingBalance": 60.00,
+      "address": "D"
+    },
+    {
+      "propertyId": "D-24",
+      "ownerName": "Juan Pastor Vega / Diana Sanchez",
+      "phones": [
+        "6090-8648"
+      ],
+      "outstandingBalance": 75.00,
+      "address": "D"
+    }
+  ]
+}

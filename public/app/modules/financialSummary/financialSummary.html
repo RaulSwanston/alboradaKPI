@@ -1,0 +1,31 @@
+<!--
+  Módulo: Resumen Financiero (financialSummary)
+  Propósito: Muestra una vista de alto nivel de la salud financiera del condominio,
+             separando las cuentas por cobrar, la deuda atrasada y los saldos a favor.
+-->
+<div id="financial-summary-card" class="card">
+    <p class="card-subtitle">Resumen Financiero</p>
+
+    <!-- Métrica Principal: Total de dinero que se debe al condominio -->
+    <div class="hero-metric">
+        <h2 class="amount" id="fs-total-receivable"></h2>
+        <p class="description">Cuentas por Cobrar Totales</p>
+    </div>
+
+    <!-- Métricas Secundarias: Desglose de la deuda y saldos a favor -->
+    <div class="secondary-metrics">
+        <div class="metric-item" id="fs-past-due-section">
+            <span class="label">Deuda Atrasada</span>
+            <strong class="value" id="fs-past-due-amount"></strong>
+        </div>
+        <div class="metric-item" id="fs-credit-balance-section">
+            <span class="label">Saldo a Favor</span>
+            <strong class="value" id="fs-credit-balance-amount"></strong>
+        </div>
+    </div>
+
+    <!-- Botones de Acción -->
+    <div class="action-buttons">
+        <button class="button button-primary">Ver Reporte Detallado</button>
+    </div>
+</div>

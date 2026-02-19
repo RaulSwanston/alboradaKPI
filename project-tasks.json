@@ -1,0 +1,8 @@
+[
+  {
+    "id": "2026-02-01T18:00:00Z",
+    "title": "Implementar Renderizado Parcial con Atributo data-link",
+    "description": "Modificar el Router para que el valor del atributo `data-link` se use como 'pista' para el renderizado. Un valor (ej: 'dashboard') indicará un refresco parcial de ese bloque. Un atributo vacío o sin valor (`data-link` o `data-link=''`) significará una navegación de página completa. Esto unifica la lógica y hace innecesario el atributo `data-view`.",
+    "status": "pending"
+  }
+]

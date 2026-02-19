@@ -1,0 +1,23 @@
+.btnNewResidents{
+  color: var(--color-gurkha-100);
+  font-weight: bold;
+  padding: 1em;
+  text-decoration: none;
+  background-color: var(--color-kaitoke-green-700);
+  border-radius: 0.75rem;
+}
+
+.table-residents.module{
+  gap: 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  & h2, p{align-self: flex-start;}
+  & a{align-self: flex-end;}
+}
+
+.table-residents.module table{
+  width: 100%;
+  overflow-y: auto;
+}

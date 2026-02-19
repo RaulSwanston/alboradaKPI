@@ -1,0 +1,102 @@
+/*
+  Estilos para el Módulo: Resumen Financiero (financialSummary)
+  Enfoque: Mobile-First
+*/
+
+/* Contenedor principal de la tarjeta */
+#financial-summary-card {
+  background-color: var(--bg-surface, #f6f5ef);
+  border-radius: 1rem; /* 16px */
+  padding: 1.5rem; /* 24px */
+  border: 1px solid var(--card-border, #d8d6be);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  display: flex;
+  flex-direction: column;
+  gap: 1rem; /* 16px */
+}
+
+/* Subtítulo: "Resumen Financiero" */
+.card-subtitle {
+  font-size: 0.875rem; /* 14px */
+  font-weight: 600;
+  color: var(--text-secondary, #555536);
+  margin: 0;
+}
+
+/* Estilo para la métrica principal (Hero) */
+.hero-metric {
+  text-align: center;
+  border-bottom: 1px solid var(--card-border, #d8d6be);
+  padding-bottom: 1rem;
+}
+
+.hero-metric .amount {
+  font-size: 2.25rem; /* 36px */
+  font-weight: 800;
+  color: var(--text-primary, #3b3c2b);
+  line-height: 1.2;
+  margin: 0;
+}
+
+.hero-metric .description {
+  font-size: 0.875rem; /* 14px */
+  color: var(--text-secondary, #555536);
+  margin: 0.25rem 0 0 0;
+}
+
+/* Contenedor para las métricas secundarias */
+.secondary-metrics {
+  display: flex;
+  flex-direction: column; /* Apilado en móvil */
+  gap: 1rem; /* Espacio entre items */
+}
+
+.metric-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.02);
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+}
+
+.metric-item .label {
+  font-size: 0.875rem; /* 14px */
+  color: var(--text-secondary, #555536);
+  font-weight: 500;
+}
+
+.metric-item .value {
+  font-size: 1rem; /* 16px */
+  font-weight: 700;
+  color: var(--text-primary, #3b3c2b);
+}
+
+/* Contenedor para los botones de acción */
+.action-buttons {
+  margin-top: 0.5rem;
+}
+
+.action-buttons .button {
+  width: 100%;
+}
+
+
+/* --- Estilos para Escritorio --- */
+@media (min-width: 768px) {
+  .secondary-metrics {
+    flex-direction: row; /* Lado a lado en escritorio */
+    gap: 1.5rem;
+  }
+
+  .metric-item {
+    flex: 1; /* Ocupan el mismo espacio */
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+
+  .hero-metric .amount {
+    font-size: 2.75rem; /* 44px, un poco más grande en escritorio */
+  }
+}
