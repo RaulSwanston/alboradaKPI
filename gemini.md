@@ -134,6 +134,7 @@ Para cumplir con la visión de una plataforma de servicios flexible y automatiza
 - **ID del Documento:** ID auto-generado por Firestore.
 - **Campos:**
     - `name` (Texto): Nombre descriptivo del concepto (ej: "Cuota de Mantenimiento", "Reserva Salón de Fiestas").
+    - `icon` (Texto): Código SVG del icono ya procesado con el color (fill/stroke) elegido por el administrador.
     - `defaultAmount` (Número): Monto sugerido para el cargo.
     - `isRecurring` (Booleano): `true` si el cargo se debe generar automáticamente de forma periódica.
     - `billingFrequency` (Texto): Si es recurrente, la frecuencia (ej: "monthly", "yearly").

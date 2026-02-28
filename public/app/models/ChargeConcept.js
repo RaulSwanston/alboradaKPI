@@ -11,6 +11,7 @@ export default class ChargeConcept {
    * Crea un nuevo concepto de cargo en la colección.
    * @param {object} conceptData - Objeto con los datos del concepto.
    * @param {string} conceptData.name - Nombre descriptivo del concepto.
+   * @param {string} conceptData.icon - Código SVG del icono ya coloreado (con fill/stroke final).
    * @param {number} conceptData.defaultAmount - Monto sugerido para el cargo.
    * @param {boolean} conceptData.isRecurring - true si el cargo es periódico.
    * @param {string} [conceptData.billingFrequency] - Frecuencia (ej: "monthly").

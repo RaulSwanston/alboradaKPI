@@ -43,4 +43,23 @@ export default class Property {
       return { totalReceivable: 0, creditBalance: 0 };
     }
   }
+
+  /**
+   * Obtiene todas las propiedades registradas.
+   * @returns {Promise<Array>} Lista de propiedades con su ID y datos.
+   */
+  static async getAll() {
+    try {
+      const q = query(collection(db, "properties"));
+      const querySnapshot = await getDocs(q);
+      const props = [];
+      querySnapshot.forEach((doc) => {
+        props.push({ id: doc.id, ...doc.data() });
+      });
+      return props;
+    } catch (error) {
+      console.error("[Property] Error al obtener propiedades:", error);
+      throw error;
+    }
+  }
 }

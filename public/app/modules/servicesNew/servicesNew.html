@@ -28,24 +28,28 @@
           <label for="concept-name">Nombre del Concepto e Icono</label>
           <div class="input-icon-group">
             <input type="text" id="concept-name" name="name" placeholder="Ej. Cuota de Mantenimiento Enero" required autocomplete="off">
-            <button type="button" id="btn-select-icon" class="btn-icon-trigger" title="Seleccionar Icono">
-              <div id="selected-icon-preview" class="selected-icon-preview">
-                <!-- Icono seleccionado o puntos suspensivos -->
-                <span>...</span>
-              </div>
-            </button>
+            <div class="icon-selection-controls">
+                <button type="button" id="btn-select-icon" class="btn-icon-trigger" title="Seleccionar Icono">
+                  <div id="selected-icon-preview" class="selected-icon-preview">
+                    <span>...</span>
+                  </div>
+                </button>
+                <div class="color-picker-wrapper">
+                    <input type="color" id="icon-color" name="iconColor" value="#28bf63" title="Color del Icono">
+                </div>
+            </div>
           </div>
           <input type="hidden" id="selected-icon-url" name="iconUrl" required>
         </div>
 
-        <!-- Panel de Sugerencias de Iconos (Inicialmente oculto) -->
+        <!-- Panel de Sugerencias de Iconos -->
         <div id="icon-results-panel" class="icon-results-panel hidden">
             <div class="panel-header">
                 <span id="search-status-text">Escribe para buscar iconos...</span>
                 <button type="button" class="btn-close-panel" id="btn-close-icon-panel">×</button>
             </div>
             <div id="icon-results-grid" class="icon-results-grid">
-                <!-- Resultados de Lordicon -->
+                <!-- Iconos de la librería local -->
             </div>
         </div>
 
@@ -77,7 +81,7 @@
         <h2 class="section-title">
           <span class="icon-wrapper orange">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
             </svg>
           </span>
           Configuración
@@ -114,6 +118,16 @@
             </label>
           </div>
         </div>
+
+        <!-- Selector de Propiedades (Solo visible si es 'manual') -->
+        <div id="manual-properties-selector" class="field-group hidden">
+            <label>Seleccionar Unidades</label>
+            <div class="property-selection-grid" id="property-selection-grid">
+                <!-- Se cargará dinámicamente -->
+                <div class="loading-text">Cargando unidades...</div>
+            </div>
+            <p class="field-helper">Seleccione las propiedades a las que se aplicará este cargo inicialmente.</p>
+        </div>
       </section>
 
       <!-- Sección: Descripción -->
@@ -134,4 +148,27 @@
       </div>
     </form>
   </main>
+
+  <!-- Modal de Confirmación -->
+  <div id="modal-confirmation" class="modal-overlay hidden">
+    <div class="modal-content">
+      <header class="modal-header">
+        <h2>Confirmar Nuevo Concepto</h2>
+        <p>Revise los detalles antes de proceder</p>
+      </header>
+      
+      <div class="modal-body" id="confirmation-summary">
+        <!-- El resumen se cargará dinámicamente -->
+      </div>
+
+      <footer class="modal-footer">
+        <button type="button" class="btn-secondary" id="btn-edit-confirmation">
+          Hacer Ajustes
+        </button>
+        <button type="button" class="btn-primary" id="btn-confirm-final">
+          Confirmar y Crear
+        </button>
+      </footer>
+    </div>
+  </div>
 </div>
