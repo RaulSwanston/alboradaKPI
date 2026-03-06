@@ -42,7 +42,7 @@ export class Mosaic {
       // 1. Recopilación de directivas globales (CSS, Controller, Theme)
       const cssMatches = [...viewRecipeText.matchAll(this.regex.css)];
       if (cssMatches.length > 0) {
-        cssMatches.forEach(match => cssUrls.add(`src/css/${match[1].replace(/\./g, '/')}.css`));
+        cssMatches.forEach(match => cssUrls.add(`/src/css/${match[1].replace(/\./g, '/')}.css`));
         viewRecipeText = viewRecipeText.replace(this.regex.css, '');
       }
 
@@ -55,7 +55,7 @@ export class Mosaic {
       const themeMatch = viewRecipeText.match(this.regex.theme);
       if (themeMatch) {
         const themePath = themeMatch[1].replace(/\./g, '/');
-        themeUrl = `views/theme/${themePath}.html`;
+        themeUrl = `/views/theme/${themePath}.html`;
         viewRecipeText = viewRecipeText.replace(this.regex.theme, '');
       }
 

@@ -138,7 +138,7 @@ export class Router {
         // Solo procede si la ruta tiene una plantilla asociada.
         if (targetRoute.viewPath) {
           // Construye la ruta al archivo de la "receta" de la vista.
-          const viewPath = `views/${targetRoute.viewPath.replace(/\./g, '/')}.html`;
+          const viewPath = `/views/${targetRoute.viewPath.replace(/\./g, '/')}.html`;
           
           // Llama a Mosaic para que componga la vista y sus dependencias (módulos, CSS, etc.).
           const composedView = await this.mosaic.composeView(viewPath, contexto); 
@@ -151,7 +151,7 @@ export class Router {
       }
     } else {
       // Si no se encontró ninguna ruta, renderiza la vista de 404 (No Encontrado).
-      const composed404 = await this.mosaic.composeView('views/404.html', { params: {}, data: {} });
+      const composed404 = await this.mosaic.composeView('/views/404.html', { params: {}, data: {} });
       await this.renderView.anima(composed404, { params: {}, data: {} }, null);
     }
     

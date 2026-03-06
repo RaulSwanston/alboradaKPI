@@ -85,9 +85,22 @@ El residente interactúa con la plataforma a través de un dashboard personal qu
 2.  **Ejecución:** Una Cloud Function programada se ejecuta el primer día de cada mes.
 3.  **Proceso:** La función busca todos los conceptos marcados como recurrentes/mensuales y genera las transacciones de cargo para todas las propiedades del condominio de forma masiva. El administrador no interviene en este proceso mensual.
 
+### 5. Estándares de Ruteo y Assets (Crítico)
+*   **Rutas Absolutas:** Para soportar rutas profundas (ej. `/dashboard/properties`), todas las referencias a archivos en el Core (`Router`, `Mosaic`, `RenderView`) y en el `index.html` **deben comenzar con una barra inclinada (`/`)**. Ejemplo: `/router.js`, `/views/dashboard/home.html`, `/src/css/style.css`.
+*   **Evitar Puntos:** Nunca usar `./` o rutas relativas simples en la definición de rutas del sistema, ya que el navegador las interpreta mal desde URLs con subdirectorios.
+
+### 6. Comunicación entre Módulos
+*   **Eventos Personalizados:** Para mantener los módulos desacoplados, se prefiere el uso de eventos globales o burbujeados.
+    *   Ejemplo: El módulo `search` emite un evento `app:search` con `detail: { query }`. Cualquier controlador de página puede escucharlo (`document.addEventListener('app:search', ...)`) para filtrar sus datos sin que el buscador sepa qué está filtrando.
+
+### 7. Filosofía de Diseño y CSS
+*   **Simple Grid:** Las listas de elementos (servicios, propiedades, etc.) deben seguir el patrón de `display: grid` con `auto-fill` y tarjetas (`.card`) limpias, inspiradas en el módulo `services`.
+*   **Prohibición de !important:** Está estrictamente prohibido el uso de `!important` en las hojas de estilo. La jerarquía debe gestionarse mediante una especificidad limpia y variables CSS.
+*   **Navegación UX:** Los botones de "volver" deben usar la clase `.btn-back`, contener un icono tipo Chevron de 24px y tener una micro-interacción de desplazamiento (ej. `translateX(-2px)` en hover).
+
 ---
 
-## 6. Estructura de la Base de Datos (Firestore)
+## 11. Estructura de la Base de Datos (Firestore)
 
 Para cumplir con la visión de una plataforma de servicios flexible y automatizada, se ha definido la siguiente estructura de colecciones.
 

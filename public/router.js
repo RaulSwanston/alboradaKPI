@@ -12,6 +12,7 @@ router
   .get('/summary', 'dashboard/summary')
   .get('/services', 'dashboard/services')
   .get('/services-new', 'dashboard/services-new')
+  .get('/dashboard/properties', 'dashboard/properties')
   .get('/notifications', 'dashboard/notifications')
   .get('/residents', 'dashboard/residents')
   .get('/import-residents', 'dashboard/importResidents')

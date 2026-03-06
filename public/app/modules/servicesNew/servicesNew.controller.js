@@ -1,5 +1,7 @@
 import ChargeConcept from "../../models/ChargeConcept.js";
 import Property from "../../models/Property.js";
+import { auth } from "../../core/firebase.js";
+import { createActivity } from "../../models/Activities.js";
 
 /**
  * Controlador para la creación de un nuevo concepto de cargo con catálogo local de iconos.
@@ -286,7 +288,30 @@ export default async function servicesNewController(context) {
                 requiresApproval: true
             };
 
-            await ChargeConcept.create(finalData);
+            const conceptId = await ChargeConcept.create(finalData);
+            
+            // Registrar Actividad
+            const currentUser = auth.currentUser;
+            await createActivity({
+                type: 'CONCEPT_CREATED',
+                description: `Se creó el nuevo concepto de cargo: ${finalData.name}`,
+                initiator: {
+                    type: 'USER',
+                    id: currentUser ? currentUser.uid : 'system',
+                    name: currentUser ? (currentUser.displayName || currentUser.email) : 'Administrador'
+                },
+                target: {
+                    type: 'CHARGECONCEPT',
+                    id: conceptId,
+                    name: finalData.name
+                },
+                details: {
+                    amount: finalData.defaultAmount,
+                    type: finalData.type,
+                    isRecurring: finalData.isRecurring
+                },
+                visibility: ['admin']
+            });
             
             if (window.appRouter) window.appRouter.navigate('/dashboard/services');
             else window.history.back();

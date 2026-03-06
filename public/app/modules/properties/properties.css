@@ -1,0 +1,214 @@
+/* Header (Estilo Limpio y Transparente) */
+.new-concept-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    background-color: transparent;
+    padding: 0;
+    margin: 0;
+    border-bottom: none;
+    backdrop-filter: none;
+}
+
+.btn-back {
+    width: 44px; /* Aumentamos ligeramente el área de toque para UX móvil */
+    height: 44px;
+    min-width: 44px;
+    border-radius: 12px; /* Cambiamos a bordes redondeados suaves, más moderno que el círculo perfecto */
+    background-color: white;
+    color: var(--color-gurkha-900);
+    border: 1px solid var(--color-gurkha-300);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    padding: 0;
+}
+
+.btn-back:hover { 
+    background-color: var(--color-gurkha-100); 
+    border-color: var(--color-kaitoke-green-500);
+    color: var(--color-kaitoke-green-700);
+    transform: translateX(-2px); /* Un pequeño desplazamiento hacia la izquierda refuerza visualmente la acción de volver */
+}
+
+.header-titles {
+    display: flex;
+    flex-direction: column;
+}
+
+.header-titles h1 { font-size: 1.25rem; font-weight: 700; color: var(--color-gurkha-900); margin: 0; }
+.header-titles span { font-size: 0.75rem; font-weight: 600; color: var(--color-gurkha-700); }
+
+/* --- Estilos del Módulo de Propiedades (Estilo Simple) --- */
+
+.properties-summary-bar {
+    display: flex;
+    gap: 2rem;
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background-color: var(--color-gurkha-50);
+    border: 1px solid var(--color-gurkha-200);
+    border-radius: 0.75rem;
+}
+
+.summary-item-simple {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.summary-item-simple .label {
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--color-gurkha-600);
+    text-transform: uppercase;
+}
+
+.summary-item-simple .value {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--color-gurkha-900);
+}
+
+.summary-item-simple .value.debt {
+    color: var(--color-solid-pink-600);
+}
+
+/* --- Grid de Propiedades (Copiado de Services) --- */
+#properties-list-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+    padding: 0;
+}
+
+.property-card {
+    background-color: var(--color-gurkha-50);
+    border: 1px solid var(--color-gurkha-200);
+    border-radius: 1rem;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.property-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 24px rgba(59, 60, 43, 0.1);
+    border-color: var(--color-kaitoke-green-500);
+}
+
+.property-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.property-id-badge {
+    background-color: var(--color-gurkha-900);
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 800;
+    padding: 0.25rem 0.6rem;
+    border-radius: 0.5rem;
+}
+
+.property-status-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    padding: 0.2rem 0.6rem;
+    border-radius: 2rem;
+    text-transform: uppercase;
+}
+
+.status-debt { background: #FFEBEE; color: #C62828; }
+.status-ok { background: #E8F5E9; color: #2E7D32; }
+
+.property-info h3 {
+    margin: 0;
+    font-size: 1rem;
+    color: var(--color-gurkha-900);
+    font-weight: 700;
+}
+
+.property-owner {
+    font-size: 0.8rem;
+    color: var(--color-gurkha-600);
+    margin: 0;
+}
+
+.property-footer {
+    margin-top: auto;
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--color-gurkha-100);
+}
+
+.property-balance {
+    display: flex;
+    flex-direction: column;
+}
+
+.balance-label {
+    font-size: 0.65rem;
+    color: var(--color-gurkha-600);
+    text-transform: uppercase;
+}
+
+.balance-value {
+    font-size: 1.1rem;
+    font-weight: 800;
+    color: var(--color-gurkha-900);
+}
+
+.property-card.has-debt .balance-value {
+    color: var(--color-solid-pink-600);
+}
+
+.properties-filters {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    scrollbar-width: none; /* Firefox */
+}
+
+.properties-filters::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
+}
+
+.filter-chip {
+    padding: 0.5rem 1.25rem;
+    border-radius: 2rem;
+    border: 1px solid var(--color-gurkha-300);
+    background-color: white;
+    color: var(--color-gurkha-700);
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+}
+
+.filter-chip:hover {
+    border-color: var(--color-kaitoke-green-500);
+    color: var(--color-kaitoke-green-700);
+}
+
+.filter-chip.active {
+    background-color: var(--color-kaitoke-green-500);
+    border-color: var(--color-kaitoke-green-600);
+    color: white;
+    box-shadow: 0 4px 12px rgba(40, 191, 99, 0.2);
+}
+
+@media (max-width: 480px) {
+    #properties-list-container {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

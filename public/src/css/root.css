@@ -402,6 +402,7 @@ input[type='button'] {
 @media screen and (max-width: 768px) {
   .dashboard-main{
     padding: 1.5em;
+    padding-bottom: 7.4rem;
   }
 
   .transactions-table {
@@ -566,46 +567,6 @@ input[type='button'] {
 .transactions-table .button {
   padding: 0.25rem 0.5rem;
   font-size: 0.75rem;
-}
-
-/* --- Service Catalog Styles --- */
-.dashboard-services-card {
-  padding: 1.5rem;
-  border-radius: 0.75rem;
-  box-shadow: var(--box-shadow-dark);
-  background-color: var(--color-surface);
-  grid-column: span 2 / span 2;
-  /* Make it full width */
-}
-
-#services-list-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-.service-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  border: 1px solid var(--color-border);
-  border-radius: 0.5rem;
-}
-
-.service-item-details {
-  display: flex;
-  flex-direction: column;
-}
-
-.service-item-name {
-  font-weight: 600;
-  color: var(--color-text-primary);
-}
-
-.service-item-amount {
-  font-size: 0.875rem;
-  color: var(--color-text-secondary);
 }
 
 /* --- Spinner Styles --- */

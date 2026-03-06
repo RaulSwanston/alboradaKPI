@@ -44,6 +44,15 @@
     display: flex;
 }
 
+
+.dashboard-services-card {
+  /* padding: 1.5rem; */
+  border-radius: 0.75rem;
+  /* background-color: transparent; */
+  grid-column: span 2 / span 2;
+  /* Make it full width */
+}
+
 /* --- Grid de Servicios --- */
 #services-list-container {
     display: grid;
