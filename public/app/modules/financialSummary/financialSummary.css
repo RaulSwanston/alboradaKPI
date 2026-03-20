@@ -28,6 +28,9 @@
   text-align: center;
   border-bottom: 1px solid var(--card-border, #d8d6be);
   padding-bottom: 1rem;
+  & a{
+    text-decoration: none;
+  }
 }
 
 .hero-metric .amount {

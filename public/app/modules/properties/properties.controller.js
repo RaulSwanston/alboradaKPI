@@ -1,4 +1,5 @@
 import Property from "../../models/Property.js";
+import Transaction from "../../models/Transaction.js";
 
 /**
  * properties.controller.js
@@ -65,24 +66,26 @@ export default async function propertiesController(contexto) {
       const ownerName = prop.ownerInfo?.name || 'Propietario no registrado';
       
       return `
-        <div class="property-card ${isDebt ? 'has-debt' : ''}" data-id="${prop.id}">
-          <div class="property-header">
-            <span class="property-id-badge">${prop.id}</span>
-            <span class="property-status-badge ${isDebt ? 'status-debt' : 'status-ok'}">
-              ${isDebt ? 'Pendiente' : 'Al día'}
-            </span>
-          </div>
-          <div class="property-info">
-            <h3>${ownerName}</h3>
-            <p class="property-owner">Unidad Residencial</p>
-          </div>
-          <div class="property-footer">
-            <div class="property-balance">
-              <span class="balance-label">Saldo Actual</span>
-              <span class="balance-value">${formatCurrency(balance)}</span>
+        <a href="/dashboard/properties/${prop.id}" data-view="dashboard">
+          <div class="property-card ${isDebt ? 'has-debt' : ''}" data-id="${prop.id}">
+            <div class="property-header">
+              <span class="property-id-badge">${prop.id}</span>
+              <span class="property-status-badge ${isDebt ? 'status-debt' : 'status-ok'}">
+                ${isDebt ? 'Pendiente' : 'Al día'}
+              </span>
+            </div>
+            <div class="property-info">
+              <h3>${ownerName}</h3>
+              <p class="property-owner">Unidad Residencial</p>
+            </div>
+            <div class="property-footer">
+              <div class="property-balance">
+                <span class="balance-label">Saldo Actual</span>
+                <span class="balance-value">${formatCurrency(balance)}</span>
+              </div>
             </div>
           </div>
-        </div>
+        </a>
       `;
     }).join('');
 
@@ -96,20 +99,36 @@ export default async function propertiesController(contexto) {
   const loadData = async () => {
     try {
         listContainer.innerHTML = '<div class="loading-text" style="grid-column: 1/-1;">Cargando catálogo de unidades...</div>';
-        allProperties = await Property.getAll();
+        
+        // Carga de propiedades y transacciones en paralelo para eficiencia
+        const [props, transactions] = await Promise.all([
+            Property.getAll(),
+            Transaction.getAll(5000) // Pedimos un límite alto para cubrir todo el año
+        ]);
+
+        allProperties = props;
         allProperties.sort((a, b) => a.id.localeCompare(b.id, undefined, {numeric: true, sensitivity: 'base'}));
 
-        const totalDebt = allProperties.reduce((acc, curr) => {
-            const b = curr.balance || 0;
-            return b < 0 ? acc + Math.abs(b) : acc;
+        // Sumatoria de movimientos de dinero reales (Excluyendo FEE)
+        const totalNetBalance = transactions.reduce((acc, t) => {
+            const type = (t.type || '').toUpperCase();
+            return type !== 'FEE' ? acc + (Number(t.amount) || 0) : acc;
         }, 0);
         
-        if (totalDebtEl) totalDebtEl.textContent = formatCurrency(totalDebt);
+        if (totalDebtEl) {
+            totalDebtEl.textContent = formatCurrency(totalNetBalance);
+            // Ajustamos el label si es necesario (opcional, por claridad visual)
+            const labelEl = totalDebtEl.previousElementSibling;
+            if (labelEl && labelEl.classList.contains('label')) {
+                labelEl.textContent = 'Balance Neto (Caja)';
+            }
+        }
+
         renderProperties();
 
     } catch (error) {
         console.error("[PropertiesController] Error:", error);
-        listContainer.innerHTML = '<div class="error" style="grid-column: 1/-1;">Error al cargar las propiedades.</div>';
+        listContainer.innerHTML = '<div class="error" style="grid-column: 1/-1;">Error al cargar las propiedades o el balance.</div>';
     }
   };
 

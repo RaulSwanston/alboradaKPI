@@ -7,6 +7,7 @@
     background-color: transparent;
     padding: 0;
     margin: 0;
+    margin-bottom: 1em;
     border-bottom: none;
     backdrop-filter: none;
 }
@@ -42,45 +43,87 @@
 .header-titles h1 { font-size: 1.25rem; font-weight: 700; color: var(--color-gurkha-900); margin: 0; }
 .header-titles span { font-size: 0.75rem; font-weight: 600; color: var(--color-gurkha-700); }
 
-/* --- Estilos del Módulo de Propiedades (Estilo Simple) --- */
+/* --- Estilos del Módulo de Propiedades (Dashboard Summary) --- */
 
 .properties-summary-bar {
     display: flex;
-    gap: 2rem;
+    align-items: center;
+    gap: 0;
     margin-bottom: 1.5rem;
-    padding: 1rem;
+    padding: 1rem 1.5rem;
     background-color: var(--color-gurkha-50);
     border: 1px solid var(--color-gurkha-200);
-    border-radius: 0.75rem;
+    border-radius: 1rem;
+    box-shadow: 0 4px 12px rgba(59, 60, 43, 0.04);
 }
 
 .summary-item-simple {
     display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
 }
 
-.summary-item-simple .label {
-    font-size: 0.75rem;
+.summary-divider {
+    width: 1px;
+    height: 32px;
+    background-color: var(--color-gurkha-200);
+    margin: 0 1.5rem;
+}
+
+.item-icon-mini {
+    width: 32px;
+    height: 32px;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.item-icon-mini.debt-color { color: var(--color-solid-pink-600); }
+.item-icon-mini.count-color { color: var(--color-kaitoke-green-600); }
+
+.item-data {
+    display: flex;
+    flex-direction: column;
+}
+
+.item-data .label {
+    font-size: 0.65rem;
     font-weight: 700;
     color: var(--color-gurkha-600);
     text-transform: uppercase;
+    letter-spacing: 0.05em;
 }
 
-.summary-item-simple .value {
-    font-size: 1.25rem;
+.item-data .value {
+    font-size: 1.15rem;
     font-weight: 800;
     color: var(--color-gurkha-900);
+    line-height: 1.1;
 }
 
-.summary-item-simple .value.debt {
-    color: var(--color-solid-pink-600);
+.item-data .value.debt {
+    color: var(--color-solid-pink-700);
 }
 
-/* --- Grid de Propiedades (Copiado de Services) --- */
+@media (max-width: 480px) {
+    .properties-summary-bar {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+    .summary-divider {
+        width: 100%;
+        height: 1px;
+        margin: 0;
+    }
+}
+
+/* --- Lista de Propiedades (Ancho Completo) --- */
 #properties-list-container {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    grid-template-columns: 1fr;
     gap: 1rem;
     padding: 0;
 }
@@ -207,8 +250,12 @@
     box-shadow: 0 4px 12px rgba(40, 191, 99, 0.2);
 }
 
-@media (max-width: 480px) {
-    #properties-list-container {
-        grid-template-columns: repeat(2, 1fr);
-    }
+/* Limpieza de enlaces en la lista */
+#properties-list-container a {
+    text-decoration: none;
+    color: inherit;
+    display: block;
 }
+
+
+

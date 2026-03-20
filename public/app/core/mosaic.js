@@ -14,13 +14,13 @@ export class Mosaic {
       CONTROLLER: 'controller' // NUEVO: Añadimos la directiva del controlador.
     };
 
-    // Pre-compilamos las expresiones regulares para eficiencia
+    // Pre-compilamos las expresiones regulares para eficiencia (soporte para guion medio)
     this.regex = {
-      theme: new RegExp(`<!-- ::${this.directives.THEME}\\.([\\w\\.]+) -->`),
-      module: new RegExp(`<!-- ::${this.directives.MODULE}\\.([\\w\\.]+) -->`, 'g'),
+      theme: new RegExp(`<!-- ::${this.directives.THEME}\\.([\\w\\.-]+) -->`),
+      module: new RegExp(`<!-- ::${this.directives.MODULE}\\.([\\w\\.-]+) -->`, 'g'),
       content: new RegExp(`<!-- ::${this.directives.CONTENT} -->`),
-      css: new RegExp(`<!-- ::${this.directives.CSS}\\.([\\w\\.]+) -->`, 'g'),
-      controller: new RegExp(`<!-- ::${this.directives.CONTROLLER}\\.([\\w\\.]+) -->`, 'g') // CORREGIDO: Añadido el flag global 'g'
+      css: new RegExp(`<!-- ::${this.directives.CSS}\\.([\\w\\.-]+) -->`, 'g'),
+      controller: new RegExp(`<!-- ::${this.directives.CONTROLLER}\\.([\\w\\.-]+) -->`, 'g')
     };
   }
 

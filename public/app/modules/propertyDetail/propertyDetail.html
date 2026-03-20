@@ -1,0 +1,32 @@
+<header class="new-concept-header">
+  <button class="btn-back" onclick="history.back()" aria-label="Volver">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+      <polyline points="15 18 9 12 15 6"></polyline>
+    </svg>
+  </button>
+  <div class="header-titles">
+    <h1 id="detail-property-id">Cargando...</h1>
+    <span id="detail-property-owner">Unidad Residencial</span>
+  </div>
+</header>
+
+<div class="detail-summary-card">
+    <div class="summary-balance">
+        <span class="label">Saldo Actual</span>
+        <h2 id="detail-property-balance">$0.00</h2>
+    </div>
+    <div class="summary-status">
+        <span id="detail-property-status-badge" class="status-badge">Pendiente</span>
+    </div>
+</div>
+
+<div class="detail-section">
+    <div class="section-header">
+        <h2>Movimientos Recientes</h2>
+        <span class="subtitle">Historial de cargos y pagos</span>
+    </div>
+    
+    <div id="movements-list-container">
+        <div class="loading-text">Cargando movimientos...</div>
+    </div>
+</div>

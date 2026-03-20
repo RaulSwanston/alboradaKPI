@@ -56,9 +56,14 @@ export class Router {
 
     // Intercepta clics en enlaces internos para evitar recargas completas de la página.
     document.body.addEventListener('click', e => {
-      if (e.target.matches('[data-link]')) {
+      const link = e.target.closest('[data-view]');
+      if (link) {
         e.preventDefault();
-        history.pushState(null, null, e.target.href);
+        
+        // El atributo data-view indica qué zona del DOM se debe refrescar.
+        this.currentTargetView = link.getAttribute('data-view');
+        
+        history.pushState(null, null, link.href);
         this.handleRouteChange();
       }
     });

@@ -1,60 +1,67 @@
-<div class="dashboard-transactions-card">
-  <h2 class="dashboard-transactions-title">Historial de Transacciones</h2>
-  <div class="table-responsive">
-    <table class="transactions-table">
-      <thead>
-        <tr>
-          <th class="table-header">Fecha</th>
-          <th class="table-header">Descripción</th>
-          <th class="table-header">Comprobante</th>
-          <th class="table-header">Nro.</th>
-          <th class="table-header text-right">Débito (-)</th>
-          <th class="table-header text-right">Crédito (+)</th>
-          <th class="table-header text-right">Saldo</th>
-        </tr>
-      </thead>
-      <tbody id="transactions-table-body">
-        <!-- Fila de ejemplo 1: Cargo -->
-        <tr>
-          <td>01/10/2025</td>
-          <td>Cuota de Mantenimiento Octubre</td>
-          <td>FEE</td>
-          <td>102025</td>
-          <td class="text-right">$-55.00</td>
-          <td class="text-right">$0.00</td>
-          <td class="text-right">$-55.00</td>
-        </tr>
-        <!-- Fila de ejemplo 2: Pago -->
-        <tr>
-            <td>05/10/2025</td>
-            <td>Pago de cuota de Septiembre</td>
-            <td>PAYMENT</td>
-            <td>AB4598</td>
-            <td class="text-right">$0.00</td>
-            <td class="text-right">$55.00</td>
-            <td class="text-right">$0.00</td>
-        </tr>
-        <!-- Fila de ejemplo 3: Cargo -->
-        <tr>
-          <td>01/09/2025</td>
-          <td>Cuota de Mantenimiento Septiembre</td>
-          <td>FEE</td>
-          <td>092025</td>
-          <td class="text-right">$-55.00</td>
-          <td class="text-right">$0.00</td>
-          <td class="text-right">$-55.00</td>
-        </tr>
-        <!-- Fila de ejemplo 4: Saldo inicial (puede ser un ajuste) -->
-        <tr>
-          <td>31/08/2025</td>
-          <td>Saldo anterior</td>
-          <td>ADJUST</td>
-          <td>$0.00</td>
-          <td class="text-right">$0.00</td>
-          <td class="text-right">$0.00</td>
-          <td class="text-right">$0.00</td>
-        </tr>
-      </tbody>
-    </table>
-  </div>
+<div class="transactions-summary-bar" id="transactions-summary-bar">
+    <div class="summary-item">
+        <span class="summary-label">Balance Neto del Periodo</span>
+        <span class="summary-value" id="sum-total-net">$0.00</span>
+    </div>
+</div>
+
+<div class="module-header">
+    <div class="header-main">
+        <div class="title-group">
+            <h2>Libro Mayor (Maestro)</h2>
+            <p class="subtitle">Historial completo de movimientos contables.</p>
+        </div>
+        <div class="actions">
+            <a href="/dashboard/transactions/new" class="btn-primary" data-view="dashboard" id="btn-new-transaction">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 5v14M5 12h14"></path>
+                </svg>
+                Nuevo Movimiento
+            </a>
+        </div>
+    </div>
+
+    <div class="header-filters">
+        <div class="filter-row-top">
+            <div class="search-bar-inline">
+                <input type="text" id="transactions-search" placeholder="Buscar por unidad o descripción...">
+            </div>
+            
+            <div class="date-filters-group">
+                <select id="date-preset-select" class="filter-select">
+                    <option value="all">Todo el tiempo</option>
+                    <option value="today">Hoy</option>
+                    <option value="yesterday">Ayer</option>
+                    <option value="last7days">Últimos 7 días</option>
+                    <option value="last30days">Últimos 30 días</option>
+                    <option value="thisMonth">Este mes</option>
+                    <option value="lastMonth">Mes pasado</option>
+                    <option value="last3months">Últimos 3 meses</option>
+                    <option value="last6months">Últimos 6 meses</option>
+                    <option value="thisYear">Este año</option>
+                    <option value="lastYear">Año pasado</option>
+                    <option value="custom">Personalizado / Rango</option>
+                </select>
+
+                <div id="custom-date-container" class="custom-dates hidden">
+                    <input type="date" id="date-start">
+                    <span>a</span>
+                    <input type="date" id="date-end">
+                    <button id="btn-apply-dates" class="btn-apply-dates">Buscar</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="chips-container" id="transaction-filters">
+            <!-- Se generará dinámicamente según los datos del periodo -->
+        </div>
+    </div>
+</div>
+
+<div class="transactions-grid" id="transactions-list">
+    <!-- Cargando... -->
+</div>
+
+<div class="pagination-container" id="pagination-controls">
+    <!-- Botones de página se inyectarán aquí -->
 </div>

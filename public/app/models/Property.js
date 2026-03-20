@@ -1,9 +1,31 @@
-import { db, collection, getDocs, query } from "../core/firebase.js";
+import { db, collection, getDocs, query, doc, getDoc } from "../core/firebase.js";
 
 /**
  * La clase Property encapsula la lógica para interactuar con la colección 'properties' en Firestore.
  */
 export default class Property {
+  /**
+   * Obtiene una propiedad específica por su ID.
+   * @param {string} id - El ID de la propiedad (ej: '001', '101').
+   * @returns {Promise<Object|null>} Un objeto con los datos de la propiedad o null si no existe.
+   */
+  static async getById(id) {
+    try {
+      const docRef = doc(db, "properties", id);
+      const docSnap = await getDoc(docRef);
+      
+      if (docSnap.exists()) {
+        return { id: docSnap.id, ...docSnap.data() };
+      } else {
+        console.warn(`[Property] No se encontró la propiedad con ID: ${id}`);
+        return null;
+      }
+    } catch (error) {
+      console.error(`[Property] Error al obtener propiedad ${id}:`, error);
+      throw error;
+    }
+  }
+
   /**
    * Realiza una única consulta a la colección 'properties' para obtener un resumen financiero.
    * @returns {Promise<{totalReceivable: number, creditBalance: number}>}

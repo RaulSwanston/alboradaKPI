@@ -1,0 +1,124 @@
+/* --- Estilos del Detalle de Propiedad --- */
+
+.detail-summary-card {
+    background-color: var(--color-gurkha-900);
+    color: white;
+    padding: 2rem;
+    border-radius: 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    box-shadow: 0 8px 32px rgba(59, 60, 43, 0.2);
+}
+
+.summary-balance .label {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--color-gurkha-300);
+    letter-spacing: 0.05em;
+}
+
+.summary-balance h2 {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin: 0.25rem 0 0;
+}
+
+.summary-status .status-badge {
+    font-size: 0.8rem;
+    font-weight: 800;
+    padding: 0.5rem 1.25rem;
+    border-radius: 2rem;
+    text-transform: uppercase;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* --- Estados Dinámicos del Resumen --- */
+.detail-summary-card.has-debt {
+    background-color: var(--color-solid-pink-600);
+}
+
+/* --- Secciones y Listas --- */
+.detail-section {
+    background-color: var(--color-gurkha-50);
+    border: 1px solid var(--color-gurkha-200);
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+}
+
+.section-header {
+    margin-bottom: 1.5rem;
+}
+
+.section-header h2 {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: var(--color-gurkha-900);
+    margin: 0;
+}
+
+.section-header .subtitle {
+    font-size: 0.85rem;
+    color: var(--color-gurkha-600);
+}
+
+/* --- Movimientos (Lista Estilo Timeline) --- */
+#movements-list-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.movement-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.25rem;
+    background-color: white;
+    border: 1px solid var(--color-gurkha-100);
+    border-radius: 1rem;
+    transition: transform 0.2s ease;
+}
+
+.movement-item:hover {
+    transform: translateX(4px);
+    border-color: var(--color-gurkha-300);
+}
+
+.movement-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.icon-fee { background-color: var(--color-solid-pink-50); color: var(--color-solid-pink-600); }
+.icon-payment { background-color: var(--color-kaitoke-green-50); color: var(--color-kaitoke-green-600); }
+
+.movement-info { flex: 1; }
+.movement-info h4 { font-size: 0.95rem; font-weight: 700; color: var(--color-gurkha-900); margin: 0; }
+.movement-info span { font-size: 0.75rem; color: var(--color-gurkha-600); }
+
+.movement-amount {
+    font-size: 1rem;
+    font-weight: 800;
+    text-align: right;
+}
+
+.amount-negative { color: var(--color-solid-pink-600); }
+.amount-positive { color: var(--color-kaitoke-green-600); }
+
+@media (max-width: 480px) {
+    .detail-summary-card {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1.5rem;
+        padding: 1.5rem;
+    }
+    .summary-balance h2 { font-size: 2rem; }
+}

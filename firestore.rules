@@ -42,8 +42,8 @@ service cloud.firestore {
     match /transactions/{transactionId} {
       // Los admins pueden leer todas. Los residentes solo las de su propiedad.
       allow read: if isAdmin() || isResidentOfProperty(resource.data.propertyId);
-      // Nadie puede escribir directamente. Se crean por lógica del servidor/funciones.
-      allow write: if false;
+      // Solo los administradores pueden crear, actualizar o borrar transacciones.
+      allow write: if isAdmin();
     }
 
     // Conceptos de Cargo (Catálogo de Servicios)

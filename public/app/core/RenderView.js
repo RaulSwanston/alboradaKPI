@@ -112,10 +112,12 @@ export class RenderView {
           const controllerModule = await import(objectUrl);
           if (controllerModule.default && typeof controllerModule.default === 'function') {
             // Ejecuta el controlador y captura la función de limpieza si la devuelve.
-            const cleanupFn = controllerModule.default(contexto);
-            if (typeof cleanupFn === 'function') {
+            // AÑADIDO: Soporte para controladores asíncronos.
+            const result = await controllerModule.default(contexto);
+            
+            if (typeof result === 'function') {
               // La almacena para ejecutarla antes de la próxima navegación.
-              this.activeCleanups.push(cleanupFn);
+              this.activeCleanups.push(result);
             }
           }
           else {

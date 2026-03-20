@@ -1,0 +1,72 @@
+<div class="module-header">
+    <div class="header-main">
+        <div class="title-group">
+            <button class="btn-back" id="btn-back-to-list" type="button" onclick="window.history.back()">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M15 18l-6-6 6-6"></path>
+                </svg>
+                Volver
+            </button>
+            <h2 id="trans-detail-title">Detalle de Transacción</h2>
+        </div>
+        <div class="actions">
+            <button class="btn-accent" id="btn-delete-trans" type="button">Eliminar Movimiento</button>
+        </div>
+    </div>
+</div>
+
+<div class="detail-card">
+    <form id="trans-form">
+        <div class="form-grid">
+            <div class="form-group full-width">
+                <label for="trans-description">Descripción del Movimiento</label>
+                <input type="text" id="trans-description" name="description" placeholder="Ej: Cuota de Mantenimiento Enero" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="trans-property-id">Unidad / Propiedad (ID)</label>
+                <input type="text" id="trans-property-id" name="propertyId" placeholder="Ej: 101" required>
+            </div>
+
+            <div class="form-group">
+                <label for="trans-amount">Monto (USD)</label>
+                <input type="number" id="trans-amount" name="amount" step="0.01" placeholder="0.00" required>
+            </div>
+
+            <div class="form-group">
+                <label for="trans-type">Tipo de Transacción</label>
+                <input type="text" id="trans-type" name="transactionType" list="trans-types-list" placeholder="Seleccione o escriba..." autocomplete="off" required>
+                <datalist id="trans-types-list">
+                    <option value="FEE">FEE (Cuota)</option>
+                    <option value="PAYMENT">PAYMENT (Pago)</option>
+                    <option value="EXPENSE">EXPENSE (Gasto)</option>
+                    <option value="FINE">FINE (Multa)</option>
+                    <option value="OTHER">OTHER (Otro)</option>
+                </datalist>
+            </div>
+
+            <div class="form-group">
+                <label for="trans-status">Estado de Verificación</label>
+                <select id="trans-status" name="status">
+                    <option value="verified">Verificado</option>
+                    <option value="unidentified">No Identificado</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label for="trans-effective-date">Fecha de Efectividad</label>
+                <input type="date" id="trans-effective-date" name="effectiveDate" required>
+            </div>
+
+            <div class="form-group">
+                <label for="trans-bank-ref">Referencia Bancaria</label>
+                <input type="text" id="trans-bank-ref" name="bankReference" placeholder="Opcional">
+            </div>
+        </div>
+
+        <div class="form-footer">
+            <button type="button" class="btn-back" onclick="window.history.back()">Cancelar</button>
+            <button type="submit" class="btn-primary" id="btn-save-trans">Guardar Transacción</button>
+        </div>
+    </form>
+</div>

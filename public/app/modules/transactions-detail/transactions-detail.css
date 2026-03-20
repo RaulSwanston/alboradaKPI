@@ -1,0 +1,206 @@
+/* --- Contenedor de Cabecera del Módulo --- */
+.module-header {
+    margin-bottom: 2rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 2px solid var(--card-border);
+}
+
+.header-main {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.title-group {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.title-group h2 {
+    margin: 0;
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: var(--text-primary);
+    letter-spacing: -0.02em;
+}
+
+/* --- Botón Volver --- */
+.btn-back {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--card-border);
+    padding: 0.6rem 1.2rem;
+    border-radius: 0.75rem;
+    color: var(--text-primary);
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-back:hover {
+    background: white;
+    color: var(--text-link);
+    transform: translateX(-4px);
+    border-color: var(--text-link);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
+
+/* --- Tarjeta de Detalle --- */
+.detail-card {
+    background: var(--bg-surface);
+    border-radius: 1.25rem;
+    padding: 3rem;
+    border: 1px solid var(--card-border);
+    max-width: 900px;
+    margin: 0 auto;
+    box-shadow: 0 10px 25px -5px rgba(59, 60, 43, 0.1);
+}
+
+/* --- Cuadrícula del Formulario --- */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    margin-bottom: 2.5rem;
+}
+
+.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.form-group label {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.form-group input, 
+.form-group select,
+.form-group textarea {
+    padding: 0.9rem 1.1rem;
+    border: 2px solid var(--input-border);
+    border-radius: 0.75rem;
+    background: white;
+    color: var(--text-primary);
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.form-group input::placeholder {
+    color: var(--gurkha-300);
+}
+
+.form-group input:focus, 
+.form-group select:focus {
+    outline: none;
+    border-color: var(--button-primary-bg);
+    box-shadow: 0 0 0 4px rgba(40, 191, 99, 0.15);
+}
+
+/* Estado de solo lectura con contraste claro */
+.form-group input:read-only {
+    background: var(--bg-canvas);
+    border-color: var(--card-border);
+    color: var(--text-secondary);
+    cursor: not-allowed;
+}
+
+/* --- Pie del Formulario --- */
+.form-footer {
+    padding-top: 2rem;
+    margin-top: 1rem;
+    border-top: 2px solid var(--card-border);
+    display: flex;
+    justify-content: flex-end;
+    gap: 1.25rem;
+}
+
+/* --- Botones de Acción --- */
+.btn-primary {
+    background: var(--button-principal-background);
+    color: var(--color-text-on-primary);
+    border: none;
+    padding: 1.1rem 2.8rem;
+    border-radius: 0.85rem;
+    cursor: pointer;
+    font-weight: 800;
+    font-size: 1.1rem;
+    box-shadow: 0 4px 14px rgba(25, 124, 64, 0.4);
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 0.01em;
+}
+
+.btn-primary:hover {
+    background: var(--color-kaitoke-green-800);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(25, 124, 64, 0.5);
+}
+
+.btn-primary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.btn-accent {
+    background: white;
+    color: var(--error);
+    border: 2px solid var(--error);
+    padding: 0.7rem 1.5rem;
+    border-radius: 0.75rem;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: 0.9rem;
+    transition: all 0.2s ease;
+}
+
+.btn-accent:hover {
+    background: var(--error);
+    color: white;
+    box-shadow: 0 4px 12px rgba(192, 62, 76, 0.2);
+}
+
+/* --- Responsive --- */
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .detail-card {
+        padding: 2rem 1.5rem;
+    }
+    
+    .header-main {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .actions, .btn-accent, .btn-primary {
+        width: 100%;
+    }
+    
+    .form-footer {
+        flex-direction: column-reverse;
+    }
+    
+    .form-footer .btn-back {
+        width: 100%;
+        justify-content: center;
+    }
+}

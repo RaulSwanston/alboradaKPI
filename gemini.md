@@ -78,7 +78,7 @@ El residente interactúa con la plataforma a través de un dashboard personal qu
 2.  **Solicitud:** El residente ve este servicio en su portal y envía una solicitud.
 3.  **Registro:** El sistema crea un documento en `serviceRequests` con estado "pendiente_aprobacion". No se genera ningún cargo financiero aún.
 4.  **Aprobación:** El administrador recibe la notificación, revisa la solicitud y la aprueba en su panel.
-5.  **Generación del Cargo:** Tras la aprobación, el sistema actualiza la solicitud a "aprobada" y crea automáticamente el documento correspondiente en la colección `transactions`, impactando el saldo del residente.
+5.  **Generación del Cargo:** Tras la aprobación, el sistema devuelve la solicitud a "aprobada" y crea automáticamente el documento correspondiente en la colección `transactions`, impactando el saldo del residente.
 
 ### Flujo Clave 2: Generación de Cuota Mensual (Automatizado)
 1.  **Configuración:** El administrador crea un "Concepto de Cargo" llamado "Cuota de Mantenimiento" y lo marca como "recurrente" con frecuencia "mensual".
@@ -167,18 +167,25 @@ Para cumplir con la visión de una plataforma de servicios flexible y automatiza
     - `finalAmount` (Número): El monto final del cargo, definido o confirmado por el administrador al aprobar.
 
 ### Colección: `transactions`
-- **Propósito:** Libro contable inmutable de todos los movimientos financieros (cargos y pagos).
+- **Propósito:** Libro contable inmutable de todos los movimientos financieros (cargos y pagos). Funciona como el Libro Mayor del condominio.
 - **ID del Documento:** ID auto-generado por Firestore.
 - **Campos:**
-    - `propertyId` (Texto): ID de la propiedad a la que pertenece.
+    - `propertyId` (Texto): ID de la propiedad a la que pertenece. Si el pago aún no ha sido identificado, se usa el valor especial `__UNIDENTIFIED__`.
+    - `status` (Texto): Estado de la transacción:
+        - `verified`: Movimiento plenamente identificado y aplicado a una propiedad.
+        - `unidentified`: Ingreso recibido en el banco pero cuyo origen (unidad) se desconoce.
     - `amount` (Número): Monto del movimiento. Negativo para cargos (débitos), positivo para créditos (pagos).
-    - `type` (Texto): Tipo de transacción (ej: "FEE", "PAYMENT", "FINE").
-    - `description` (Texto): Descripción legible del movimiento.
+    - `type` (Texto): Tipo de transacción (ej: "FEE", "PAYMENT", "FINE", "UNCATEGORIZED").
+    - `description` (Texto): Descripción legible del movimiento (ej: "Cuota Enero 2026", "Transferencia por identificar").
+    - `metadata` (Objeto, Opcional): Detalles técnicos del movimiento bancario para facilitar la identificación posterior.
+        - `senderName` (Texto): Nombre que aparece en la transferencia.
+        - `bankReference` (Número de confirmación del banco.
+        - `bankName` (Banco donde se recibió el dinero.
     - `voucherType` (Texto): Tipo de comprobante asociado (ej: "Factura", "Recibo", "Nota de Crédito").
     - `voucherNumber` (Texto): Número del comprobante.
     - `serviceRequestId` (Texto, Opcional): Si la transacción se originó por una solicitud de servicio, se guarda el ID para trazabilidad.
     - `createdAt` (Fecha y Hora): Fecha de registro en el sistema.
-    - `effectiveDate` (Fecha): Fecha a la que corresponde el movimiento contable.
+    - `effectiveDate` (Fecha): Fecha a la que corresponde el movimiento contable (ej: fecha de la transferencia).
 
 ### Colección: `paymentNotifications`
 - **Propósito:** Almacena los reportes de pago enviados por los residentes, pendientes de verificación por parte del administrador.
@@ -395,4 +402,31 @@ La aplicación utiliza una arquitectura desacoplada y de alta cohesión para ges
 6.  **Mosaic** procesa la vista y sus módulos de forma recursiva, y devuelve: `{ finalHtml: "...", cssUrls: [...], controllerNames: ["userProfileController"] }`.
 7.  **Router** llama a `renderView.anima(composedView, contexto)`.
 8.  **RenderView** carga el CSS, espera, inyecta el HTML y ejecuta `userProfileController(contexto)`.
-9.  El **Controller** usa `contexto.data.user.name` para mostrar "Ana" en la página.
+9. El **Controller** usa `contexto.data.user.name` para mostrar "Ana" en la página.
+
+---
+
+## 11. Modelo Contable (Dualidad de Registro)
+
+Para mantener la integridad financiera sin descuadrar el banco, el sistema separa el flujo de caja de la deuda del residente:
+
+- **Dinero en Banco:** Suma de `PAYMENT` (entradas) y `EXPENSE` (salidas). Los cargos no afectan este saldo.
+- **Saldo del Residente:** Suma de `FEE` (cargos mensuales, ej: $15) y `PAYMENT` (abonos).
+- **Regla de Justificación:** Todo pago recibido debe estar precedido por un cargo (`FEE`) que explique el origen de la deuda.
+
+## 12. Estándares de Navegación y Renderizado Parcial
+
+### Atributo Unificado `data-view`
+Se utiliza exclusivamente el atributo `data-view` en los enlaces (`<a>`) para gestionar la SPA:
+1.  **Captura de Clic:** El Router intercepta clics en cualquier elemento que contenga o esté dentro de un `[data-view]`.
+2.  **Destino de Refresco:** El valor del atributo (ej: `data-view="dashboard"`) indica qué contenedor `data-content` debe actualizarse.
+3.  **Fluidez:** Si el contenedor de destino existe tanto en la vista actual como en la nueva, el refresco es parcial (Inteligente).
+
+## 13. Convención de Auto-descubrimiento (Auto-discovery)
+
+El sistema `Mosaic` está diseñado para eliminar la configuración manual. Siempre que se respete la convención de nombres, los assets se cargarán automáticamente:
+
+- **Estructura:** `public/app/modules/{nombreModulo}/`
+- **Archivos:** `{nombreModulo}.html`, `{nombreModulo}.controller.js`, `{nombreModulo}.css`.
+- **Comportamiento:** Al declarar `<!-- ::module.{nombreModulo} -->`, el sistema buscará y ejecutará el controlador y el CSS asociados sin necesidad de directivas adicionales como `::controller`.
+
