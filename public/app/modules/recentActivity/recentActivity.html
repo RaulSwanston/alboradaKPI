@@ -1,26 +1,44 @@
-<section id="recent-activity-module" class="container">
-  <h2>Actividad Reciente</h2>
+<section id="recent-activity-module" class="recent-activity-section">
+  <div class="recent-activity-header">
+    <h3 class="recent-activity-title">Actividad Reciente</h3>
+  </div>
   
-  <!-- Contenedor para los items de actividad -->
-  <div id="activity-feed">
-    <p class="loading-message">Cargando actividades...</p>
+  <div id="activity-feed" class="activity-feed-container">
+    <div class="loading-message">
+      <div class="spinner-small"></div>
+      <p>Cargando actividades...</p>
+    </div>
   </div>
 
-  <!-- Mensaje para cuando no hay actividades -->
   <div id="no-activity-message" class="empty-state" style="display: none;">
+    <span class="material-symbols-outlined empty-icon">history_toggle_off</span>
     <p>Aún no hay actividad para mostrar.</p>
-    <span>Cuando los residentes reporten pagos o se generen cargos, aparecerán aquí.</span>
+    <span>Cuando ocurran movimientos en el condominio, aparecerán aquí.</span>
+  </div>
+
+  <div id="load-more-container" class="load-more-container" style="display: none;">
+    <button id="btn-load-more" class="btn-load-more">
+      <span>Cargar más actividades</span>
+      <svg class="icon-chevron" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 16">
+        <path fill-rule="evenodd" d="M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708"/>
+      </svg>
+    </button>
   </div>
 
   <!-- Plantilla para un solo item de actividad -->
   <template id="activity-item-template">
-    <div class="activity-item">
-      <div class="activity-icon">
-        <!-- El icono se establecerá desde el controlador -->
+    <div class="activity-card">
+      <div class="activity-card-left">
+        <div class="activity-icon-container">
+          <!-- El SVG se inyectará desde el controlador -->
+        </div>
+        <div class="activity-info">
+          <p class="activity-main-text"></p>
+          <p class="activity-sub-text"></p>
+        </div>
       </div>
-      <div class="activity-content">
-        <p class="activity-description"></p>
-        <span class="activity-timestamp"></span>
+      <div class="activity-card-right">
+        <div class="activity-eye-container"></div>
       </div>
     </div>
   </template>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Alborada Azure - Dashboard Residente</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container": "#f3f4f6",
+                    "on-surface-variant": "#374151",
+                    "tertiary-fixed-dim": "#fed7aa",
+                    "on-tertiary-fixed": "#431407",
+                    "error-container": "#fee2e2",
+                    "surface-container-low": "#ffffff",
+                    "on-tertiary-container": "#9a3412",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed": "#1e3a8a",
+                    "inverse-on-surface": "#ffffff",
+                    "surface": "#ffffff",
+                    "on-tertiary-fixed-variant": "#9a3412",
+                    "outline-variant": "#f3f4f6",
+                    "on-background": "#111827",
+                    "on-secondary-fixed": "#111827",
+                    "on-primary-container": "#1e40af",
+                    "on-error": "#ffffff",
+                    "secondary": "#374151",
+                    "primary-fixed": "#dbeafe",
+                    "error": "#dc2626",
+                    "surface-tint": "#2563eb",
+                    "outline": "#e5e7eb",
+                    "on-secondary-fixed-variant": "#374151",
+                    "on-secondary-container": "#111827",
+                    "background": "#f3f4f6",
+                    "on-primary": "#ffffff",
+                    "on-error-container": "#991b1b",
+                    "surface-dim": "#f3f4f6",
+                    "primary-container": "#eff6ff",
+                    "surface-variant": "#f3f4f6",
+                    "primary": "#2563eb",
+                    "primary-fixed-dim": "#bfdbfe",
+                    "on-surface": "#111827",
+                    "surface-container-lowest": "#ffffff",
+                    "tertiary-container": "#ffedd5",
+                    "surface-bright": "#ffffff",
+                    "on-primary-fixed-variant": "#1d4ed8",
+                    "secondary-container": "#f3f4f6",
+                    "tertiary-fixed": "#ffedd5",
+                    "tertiary": "#ea580c",
+                    "secondary-fixed": "#f3f4f6",
+                    "secondary-fixed-dim": "#e5e7eb",
+                    "surface-container-high": "#f3f4f6",
+                    "surface-container-highest": "#f3f4f6",
+                    "inverse-surface": "#111827",
+                    "inverse-primary": "#93c5fd",
+                    "on-tertiary": "#ffffff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "2xl": "1rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "body": ["Manrope"],
+                    "label": ["Manrope"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .brand-watermark {
+            background-image: radial-gradient(circle at top right, rgba(37, 99, 235, 0.05) 0%, transparent 70%);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- SideNavBar -->
+<aside class="fixed left-0 top-0 h-full flex flex-col p-4 z-50 bg-gray-50 dark:bg-gray-950 h-screen w-64 border-r border-gray-100 font-manrope text-sm font-semibold tracking-wide">
+<div class="mb-8 px-2 flex items-center gap-3">
+<div class="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white">
+<span class="material-symbols-outlined" data-icon="domain">domain</span>
+</div>
+<div>
+<h1 class="text-lg font-black text-blue-600 dark:text-blue-400 leading-tight">Alborada Azure</h1>
+<p class="text-[10px] uppercase tracking-[0.1em] text-on-surface-variant font-bold">Modo Residente</p>
+</div>
+</div>
+<nav class="flex-1 space-y-1">
+<a class="flex items-center gap-3 px-4 py-3 bg-white dark:bg-gray-900 text-blue-600 dark:text-blue-400 shadow-sm rounded-lg transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span>Inicio</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="account_balance_wallet">account_balance_wallet</span>
+<span>Estado de Cuenta</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="payments">payments</span>
+<span>Pagos</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="room_service">room_service</span>
+<span>Servicios</span>
+</a>
+<a class="flex items-center gap-3 px-4 py-3 text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-all duration-200 ease-in-out" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span>Perfil</span>
+</a>
+</nav>
+<div class="mt-auto">
+<button class="w-full py-3 px-4 bg-primary text-white rounded-xl font-bold flex items-center justify-center gap-2 hover:opacity-90 transition-opacity">
+<span class="material-symbols-outlined text-sm" data-icon="add_circle">add_circle</span>
+                Reportar Incidencia
+            </button>
+</div>
+</aside>
+<!-- Main Content Area -->
+<main class="ml-64 min-h-screen">
+<!-- TopNavBar -->
+<header class="flex justify-between items-center w-full px-8 h-16 sticky top-0 z-40 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 shadow-sm font-manrope text-sm font-medium">
+<div class="flex items-center gap-4 flex-1">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" data-icon="search">search</span>
+<input class="w-full bg-surface-container border-none rounded-full py-2 pl-10 pr-4 text-sm focus:ring-2 focus:ring-primary/20" placeholder="Buscar pagos, servicios o avisos..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="flex items-center gap-2 text-gray-500">
+<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors" data-icon="notifications">notifications</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary transition-colors" data-icon="settings">settings</span>
+</div>
+<div class="h-8 w-[1px] bg-gray-100"></div>
+<div class="flex items-center gap-3 cursor-pointer group">
+<div class="text-right">
+<p class="font-bold text-on-background leading-none">Julio Cortázar</p>
+<p class="text-[10px] text-gray-500 uppercase tracking-wider font-bold">Torre A - 402</p>
+</div>
+<img alt="Residente" class="w-10 h-10 rounded-full border-2 border-white shadow-sm object-cover group-hover:border-primary transition-all" data-alt="professional headshot of a middle-aged man with short dark hair and a friendly expression in a clean studio setting" src="https://lh3.googleusercontent.com/aida-public/AB6AXuAviBHKM1esIrZ_TR90Rh6dk3-Np2nwx6TjUUt759QUFCcBQ53CmqIk55a4H6_hxMIZSriXFE60RipXigLKB3524w_Hv4e2TyrwHlEaLMgzPGj7a1vkgQsQ4HsYKb_vLWEAa8EGnEIrltl-J9_8YroWiGFrOd2F6dw_nnFgMlwIGyTQ3wyUXRkTWjboS86sMmFrJ-i36ZOuA-HZBYA2OwVFyHfMUMDllULrd5LLeM--lkHQ0LwrD6WzWm67D7yftL8uYmkptWu9Deo"/>
+</div>
+</div>
+</header>
+<!-- Dashboard Content -->
+<div class="p-8 max-w-7xl mx-auto space-y-8">
+<!-- Welcome Header -->
+<section>
+<h2 class="text-[30px] font-extrabold tracking-tight text-on-background">¡Bienvenido de nuevo, Julio!</h2>
+<p class="text-on-surface-variant mt-1">Aquí tienes un resumen de tu propiedad al <span class="font-bold">24 de Octubre, 2023</span>.</p>
+</section>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-12 gap-6">
+<!-- Financial Summary Card (Large) -->
+<div class="col-span-12 lg:col-span-8 bg-surface rounded-2xl p-8 shadow-[0_2px_12px_rgba(0,0,0,0.06)] relative overflow-hidden brand-watermark border border-outline/30">
+<div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 relative z-10">
+<div>
+<p class="text-[12px] font-bold text-on-surface-variant uppercase tracking-[0.05em] mb-1">Estado de Cuenta</p>
+<h3 class="text-4xl font-extrabold text-error tracking-tight">$-15,400.00</h3>
+<p class="text-sm text-on-surface-variant mt-2 flex items-center gap-2">
+<span class="material-symbols-outlined text-sm" data-icon="event">event</span>
+                                Vence el 30 de Octubre
+                            </p>
+</div>
+<div class="flex gap-3">
+<button class="bg-primary text-white px-8 py-4 rounded-xl font-bold text-base shadow-sm active:opacity-80 transition-all hover:scale-[1.02]">
+                                Pagar Ahora
+                            </button>
+<button class="bg-white border border-outline px-6 py-4 rounded-xl font-semibold text-secondary hover:bg-surface-container transition-colors">
+                                Descargar Recibo
+                            </button>
+</div>
+</div>
+<div class="mt-8 pt-6 border-t border-gray-100 flex gap-8">
+<div>
+<p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Último Pago</p>
+<p class="font-bold">$7,200.00 <span class="text-xs font-normal text-gray-500">(15 Sep)</span></p>
+</div>
+<div>
+<p class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Próxima Expensa</p>
+<p class="font-bold">$8,200.00 <span class="text-xs font-normal text-gray-500">(Estimado)</span></p>
+</div>
+</div>
+</div>
+<!-- Featured Image/Promo Card -->
+<div class="col-span-12 lg:col-span-4 bg-primary text-white rounded-2xl p-6 shadow-[0_2px_12px_rgba(0,0,0,0.06)] relative overflow-hidden flex flex-col justify-end min-h-[240px]">
+<img alt="Condominium Amenities" class="absolute inset-0 w-full h-full object-cover mix-blend-overlay opacity-40" data-alt="modern luxury apartment rooftop swimming pool at sunset with lounge chairs and city skyline view" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBUkyol7_vSFOYfq6Nnwhk9Z8DxI7m0l3v0Js8_941S-1Q9e6Ioo6DXaZ_uMb3jNJcLgEp-Y0JqShYk8H1XJUcQCTatYVSTT-Ojr9_kNCBLr9m1qHQa26dY6eAojE7o5KwwoP0gOy1_dRlNbbbPN1aaey11vAd7b0Zuw2HC7VG0oV3WJqAfQXAjkK9kRguJLbG66AwP_T7qJrONAzCmcMInPhzBbQr7kN-pLoVmAwfrptGCGdXv4Hv4OITNlMEtu89Ihe_8xsBL99s"/>
+<div class="relative z-10">
+<span class="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-widest mb-3 inline-block">Novedad</span>
+<h4 class="text-xl font-extrabold leading-tight">Nueva Terraza Grill disponible</h4>
+<p class="text-white/80 text-sm mt-2">Ya puedes reservar el espacio renovado para tus eventos.</p>
+<button class="mt-4 text-sm font-bold flex items-center gap-1 hover:gap-2 transition-all">
+                            Reservar ahora <span class="material-symbols-outlined text-sm" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Quick Actions Row -->
+<div class="col-span-12">
+<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+<button class="bg-surface p-6 rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-outline/30 flex flex-col items-center gap-3 group hover:border-primary/50 transition-all">
+<div class="w-12 h-12 bg-blue-50 text-primary rounded-xl flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-2xl" data-icon="receipt_long">receipt_long</span>
+</div>
+<span class="font-bold text-on-background">Expensas</span>
+</button>
+<button class="bg-surface p-6 rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-outline/30 flex flex-col items-center gap-3 group hover:border-primary/50 transition-all">
+<div class="w-12 h-12 bg-orange-50 text-tertiary rounded-xl flex items-center justify-center group-hover:bg-tertiary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-2xl" data-icon="event_available">event_available</span>
+</div>
+<span class="font-bold text-on-background">Reservas</span>
+</button>
+<button class="bg-surface p-6 rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-outline/30 flex flex-col items-center gap-3 group hover:border-primary/50 transition-all">
+<div class="w-12 h-12 bg-gray-50 text-secondary rounded-xl flex items-center justify-center group-hover:bg-secondary group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-2xl" data-icon="home_repair_service">home_repair_service</span>
+</div>
+<span class="font-bold text-on-background">Servicios</span>
+</button>
+<button class="bg-surface p-6 rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-outline/30 flex flex-col items-center gap-3 group hover:border-primary/50 transition-all">
+<div class="w-12 h-12 bg-error-container text-error rounded-xl flex items-center justify-center group-hover:bg-error group-hover:text-white transition-colors">
+<span class="material-symbols-outlined text-2xl" data-icon="campaign">campaign</span>
+</div>
+<span class="font-bold text-on-background">Avisos</span>
+</button>
+</div>
+</div>
+<!-- Recent Activity Table -->
+<div class="col-span-12 bg-surface rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-outline/30 overflow-hidden">
+<div class="p-6 border-b border-gray-100 flex justify-between items-center">
+<h3 class="text-lg font-extrabold text-on-background">Actividad Reciente</h3>
+<a class="text-primary text-sm font-bold hover:underline" href="#">Ver todo</a>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="bg-surface-container/50">
+<th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-[0.1em]">Fecha</th>
+<th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-[0.1em]">Descripción</th>
+<th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-[0.1em]">Monto</th>
+<th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-[0.1em]">Estado</th>
+<th class="px-6 py-4 text-[10px] font-black text-gray-500 uppercase tracking-[0.1em]">Acción</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-gray-100">
+<!-- Transaction 1 -->
+<tr class="hover:bg-gray-50 transition-colors">
+<td class="px-6 py-4 text-sm font-medium text-gray-600">12 Oct 2023</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-blue-50 text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-sm" data-icon="description">description</span>
+</div>
+<div>
+<p class="font-bold text-sm">Expensas Ordinarias</p>
+<p class="text-xs text-gray-500">Octubre 2023</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm font-bold text-error">-$8,200.00</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-error-container text-error">Pendiente</span>
+</td>
+<td class="px-6 py-4">
+<button class="text-primary font-bold text-xs hover:text-on-primary-container transition-colors">Pagar</button>
+</td>
+</tr>
+<!-- Transaction 2 -->
+<tr class="hover:bg-gray-50 transition-colors">
+<td class="px-6 py-4 text-sm font-medium text-gray-600">08 Oct 2023</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-orange-50 text-tertiary flex items-center justify-center">
+<span class="material-symbols-outlined text-sm" data-icon="sports_tennis">sports_tennis</span>
+</div>
+<div>
+<p class="font-bold text-sm">Reserva Cancha de Tenis</p>
+<p class="text-xs text-gray-500">Sábado 14 Oct</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm font-bold text-error">-$500.00</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-tertiary-container text-tertiary">Confirmado</span>
+</td>
+<td class="px-6 py-4">
+<button class="text-gray-400 cursor-not-allowed font-bold text-xs">Cancelar</button>
+</td>
+</tr>
+<!-- Transaction 3 -->
+<tr class="hover:bg-gray-50 transition-colors">
+<td class="px-6 py-4 text-sm font-medium text-gray-600">15 Sep 2023</td>
+<td class="px-6 py-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-green-50 text-emerald-600 flex items-center justify-center">
+<span class="material-symbols-outlined text-sm" data-icon="check_circle">check_circle</span>
+</div>
+<div>
+<p class="font-bold text-sm">Pago de Expensas</p>
+<p class="text-xs text-gray-500">Transferencia Bancaria</p>
+</div>
+</div>
+</td>
+<td class="px-6 py-4 text-sm font-bold text-emerald-600">+$7,200.00</td>
+<td class="px-6 py-4">
+<span class="px-3 py-1 rounded-full text-[10px] font-bold uppercase bg-green-100 text-emerald-700">Completado</span>
+</td>
+<td class="px-6 py-4">
+<button class="text-primary font-bold text-xs hover:text-on-primary-container transition-colors">Detalles</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</div>
+</main>
+</body></html>

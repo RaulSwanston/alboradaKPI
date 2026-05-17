@@ -1,0 +1,84 @@
+<div class="payment-report-wrapper">
+  <!-- Page Header -->
+  <header class="detail-header">
+    <div class="header-left">
+      <button class="btn-back" onclick="history.back()" aria-label="Volver">
+        <div class="icon-slot" data-icon="chevron-left"></div>
+      </button>
+      <h1 class="header-title">Reportar Pago</h1>
+    </div>
+  </header>
+
+  <main class="report-main">
+    <form id="payment-report-form" class="report-form">
+      
+      <!-- Panel de Datos -->
+      <div class="report-card brand-watermark">
+        <div class="form-group">
+          <label for="propertyId" class="form-label">Unidad / Propiedad</label>
+          <select id="propertyId" name="propertyId" class="form-select" required>
+            <option value="" disabled selected>Selecciona una propiedad</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="amount" class="form-label">Monto Pagado</label>
+          <div class="input-prefix-wrapper">
+            <span class="input-prefix">$</span>
+            <input type="number" id="amount" name="amount" class="form-input" placeholder="0.00" step="0.01" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="paymentDate" class="form-label">Fecha del Pago</label>
+          <input type="date" id="paymentDate" name="paymentDate" class="form-input" required>
+        </div>
+
+        <div class="form-group">
+          <label for="notes" class="form-label">Notas Adicionales</label>
+          <textarea id="notes" name="notes" class="form-textarea" placeholder="¿Algún detalle importante?"></textarea>
+        </div>
+      </div>
+
+      <!-- Panel de Comprobante -->
+      <div class="report-card">
+        <label class="form-label">Comprobante de Pago</label>
+        <div class="upload-zone" id="upload-zone">
+          <input type="file" id="receipt-file" accept="image/*" class="hidden-input">
+          <div class="upload-content">
+            <div class="upload-icon" data-icon="camera"></div>
+            <div class="upload-text">
+              <span class="upload-title">Adjuntar Imagen</span>
+              <span class="upload-subtitle">Haz clic para subir la foto</span>
+            </div>
+          </div>
+          <div id="file-preview" class="file-preview hidden">
+            <img id="preview-img" src="" alt="Vista previa">
+            <button type="button" id="btn-remove-file" class="btn-remove-file">
+              <div class="icon-slot-sm" data-icon="x-circle"></div>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Acciones (Sticky en móvil, debajo en Desktop) -->
+      <div class="form-actions">
+        <button type="submit" id="btn-submit-report" class="btn-primary">
+          <div class="icon-slot-sm" data-icon="send"></div>
+          Enviar Reporte
+        </button>
+      </div>
+
+    </form>
+  </main>
+
+  <!-- Modal de Estado -->
+  <div id="status-modal" class="modal-overlay hidden">
+    <div class="modal-content">
+      <div id="modal-icon" class="modal-icon"></div>
+      <h3 id="modal-title" class="modal-title"></h3>
+      <p id="modal-message" class="modal-message"></p>
+      <button type="button" id="btn-modal-close" class="btn-primary">Entendido</button>
+    </div>
+  </div>
+</div>

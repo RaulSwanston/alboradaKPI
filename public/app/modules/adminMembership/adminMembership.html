@@ -1,0 +1,31 @@
+<div class="admin-membership-module">
+  <div class="module-header">
+    <h2 class="module-title">Solicitudes de Vinculación</h2>
+    <p class="module-desc">Gestiona las peticiones de residentes para vincularse a unidades del condominio.</p>
+  </div>
+
+  <div id="requests-list-container" class="requests-grid">
+    <div class="loading-state">Cargando solicitudes...</div>
+  </div>
+
+  <!-- Template para las tarjetas de solicitud (se usa dinámicamente) -->
+  <template id="request-card-template">
+    <div class="request-card">
+      <div class="request-card-info">
+        <div class="user-info">
+          <span class="user-name"></span>
+          <span class="user-email"></span>
+        </div>
+        <div class="property-target">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+          <span class="property-name"></span>
+        </div>
+        <div class="request-date"></div>
+      </div>
+      <div class="request-actions">
+        <button class="button button-accent btn-reject">Rechazar</button>
+        <button class="button button-primary btn-approve">Aprobar</button>
+      </div>
+    </div>
+  </template>
+</div>

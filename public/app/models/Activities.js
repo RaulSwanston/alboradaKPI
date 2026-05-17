@@ -1,4 +1,4 @@
-import { db, collection, addDoc, query, orderBy, limit, getDocs, serverTimestamp } from "../core/firebase.js";
+import { db, collection, addDoc, query, orderBy, limit, getDocs, serverTimestamp, startAfter } from "../core/firebase.js";
 
 /**
  * Crea un nuevo documento en la colección 'activities'.
@@ -21,15 +21,22 @@ export async function createActivity(activityData) {
 }
 
 /**
- * Obtiene las actividades más recientes de la base de datos.
- * @param {number} count - El número de actividades a obtener (por defecto 20).
- * @returns {Promise<Array>} Un array con los documentos de las actividades.
+ * Obtiene las actividades más recientes de la base de datos con soporte para paginación.
+ * @param {number} count - El número de actividades a obtener.
+ * @param {DocumentSnapshot} lastDoc - El último documento de la carga anterior para paginación.
+ * @returns {Promise<{activities: Array, lastVisible: DocumentSnapshot}>} Un objeto con el array de actividades y el último documento visible.
  */
-export async function getRecentActivities(count = 20) {
+export async function getRecentActivities(count = 15, lastDoc = null) {
   try {
     const activitiesRef = collection(db, "activities");
-    // Creamos una consulta para obtener los 'count' documentos más recientes, ordenados por 'timestamp' descendente.
-    const q = query(activitiesRef, orderBy("timestamp", "desc"), limit(count));
+    let q;
+    
+    if (lastDoc) {
+      q = query(activitiesRef, orderBy("timestamp", "desc"), startAfter(lastDoc), limit(count));
+    } else {
+      q = query(activitiesRef, orderBy("timestamp", "desc"), limit(count));
+    }
+    
     const querySnapshot = await getDocs(q);
     
     const activities = [];
@@ -37,7 +44,9 @@ export async function getRecentActivities(count = 20) {
       activities.push({ id: doc.id, ...doc.data() });
     });
     
-    return activities;
+    const lastVisible = querySnapshot.docs[querySnapshot.docs.length - 1];
+    
+    return { activities, lastVisible };
   } catch (error) {
     console.error("Error al obtener actividades recientes: ", error);
     throw error;

@@ -1,7 +1,39 @@
-/*=============================================
-|     SECTION: DYNAMIC DASHBOARD MENU       |
-=============================================
-*/
+/* --- Notificación en tiempo real (Punto Rojo) --- */
+#nav-notifications {
+  position: relative;
+}
+
+#nav-notifications.has-updates a svg {
+  position: relative;
+}
+
+#nav-notifications.has-updates a::after {
+  content: "";
+  position: absolute;
+  top: 0.5rem;
+  right: 1.5rem;
+  width: 10px;
+  height: 10px;
+  background-color: var(--color-solid-pink-500);
+  border: 2px solid var(--color-surface);
+  border-radius: 50%;
+  z-index: 2;
+  animation: pulse-red 2s infinite;
+}
+
+/* Ajuste para escritorio */
+@media (min-width: 768px) {
+  #nav-notifications.has-updates a::after {
+    top: 0.75rem;
+    right: 0.75rem;
+  }
+}
+
+@keyframes pulse-red {
+  0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(213, 94, 101, 0.7); }
+  70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(213, 94, 101, 0); }
+  100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(213, 94, 101, 0); }
+}
 
 /* --- Estilos de los items del menú (igual que antes) --- */
 .dashboard-menu ul {

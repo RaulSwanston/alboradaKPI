@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Estado de Cuenta - Alborada Azure</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@200;300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "on-background": "#111827",
+              "tertiary-container": "#ffedd5",
+              "primary-fixed-dim": "#bfdbfe",
+              "secondary-fixed": "#f3f4f6",
+              "surface-container-highest": "#f3f4f6",
+              "secondary": "#374151",
+              "on-secondary-fixed-variant": "#374151",
+              "surface-dim": "#f3f4f6",
+              "outline-variant": "#f3f4f6",
+              "tertiary-fixed": "#ffedd5",
+              "surface-container-low": "#ffffff",
+              "primary-container": "#eff6ff",
+              "inverse-primary": "#93c5fd",
+              "secondary-fixed-dim": "#e5e7eb",
+              "surface-container-lowest": "#ffffff",
+              "surface-bright": "#ffffff",
+              "on-tertiary-container": "#9a3412",
+              "secondary-container": "#f3f4f6",
+              "outline": "#e5e7eb",
+              "on-surface-variant": "#374151",
+              "on-primary": "#ffffff",
+              "background": "#f3f4f6",
+              "tertiary-fixed-dim": "#fed7aa",
+              "on-tertiary": "#ffffff",
+              "on-tertiary-fixed-variant": "#9a3412",
+              "primary": "#2563eb",
+              "inverse-on-surface": "#ffffff",
+              "surface-variant": "#f3f4f6",
+              "on-error": "#ffffff",
+              "primary-fixed": "#dbeafe",
+              "surface-tint": "#2563eb",
+              "error": "#dc2626",
+              "on-primary-fixed-variant": "#1d4ed8",
+              "inverse-surface": "#111827",
+              "tertiary": "#ea580c",
+              "on-error-container": "#991b1b",
+              "on-tertiary-fixed": "#431407",
+              "on-secondary": "#ffffff",
+              "on-primary-container": "#1e40af",
+              "surface": "#ffffff",
+              "error-container": "#fee2e2",
+              "on-primary-fixed": "#1e3a8a",
+              "on-secondary-container": "#111827",
+              "surface-container-high": "#f3f4f6",
+              "on-secondary-fixed": "#111827",
+              "on-surface": "#111827",
+              "surface-container": "#f3f4f6"
+            },
+            fontFamily: {
+              "headline": ["Manrope"],
+              "body": ["Manrope"],
+              "label": ["Manrope"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "2xl": "1rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+<style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+      body { font-family: 'Manrope', sans-serif; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 bg-white dark:bg-gray-900 shadow-[0_2px_12px_rgba(0,0,0,0.06)] dark:shadow-none">
+<div class="flex items-center justify-between px-4 py-3 w-full">
+<div class="flex items-center gap-3">
+<button class="active:scale-95 duration-200 hover:bg-gray-50 dark:hover:bg-gray-800 p-1 rounded-full text-blue-600 dark:text-blue-400">
+<span class="material-symbols-outlined" data-icon="arrow_back">arrow_back</span>
+</button>
+<h1 class="font-manrope font-bold text-lg tracking-tight text-on-background">Estado de Cuenta</h1>
+</div>
+<div class="w-8"></div> <!-- Spacer for balance -->
+</div>
+<div class="bg-gray-100 dark:bg-gray-800 h-[1px] w-full"></div>
+</header>
+<main class="pt-20 px-4 space-y-6">
+<!-- User Context Header -->
+<section class="flex flex-col gap-1">
+<span class="text-[12px] font-medium tracking-widest text-on-surface-variant uppercase">Resumen de Propietario</span>
+<div class="flex items-center justify-between">
+<div>
+<h2 class="text-xl font-extrabold tracking-tight text-on-background">Julio Bejarano</h2>
+<p class="text-sm text-on-surface-variant font-medium">No. Casa 218</p>
+</div>
+<div class="h-12 w-12 rounded-2xl bg-primary-container flex items-center justify-center text-primary">
+<span class="material-symbols-outlined" data-icon="apartment" style="font-variation-settings: 'FILL' 1;">apartment</span>
+</div>
+</div>
+</section>
+<!-- Current Balance Card -->
+<section class="relative overflow-hidden bg-surface rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.06)] p-6">
+<!-- Signature Texture -->
+<div class="absolute -top-4 -right-4 w-24 h-24 bg-primary/5 rounded-full"></div>
+<div class="flex flex-col gap-2 relative z-10">
+<span class="text-xs font-bold text-on-surface-variant tracking-wider uppercase">Saldo Actual</span>
+<div class="flex items-baseline gap-1">
+<span class="text-4xl font-extrabold text-on-background">$0.00</span>
+<span class="text-sm font-semibold text-primary">MXN</span>
+</div>
+<div class="mt-4 flex items-center gap-2 py-2 px-3 bg-primary-container rounded-lg w-fit">
+<span class="material-symbols-outlined text-sm text-primary" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+<span class="text-xs font-bold text-on-primary-container">CUENTA AL DÍA</span>
+</div>
+</div>
+</section>
+<!-- Movements Header -->
+<section class="flex items-center justify-between">
+<h3 class="text-sm font-extrabold tracking-tight uppercase text-on-surface-variant">Movimientos Recientes</h3>
+<button class="text-xs font-bold text-primary flex items-center gap-1">
+                FILTRAR <span class="material-symbols-outlined text-sm" data-icon="filter_list">filter_list</span>
+</button>
+</section>
+<!-- Transaction Cards List -->
+<section class="space-y-3">
+<!-- Transaction 1: Charge -->
+<div class="bg-surface rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.06)] p-4 flex flex-col gap-3 border-l-4 border-error/20">
+<div class="flex justify-between items-start">
+<div class="flex flex-col">
+<span class="text-[10px] font-bold text-on-surface-variant tracking-wider uppercase">01-ene-25</span>
+<h4 class="font-bold text-on-background leading-tight">MANTENIMIENTO ENERO</h4>
+</div>
+<span class="text-sm font-extrabold text-error">- $1,250.00</span>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-gray-50">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-xs text-on-surface-variant" data-icon="description">description</span>
+<span class="text-[10px] font-medium text-on-surface-variant">FACTURA FE-1092</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="text-[10px] font-medium text-on-surface-variant">SALDO:</span>
+<span class="text-[10px] font-bold text-on-background">$1,250.00</span>
+</div>
+</div>
+</div>
+<!-- Transaction 2: Payment -->
+<div class="bg-surface rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.06)] p-4 flex flex-col gap-3 border-l-4 border-primary/20">
+<div class="flex justify-between items-start">
+<div class="flex flex-col">
+<span class="text-[10px] font-bold text-on-surface-variant tracking-wider uppercase">05-ene-25</span>
+<h4 class="font-bold text-on-background leading-tight">PAGO ENERO - TRANSFERENCIA</h4>
+</div>
+<span class="text-sm font-extrabold text-primary">+ $1,250.00</span>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-gray-50">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-xs text-on-surface-variant" data-icon="receipt_long">receipt_long</span>
+<span class="text-[10px] font-medium text-on-surface-variant">RECIBO RC-8821</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="text-[10px] font-medium text-on-surface-variant">SALDO:</span>
+<span class="text-[10px] font-bold text-on-background">$0.00</span>
+</div>
+</div>
+</div>
+<!-- Transaction 3: Extra Charge -->
+<div class="bg-surface rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.06)] p-4 flex flex-col gap-3 border-l-4 border-error/20">
+<div class="flex justify-between items-start">
+<div class="flex flex-col">
+<span class="text-[10px] font-bold text-on-surface-variant tracking-wider uppercase">15-dic-24</span>
+<h4 class="font-bold text-on-background leading-tight">CUOTA EXTRAORDINARIA</h4>
+</div>
+<span class="text-sm font-extrabold text-error">- $500.00</span>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-gray-50">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-xs text-on-surface-variant" data-icon="description">description</span>
+<span class="text-[10px] font-medium text-on-surface-variant">FACTURA FE-1045</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="text-[10px] font-medium text-on-surface-variant">SALDO:</span>
+<span class="text-[10px] font-bold text-on-background">$500.00</span>
+</div>
+</div>
+</div>
+<!-- Transaction 4: Previous Payment -->
+<div class="bg-surface rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.06)] p-4 flex flex-col gap-3 border-l-4 border-primary/20">
+<div class="flex justify-between items-start">
+<div class="flex flex-col">
+<span class="text-[10px] font-bold text-on-surface-variant tracking-wider uppercase">20-dic-24</span>
+<h4 class="font-bold text-on-background leading-tight">ABONO CUOTA EXTRAORDINARIA</h4>
+</div>
+<span class="text-sm font-extrabold text-primary">+ $500.00</span>
+</div>
+<div class="flex items-center justify-between pt-2 border-t border-gray-50">
+<div class="flex items-center gap-1.5">
+<span class="material-symbols-outlined text-xs text-on-surface-variant" data-icon="receipt_long">receipt_long</span>
+<span class="text-[10px] font-medium text-on-surface-variant">RECIBO RC-8750</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="text-[10px] font-medium text-on-surface-variant">SALDO:</span>
+<span class="text-[10px] font-bold text-on-background">$0.00</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Quick Access to Payment (Action) -->
+<section class="pb-10">
+<div class="bg-blue-600 rounded-2xl p-6 flex items-center justify-between shadow-xl shadow-blue-500/20">
+<div class="flex flex-col gap-1">
+<span class="text-blue-100 text-[10px] font-bold uppercase tracking-widest">¿Tienes saldos pendientes?</span>
+<h3 class="text-white font-bold text-base leading-tight">Pagar mis servicios en línea</h3>
+</div>
+<button class="bg-white text-blue-600 rounded-xl px-4 py-2.5 font-bold text-sm shadow-lg active:scale-95 transition-transform">
+                    IR A PAGOS
+                </button>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full flex justify-around items-center px-4 py-2 pb-safe bg-white dark:bg-gray-900 shadow-[0_-2px_12px_rgba(0,0,0,0.06)] border-t border-gray-100 dark:border-gray-800 z-50">
+<!-- Inicio -->
+<a class="flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 hover:text-blue-500 transition-all active:translate-y-[-2px]" href="#">
+<span class="material-symbols-outlined" data-icon="home">home</span>
+<span class="font-manrope text-[10px] font-medium tracking-wide uppercase mt-0.5">Inicio</span>
+</a>
+<!-- Servicios -->
+<a class="flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 hover:text-blue-500 transition-all active:translate-y-[-2px]" href="#">
+<span class="material-symbols-outlined" data-icon="apps">apps</span>
+<span class="font-manrope text-[10px] font-medium tracking-wide uppercase mt-0.5">Servicios</span>
+</a>
+<!-- Pagos (ACTIVE mapped to Estado de Cuenta flow) -->
+<a class="flex flex-col items-center justify-center text-blue-600 dark:text-blue-400 scale-105 transition-all active:translate-y-[-2px]" href="#">
+<span class="material-symbols-outlined" data-icon="payments" style="font-variation-settings: 'FILL' 1;">payments</span>
+<span class="font-manrope text-[10px] font-medium tracking-wide uppercase mt-0.5">Pagos</span>
+</a>
+<!-- Perfil -->
+<a class="flex flex-col items-center justify-center text-gray-400 dark:text-gray-500 hover:text-blue-500 transition-all active:translate-y-[-2px]" href="#">
+<span class="material-symbols-outlined" data-icon="person">person</span>
+<span class="font-manrope text-[10px] font-medium tracking-wide uppercase mt-0.5">Perfil</span>
+</a>
+</nav>
+</body></html>

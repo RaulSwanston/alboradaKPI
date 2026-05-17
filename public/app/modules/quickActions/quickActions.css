@@ -1,0 +1,160 @@
+/* --- quickActions Module --- */
+
+.quick-actions-container {
+    padding: 0.5rem 0;
+    width: 100%;
+}
+
+.quick-actions-scroll {
+    display: flex;
+    gap: 1.25rem;
+    overflow-x: auto;
+    padding: 0.5rem 0.25rem;
+    /* Ocultar scrollbar */
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.quick-actions-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+.quick-action-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 76px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: transform 0.2s ease;
+}
+
+.quick-action-item:active {
+    transform: scale(0.95);
+}
+
+.quick-action-icon-wrapper {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background-color: var(--bg-surface, #f6f5ef);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    border: 1px solid var(--card-border, #d8d6be);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.quick-action-item:hover .quick-action-icon-wrapper {
+    border-color: var(--button-primary-bg, #28bf63);
+    box-shadow: 0 4px 12px rgba(40, 191, 99, 0.15);
+    background-color: #ffffff;
+}
+
+.quick-action-icon-wrapper span {
+    color: var(--button-primary-bg, #28bf63);
+    font-size: 1.75rem;
+    font-variation-settings: 'FILL' 0, 'wght' 400;
+}
+
+.quick-action-item:hover .quick-action-icon-wrapper span {
+    font-variation-settings: 'FILL' 1, 'wght' 500;
+}
+
+.quick-action-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-secondary, #555536);
+    text-align: center;
+    white-space: nowrap;
+}
+
+/* --- Desktop Styles (Media Query) --- */
+@media (min-width: 768px) {
+    .quick-actions-container {
+        padding: 1.5rem 0;
+    }
+
+    .quick-actions-scroll {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 1.5rem;
+        overflow: visible;
+        padding: 0;
+    }
+
+    .quick-action-item {
+        background: white;
+        padding: 1.5rem;
+        border-radius: 1.5rem;
+        border: 1px solid var(--color-gurkha-100);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        flex-direction: row; /* Ícono y texto en fila */
+        align-items: center;
+        justify-content: flex-start;
+        gap: 1.25rem;
+        min-width: 0;
+        position: relative;
+        overflow: hidden;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .quick-action-item:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.06);
+        border-color: var(--color-kaitoke-green-200);
+    }
+
+    /* Efecto Brand Watermark (estándar propertyDetail) */
+    .brand-watermark::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 100%;
+        height: 100%;
+        background-image: radial-gradient(circle at top right, rgba(40, 191, 99, 0.05) 0%, transparent 70%);
+        pointer-events: none;
+    }
+
+    .quick-action-icon-wrapper {
+        width: 3.25rem;
+        height: 3.25rem;
+        border-radius: 1rem;
+        background-color: var(--color-gurkha-50);
+        border: none;
+        flex-shrink: 0;
+    }
+
+    .quick-action-item:hover .quick-action-icon-wrapper {
+        background-color: var(--color-kaitoke-green-50);
+    }
+
+    .quick-action-icon-wrapper svg,
+    .quick-action-icon-wrapper span {
+        font-size: 1.5rem;
+        color: var(--color-gurkha-400);
+        fill: var(--color-gurkha-400);
+        transition: all 0.3s ease;
+    }
+
+    .quick-action-item:hover .quick-action-icon-wrapper svg,
+    .quick-action-item:hover .quick-action-icon-wrapper span {
+        color: var(--color-kaitoke-green-600);
+        fill: var(--color-kaitoke-green-600);
+    }
+
+    .quick-action-label {
+        font-size: 1rem;
+        font-weight: 800;
+        color: var(--color-text-primary);
+        text-align: left;
+        letter-spacing: -0.01em;
+    }
+
+    .quick-action-item:hover .quick-action-label {
+        color: var(--color-kaitoke-green-700);
+    }
+}

@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Portal Alborada - Admin Payments</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2563eb",
+                        "gurkha-50": "#ffffff","gurkha-100": "#f3f4f6","gurkha-700": "#374151","gurkha-900": "#111827","danger": "#dc2626",
+                        "success": "#16a34a",
+                        "warning": "#f59e0b",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "3xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>.no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-gurkha-100 font-display text-gurkha-900">
+<div class="relative flex min-h-screen w-full flex-col overflow-hidden pb-24">
+<header class="flex items-center justify-between bg-gurkha-100 p-4 pt-6 sticky top-0 z-10">
+<div class="flex flex-col">
+<span class="text-xs font-medium text-gurkha-700 uppercase tracking-wider">Modo Administrador</span>
+<h1 class="text-gurkha-900 text-xl font-bold leading-tight tracking-[-0.015em]">Portal Alborada</h1>
+</div>
+<div class="flex items-center justify-end">
+<button class="flex items-center justify-center rounded-full bg-white shadow-sm h-10 w-10 text-primary hover:bg-gray-50 transition-colors border border-gray-100">
+<span class="material-symbols-outlined text-2xl">manage_accounts</span>
+</button>
+</div>
+</header>
+<main class="flex flex-col gap-0 px-4 py-2">
+<section class="mb-6">
+<div class="flex w-full rounded-xl bg-gurkha-50 p-1 shadow-sm border border-gray-200">
+<button class="flex-1 rounded-lg py-2.5 text-sm font-semibold text-gurkha-700 transition-colors hover:bg-gray-50">
+                        Servicios
+                    </button>
+<button class="flex-1 rounded-lg bg-primary py-2.5 text-sm font-bold text-white shadow-sm transition-all">
+                        Pagos
+                    </button>
+</div>
+</section>
+<section class="flex flex-col gap-4">
+<div class="flex items-center justify-between mb-1">
+<h2 class="text-gurkha-900 text-lg font-bold">Pagos Pendientes</h2>
+<span class="text-xs font-medium text-gurkha-700 bg-gray-200 px-2 py-1 rounded-full">5 por revisar</span>
+</div>
+<div class="relative w-full overflow-hidden rounded-2xl bg-gurkha-50 p-4 shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-gray-100 active:scale-[0.99] transition-transform">
+<div class="flex items-start justify-between">
+<div class="flex gap-3">
+<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-50 text-primary">
+<span class="material-symbols-outlined text-2xl">receipt_long</span>
+</div>
+<div class="flex flex-col">
+<h3 class="text-gurkha-900 text-base font-bold">Unidad 402 - Torre A</h3>
+<p class="text-gurkha-700 text-xs font-medium">Mantenimiento Marzo 2024</p>
+<p class="text-gurkha-500 text-[10px] mt-1">Ref: #PAY-29381</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-gurkha-900 text-base font-bold">$ 2,500.00</p>
+<span class="inline-flex mt-1 items-center rounded-full bg-orange-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-orange-700 border border-orange-100">
+                                Revision
+                            </span>
+</div>
+</div>
+<div class="mt-3 flex items-center justify-between border-t border-gray-50 pt-3">
+<div class="flex items-center gap-1 text-xs text-gurkha-700">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>Hace 2 horas</span>
+</div>
+<button class="flex items-center gap-1 text-xs font-bold text-primary hover:text-blue-700 transition-colors">
+                            Ver comprobante <span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="relative w-full overflow-hidden rounded-2xl bg-gurkha-50 p-4 shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-gray-100 active:scale-[0.99] transition-transform">
+<div class="flex items-start justify-between">
+<div class="flex gap-3">
+<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-50 text-primary">
+<span class="material-symbols-outlined text-2xl">receipt_long</span>
+</div>
+<div class="flex flex-col">
+<h3 class="text-gurkha-900 text-base font-bold">Unidad 105 - Torre B</h3>
+<p class="text-gurkha-700 text-xs font-medium">Cuota Extraordinaria</p>
+<p class="text-gurkha-500 text-[10px] mt-1">Ref: #PAY-29377</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-gurkha-900 text-base font-bold">$ 1,200.00</p>
+<span class="inline-flex mt-1 items-center rounded-full bg-orange-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-orange-700 border border-orange-100">
+                                Revision
+                            </span>
+</div>
+</div>
+<div class="mt-3 flex items-center justify-between border-t border-gray-50 pt-3">
+<div class="flex items-center gap-1 text-xs text-gurkha-700">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>Hace 5 horas</span>
+</div>
+<button class="flex items-center gap-1 text-xs font-bold text-primary hover:text-blue-700 transition-colors">
+                            Ver comprobante <span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="relative w-full overflow-hidden rounded-2xl bg-gurkha-50 p-4 shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-gray-100 active:scale-[0.99] transition-transform">
+<div class="flex items-start justify-between">
+<div class="flex gap-3">
+<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-50 text-primary">
+<span class="material-symbols-outlined text-2xl">payments</span>
+</div>
+<div class="flex flex-col">
+<h3 class="text-gurkha-900 text-base font-bold">Unidad PH-01 - Torre A</h3>
+<p class="text-gurkha-700 text-xs font-medium">Reserva Salón de Fiestas</p>
+<p class="text-gurkha-500 text-[10px] mt-1">Ref: #RES-8821</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-gurkha-900 text-base font-bold">$ 500.00</p>
+<span class="inline-flex mt-1 items-center rounded-full bg-orange-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-orange-700 border border-orange-100">
+                                Revision
+                            </span>
+</div>
+</div>
+<div class="mt-3 flex items-center justify-between border-t border-gray-50 pt-3">
+<div class="flex items-center gap-1 text-xs text-gurkha-700">
+<span class="material-symbols-outlined text-sm">schedule</span>
+<span>Ayer, 18:30</span>
+</div>
+<button class="flex items-center gap-1 text-xs font-bold text-primary hover:text-blue-700 transition-colors">
+                            Ver comprobante <span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="relative w-full overflow-hidden rounded-2xl bg-gurkha-50 p-4 shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-gray-100 active:scale-[0.99] transition-transform opacity-70">
+<div class="flex items-start justify-between">
+<div class="flex gap-3">
+<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-green-50 text-success">
+<span class="material-symbols-outlined text-2xl">check_circle</span>
+</div>
+<div class="flex flex-col">
+<h3 class="text-gurkha-900 text-base font-bold">Unidad 202 - Torre C</h3>
+<p class="text-gurkha-700 text-xs font-medium">Mantenimiento Marzo 2024</p>
+<p class="text-gurkha-500 text-[10px] mt-1">Ref: #PAY-29360</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-gurkha-900 text-base font-bold">$ 2,500.00</p>
+<span class="inline-flex mt-1 items-center rounded-full bg-green-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-success border border-green-100">
+                                Aprobado
+                            </span>
+</div>
+</div>
+<div class="mt-3 flex items-center justify-between border-t border-gray-50 pt-3">
+<div class="flex items-center gap-1 text-xs text-gurkha-700">
+<span class="material-symbols-outlined text-sm">check</span>
+<span>Aprobado ayer</span>
+</div>
+<button class="flex items-center gap-1 text-xs font-bold text-gurkha-700 hover:text-gurkha-900 transition-colors">
+                            Ver detalle <span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+<div class="relative w-full overflow-hidden rounded-2xl bg-gurkha-50 p-4 shadow-[0_2px_12px_rgba(0,0,0,0.06)] border border-gray-100 active:scale-[0.99] transition-transform opacity-70">
+<div class="flex items-start justify-between">
+<div class="flex gap-3">
+<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-red-50 text-danger">
+<span class="material-symbols-outlined text-2xl">cancel</span>
+</div>
+<div class="flex flex-col">
+<h3 class="text-gurkha-900 text-base font-bold">Unidad 303 - Torre A</h3>
+<p class="text-gurkha-700 text-xs font-medium">Multa Ruido Excesivo</p>
+<p class="text-gurkha-500 text-[10px] mt-1">Ref: #PAY-29342</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-gurkha-900 text-base font-bold">$ 800.00</p>
+<span class="inline-flex mt-1 items-center rounded-full bg-red-50 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-danger border border-red-100">
+                                Rechazado
+                            </span>
+</div>
+</div>
+<div class="mt-3 flex items-center justify-between border-t border-gray-50 pt-3">
+<div class="flex items-center gap-1 text-xs text-gurkha-700">
+<span class="material-symbols-outlined text-sm">close</span>
+<span>Rechazado el 12/03</span>
+</div>
+<button class="flex items-center gap-1 text-xs font-bold text-gurkha-700 hover:text-gurkha-900 transition-colors">
+                            Ver motivo <span class="material-symbols-outlined text-sm">chevron_right</span>
+</button>
+</div>
+</div>
+</section>
+</main>
+<nav class="fixed bottom-0 left-0 z-50 w-full bg-gurkha-50 border-t border-gray-200 pb-safe shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+<div class="flex h-16 items-center justify-around px-2">
+<button class="flex flex-1 flex-col items-center justify-center gap-1 text-gurkha-700/60 hover:text-gurkha-900 transition-colors">
+<span class="material-symbols-outlined text-[24px]">dashboard</span>
+<span class="text-[10px] font-medium">Dashboard</span>
+</button>
+<button class="flex flex-1 flex-col items-center justify-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[24px] filled">inbox</span>
+<span class="text-[10px] font-bold">Solicitudes</span>
+</button>
+<button class="flex flex-1 flex-col items-center justify-center gap-1 text-gurkha-700/60 hover:text-gurkha-900 transition-colors">
+<span class="material-symbols-outlined text-[24px]">apartment</span>
+<span class="text-[10px] font-medium">Unidades</span>
+</button>
+<button class="flex flex-1 flex-col items-center justify-center gap-1 text-gurkha-700/60 hover:text-gurkha-900 transition-colors">
+<span class="material-symbols-outlined text-[24px]">menu</span>
+<span class="text-[10px] font-medium">Menú</span>
+</button>
+</div>
+<div class="h-5 w-full bg-gurkha-50"></div>
+</nav>
+</div>
+</body></html>

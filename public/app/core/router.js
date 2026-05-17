@@ -1,5 +1,6 @@
 import { Mosaic } from './mosaic.js';
 import { RenderView } from './RenderView.js';
+import { getInternalPath } from './i18n.js';
 
 /**
  * @class Router
@@ -16,6 +17,7 @@ export class Router {
     this.renderView = new RenderView(); // Instancia del motor de renderizado.
     this.appView = document.getElementById('app-view'); // Contenedor principal de la aplicación.
     this.currentTargetView = null; // Almacena un destino específico para renderizado parcial.
+    this.currentLanguage = 'es'; // Idioma por defecto.
   }
 
   /**
@@ -89,8 +91,13 @@ export class Router {
    */
   async handleRouteChange() {
     // Obtiene la ruta actual desde la barra de direcciones del navegador.
-    const currentPath = window.location.pathname;
-    console.log(`Ruta actual: ${currentPath}`);
+    const urlPath = window.location.pathname;
+    
+    // TRADUCCIÓN i18n: Convertimos la URL amigable a la ruta interna del sistema
+    // Ahora es una búsqueda global, no depende de this.currentLanguage
+    const currentPath = getInternalPath(urlPath);
+    
+    console.log(`Ruta URL: ${urlPath} -> Interna: ${currentPath}`);
 
     // Verifica que el contenedor principal de la app exista en el DOM.
     if (!this.appView) {
@@ -137,13 +144,22 @@ export class Router {
 
       // Si todos los middlewares permitieron continuar...
       if (!canProceed) { return; }
+
+      // --- CAPACIDAD DE DESVÍO DINÁMICO ---
+      // Si un middleware ha marcado una vista forzada (ej. verificación de email),
+      // actualizamos el path de la vista antes de componerla.
+      let effectiveViewPath = targetRoute.viewPath;
+      if (contexto.data.forcedView) {
+        console.log(`Desvío detectado: Forzando vista "${contexto.data.forcedView}"`);
+        effectiveViewPath = contexto.data.forcedView;
+      }
       
       // 3. Orquestar la composición y el renderizado de la vista.
       try {
-        // Solo procede si la ruta tiene una plantilla asociada.
-        if (targetRoute.viewPath) {
+        // Solo procede si hay una plantilla asociada (original o forzada).
+        if (effectiveViewPath) {
           // Construye la ruta al archivo de la "receta" de la vista.
-          const viewPath = `/views/${targetRoute.viewPath.replace(/\./g, '/')}.html`;
+          const viewPath = `/views/${effectiveViewPath.replace(/\./g, '/')}.html`;
           
           // Llama a Mosaic para que componga la vista y sus dependencias (módulos, CSS, etc.).
           const composedView = await this.mosaic.composeView(viewPath, contexto); 

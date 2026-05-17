@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Portal Alborada - Home</title>
+<!-- Google Fonts: Manrope -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2463eb",
+                        "background-light": "#f6f6f8",
+                        "background-dark": "#111621",
+                        "danger": "#dc2626",
+                        "success": "#16a34a",
+                        "text-main": "#111318",
+                        "text-secondary": "#616e89",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        /* Custom scrollbar hiding for clean UI */
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background-light dark:bg-background-dark font-display text-text-main">
+<div class="relative flex min-h-screen w-full flex-col overflow-hidden pb-24">
+<!-- Header -->
+<header class="flex items-center justify-between bg-background-light dark:bg-background-dark p-4 pt-6 sticky top-0 z-10">
+<div class="flex flex-col">
+<span class="text-xs font-medium text-text-secondary uppercase tracking-wider">Bienvenido</span>
+<h1 class="text-text-main dark:text-white text-xl font-bold leading-tight tracking-[-0.015em]">Portal Alborada</h1>
+</div>
+<div class="flex items-center justify-end">
+<button class="flex items-center justify-center rounded-full bg-white dark:bg-gray-800 shadow-sm h-10 w-10 text-primary hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+<span class="material-symbols-outlined text-2xl">account_circle</span>
+</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="flex flex-col gap-6 px-4 py-2">
+<!-- Balance Card (Hero) -->
+<section class="w-full">
+<div class="flex flex-col items-start justify-center rounded-2xl bg-white dark:bg-[#1a2233] shadow-[0_2px_8px_rgba(0,0,0,0.08)] p-6 relative overflow-hidden">
+<!-- Decorative background element -->
+<div class="absolute -right-8 -top-8 h-32 w-32 rounded-full bg-primary/5"></div>
+<div class="relative z-10 w-full">
+<div class="flex justify-between items-start w-full mb-2">
+<p class="text-text-secondary dark:text-gray-400 text-sm font-medium leading-normal">Saldo Actual</p>
+<span class="inline-flex items-center rounded-full bg-red-50 dark:bg-red-900/20 px-2 py-1 text-xs font-semibold text-danger">
+                                Pendiente de pago
+                            </span>
+</div>
+<!-- Dynamic Color Amount: Red for debt -->
+<h2 class="text-danger text-4xl font-extrabold tracking-tight mb-1">$ -15,400.00</h2>
+<div class="mt-4 flex w-full gap-3">
+<button class="flex-1 rounded-lg bg-primary px-4 py-2.5 text-sm font-bold text-white shadow-sm hover:bg-blue-700 transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">payments</span>
+                                Pagar Ahora
+                             </button>
+<button class="rounded-lg bg-primary/10 px-4 py-2.5 text-sm font-bold text-primary hover:bg-primary/20 transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">more_horiz</span>
+</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Quick Actions (Optional but good for UX) -->
+<section class="flex gap-4 overflow-x-auto no-scrollbar pb-2">
+<div class="flex flex-col items-center gap-2 min-w-[72px] cursor-pointer group">
+<div class="h-14 w-14 rounded-full bg-white dark:bg-[#1a2233] flex items-center justify-center shadow-sm border border-gray-100 dark:border-gray-700 group-hover:border-primary/30 transition-all">
+<span class="material-symbols-outlined text-primary text-2xl">receipt_long</span>
+</div>
+<span class="text-xs font-medium text-text-secondary">Expensas</span>
+</div>
+<div class="flex flex-col items-center gap-2 min-w-[72px] cursor-pointer group">
+<div class="h-14 w-14 rounded-full bg-white dark:bg-[#1a2233] flex items-center justify-center shadow-sm border border-gray-100 dark:border-gray-700 group-hover:border-primary/30 transition-all">
+<span class="material-symbols-outlined text-primary text-2xl">calendar_month</span>
+</div>
+<span class="text-xs font-medium text-text-secondary">Reservas</span>
+</div>
+<div class="flex flex-col items-center gap-2 min-w-[72px] cursor-pointer group">
+<div class="h-14 w-14 rounded-full bg-white dark:bg-[#1a2233] flex items-center justify-center shadow-sm border border-gray-100 dark:border-gray-700 group-hover:border-primary/30 transition-all">
+<span class="material-symbols-outlined text-primary text-2xl">build</span>
+</div>
+<span class="text-xs font-medium text-text-secondary">Servicios</span>
+</div>
+<div class="flex flex-col items-center gap-2 min-w-[72px] cursor-pointer group">
+<div class="h-14 w-14 rounded-full bg-white dark:bg-[#1a2233] flex items-center justify-center shadow-sm border border-gray-100 dark:border-gray-700 group-hover:border-primary/30 transition-all">
+<span class="material-symbols-outlined text-primary text-2xl">campaign</span>
+</div>
+<span class="text-xs font-medium text-text-secondary">Avisos</span>
+</div>
+</section>
+<!-- Recent Activity Section -->
+<section class="flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<h3 class="text-text-main dark:text-white text-lg font-bold leading-tight tracking-tight">Actividad Reciente</h3>
+<a class="text-primary text-sm font-semibold hover:text-blue-700 transition-colors" href="#">Ver todo</a>
+</div>
+<div class="flex flex-col gap-3">
+<!-- Item 1: Expense -->
+<div class="flex items-center justify-between rounded-xl bg-white dark:bg-[#1a2233] p-4 shadow-sm border border-transparent hover:border-gray-200 transition-all">
+<div class="flex items-center gap-4">
+<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-orange-50 dark:bg-orange-900/20 text-orange-600">
+<span class="material-symbols-outlined text-2xl">description</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-text-main dark:text-white text-base font-bold leading-none mb-1">Expensas - Mar 2024</p>
+<p class="text-text-secondary dark:text-gray-400 text-sm font-medium leading-none">10 Mar • Vencimiento</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-text-main dark:text-white text-base font-bold leading-none">-$15,000</p>
+</div>
+</div>
+<!-- Item 2: Income -->
+<div class="flex items-center justify-between rounded-xl bg-white dark:bg-[#1a2233] p-4 shadow-sm border border-transparent hover:border-gray-200 transition-all">
+<div class="flex items-center gap-4">
+<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-green-50 dark:bg-green-900/20 text-success">
+<span class="material-symbols-outlined text-2xl">check_circle</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-text-main dark:text-white text-base font-bold leading-none mb-1">Pago Recibido</p>
+<p class="text-text-secondary dark:text-gray-400 text-sm font-medium leading-none">05 Feb • Transferencia</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-success text-base font-bold leading-none">+$15,000</p>
+</div>
+</div>
+<!-- Item 3: Service Expense -->
+<div class="flex items-center justify-between rounded-xl bg-white dark:bg-[#1a2233] p-4 shadow-sm border border-transparent hover:border-gray-200 transition-all">
+<div class="flex items-center gap-4">
+<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-blue-50 dark:bg-blue-900/20 text-primary">
+<span class="material-symbols-outlined text-2xl">meeting_room</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-text-main dark:text-white text-base font-bold leading-none mb-1">Reserva SUM</p>
+<p class="text-text-secondary dark:text-gray-400 text-sm font-medium leading-none">02 Feb • Uso de amenidad</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-text-main dark:text-white text-base font-bold leading-none">-$2,500</p>
+</div>
+</div>
+<!-- Item 4: Old Expense -->
+<div class="flex items-center justify-between rounded-xl bg-white dark:bg-[#1a2233] p-4 shadow-sm border border-transparent hover:border-gray-200 transition-all">
+<div class="flex items-center gap-4">
+<div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-orange-50 dark:bg-orange-900/20 text-orange-600">
+<span class="material-symbols-outlined text-2xl">description</span>
+</div>
+<div class="flex flex-col justify-center">
+<p class="text-text-main dark:text-white text-base font-bold leading-none mb-1">Expensas - Feb 2024</p>
+<p class="text-text-secondary dark:text-gray-400 text-sm font-medium leading-none">10 Feb • Vencimiento</p>
+</div>
+</div>
+<div class="text-right">
+<p class="text-text-main dark:text-white text-base font-bold leading-none">-$15,000</p>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Tab Navigator -->
+<nav class="fixed bottom-0 left-0 z-50 w-full bg-white dark:bg-[#1a2233] border-t border-gray-100 dark:border-gray-800 pb-safe">
+<div class="flex h-16 items-center justify-around px-2">
+<!-- Tab: Home (Active) -->
+<button class="flex flex-1 flex-col items-center justify-center gap-1 text-primary">
+<span class="material-symbols-outlined text-[24px]">home</span>
+<span class="text-[10px] font-bold">Inicio</span>
+</button>
+<!-- Tab: Services -->
+<button class="flex flex-1 flex-col items-center justify-center gap-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+<span class="material-symbols-outlined text-[24px]">grid_view</span>
+<span class="text-[10px] font-medium">Servicios</span>
+</button>
+<!-- Tab: Payments -->
+<button class="flex flex-1 flex-col items-center justify-center gap-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+<span class="material-symbols-outlined text-[24px]">credit_card</span>
+<span class="text-[10px] font-medium">Pagos</span>
+</button>
+<!-- Tab: Profile -->
+<button class="flex flex-1 flex-col items-center justify-center gap-1 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
+<span class="material-symbols-outlined text-[24px]">person</span>
+<span class="text-[10px] font-medium">Perfil</span>
+</button>
+</div>
+<!-- iOS Home Indicator Spacing -->
+<div class="h-5 w-full bg-white dark:bg-[#1a2233]"></div>
+</nav>
+</div>
+</body></html>

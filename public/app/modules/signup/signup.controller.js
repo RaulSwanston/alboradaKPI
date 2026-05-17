@@ -8,7 +8,7 @@ export default async function signup(params) { // MODIFICADO: Ahora es un export
 async function initSignupModule() {
   let errorMessageElement = document.getElementById("error-message");
   let user = await waitForAuth();
-  if (user) { window.location.href = '/summary'; return; }
+  if (user) { window.location.href = '/dashboard/resumen'; return; }
 
   // --- Event Listener para el botón de "Continuar con Google" ---
   const googleSignupButton = document.getElementById("googleSignupButton");
@@ -16,7 +16,7 @@ async function initSignupModule() {
     googleSignupButton.addEventListener("click", async () =>{
       errorMessageElement.textContent = '';
       const result = await handleGoogleAuthentication();
-      if (result.success) { window.location.href = '/summary';
+      if (result.success) { window.location.href = '/dashboard/resumen';
         // showToast('¡Registro exitoso! Por favor, inicia sesión.');
       }
       else { errorMessageElement.textContent = `Error al Continuar con Google: ${result.error.message}`; }
@@ -29,7 +29,7 @@ async function initSignupModule() {
     signupModule.addEventListener("submit", async function(e){
       e.preventDefault();
       const result = await handleCreateUserWithEmailAndPassword(e.target["SignUpUser"].value, e.target["SignUpEmail"].value, e.target["SignUpPassword"].value);
-      if (result.success) { window.location.href = '/summary';
+      if (result.success) { window.location.href = '/dashboard/resumen';
         // showToast('¡Registro exitoso! Por favor, inicia sesión.');
       }
       else { errorMessageElement.textContent = `Error al registrarse: ${result.error.message}`; }

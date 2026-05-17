@@ -1,0 +1,138 @@
+.notifications-feed-module {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.feed-header {
+  margin-bottom: 2rem;
+}
+
+.feed-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.feed-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.notifications-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.notification-item {
+  background: var(--bg-surface);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  padding: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  transition: all 0.2s ease;
+  animation: slideUp 0.3s ease-out;
+}
+
+.notification-item:hover {
+  border-color: var(--color-primary);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  transform: translateX(4px);
+}
+
+.notification-icon-wrapper {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+/* Colores por categoría */
+.notif-type-membership { background: var(--bg-hero); color: var(--color-primary); }
+.notif-type-payment { background: #fff7ed; color: #c2410c; }
+.notif-type-service { background: #f0f9ff; color: #0369a1; }
+.notif-type-info { background: var(--color-gurkha-100); color: var(--color-gurkha-900); }
+
+.notification-icon-wrapper svg {
+  width: 20px;
+  height: 20px;
+}
+
+.notification-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.notification-message {
+  font-weight: 600;
+  color: var(--text-primary);
+  font-size: 0.95rem;
+  margin: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.notification-time {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  opacity: 0.7;
+}
+
+.notification-action-btn {
+  background: transparent;
+  border: none;
+  color: var(--color-primary);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.notification-action-btn:hover {
+  background: var(--bg-hero);
+}
+
+.notification-action-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.empty-feed {
+  text-align: center;
+  padding: 4rem 2rem;
+  color: var(--text-secondary);
+}
+
+.empty-icon {
+  margin-bottom: 1rem;
+  opacity: 0.2;
+}
+
+.empty-icon svg {
+  width: 64px;
+  height: 64px;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+  font-style: italic;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}

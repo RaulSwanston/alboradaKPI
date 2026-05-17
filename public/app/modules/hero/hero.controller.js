@@ -8,7 +8,7 @@ export default async function home(contexto) {
   const startButton = document.getElementById("start-button");
   if (startButton) { // Añadir una comprobación de existencia
     if (user) {
-      startButton.addEventListener('click', function () { window.location.href = '/summary'; });
+      startButton.addEventListener('click', function () { window.location.href = '/dashboard/resumen'; });
     } else {
       startButton.addEventListener('click', function () { window.location.href = '/login'; });
     }

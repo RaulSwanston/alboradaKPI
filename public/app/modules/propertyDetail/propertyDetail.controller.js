@@ -1,84 +1,230 @@
 import Property from "../../models/Property.js";
 import Transaction from "../../models/Transaction.js";
+import { jsPDF } from "https://esm.sh/jspdf@2.5.1";
 
 /**
  * propertyDetail.controller.js
- * 
- * Gestiona la visualización de la propiedad y calcula su saldo real 
- * basándose en la sumatoria de TODAS sus transacciones.
+ * Gestiona el "Estado de Cuenta" detallado de una propiedad.
  */
 export default async function propertyDetailController(contexto) {
-  const propertyId = contexto.params.id;
-  
-  const idEl = document.getElementById('detail-property-id');
-  const ownerEl = document.getElementById('detail-property-owner');
-  const balanceEl = document.getElementById('detail-property-balance');
-  const statusBadgeEl = document.getElementById('detail-property-status-badge');
-  const listContainer = document.getElementById('movements-list-container');
-
+  const propertyId = contexto?.params?.id;
   if (!propertyId) return;
 
+  // --- ESTADO LOCAL ---
+  let allMovements = [];
+  let currentPropData = null;
+  let totalBalance = 0;
+  let state = { pagination: { current: 1, perPage: 10 } };
+
+  // --- Referencias al DOM ---
+  const getEl = (id) => document.getElementById(id);
+  const listContainer = getEl('movements-list-container');
+  const paginationContainer = document.querySelector('.pagination');
+  const btnDownloadPdf = getEl('btn-download-pdf');
+
+  // --- Helpers de Formateo ---
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', { 
-      style: 'currency', 
-      currency: 'USD' 
-    }).format(amount);
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Math.abs(amount || 0));
   };
 
+  const formatDate = (dateValue) => {
+    if (!dateValue) return '---';
+    const date = dateValue.toDate ? dateValue.toDate() : new Date(dateValue);
+    return isNaN(date.getTime()) ? '---' : date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+  };
+
+  /**
+   * Genera el PDF del Estado de Cuenta
+   */
+  const generatePDF = () => {
+    if (!allMovements.length || !currentPropData) return;
+    try {
+      const doc = new jsPDF();
+      const margin = 20;
+      let y = 20;
+
+      doc.setFontSize(18);
+      doc.setFont("helvetica", "bold");
+      doc.text("ESTADO DE CUENTA", margin, y);
+      doc.setFontSize(10);
+      doc.text("Condominio Residencial Alborada", 190, y, { align: "right" });
+      
+      y += 15;
+      doc.setFontSize(12);
+      doc.text(`Unidad: ${currentPropData.id}`, margin, y);
+      doc.text(`Titular: ${currentPropData.ownerInfo?.name || 'No registrado'}`, 190, y, { align: "right" });
+      
+      y += 7;
+      doc.setFontSize(10);
+      doc.setFont("helvetica", "normal");
+      doc.text(`Fecha: ${new Date().toLocaleDateString()}`, margin, y);
+      doc.text(`Saldo: ${formatCurrency(totalBalance)} USD`, 190, y, { align: "right" });
+
+      y += 15;
+      doc.setFont("helvetica", "bold");
+      doc.setFillColor(246, 245, 239);
+      doc.rect(margin, y, 170, 8, 'F');
+      doc.text("Fecha", margin + 2, y + 6);
+      doc.text("Descripción", margin + 30, y + 6);
+      doc.text("Cargo", margin + 100, y + 6, { align: "right" });
+      doc.text("Abono", margin + 130, y + 6, { align: "right" });
+      doc.text("Saldo", margin + 165, y + 6, { align: "right" });
+      
+      y += 12;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(9);
+
+      allMovements.forEach((t) => {
+        if (y > 275) { doc.addPage(); y = 20; }
+        const isPayment = (t.amount || 0) > 0;
+        doc.text(formatDate(t.effectiveDate), margin + 2, y);
+        doc.text((t.description || "").substring(0, 40), margin + 30, y);
+        doc.text(!isPayment ? `-${Math.abs(t.amount).toFixed(2)}` : "", margin + 100, y, { align: "right" });
+        doc.text(isPayment ? `+${Math.abs(t.amount).toFixed(2)}` : "", margin + 130, y, { align: "right" });
+        doc.text(`${Math.abs(t.currentBalance).toFixed(2)}`, margin + 165, y, { align: "right" });
+        y += 7;
+      });
+
+      // Abrir en nueva pestaña para vista previa
+      const blobUrl = doc.output('bloburl');
+      window.open(blobUrl, '_blank');
+    } catch (err) { console.error("Error PDF:", err); }
+  };
+
+  const renderTable = () => {
+    if (!listContainer) return;
+    const start = (state.pagination.current - 1) * state.pagination.perPage;
+    const items = allMovements.slice(start, start + state.pagination.perPage);
+
+    listContainer.innerHTML = items.map(t => {
+      const isPayment = (t.amount || 0) > 0;
+      let reference = t.voucherNumber || t.metadata?.bankReference || '';
+      if (reference.toUpperCase() === 'S/N' || reference.toUpperCase() === 'SN') reference = '';
+
+      return `
+        <tr class="${isPayment ? 'bg-highlight' : ''}">
+          <td>${formatDate(t.effectiveDate)}</td>
+          <td>
+            <div class="concept-cell">
+              <span class="concept-main">${t.description || 'Movimiento'}</span>
+              <span class="concept-sub">${t.type === 'FEE' ? 'Cuota Ordinaria' : 'Condominio Alborada'}</span>
+            </div>
+          </td>
+          <td>
+            ${reference ? `<span class="ref-badge ${isPayment ? 'payment' : ''}">${reference}</span>` : ''}
+          </td>
+          <td class="text-right font-bold ${!isPayment ? 'text-error' : ''}">${!isPayment ? `-$${Math.abs(t.amount).toFixed(2)}` : ''}</td>
+          <td class="text-right font-bold ${isPayment ? 'text-success' : ''}">${isPayment ? `+$${Math.abs(t.amount).toFixed(2)}` : ''}</td>
+          <td class="text-right font-bold">${formatCurrency(t.currentBalance)}</td>
+        </tr>
+      `;
+    }).join('');
+
+    renderPagination();
+  };
+
+  const renderPagination = () => {
+    if (!paginationContainer) return;
+    const pages = Math.ceil(allMovements.length / state.pagination.perPage);
+    if (pages <= 1) { paginationContainer.innerHTML = ''; return; }
+
+    let html = `<button class="btn-pagination ${state.pagination.current === 1 ? 'disabled' : ''}" data-page="${state.pagination.current - 1}"><svg viewBox="0 0 16 16" fill="currentColor" width="16" height="16"><path d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/></svg></button>`;
+    for (let i = 1; i <= pages; i++) {
+      html += `<button class="btn-pagination ${state.pagination.current === i ? 'active' : ''}" data-page="${i}">${i}</button>`;
+    }
+    html += `<button class="btn-pagination ${state.pagination.current === pages ? 'disabled' : ''}" data-page="${state.pagination.current + 1}"><svg viewBox="0 0 16 16" fill="currentColor" width="16" height="16"><path d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/></svg></button>`;
+    
+    paginationContainer.innerHTML = html;
+    paginationContainer.querySelectorAll('.btn-pagination:not(.disabled)').forEach(btn => {
+      btn.onclick = (e) => { state.pagination.current = parseInt(e.currentTarget.dataset.page); renderTable(); };
+    });
+  };
+
+  // --- CARGA INICIAL ---
   try {
-    // 1. Obtener Metadatos de la Propiedad (Nombre y Propietario)
-    const prop = await Property.getById(propertyId);
+    if (listContainer) listContainer.innerHTML = '<tr><td colspan="6" class="text-center">Cargando...</td></tr>';
+    const [prop, transactions] = await Promise.all([Property.getById(propertyId), Transaction.getByPropertyId(propertyId)]);
+    
     if (prop) {
-      idEl.textContent = `Unidad ${prop.id}`;
-      ownerEl.textContent = prop.ownerInfo?.name || 'Propietario no registrado';
+      currentPropData = prop;
+      if (getEl('detail-property-id')) getEl('detail-property-id').textContent = `Unidad ${prop.id}`;
+      if (getEl('detail-property-owner')) getEl('detail-property-owner').textContent = prop.ownerInfo?.name || 'No registrado';
+      if (getEl('detail-property-address')) getEl('detail-property-address').textContent = prop.address?.street || prop.address?.Street || 'Condominio Alborada';
+      if (getEl('detail-property-phone')) getEl('detail-property-phone').textContent = prop.ownerInfo?.mobile || 'Sin teléfono';
     }
 
-    // 2. Cargar TODAS las transacciones para calcular el saldo real
-    listContainer.innerHTML = '<div class="loading-text">Cargando movimientos...</div>';
-    const transactions = await Transaction.getByPropertyId(propertyId);
+    const sorted = [...transactions].sort((a, b) => (a.effectiveDate?.seconds || 0) - (b.effectiveDate?.seconds || 0));
+    let running = 0;
+    allMovements = sorted.map(t => { running -= (Number(t.amount) || 0); return { ...t, currentBalance: running }; }).reverse();
+    totalBalance = allMovements.length > 0 ? allMovements[0].currentBalance : 0;
 
-    // 3. CALCULO DE SUMATORIA (Saldo Real)
-    // Positive amount = Payment/Credit, Negative amount = Fee/Debt
-    const totalBalance = transactions.reduce((acc, t) => acc + (Number(t.amount) || 0), 0);
-
-    // 4. Actualizar el Balance en la UI
-    balanceEl.textContent = formatCurrency(totalBalance);
-
-    // 5. Determinar y mostrar el Estado según el balance calculado
-    if (totalBalance < 0) {
-      statusBadgeEl.textContent = 'Pendiente';
-      statusBadgeEl.style.backgroundColor = 'rgba(192, 62, 76, 0.2)'; // Solid Pink suave
-      statusBadgeEl.style.color = '#c03e4c';
-    } else if (totalBalance > 0) {
-      statusBadgeEl.textContent = 'Saldo a Favor';
-      statusBadgeEl.style.backgroundColor = 'rgba(27, 158, 78, 0.2)'; // Kaitoke Green suave
-      statusBadgeEl.style.color = '#1b9e4e';
-    } else {
-      statusBadgeEl.textContent = 'Al día';
-      statusBadgeEl.style.backgroundColor = 'rgba(40, 191, 99, 0.2)'; // Success Green suave
-      statusBadgeEl.style.color = '#28bf63';
+    // Actualizar contador de transacciones
+    const transactionsCountEl = getEl('detail-transactions-count');
+    if (transactionsCountEl) {
+      transactionsCountEl.innerHTML = `Mostrando <span class="count-value">${allMovements.length}</span> transacciones`;
     }
 
-    // 6. Renderizar la lista de transacciones
-    if (transactions.length === 0) {
-      listContainer.innerHTML = '<div class="empty-state">No se encontraron movimientos para esta propiedad.</div>';
-      return;
+    if (getEl('detail-property-balance')) getEl('detail-property-balance').textContent = formatCurrency(totalBalance);
+    
+    // --- ACTUALIZACIÓN DE ESTADO Y ÚLTIMO PAGO ---
+    const statusBadgeEl = getEl('detail-property-status-badge');
+    const statusContainerEl = getEl('detail-property-status-container');
+    const statusIconEl = getEl('detail-property-status-icon');
+    const lastPaymentAmountEl = getEl('detail-last-payment-amount');
+    const lastPaymentDateEl = getEl('detail-last-payment-date');
+
+    // 1. Estado de Cuenta
+    if (statusBadgeEl && statusContainerEl) {
+      if (totalBalance > 0.01) {
+        statusBadgeEl.textContent = 'Pendiente de pago';
+        statusContainerEl.className = 'status-indicator status-debt';
+        if (statusIconEl) statusIconEl.setAttribute('data-icon', 'x-circle');
+      } else if (totalBalance < -0.01) {
+        statusBadgeEl.textContent = 'Saldo a favor';
+        statusContainerEl.className = 'status-indicator status-credit';
+        if (statusIconEl) statusIconEl.setAttribute('data-icon', 'plus-circle');
+      } else {
+        statusBadgeEl.textContent = 'Cuenta al día';
+        statusContainerEl.className = 'status-indicator status-ok';
+        if (statusIconEl) statusIconEl.setAttribute('data-icon', 'check-circle');
+      }
     }
 
-    listContainer.innerHTML = transactions.map(t => `
-      <div class="movement-item">
-        <div class="movement-info">
-          <h4>${t.description || 'Movimiento'}</h4>
-          <span>${t.type || 'N/A'} • ${t.voucherType || '---'} ${t.voucherNumber || ''}</span>
-        </div>
-        <div class="movement-amount" style="color: ${t.amount < 0 ? 'var(--color-solid-pink-600)' : 'var(--color-kaitoke-green-600)'}">
-          ${formatCurrency(t.amount || 0)}
-        </div>
-      </div>
-    `).join('');
+    // 2. Último Pago
+    const lastPayment = transactions.filter(t => t.amount > 0).sort((a, b) => {
+      const dateA = a.effectiveDate?.seconds || 0;
+      const dateB = b.effectiveDate?.seconds || 0;
+      return dateB - dateA;
+    })[0];
 
+    if (lastPayment) {
+      if (lastPaymentAmountEl) lastPaymentAmountEl.textContent = formatCurrency(lastPayment.amount);
+      if (lastPaymentDateEl) lastPaymentDateEl.textContent = `Realizado el ${formatDate(lastPayment.effectiveDate)}`;
+    }
+
+    // 3. Reinyectar iconos para asegurar visibilidad
+    const handleIcons = async (container = document) => {
+      try {
+        const response = await fetch('/src/img/icons.json');
+        const data = await response.json();
+        const iconRepo = data.icons;
+        const inject = (c, iconName) => {
+          const iconData = iconRepo.find(i => i.name === iconName);
+          if (iconData && c) c.innerHTML = iconData.svg;
+        };
+        container.querySelectorAll('[data-icon]').forEach(el => inject(el, el.dataset.icon));
+      } catch (error) {
+        console.error("Error al cargar icons.json:", error);
+      }
+    };
+
+    await handleIcons();
+    
+    if (btnDownloadPdf) btnDownloadPdf.onclick = generatePDF;
+
+    renderTable();
   } catch (error) {
-    console.error("[PropertyDetail] Error fatal:", error);
-    listContainer.innerHTML = `<div class="error">Error del sistema: ${error.message}</div>`;
+    console.error("Error Fatal:", error);
+    if (listContainer) listContainer.innerHTML = '<tr><td colspan="6">Error al cargar datos.</td></tr>';
   }
 }

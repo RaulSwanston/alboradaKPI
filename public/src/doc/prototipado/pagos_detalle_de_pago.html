@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Portal Alborada - Detalle Solicitud</title>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#2563eb",
+                        "gurkha-50": "#ffffff","gurkha-100": "#f3f4f6","gurkha-700": "#374151","gurkha-900": "#111827","danger": "#dc2626",
+                        "success": "#16a34a",
+                    },
+                    fontFamily: {
+                        "display": ["Manrope", "sans-serif"]
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "2xl": "1rem",
+                        "3xl": "1.5rem",
+                        "full": "9999px"
+                    },
+                },
+            },
+        }
+    </script>
+<style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        body {
+            min-height: max(884px, 100dvh);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-gurkha-100 font-display text-gurkha-900">
+<div class="relative flex min-h-screen w-full flex-col overflow-hidden pb-[100px]">
+<header class="sticky top-0 z-10 flex items-center gap-4 bg-gurkha-100 p-4 pt-6 backdrop-blur-md bg-opacity-95">
+<button class="flex h-10 w-10 items-center justify-center rounded-full border border-gray-100 bg-white text-gurkha-700 shadow-sm transition-colors hover:bg-gray-50">
+<span class="material-symbols-outlined text-xl">arrow_back</span>
+</button>
+<h1 class="text-lg font-bold leading-tight text-gurkha-900">Detalle de Pago</h1>
+</header>
+<main class="flex flex-col gap-4 px-4 py-2">
+<div class="relative w-full overflow-hidden rounded-2xl border border-gray-100 bg-gurkha-50 p-6 text-center shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
+<div class="flex flex-col items-center gap-2">
+<span class="inline-flex items-center rounded-full border border-orange-100 bg-orange-50 px-3 py-1 text-xs font-bold text-orange-700">
+                        Pendiente de revisión
+                    </span>
+<div class="mt-2 flex flex-col items-center">
+<h2 class="text-sm font-semibold uppercase tracking-wide text-gurkha-700">Monto a validar</h2>
+<p class="text-4xl font-extrabold tracking-tight text-gurkha-900">$3,450.00</p>
+</div>
+<p class="mt-1 text-xs font-medium text-gurkha-700">Fecha de operación: 24 Oct, 2023</p>
+</div>
+</div>
+<div class="flex w-full items-center gap-4 rounded-2xl border border-gray-100 bg-gurkha-50 p-4 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
+<div class="flex h-12 w-12 items-center justify-center rounded-full bg-primary/10 text-lg font-bold text-primary">
+                    RM
+                </div>
+<div class="flex flex-col">
+<span class="text-sm font-bold text-gurkha-900">Ricardo Montaner</span>
+<span class="text-xs font-medium text-gurkha-700">Torre B - Depto 402</span>
+</div>
+<button class="ml-auto rounded-full p-2 text-primary hover:bg-blue-50">
+<span class="material-symbols-outlined">chat</span>
+</button>
+</div>
+<div class="w-full rounded-2xl border border-gray-100 bg-gurkha-50 p-5 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
+<h3 class="mb-4 border-b border-gray-100 pb-2 text-sm font-bold text-gurkha-900">Información de la Transacción</h3>
+<div class="flex flex-col gap-3">
+<div class="flex items-center justify-between">
+<span class="text-xs text-gurkha-700">Concepto</span>
+<span class="text-right text-sm font-semibold text-gurkha-900">Cuota Mantenimiento Oct</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-xs text-gurkha-700">Banco Emisor</span>
+<span class="text-right text-sm font-semibold text-gurkha-900">BBVA Bancomer</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-xs text-gurkha-700">Referencia</span>
+<span class="text-right text-sm font-semibold text-gurkha-900">0029384755</span>
+</div>
+<div class="flex items-center justify-between">
+<span class="text-xs text-gurkha-700">Folio Interno</span>
+<span class="text-right text-sm font-semibold text-gurkha-900">#PAY-2023-892</span>
+</div>
+</div>
+</div>
+<div class="w-full rounded-2xl border border-gray-100 bg-gurkha-50 p-5 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
+<h3 class="mb-3 text-sm font-bold text-gurkha-900">Comprobante Adjunto</h3>
+<div class="relative aspect-[4/3] w-full overflow-hidden rounded-lg border border-gray-200 bg-gray-100">
+<img alt="Comprobante" class="h-full w-full object-cover opacity-90 transition-opacity hover:opacity-100" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBakjKAnq3R82nFeb4HpMORUNlrijEtRFoI7ERI8JvoT2WHT4T9SGnNI_jY2afJ4KFOsO650Tf_1BHNl0OkFigSys0PharxP1CEj86EJNGaZtaS7kAkuhS7fIfgzv99PCtaJmBFC5-yrTUJEnUYwYJLDawtKjyLWNSL_JRMNvI1uGZw_QaY-A1JhbXDBP5wnwLYblcoT9u5KLOMGqzu67JtjykMmsOyxmfdLJPN5Iz_1QTwKv21Z8ZJD1B-gs2SRvFtZnpsn5rC0z0"/>
+<div class="absolute inset-0 flex items-center justify-center bg-black/5">
+<button class="flex items-center gap-2 rounded-full bg-white/90 px-4 py-2 text-xs font-bold text-gurkha-900 shadow-lg backdrop-blur-sm">
+<span class="material-symbols-outlined text-sm">visibility</span>
+                            Ver Original
+                        </button>
+</div>
+</div>
+</div>
+<div class="w-full rounded-2xl border border-gray-100 bg-gurkha-50 p-5 shadow-[0_2px_12px_rgba(0,0,0,0.06)]">
+<h3 class="mb-2 text-sm font-bold text-gurkha-900">Notas del Residente</h3>
+<p class="text-sm text-gurkha-700 leading-relaxed">
+                    Hola, adjunto el comprobante del mes de octubre. Tuve un pequeño retraso por el fin de semana. Saludos.
+                </p>
+</div>
+</main>
+<div class="fixed bottom-0 left-0 z-50 w-full border-t border-gray-200 bg-gurkha-50 p-4 pb-8 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)]">
+<div class="grid grid-cols-2 gap-4">
+<button class="flex items-center justify-center gap-2 rounded-xl border-2 border-danger bg-white px-4 py-3.5 text-sm font-bold text-danger transition-colors hover:bg-red-50 active:bg-red-100">
+<span class="material-symbols-outlined text-xl">close</span>
+                Rechazar
+            </button>
+<button class="flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3.5 text-sm font-bold text-white shadow-lg shadow-blue-500/30 transition-colors hover:bg-blue-700 active:bg-blue-800">
+<span class="material-symbols-outlined text-xl">check</span>
+                Aprobar
+            </button>
+</div>
+</div>
+</div>
+
+</body></html>

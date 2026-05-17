@@ -15,67 +15,62 @@ service cloud.firestore {
     }
 
     function isResidentOfProperty(propertyId) {
-      // Verifica si el usuario que hace la petición pertenece a una propiedad específica.
-      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.propertyId == propertyId;
+      // Verifica si el ID de la propiedad está presente en el array de propiedades del usuario.
+      return propertyId in get(/databases/$(database)/documents/users/$(request.auth.uid)).data.propertyIds;
     }
 
     // --- Reglas para Colecciones ---
 
     // Perfiles de Usuario
     match /users/{userId} {
-      // Los admins pueden leer cualquier perfil. Los usuarios solo el suyo.
       allow read: if isAdmin() || isOwner(userId);
-      // Los usuarios solo pueden actualizar su propio perfil.
       allow update: if isOwner(userId);
-      // Cualquier usuario autenticado puede crear su perfil.
       allow create: if request.auth != null;
     }
 
     // Propiedades
     match /properties/{propertyId} {
-      // Los admins tienen acceso total. Los residentes pueden leer si son dueños.
-      allow read, write: if isAdmin();
-      allow read: if request.auth.uid in resource.data.ownerUids;
+      allow write: if isAdmin();
+      allow get, list: if request.auth != null;
+    }
+
+    // Solicitudes de Vinculación Residencial
+    match /membershipRequests/{requestId} {
+      // Permitimos crear, leer y listar a cualquier usuario autenticado.
+      allow create, read, list: if request.auth != null;
+      // Los admins pueden gestionar las solicitudes (aprobar/rechazar/borrar).
+      allow update, delete: if isAdmin();
     }
 
     // Transacciones (Historial Financiero)
     match /transactions/{transactionId} {
-      // Los admins pueden leer todas. Los residentes solo las de su propiedad.
       allow read: if isAdmin() || isResidentOfProperty(resource.data.propertyId);
-      // Solo los administradores pueden crear, actualizar o borrar transacciones.
       allow write: if isAdmin();
     }
 
     // Conceptos de Cargo (Catálogo de Servicios)
     match /chargeConcepts/{conceptId} {
-      // CUALQUIER usuario autenticado puede LEER el catálogo de servicios.
       allow read: if request.auth != null;
-      // Solo los admins pueden modificar el catálogo.
       allow write: if isAdmin();
     }
 
     // Solicitudes de Servicio
     match /serviceRequests/{requestId} {
-      // Los admins pueden gestionar todas las solicitudes.
-      allow read, write: if isAdmin();
-      // Un residente solo puede CREAR una solicitud si tiene una propiedad asignada.
-      // La UI se encargará de ocultar el botón si no la tiene.
-      allow create: if isResidentOfProperty(request.resource.data.propertyId);
+      allow create, read, list: if request.auth != null;
+      allow update, delete: if isAdmin();
     }
 
     // Notificaciones de Pago
     match /paymentNotifications/{notificationId} {
-      // Los admins pueden gestionar todas las notificaciones.
-      allow read, write: if isAdmin();
-      // Un residente solo puede CREAR una notificación si tiene una propiedad asignada.
-      allow create: if isResidentOfProperty(request.resource.data.propertyId);
+      allow create, read, list: if request.auth != null;
+      allow update, delete: if isAdmin();
     }
 
     // Colección de Actividades: Log inmutable de eventos.
     match /activities/{activityId} {
-      allow create: if request.auth != null;
-      allow read: if request.auth != null;
-      allow update, delete: if false; // Nadie puede modificar o borrar.
+      // Permitimos crear y leer a cualquier usuario autenticado.
+      allow create, read, list: if request.auth != null;
+      allow update, delete: if false; // Nadie puede modificar o borrar lo ya registrado.
     }
   }
 }

@@ -112,12 +112,16 @@ export class RenderView {
           const controllerModule = await import(objectUrl);
           if (controllerModule.default && typeof controllerModule.default === 'function') {
             // Ejecuta el controlador y captura la función de limpieza si la devuelve.
-            // AÑADIDO: Soporte para controladores asíncronos.
-            const result = await controllerModule.default(contexto);
-            
-            if (typeof result === 'function') {
-              // La almacena para ejecutarla antes de la próxima navegación.
-              this.activeCleanups.push(result);
+            // AÑADIDO: Bloque de seguridad para evitar caídas en cascada.
+            try {
+              const result = await controllerModule.default(contexto);
+              
+              if (typeof result === 'function') {
+                // La almacena para ejecutarla antes de la próxima navegación.
+                this.activeCleanups.push(result);
+              }
+            } catch (error) {
+              console.error(`❌ Error al ejecutar el controlador [${controllerPath}]:`, error);
             }
           }
           else {

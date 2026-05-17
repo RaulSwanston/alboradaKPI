@@ -69,9 +69,15 @@ El administrador tiene control total sobre la lógica de negocio del condominio 
 
 ### El Rol del Residente (Portal de Autogestión)
 El residente interactúa con la plataforma a través de un dashboard personal que le permite:
-- **Consultar un Estado de Cuenta Unificado:** Ver todos sus movimientos financieros: cuotas obligatorias, servicios solicitados, etc.
-- **Acceder a un Catálogo de Servicios:** Ver y solicitar los servicios opcionales que el administrador ha configurado.
+- **Consultar un Estado de Cuenta Unificado:** Ver todos sus movimientos financieros.
+- **Acceder a un Catálogo de Servicios:** Ver y solicitar los servicios opcionales.
 - **Gestionar sus Pagos:** Realizar acciones sobre sus saldos pendientes, como subir comprobantes de pago.
+
+### El Perfil Híbrido (Ecosistema Comunitario)
+Un usuario puede ser simultáneamente **Residente y Proveedor**. 
+- **Incentivo de Pago:** El administrador puede habilitar cuotas de anuncios gratuitos o VIP para residentes que estén al día con sus pagos.
+- **Economía Circular:** Los residentes pueden ofrecer sus servicios profesionales (ej: reparaciones, asesorías) a otros miembros de la comunidad directamente desde la app.
+- **Identidad Dual:** El sistema habilita módulos de finanzas (si tiene `propertyIds`) y módulos de venta (si tiene el rol de `provider` o `hybrid`) en la misma sesión.
 
 ### Flujo Clave 1: Solicitud de un Servicio (Ej: Reserva de Salón)
 1.  **Configuración:** El administrador crea un "Concepto de Cargo" llamado "Reserva Salón de Fiestas" y lo marca como "solicitable por el residente" y "requiere aprobación".
@@ -93,10 +99,23 @@ El residente interactúa con la plataforma a través de un dashboard personal qu
 *   **Eventos Personalizados:** Para mantener los módulos desacoplados, se prefiere el uso de eventos globales o burbujeados.
     *   Ejemplo: El módulo `search` emite un evento `app:search` con `detail: { query }`. Cualquier controlador de página puede escucharlo (`document.addEventListener('app:search', ...)`) para filtrar sus datos sin que el buscador sepa qué está filtrando.
 
-### 7. Filosofía de Diseño y CSS
+### 7. Estándares de Assets e Iconografía
+*   **Iconos SVG Locales:** Está estrictamente prohibido el uso de librerías de iconos externas (como Google Material Symbols o FontAwesome). Se debe utilizar exclusivamente iconos en formato SVG.
+*   **Repositorio de Iconos:** Se cuenta con un archivo centralizado `public/src/img/icons.json` que contiene las definiciones de los iconos. Se prefiere su uso para mantener la consistencia y ligereza de la aplicación.
+*   **Inyección de SVGs:** Los iconos deben integrarse directamente en el HTML como elementos `<svg>` o inyectarse mediante JavaScript para evitar peticiones HTTP adicionales.
+
+### 8. Filosofía de Diseño y CSS
 *   **Simple Grid:** Las listas de elementos (servicios, propiedades, etc.) deben seguir el patrón de `display: grid` con `auto-fill` y tarjetas (`.card`) limpias, inspiradas en el módulo `services`.
 *   **Prohibición de !important:** Está estrictamente prohibido el uso de `!important` en las hojas de estilo. La jerarquía debe gestionarse mediante una especificidad limpia y variables CSS.
 *   **Navegación UX:** Los botones de "volver" deben usar la clase `.btn-back`, contener un icono tipo Chevron de 24px y tener una micro-interacción de desplazamiento (ej. `translateX(-2px)` en hover).
+
+### 4. Navegación desde Actividades (Actividades como Accesos Directos)
+El módulo de `recentActivity` actúa como un centro de comando. Se ha establecido la siguiente convención de navegación mediante el icono de "ojo":
+*   **Destino Dinámico:** La navegación se basa en el objeto `target` del documento de actividad.
+*   **Mapeo de Rutas:**
+    *   `type: 'TRANSACTION'` -> Redirige a `/dashboard/transactions/:id`
+    *   `type: 'PROPERTY'` -> Redirige a `/dashboard/properties/:id`
+*   **Comportamiento UX:** El clic en el icono de detalle utiliza `e.stopPropagation()` para no interferir con la selección visual de la tarjeta y ejecuta `router.navigate(path, 'dashboard')` para un refresco parcial y fluido.
 
 ---
 
@@ -108,15 +127,22 @@ Para cumplir con la visión de una plataforma de servicios flexible y automatiza
 - **Propósito:** Almacena el perfil de la persona que **inicia sesión en la aplicación**.
 - **ID del Documento:** UID de Firebase Authentication.
 - **Campos:**
-    - `email` (Texto): El email de login. No editable por el usuario directamente desde el perfil.
-    - `displayName` (Texto): Nombre público del usuario en la app.
-    - `photoUrl` (Texto, Opcional): URL a la imagen de perfil en Firebase Storage.
+    - `uid` (Texto): UID del usuario para facilitar consultas.
+    - `email` (Texto): El email de login.
+    - `displayName` (Texto): Nombre público del usuario.
+    - `photoUrl` (Texto, Opcional): URL a la imagen de perfil.
     - `mobile` (Texto, Opcional): Número de teléfono celular.
     - `phone` (Texto, Opcional): Número de teléfono de casa.
-    - `propertyIds` (Array de Strings): IDs de las propiedades asociadas. **Gestionado solo por administradores.**
-    - `role` (Texto): Rol del usuario (ej: "resident", "admin"). **La autorización real se determina mediante Custom Claims.**
-    - `isActive` (Booleano): `true` si el usuario ha sido aprobado por un admin y puede operar en la app, `false` si está pendiente o ha sido desactivado.
-    - `createdAt` (Fecha y Hora): Fecha de creación del perfil.
+    - `role` (Texto): Rol del usuario. Los roles posibles son:
+        - `pending`: Usuario recién registrado, email sin verificar.
+        - `guest`: Usuario con email verificado, explorador de la comunidad (visitante).
+        - `resident`: Usuario verificado y vinculado legalmente a una propiedad.
+        - `provider`: Usuario verificado que ofrece productos o servicios.
+        - `hybrid`: Usuario que es simultáneamente residente y proveedor.
+        - `admin`: Administrador total del sistema.
+    - `isActive` (Booleano): `true` si el usuario está habilitado para operar en la plataforma, `false` si ha sido desactivado por un administrador.
+    - `propertyIds` (Array de Strings): IDs de las propiedades asociadas.
+    - `createdAt` (Timestamp): Fecha de creación del perfil.
     - `emergencyContact` (Objeto, Opcional): Información de contacto en caso de emergencia.
         - `name` (Texto)
         - `phone` (Texto)
@@ -153,6 +179,20 @@ Para cumplir con la visión de una plataforma de servicios flexible y automatiza
     - `billingFrequency` (Texto): Si es recurrente, la frecuencia (ej: "monthly", "yearly").
     - `isRequestableByResident` (Booleano): `true` si los residentes pueden ver y solicitar este servicio desde su panel.
     - `requiresApproval` (Booleano): `true` si la solicitud de un residente para este servicio requiere aprobación del administrador.
+
+### Colección: `membershipRequests`
+- **Propósito:** Actúa como un sistema de "tickets" para gestionar las solicitudes de vinculación de usuarios con propiedades o cambios de rol.
+- **ID del Documento:** Prefijo `residency_` + `UID` + `propertyId` (para permitir múltiples solicitudes por usuario).
+- **Campos:**
+    - `userId` (Texto): UID del solicitante.
+    - `userEmail` (Texto): Email del solicitante.
+    - `userName` (Texto): Nombre del solicitante.
+    - `requestedPropertyId` (Texto): ID de la unidad.
+    - `requestedPropertyName` (Texto): Nombre de la unidad.
+    - `relationship` (Texto): Relación declarada (Propietario, Inquilino, Familiar, etc.).
+    - `status` (Texto): `pending`, `approved`, `rejected`.
+    - `createdAt` (Timestamp): Fecha de creación.
+    - `processedAt` (Timestamp): Fecha de resolución.
 
 ### Colección: `serviceRequests`
 - **Propósito:** Registra cada solicitud de servicio hecha por un residente. Funciona como un paso intermedio de aprobación antes de que se cree un cargo financiero.
@@ -201,11 +241,13 @@ Para cumplir con la visión de una plataforma de servicios flexible y automatiza
     - `adminNotes` (Texto, Opcional): Notas del administrador al verificar o rechazar.
 
 ### Colección: `activities`
-- **Propósito:** Un registro unificado y cronológico de todos los eventos y acciones importantes que ocurren en el sistema, optimizado para la visualización de un feed de "actividades recientes".
+- **Propósito:** Un registro unificado y cronológico de todos los eventos. Se utiliza para dos fines distintos:
+    1. **Auditoría (Vigilante):** El módulo `recentActivity` muestra el log completo de todo lo que sucede.
+    2. **Bandeja de Entrada (Accionable):** El módulo `notificationsFeed` filtra solo los eventos que requieren atención inmediata (solicitudes pendientes).
 - **ID del Documento:** ID auto-generado por Firestore.
 - **Campos:**
     - `timestamp` (Fecha y Hora): Fecha y hora exacta en que ocurrió la actividad, para ordenar el feed.
-    - `type` (Texto): Un código que describe el tipo de evento (ej: "PAYMENT_REPORTED", "SERVICE_REQUESTED", "MONTHLY_FEE_GENERATED", "USER_REGISTERED", "PROPERTY_UPDATED").
+    - `type` (Texto): Un código que describe el tipo de evento (ej: "PAYMENT_REPORTED", "MEMBERSHIP_REQUESTED", "SERVICE_REQUESTED", "MONTHLY_FEE_GENERATED", "USER_REGISTERED", "PROPERTY_UPDATED").
     - `description` (Texto): Una breve descripción legible por humanos de la actividad (ej: "Residente de Casa 101 reportó un pago").
     - `initiator` (Objeto, Opcional): Información sobre quién o qué inició la actividad.
         - `type` (Texto): "USER" o "SYSTEM".
@@ -217,6 +259,23 @@ Para cumplir con la visión de una plataforma de servicios flexible y automatiza
         - `name` (Texto, Opcional): Nombre o identificador de la entidad (ej: "Casa 101", "Ana García").
     - `details` (Objeto, Opcional): Un objeto flexible para almacenar datos adicionales relevantes para el tipo de actividad (ej: `{ amount: 150, currency: 'USD', paymentNotificationId: 'abc' }` para un pago).
     - `visibility` (Array de Strings, Opcional): Define quién puede ver esta actividad (ej: `["admin"]`, `["admin", "resident_UID"]`).
+
+---
+
+## 12. Ciclo de Vida del Usuario y Evolución de Roles
+
+Para garantizar una experiencia fluida y segura, el usuario evoluciona a través de los siguientes estados:
+
+1.  **Registro (Origen):** El usuario nace con `role: "pending"` y `isActive: true`.
+2.  **Gatekeeper (Validación):** El sistema exige la verificación de email. Mientras no se cumpla, el acceso a la app está restringido.
+3.  **Transición a Visitante:** Una vez confirmado el email, el rol evoluciona de `pending` a `guest` (Visitante).
+4.  **Entrada y Exploración:** Como `guest`, el usuario accede a módulos públicos habilitados por el administrador, principalmente el catálogo de `/services`.
+5.  **Proactividad (Solicitud de Perfil):**
+    *   Desde su `/profile`, el usuario puede reportarse como residente (solicitando vinculación a una propiedad).
+    *   Desde `/services`, mediante el botón "Ofrecer Servicio", el usuario puede registrar sus datos comerciales para convertirse en `provider`.
+6.  **Consolidación (Aprobación):**
+    *   Si el administrador aprueba la vinculación a una propiedad, el rol pasa a `resident`.
+    *   Si un `resident` decide también ser proveedor (o viceversa), su identidad final se consolida como `hybrid`.
 
 ---
 
@@ -354,17 +413,22 @@ La aplicación utiliza una arquitectura desacoplada y de alta cohesión para ges
 
 *   **Archivo:** `public/app/core/router.js`
 *   **Responsabilidad:** Actuar como el "director de orquesta". Es el punto de entrada para cualquier cambio de navegación.
+*   **Capacidad i18n (Alias de Ruta):** El router utiliza un motor de internacionalización (`i18n.js`) que permite mapear URLs amigables en cualquier idioma (ej: `/dashboard/solicitudes`) a rutas internas en inglés (ej: `/dashboard/requests`). Esto permite una experiencia de usuario localizada sin comprometer la consistencia del código.
+*   **Capacidad de Desvío Dinámico (Forced View):** El router permite que un middleware inyecta una `forcedView` en el contexto. Si esto ocurre, el sistema renderiza esa vista en lugar de la original (ej: para forzar verificación de email), manteniendo la URL del navegador intacta.
 *   **Flujo de Trabajo:**
     1.  Escucha los cambios de URL (por clics, historial del navegador o llamadas programáticas a `navigate()`).
     2.  Identifica la ruta correspondiente y crea un objeto `contexto` (`{ params, data }`).
-    3.  Ejecuta el *pipeline* de `Middlewares` asociados a la ruta, pasándoles el `contexto` para que puedan validarlo o enriquecerlo.
-    4.  Si los middlewares tienen éxito, llama a `Mosaic` para componer la vista.
-    5.  Finalmente, llama a `RenderView` para que "anime" la vista en el DOM.
+    3.  Ejecuta el *pipeline* de `Middlewares` asociados a la ruta.
+    4.  **Desvío:** Si un middleware marca `contexto.data.forcedView`, el Router cambia el path de la vista a renderizar.
+    5.  Si los middlewares tienen éxito, llama a `Mosaic` para componer la vista.
+    6.  Finalmente, llama a `RenderView` para que "anime" la vista en el DOM.
 
 ### 2. El Compositor (`Mosaic`)
 
 *   **Archivo:** `public/app/core/mosaic.js`
-*   **Responsabilidad:** Actuar como un "maestro albañil". Su único trabajo es construir un "paquete de renderizado" en memoria, sin tocar nunca el DOM.
+*   **Responsabilidad:** Actuar como un "maestro albañil". Su único trabajo es construir un "paquete de renderizado" en memoria.
+*   **Directivas de Contenido (Named Slots):** Permite definir huecos específicos en los temas usando `<!-- ::content.identificador -->`.
+*   **Mapeo Dinámico:** Busca elementos con `data-content="identificador"` en la vista y los inyecta en su slot correspondiente en el tema. El contenido sin atributo se inyecta en el slot por defecto `<!-- ::content -->`.
 *   **Flujo de Trabajo (`composeView`):**
     1.  Recibe la URL de una "receta" de vista.
     2.  Inicia un bucle de composición que busca recursivamente todas las directivas anidadas (`::module`, `::css`, `::controller`).
@@ -383,13 +447,18 @@ La aplicación utiliza una arquitectura desacoplada y de alta cohesión para ges
     3.  Inyecta el `finalHtml` en el contenedor principal `#app-view`.
     4.  Itera sobre la lista de `controllerNames`, los importa y los ejecuta en secuencia, pasándoles el `contexto` enriquecido.
 
-### 4. Los Filtros (`Middlewares`)
+### 4. El Middleware de Identidad (`auth.js`)
 
-*   **Ubicación:** `public/app/middleware/`
-*   **Responsabilidad:** Actuar como filtros o puntos de control en el proceso de navegación.
-*   **Capacidades:**
-    *   **Validación:** Pueden bloquear la navegación (ej. `authMiddleware`) devolviendo `false`.
-    *   **Enriquecimiento:** Pueden realizar llamadas a APIs o bases de datos y añadir la información al objeto `contexto.data` para que el controlador la utilice.
+*   **Ubicación:** `public/app/middleware/auth.js`
+*   **Responsabilidad:** Actuar como el "Interrogador" del sistema y el **Middleware de Sesión Inteligente (Crítico)**.
+*   **Lógica:** No solo verifica la autenticación en Firebase Auth, sino que realiza una carga profunda del perfil del usuario desde la colección `users` de Firestore.
+*   **Inyección en Contexto:** Añade el objeto `userProfile` y una **Ficha de Identidad (`permissions`)** a `contexto.data`.
+*   **Capacidad de Decisión:** Al tener el perfil cargado antes de que Mosaic o los Controladores se ejecuten, permite realizar **Renderizado Condicional**:
+    *   **Ejemplo:** `if (contexto.data.permissions.isProvider)` permite cargar módulos específicos para proveedores en la misma ruta `/dashboard`.
+    *   **Control de Acceso:** Permite bloquear el acceso a módulos funcionales o forzar vistas de estado si `permissions.isActive === false`.
+*   **Redirección Inteligente por Rol:**
+    *   Si un usuario es verificado y activo pero **no es residente**, es enviado automáticamente a `/services` si intenta entrar a la raíz del dashboard.
+    *   Si el usuario no está verificado o activo, se activa el `forcedView` del Router para mostrar la pantalla de estado correspondiente sin cambiar la URL.
 
 ---
 ### Ejemplo de Flujo Completo
@@ -422,6 +491,14 @@ Se utiliza exclusivamente el atributo `data-view` en los enlaces (`<a>`) para ge
 2.  **Destino de Refresco:** El valor del atributo (ej: `data-view="dashboard"`) indica qué contenedor `data-content` debe actualizarse.
 3.  **Fluidez:** Si el contenedor de destino existe tanto en la vista actual como en la nueva, el refresco es parcial (Inteligente).
 
+### Sistema de Notificaciones Modular
+El componente `navigator` implementa un `NotificationManager` que gestiona "Antenas" (listeners en tiempo real).
+- **Reactividad:** Usa `onSnapshot` para detectar cambios en Firestore y activar/desactivar el indicador visual (`.has-updates`) sin recargar la página.
+- **Modularidad:** Permite registrar múltiples observadores por rol (ej: el administrador observa membresías y servicios simultáneamente).
+
+### Prevención de Doble Navegación (Crítico)
+*   **Aislamiento de Eventos:** En módulos que gestionan su propia navegación (llamando a `router.navigate()`), es obligatorio usar `e.stopPropagation()` en el handler del clic. Esto evita que el `Router` global detecte el mismo evento, previniendo navegaciones duplicadas que rompen el ciclo de limpieza (`cleanup`) de los controladores.
+
 ## 13. Convención de Auto-descubrimiento (Auto-discovery)
 
 El sistema `Mosaic` está diseñado para eliminar la configuración manual. Siempre que se respete la convención de nombres, los assets se cargarán automáticamente:
@@ -430,3 +507,21 @@ El sistema `Mosaic` está diseñado para eliminar la configuración manual. Siem
 - **Archivos:** `{nombreModulo}.html`, `{nombreModulo}.controller.js`, `{nombreModulo}.css`.
 - **Comportamiento:** Al declarar `<!-- ::module.{nombreModulo} -->`, el sistema buscará y ejecutará el controlador y el CSS asociados sin necesidad de directivas adicionales como `::controller`.
 
+---
+
+## 14. Estándares de la Vista "Estado de Cuenta" (Property Detail)
+
+Para asegurar la precisión financiera y la consistencia visual en el detalle de las unidades:
+
+- **Diseño Bento Grid:** Las métricas superiores (Saldo, Pagos, Inmueble) deben seguir el diseño de rejilla Bento con tarjetas `.summary-card`.
+- **Variante Dark:** La información del residente titular debe usar la clase `.dark` (`--color-gurkha-900`) para generar contraste y jerarquía visual.
+- **Lógica Contable (Cálculo de Saldo):**
+    - El saldo se calcula de forma **acumulativa y cronológica** (desde la transacción más antigua a la más reciente).
+    - **Cargos (Monto Negativo):** Representan deuda y **aumentan** el saldo deudor del residente.
+    - **Abonos/Pagos (Monto Positivo):** Representan ingresos y **disminuyen** el saldo deudor.
+    - En la UI, las transacciones se muestran en orden inverso (más reciente primero) tras calcular el saldo histórico.
+- **Feedback Visual de Saldo:**
+    - `Deuda (> 0.01)`: Color `.status-debt` (rojo) + icono SVG `x-circle`.
+    - `Al día (≈ 0)`: Color `.status-ok` (verde) + icono SVG `check-circle`.
+    - `A favor (< -0.01)`: Color `.status-credit` (azul) + icono SVG `plus-circle`.
+- **Iconografía local:** Se prohíbe el uso de fuentes de iconos externas. Se deben integrar SVGs directamente en el HTML o mediante inyección desde `icons.json`.
