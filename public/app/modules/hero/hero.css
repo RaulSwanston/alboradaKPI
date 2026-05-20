@@ -42,7 +42,7 @@ header.hero section {
         /* height: 832px; */
         position: absolute;
         left: 1.4em;
-        bottom: -.6em;
+        bottom: -1em;
     }
 }
 
@@ -71,7 +71,7 @@ header.hero section {
     font-family: "Arial Black", Arial, Helvetica, sans-serif;
     text-transform: uppercase;
     left: 1rem;
-    top: .2rem;
+    top: .3rem;
 }
 
 .logo .subTitle {
