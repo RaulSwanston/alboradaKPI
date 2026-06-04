@@ -5,6 +5,10 @@ import { sessionGuard } from './app/middleware/auth.js';
 // --- Definición de Rutas ---
 // Se definen las rutas utilizando el nuevo formato para Mosaic, relativo a /app/views.
 export const router = new Router(); // CREA y EXPORTA la instancia del router
+
+// Exponer globalmente para acceso desde controladores
+window.router = router;
+
 router
   .get('/', 'inicio', [logMiddleware]) // Se aplica el middleware a la ruta raíz
   .get('/login', 'auth/login')
@@ -23,6 +27,7 @@ router
   .get('/residents', 'dashboard/residents', [sessionGuard])
   .get('/import-residents', 'dashboard/importResidents', [sessionGuard])
   .get('/import-properties', 'dashboard/importProperties', [sessionGuard])
+  .get('/dashboard/config', 'dashboard/config', [sessionGuard])
   // --- Rutas de Pagos ---
   .get('/dashboard/payments/report', 'dashboard/payments/report', [sessionGuard])
   .get('/dashboard/payments/history', 'dashboard/payments/history', [sessionGuard])

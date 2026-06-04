@@ -91,25 +91,25 @@ Un usuario puede ser simultáneamente **Residente y Proveedor**.
 2.  **Ejecución:** Una Cloud Function programada se ejecuta el primer día de cada mes.
 3.  **Proceso:** La función busca todos los conceptos marcados como recurrentes/mensuales y genera las transacciones de cargo para todas las propiedades del condominio de forma masiva. El administrador no interviene en este proceso mensual.
 
-### 5. Estándares de Ruteo y Assets (Crítico)
+### 6. Estándares de Ruteo y Assets (Crítico)
 *   **Rutas Absolutas:** Para soportar rutas profundas (ej. `/dashboard/properties`), todas las referencias a archivos en el Core (`Router`, `Mosaic`, `RenderView`) y en el `index.html` **deben comenzar con una barra inclinada (`/`)**. Ejemplo: `/router.js`, `/views/dashboard/home.html`, `/src/css/style.css`.
 *   **Evitar Puntos:** Nunca usar `./` o rutas relativas simples en la definición de rutas del sistema, ya que el navegador las interpreta mal desde URLs con subdirectorios.
 
-### 6. Comunicación entre Módulos
+### 7. Comunicación entre Módulos
 *   **Eventos Personalizados:** Para mantener los módulos desacoplados, se prefiere el uso de eventos globales o burbujeados.
     *   Ejemplo: El módulo `search` emite un evento `app:search` con `detail: { query }`. Cualquier controlador de página puede escucharlo (`document.addEventListener('app:search', ...)`) para filtrar sus datos sin que el buscador sepa qué está filtrando.
 
-### 7. Estándares de Assets e Iconografía
+### 8. Estándares de Assets e Iconografía
 *   **Iconos SVG Locales:** Está estrictamente prohibido el uso de librerías de iconos externas (como Google Material Symbols o FontAwesome). Se debe utilizar exclusivamente iconos en formato SVG.
 *   **Repositorio de Iconos:** Se cuenta con un archivo centralizado `public/src/img/icons.json` que contiene las definiciones de los iconos. Se prefiere su uso para mantener la consistencia y ligereza de la aplicación.
 *   **Inyección de SVGs:** Los iconos deben integrarse directamente en el HTML como elementos `<svg>` o inyectarse mediante JavaScript para evitar peticiones HTTP adicionales.
 
-### 8. Filosofía de Diseño y CSS
+### 9. Filosofía de Diseño y CSS
 *   **Simple Grid:** Las listas de elementos (servicios, propiedades, etc.) deben seguir el patrón de `display: grid` con `auto-fill` y tarjetas (`.card`) limpias, inspiradas en el módulo `services`.
 *   **Prohibición de !important:** Está estrictamente prohibido el uso de `!important` en las hojas de estilo. La jerarquía debe gestionarse mediante una especificidad limpia y variables CSS.
 *   **Navegación UX:** Los botones de "volver" deben usar la clase `.btn-back`, contener un icono tipo Chevron de 24px y tener una micro-interacción de desplazamiento (ej. `translateX(-2px)` en hover).
 
-### 4. Navegación desde Actividades (Actividades como Accesos Directos)
+### 10. Navegación desde Actividades (Actividades como Accesos Directos)
 El módulo de `recentActivity` actúa como un centro de comando. Se ha establecido la siguiente convención de navegación mediante el icono de "ojo":
 *   **Destino Dinámico:** La navegación se basa en el objeto `target` del documento de actividad.
 *   **Mapeo de Rutas:**
@@ -119,7 +119,12 @@ El módulo de `recentActivity` actúa como un centro de comando. Se ha estableci
 
 ---
 
-## 11. Estructura de la Base de Datos (Firestore)
+### 11. Estándares del Módulo de Transacciones (Nuevo)
+- **Campo `period`:** Toda transacción debe incluir obligatoriamente el campo `period` con formato `YYYY-MM` (ej: "2025-06") para permitir consultas temporales eficientes.
+- **Consistencia de Fechas (`effectiveDate`):** El campo `effectiveDate` debe almacenarse siempre como un objeto `Date`/`Timestamp` de Firestore. No se deben mezclar tipos (evitar strings planos) para asegurar que los filtros por rango funcionen correctamente.
+- **Normalización de Unidades:** Los IDs de propiedad deben seguir la convención establecida (ej: `D-01` o `001`) para mantener la coherencia financiera.
+- **Estandarización de Tipos:** Los tipos de transacción deben usar los valores definidos (`FEE`, `PAYMENT`, `EXPENSE`, `OTHER_INCOME`) para asegurar que el balance neto sea preciso y los chips de filtro funcionen correctamente.
+
 
 Para cumplir con la visión de una plataforma de servicios flexible y automatizada, se ha definido la siguiente estructura de colecciones.
 
@@ -210,35 +215,34 @@ Para cumplir con la visión de una plataforma de servicios flexible y automatiza
 - **Propósito:** Libro contable inmutable de todos los movimientos financieros (cargos y pagos). Funciona como el Libro Mayor del condominio.
 - **ID del Documento:** ID auto-generado por Firestore.
 - **Campos:**
-    - `propertyId` (Texto): ID de la propiedad a la que pertenece. Si el pago aún no ha sido identificado, se usa el valor especial `__UNIDENTIFIED__`.
-    - `status` (Texto): Estado de la transacción:
-        - `verified`: Movimiento plenamente identificado y aplicado a una propiedad.
-        - `unidentified`: Ingreso recibido en el banco pero cuyo origen (unidad) se desconoce.
-    - `amount` (Número): Monto del movimiento. Negativo para cargos (débitos), positivo para créditos (pagos).
-    - `type` (Texto): Tipo de transacción (ej: "FEE", "PAYMENT", "FINE", "UNCATEGORIZED").
-    - `description` (Texto): Descripción legible del movimiento (ej: "Cuota Enero 2026", "Transferencia por identificar").
-    - `metadata` (Objeto, Opcional): Detalles técnicos del movimiento bancario para facilitar la identificación posterior.
-        - `senderName` (Texto): Nombre que aparece en la transferencia.
-        - `bankReference` (Número de confirmación del banco.
-        - `bankName` (Banco donde se recibió el dinero.
-    - `voucherType` (Texto): Tipo de comprobante asociado (ej: "Factura", "Recibo", "Nota de Crédito").
-    - `voucherNumber` (Texto): Número del comprobante.
-    - `serviceRequestId` (Texto, Opcional): Si la transacción se originó por una solicitud de servicio, se guarda el ID para trazabilidad.
-    - `createdAt` (Fecha y Hora): Fecha de registro en el sistema.
-    - `effectiveDate` (Fecha): Fecha a la que corresponde el movimiento contable (ej: fecha de la transferencia).
+    - `propertyId` (Texto): ID de la propiedad a la que pertenece.
+    - `status`: `verified`, `unidentified`.
+    - `amount` (Número): Negativo para cargos, positivo para créditos.
+    - `pendingAmount` (Número): **(NUEVO)** Para cargos (FEE), indica cuánto falta por pagar de ese movimiento específico.
+    - `type` (Texto): `FEE`, `PAYMENT`, `FINE`, `UNCATEGORIZED`.
+    - `description` (Texto).
+    - `metadata` (Objeto).
+    - `voucherType` (Texto).
+    - `voucherNumber` (Texto): Aquí se guardará el número de recibo `REC-YYYYMMDD-XXXX` para los pagos.
+    - `serviceRequestId` (Texto, Opcional).
+    - `createdAt` (Fecha y Hora).
+    - `effectiveDate` (Fecha).
 
 ### Colección: `paymentNotifications`
 - **Propósito:** Almacena los reportes de pago enviados por los residentes, pendientes de verificación por parte del administrador.
 - **ID del Documento:** ID auto-generado por Firestore.
 - **Campos:**
     - `propertyId` (Texto): ID de la propiedad que reporta el pago.
-    - `amount` (Número): Monto que el residente reporta haber pagado.
+    - `residentUid` (Texto): UID del usuario que realizó el reporte.
+    - `amount` (Número): Monto total del comprobante.
     - `paymentDate` (Fecha): Fecha en que el residente realizó el pago.
-    - `reportDate` (Fecha y Hora): Fecha y hora en que se creó el reporte.
-    - `status` (Texto): Estado del flujo de verificación (ej: "pending_verification", "verified", "rejected").
-    - `receiptUrl` (Texto, Opcional): URL de la imagen del comprobante en Firebase Storage.
-    - `notes` (Texto, Opcional): Notas del residente sobre el pago.
-    - `adminNotes` (Texto, Opcional): Notas del administrador al verificar o rechazar.
+    - `reportDate` (Fecha y Hora).
+    - `status` (Texto): `pending_verification`, `verified`, `rejected`.
+    - `receiptUrl` (Texto): URL del comprobante en Storage.
+    - `appliedTo` (Array de Objetos): **(NUEVO)** Lista de deudas a las que se aplica este pago `[{ transactionId: string, amount: number }]`.
+    - `excessAmount` (Número): **(NUEVO)** Monto sobrante que pasará a ser "Saldo a Favor" si el pago supera las deudas seleccionadas.
+    - `notes` (Texto).
+    - `adminNotes` (Texto).
 
 ### Colección: `activities`
 - **Propósito:** Un registro unificado y cronológico de todos los eventos. Se utiliza para dos fines distintos:
@@ -279,7 +283,7 @@ Para garantizar una experiencia fluida y segura, el usuario evoluciona a través
 
 ---
 
-## 6. Lógica de Reglas de Seguridad (Firestore Rules)
+## 13. Lógica de Reglas de Seguridad (Firestore Rules)
 
 Para proteger los datos, se implementará la siguiente lógica en las reglas de seguridad de Firestore. El principio fundamental es **denegar todo por defecto** y solo permitir accesos explícitamente.
 
@@ -295,217 +299,6 @@ Para proteger los datos, se implementará la siguiente lógica en las reglas de 
 - **Colección `transactions`:**
     - Un usuario solo puede **leer** los documentos de transacciones si el `propertyId` de la transacción está incluido en el array `propertyIds` de su propio perfil de usuario (`/users/{request.auth.uid}`).
     - Los usuarios **no pueden crear, actualizar ni borrar** transacciones. Estas operaciones serán exclusivas para administradores.
----
-
-## 7. Paleta de Colores
-
-### Paletas Base
-
-'gurkha': {
-    '50': '#f6f5ef',
-    '100': '#eae9dd',
-    '200': '#d8d6be',
-    '300': '#bfbd97',
-    '400': '#9e9c68',
-    '500': '#8a8958',
-    '600': '#6d6d43',
-    '700': '#555536',
-    '800': '#44452f',
-    '900': '#3b3c2b',
-    '950': '#1f1f14',
-},
-'solid-pink': {
-    '50': '#fdf3f3',
-    '100': '#faeae9',
-    '200': '#f6d5d5',
-    '300': '#eeb3b3',
-    '400': '#e4888c',
-    '500': '#d55e65',
-    '600': '#c03e4c',
-    '700': '#a12f3e',
-    '800': '#842938',
-    '900': '#742736',
-    '950': '#401119',
-},
-'kaitoke-green': {
-    '50': '#f0fdf4',
-    '100': '#ddfbe8',
-    '200': '#bdf5d2',
-    '300': '#8aebaf',
-    '400': '#50d884',
-    '500': '#28bf63',
-    '600': '#1b9e4e',
-    '700': '#197c40',
-    '800': '#196236',
-    '900': '#175330',
-    '950': '#072c17',
-},
-
-### Paleta Expandida: "Condo-Fresh UI Kit"
-
-#### 1. Colores de Texto
-
--   `text-primary`: `gurkha['900']` (#3b3c2b)
--   `text-secondary`: `gurkha['700']` (#555536)
--   `text-link`: `kaitoke-green['600']` (#1b9e4e)
--   `text-on-primary`: `#FFFFFF`
-
-#### 2. Colores de Fondo (Backgrounds)
-
--   `bg-canvas`: `gurkha['100']` (#eae9dd)
--   `bg-surface`: `gurkha['50']` (#f6f5ef)
--   `bg-hero`: `kaitoke-green['100']` (#ddfbe8)
-
-#### 3. Colores para Componentes de UI
-
--   **Cards:**
-    -   `card-bg`: `bg-surface` (#f6f5ef)
-    -   `card-border`: `gurkha['200']` (#d8d6be)
--   **Botones:**
-    -   `button-primary-bg`: `kaitoke-green['500']` (#28bf63)
-    -   `button-primary-hover-bg`: `kaitoke-green['600']` (#1b9e4e)
-    -   `button-accent-bg`: `solid-pink['500']` (#d55e65)
-    -   `button-accent-hover-bg`: `solid-pink['600']` (#c03e4c)
--   **Inputs (Campos de formulario):**
-    -   `input-bg`: `bg-surface` (#f6f5ef)
-    -   `input-border`: `gurkha['300']` (#bfbd97)
-    -   `input-focus-border`: `kaitoke-green['500']` (#28bf63)
-
-#### 4. Colores Semánticos (Estados)
-
--   `success`: `kaitoke-green['500']` (#28bf63)
--   `warning`: `#FFC700`
--   `error`: `solid-pink['600']` (#c03e4c)
----
-
-## 8. Estándares de Documentación
-
-Se ha acordado aplicar documentación de forma continua durante el desarrollo para asegurar la claridad y mantenibilidad del código.
-
--   **Para la Estructura HTML (`index.html`):**
-    -   Se utilizarán **comentarios HTML (`<!-- ... -->`)** para delimitar y describir las secciones lógicas principales de la interfaz (ej: `<!-- Sección de Login -->`). Esto proporciona un mapa estructural del documento.
-
--   **Para la Lógica de JavaScript (en `<script>` o archivos `.js`):**
-    -   Se usará **JSDoc (`/** ... */`)** para documentar todas las funciones, explicando su propósito, parámetros (`@param`) y valores de retorno (`@returns`).
-    -   Se usarán comentarios de una línea (`//`) o multilínea (`/* ... */`) para aclaraciones puntuales dentro de las funciones, según sea el caso.
-
--   **Para CSS (`public/style.css`):**
-    -   Se utilizarán comentarios de bloque (`/* --- Sección --- */`) para delimitar grandes secciones lógicas (ej: Fuentes, Variables de Color, Componentes).
-    -   Se utilizarán comentarios de una línea (`/* Comentario */`) o de múltiples líneas para explicar reglas CSS complejas o decisiones de diseño específicas.
----
-
-## 9. Flujo de Trabajo de Git
-
-- **Doble Repositorio:** El proyecto se mantiene sincronizado en dos repositorios remotos: `github` y `gitlab`.
-- **Práctica de Actualización:** Al finalizar un conjunto de cambios, se debe realizar un `push` a **ambos** remotos para mantenerlos actualizados.
-  - `git push github main`
-  - `git push gitlab main`
----
-El usuario prefiere respuestas cortas y completas.
-
----
-
-## 10. Arquitectura de Renderizado y Navegación
-
-La aplicación utiliza una arquitectura desacoplada y de alta cohesión para gestionar la navegación y el renderizado de vistas. Se basa en cuatro componentes principales con responsabilidades claramente definidas.
-
-### 1. El Orquestador (`Router`)
-
-*   **Archivo:** `public/app/core/router.js`
-*   **Responsabilidad:** Actuar como el "director de orquesta". Es el punto de entrada para cualquier cambio de navegación.
-*   **Capacidad i18n (Alias de Ruta):** El router utiliza un motor de internacionalización (`i18n.js`) que permite mapear URLs amigables en cualquier idioma (ej: `/dashboard/solicitudes`) a rutas internas en inglés (ej: `/dashboard/requests`). Esto permite una experiencia de usuario localizada sin comprometer la consistencia del código.
-*   **Capacidad de Desvío Dinámico (Forced View):** El router permite que un middleware inyecta una `forcedView` en el contexto. Si esto ocurre, el sistema renderiza esa vista en lugar de la original (ej: para forzar verificación de email), manteniendo la URL del navegador intacta.
-*   **Flujo de Trabajo:**
-    1.  Escucha los cambios de URL (por clics, historial del navegador o llamadas programáticas a `navigate()`).
-    2.  Identifica la ruta correspondiente y crea un objeto `contexto` (`{ params, data }`).
-    3.  Ejecuta el *pipeline* de `Middlewares` asociados a la ruta.
-    4.  **Desvío:** Si un middleware marca `contexto.data.forcedView`, el Router cambia el path de la vista a renderizar.
-    5.  Si los middlewares tienen éxito, llama a `Mosaic` para componer la vista.
-    6.  Finalmente, llama a `RenderView` para que "anime" la vista en el DOM.
-
-### 2. El Compositor (`Mosaic`)
-
-*   **Archivo:** `public/app/core/mosaic.js`
-*   **Responsabilidad:** Actuar como un "maestro albañil". Su único trabajo es construir un "paquete de renderizado" en memoria.
-*   **Directivas de Contenido (Named Slots):** Permite definir huecos específicos en los temas usando `<!-- ::content.identificador -->`.
-*   **Mapeo Dinámico:** Busca elementos con `data-content="identificador"` en la vista y los inyecta en su slot correspondiente en el tema. El contenido sin atributo se inyecta en el slot por defecto `<!-- ::content -->`.
-*   **Flujo de Trabajo (`composeView`):**
-    1.  Recibe la URL de una "receta" de vista.
-    2.  Inicia un bucle de composición que busca recursivamente todas las directivas anidadas (`::module`, `::css`, `::controller`).
-    3.  Acumula todas las URLs de CSS y nombres de controladores en listas.
-    4.  Reemplaza las directivas `::module` con su contenido HTML, repitiendo el proceso hasta que no queden más.
-    5.  Aplica el tema principal al HTML ya compuesto.
-    6.  Devuelve un objeto final: `{ finalHtml, cssUrls, controllerNames }`.
-
-### 3. El Renderizador (`RenderView`)
-
-*   **Archivo:** `public/app/core/RenderView.js`
-*   **Responsabilidad:** Dar vida a la vista en el DOM. Es el único componente que interactúa directamente con el `document`.
-*   **Flujo de Trabajo (`anima`):**
-    1.  Recibe el "paquete de renderizado" de `Mosaic` y el `contexto` del `Router`.
-    2.  Llama a su método `mergeHeadElements`, que añade los `<link>` de CSS y otros assets al `<head>` y **espera** a que se carguen para evitar FOUC (Flash of Unstyled Content).
-    3.  Inyecta el `finalHtml` en el contenedor principal `#app-view`.
-    4.  Itera sobre la lista de `controllerNames`, los importa y los ejecuta en secuencia, pasándoles el `contexto` enriquecido.
-
-### 4. El Middleware de Identidad (`auth.js`)
-
-*   **Ubicación:** `public/app/middleware/auth.js`
-*   **Responsabilidad:** Actuar como el "Interrogador" del sistema y el **Middleware de Sesión Inteligente (Crítico)**.
-*   **Lógica:** No solo verifica la autenticación en Firebase Auth, sino que realiza una carga profunda del perfil del usuario desde la colección `users` de Firestore.
-*   **Inyección en Contexto:** Añade el objeto `userProfile` y una **Ficha de Identidad (`permissions`)** a `contexto.data`.
-*   **Capacidad de Decisión:** Al tener el perfil cargado antes de que Mosaic o los Controladores se ejecuten, permite realizar **Renderizado Condicional**:
-    *   **Ejemplo:** `if (contexto.data.permissions.isProvider)` permite cargar módulos específicos para proveedores en la misma ruta `/dashboard`.
-    *   **Control de Acceso:** Permite bloquear el acceso a módulos funcionales o forzar vistas de estado si `permissions.isActive === false`.
-*   **Redirección Inteligente por Rol:**
-    *   Si un usuario es verificado y activo pero **no es residente**, es enviado automáticamente a `/services` si intenta entrar a la raíz del dashboard.
-    *   Si el usuario no está verificado o activo, se activa el `forcedView` del Router para mostrar la pantalla de estado correspondiente sin cambiar la URL.
-
----
-### Ejemplo de Flujo Completo
-
-1.  Usuario navega a `/users/123`.
-2.  **Router** crea el `contexto`: `{ params: { id: '123' }, data: {} }`.
-3.  **Router** ejecuta el middleware `fetchUserMiddleware(contexto)`.
-4.  **Middleware** busca el usuario y modifica el contexto: `contexto.data.user = { name: 'Ana' }`. Devuelve `true`.
-5.  **Router** llama a `mosaic.composeView('views/user-profile.html')`.
-6.  **Mosaic** procesa la vista y sus módulos de forma recursiva, y devuelve: `{ finalHtml: "...", cssUrls: [...], controllerNames: ["userProfileController"] }`.
-7.  **Router** llama a `renderView.anima(composedView, contexto)`.
-8.  **RenderView** carga el CSS, espera, inyecta el HTML y ejecuta `userProfileController(contexto)`.
-9. El **Controller** usa `contexto.data.user.name` para mostrar "Ana" en la página.
-
----
-
-## 11. Modelo Contable (Dualidad de Registro)
-
-Para mantener la integridad financiera sin descuadrar el banco, el sistema separa el flujo de caja de la deuda del residente:
-
-- **Dinero en Banco:** Suma de `PAYMENT` (entradas) y `EXPENSE` (salidas). Los cargos no afectan este saldo.
-- **Saldo del Residente:** Suma de `FEE` (cargos mensuales, ej: $15) y `PAYMENT` (abonos).
-- **Regla de Justificación:** Todo pago recibido debe estar precedido por un cargo (`FEE`) que explique el origen de la deuda.
-
-## 12. Estándares de Navegación y Renderizado Parcial
-
-### Atributo Unificado `data-view`
-Se utiliza exclusivamente el atributo `data-view` en los enlaces (`<a>`) para gestionar la SPA:
-1.  **Captura de Clic:** El Router intercepta clics en cualquier elemento que contenga o esté dentro de un `[data-view]`.
-2.  **Destino de Refresco:** El valor del atributo (ej: `data-view="dashboard"`) indica qué contenedor `data-content` debe actualizarse.
-3.  **Fluidez:** Si el contenedor de destino existe tanto en la vista actual como en la nueva, el refresco es parcial (Inteligente).
-
-### Sistema de Notificaciones Modular
-El componente `navigator` implementa un `NotificationManager` que gestiona "Antenas" (listeners en tiempo real).
-- **Reactividad:** Usa `onSnapshot` para detectar cambios en Firestore y activar/desactivar el indicador visual (`.has-updates`) sin recargar la página.
-- **Modularidad:** Permite registrar múltiples observadores por rol (ej: el administrador observa membresías y servicios simultáneamente).
-
-### Prevención de Doble Navegación (Crítico)
-*   **Aislamiento de Eventos:** En módulos que gestionan su propia navegación (llamando a `router.navigate()`), es obligatorio usar `e.stopPropagation()` en el handler del clic. Esto evita que el `Router` global detecte el mismo evento, previniendo navegaciones duplicadas que rompen el ciclo de limpieza (`cleanup`) de los controladores.
-
-## 13. Convención de Auto-descubrimiento (Auto-discovery)
-
-El sistema `Mosaic` está diseñado para eliminar la configuración manual. Siempre que se respete la convención de nombres, los assets se cargarán automáticamente:
-
-- **Estructura:** `public/app/modules/{nombreModulo}/`
-- **Archivos:** `{nombreModulo}.html`, `{nombreModulo}.controller.js`, `{nombreModulo}.css`.
-- **Comportamiento:** Al declarar `<!-- ::module.{nombreModulo} -->`, el sistema buscará y ejecutará el controlador y el CSS asociados sin necesidad de directivas adicionales como `::controller`.
 
 ---
 
@@ -525,3 +318,97 @@ Para asegurar la precisión financiera y la consistencia visual en el detalle de
     - `Al día (≈ 0)`: Color `.status-ok` (verde) + icono SVG `check-circle`.
     - `A favor (< -0.01)`: Color `.status-credit` (azul) + icono SVG `plus-circle`.
 - **Iconografía local:** Se prohíbe el uso de fuentes de iconos externas. Se deben integrar SVGs directamente en el HTML o mediante inyección desde `icons.json`.
+
+---
+
+## 15. Arquitectura de Configuración Dinámica (appConfig)
+
+Para garantizar la flexibilidad y escalabilidad de la plataforma, se implementa una capa de configuración centralizada que permite al administrador gestionar el comportamiento y la apariencia de la app sin modificar el código fuente.
+
+### 1. Origen de Datos y Persistencia
+- **Fuente de Verdad:** Colección `_config/app` en Firestore (Producción).
+- **Prioridad de Carga (sessionGuard):** Para facilitar el desarrollo y las pruebas, el sistema prioriza la configuración guardada en `localStorage` (`gph_app_config`). Si no existe, utiliza el objeto por defecto en `public/app/core/appConfig.js`.
+- **Estrategia Offline:** El objeto `appConfig` se inyecta en el `contexto.data` de cada navegación, asegurando que todos los controladores tengan acceso a las definiciones globales de forma síncrona.
+
+### 2. Estructura del Objeto `appConfig`
+Se divide en tres bloques lógicos:
+- **`accessControl`**: Define la matriz de permisos por rol y la lista de módulos permitidos.
+- **`systemDefaults`**: Ajustes técnicos (Idioma base, moneda, zona horaria).
+- **`branding`**: Identidad visual (Nombre de la app, Logo URL, Paleta activa).
+
+### 3. Cascada de Módulos (Layout Dinámico)
+- El administrador puede organizar el orden (`order`) y la visibilidad (`visible`) de los módulos por cada vista, permitiendo una personalización total de la experiencia de usuario sin tocar el HTML.
+
+---
+
+## 16. Sistema de Internacionalización Dinámica (i18n)
+
+La aplicación implementa un motor de traducción nativo integrado en el ciclo de renderizado de `Mosaic`.
+
+- **Directiva Nativa:** Se utiliza el marcador `<!-- ::i18n.ruta.clave -->` directamente en el HTML.
+- **Resolución en Composición:** El motor `Mosaic` detecta estos marcadores durante la fase de ensamblado y los reemplaza por sus valores traducidos antes de inyectar el HTML en el DOM.
+- **Diccionarios Estándar:**
+    - Ubicación: `public/app/core/lang/{lang}/translations.json`.
+    - Regla de Claves: Todas las claves deben estar en **inglés** para mantener la profesionalidad del código, mientras que los valores corresponden al idioma del archivo.
+- **Carga Predictiva:** El middleware `sessionGuard` asegura que el diccionario del idioma configurado se cargue antes de procesar cualquier vista.
+
+---
+
+## 17. Filosofía de Estilo y CSS Semántico
+
+Para mantener una base de código profesional y de alto rendimiento, se aplican las siguientes reglas de estilo:
+
+- **Prohibición de Clases de Utilidad:** Está estrictamente prohibido el uso de clases tipo Tailwind o utilitarias que ensucien el HTML (ej: `mb-md`, `text-primary`, `border-b`).
+- **CSS Semántico:** Cada módulo debe tener su propio archivo `.css` donde se definan clases con nombres descriptivos (ej: `.config-section-title`, `.module-card`).
+- **Encapsulamiento Visual:** Los estilos de un módulo deben ser autosuficientes y utilizar las variables de `root.css` para garantizar la coherencia con el UI Kit global.
+- **Clean HTML:** El HTML debe permanecer lo más minimalista posible, delegando toda la responsabilidad estética a las hojas de estilo correspondientes.
+
+---
+
+## 18. Estándares de Edición Quirúrgica y Mantenimiento
+
+Para garantizar la integridad del código y facilitar las revisiones por parte del equipo:
+
+- **Prioridad de `replace`:** Es mandatorio utilizar la herramienta `replace` para realizar cambios específicos y localizados. Se prohíbe el uso de sobrescrituras totales (`write_file`) en archivos existentes para evitar la pérdida accidental de contexto o contenido no relacionado.
+- **Minimización de Ruido Visual:** Cada edición debe ser lo más pequeña posible, afectando únicamente a las líneas necesarias para cumplir el objetivo técnico.
+- **Preservación de Memoria:** Antes de cualquier cambio estructural, se debe validar que las secciones previas de la documentación y del código no sean alteradas o eliminadas sin una justificación técnica explícita.
+
+---
+
+## 19. Sistema de Permisos Granulares (Module Registry)
+
+Para permitir un control administrativo detallado, la aplicación utiliza un registro de capacidades por módulo:
+
+- **Definición de Capacidades:** Cada módulo debe declarar sus acciones permitidas (ej: `create`, `delete`, `view_all`) en el objeto `moduleRegistry` de `appConfig.js`.
+- **Etiquetas i18n:** Las etiquetas de estas capacidades deben referenciar claves de traducción para soportar múltiples idiomas.
+- **Jerarquía de Acceso:** Los controladores deben validar no solo el acceso al módulo, sino la capacidad específica del usuario (ej: `permissions.can('residents.delete')`) antes de habilitar funcionalidades críticas.
+
+---
+
+## 20. Flujo de Gestión de Usuarios y Roles
+
+La administración de identidades se rige por los siguientes estándares de eficiencia y seguridad:
+
+- **Paginación Firestore:** La carga de usuarios debe realizarse de forma incremental (ej: bloques de 5 o 10) utilizando `limit` y `startAfter` para optimizar el consumo de datos.
+- **Protección de Roles de Sistema:** Los roles esenciales definidos con `isSystem: true` (admin, resident, guest, pending) no pueden ser eliminados por el administrador para garantizar la estabilidad operativa.
+---
+
+## 21. Estándares del Módulo de Reporte de Pago (Conciliación)
+
+Para garantizar una gestión contable precisa y una UX fluida en el reporte de ingresos:
+
+### 1. Jerarquía Visual y Flujo de Usuario
+- **Prioridad 1 (Evidencia):** El área de carga del comprobante debe ser el primer elemento visual. No se permite el envío sin adjuntar una imagen válida.
+- **Prioridad 2 (Conciliación):** El sistema debe listar dinámicamente las deudas pendientes de la unidad (`pendingAmount > 0`). El usuario selecciona qué está pagando mediante tarjetas interactivas.
+- **Prioridad 3 (Cálculo Automático):** El monto total del reporte se autocalcula basándose en la selección, aunque permite edición manual para reflejar el monto exacto del comprobante (soportando excedentes o pagos parciales).
+
+### 2. Lógica de Aplicación de Fondos
+- **Desglose de Pago:** Cada reporte debe generar un objeto `appliedTo` que vincule el dinero a transacciones de cargo específicas.
+- **Excedentes:** Cualquier monto que supere la deuda seleccionada se registra como `excessAmount` para ser tratado como saldo a favor en la validación.
+- **Notificación Automática:** Todo reporte enviado debe generar una entrada en la colección `actividades` con visibilidad para administradores.
+
+### 3. Sistema de Recibos (Constancias)
+- **Folio Único:** Al validar un pago, se genera un número de recibo inmutable con el formato `REC-YYYYMMDD-XXXX` (donde XXXX son los últimos 4 caracteres del ID de la transacción).
+- **Generación PDF:** Se utiliza la librería `jspdf` para generar la constancia digital basada en los datos de la transacción de pago validada.
+- **Trazabilidad:** El número de recibo debe quedar vinculado tanto en la transacción de pago como en la notificación de origen.
+

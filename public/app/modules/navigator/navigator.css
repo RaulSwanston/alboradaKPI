@@ -43,6 +43,8 @@
 }
 
 @media only screen and (max-width: 768px){
+.menu-header { display: none; }
+
 /* --- Estilos Base del Menú (Mobile-First: Botón Flotante) --- */
 .dashboard-menu {
   width: 100dvw;
@@ -201,6 +203,31 @@ nav:has(+ #button-menu.open) .menu-divider.selected + .dropdown{
 
 /* --- Estilos para Escritorio (Media Query) --- */
 @media (min-width: 768px) {
+  .menu-header{
+    gap: 1rem;
+    width: 260px;
+    height: 4rem; /* 64px aprox */
+    padding: 0 1rem;
+    display: flex;
+    align-items: center;
+    position: absolute;
+    top: -4rem;
+    left: 0rem;
+    /* border-bottom: 1px solid var(--color-gurkha-200); */
+    background-color:  var(--color-gurkha-50);
+    & img{
+      width: 70px;
+      height: 70px;
+    }
+    & h2{
+      line-height: 1;
+      font-size: 1rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--color-gurkha-900);
+    }
+  }
+
   /* Ocultamos el botón de menú flotante de móvil */
   .dashboard-menu #button-menu {display: none;}
 
@@ -208,6 +235,7 @@ nav:has(+ #button-menu.open) .menu-divider.selected + .dropdown{
   .dashboard-menu {
     width: 260px; /* Ancho fijo para la barra lateral */
     height: 100vh; /* Altura completa */
+    margin-top: 4.2rem; /* Para dejar espacio a la cabecera */
     position: fixed; /* Fijo en la pantalla */
     top: 0; left: 0; bottom: auto; /* Anulamos el 'bottom' de móvil */
     display: flex;
@@ -215,189 +243,121 @@ nav:has(+ #button-menu.open) .menu-divider.selected + .dropdown{
     padding: 1.5rem 1rem;
     gap: 1.5rem;
     background-color: var(--color-surface);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    border-right: 1px solid var(--color-gurkha-200);
+    /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); */
+    /* border-right: 1px solid var(--color-gurkha-200); */
     grid-template-columns: none; /* Anulamos el grid de móvil */
   }
 
-
-
-
-
-
-
   /* Hacemos que la navegación ocupe todo el espacio disponible */
-
   .dashboard-menu nav {
-
     height: 100%;
-
     overflow-y: auto; /* Permitir scroll si hay muchos ítems */
-
     overflow-x: hidden;
-
   }
-
-
 
   /* Organizamos los elementos principales del menú verticalmente */
-
   .dashboard-menu nav ul {
-
     display: flex;
-
     flex-direction: column;
-
     gap: 0.5rem;
-
   }
-
-
 
   /* Los divisores de menú ya no necesitan ser flexibles ni tener un tamaño fijo */
-
   .dashboard-menu .menu-divider {
-
     flex: 0 0 auto;
-
     padding: 0;
-
     border-radius: 0.5rem;
-
   }
-
-
 
   .dashboard-menu .menu-divider a {
-
+    display: flex;
     flex-direction: row; /* Ícono y texto en fila */
-
     justify-content: flex-start;
-
     align-items: center;
-
     gap: 1rem;
-
     padding: 0.75rem 1rem;
-
     text-decoration: none;
-
     color: var(--color-text-secondary);
-
   }
-
-  
 
   .dashboard-menu .menu-divider svg {
-
       width: 20px;
-
       height: 20px;
-
       fill: var(--color-text-secondary);
-
       flex-shrink: 0;
-
   }
-
-
 
   .dashboard-menu .menu-divider span {
-
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
     white-space: normal;
-
     text-align: left;
-
   }
-
-
 
   .dashboard-menu .menu-divider a::before {
-
-      display: none; /* Ocultamos el indicador de punto/línea de móvil */
-
+    display: none; /* Ocultamos el indicador de punto/línea de móvil */
   }
-
   
 
-  .dashboard-menu .menu-divider:hover a,
-
-  .dashboard-menu .menu-divider.selected a {
-
+  .dashboard-menu .menu-divider:hover a{
     background-color: var(--color-gurkha-100);
-
-    color: var(--color-text-primary);
-
+    color: var(--color-gurkha-700);
+    border-radius: 0.5rem;
   }
 
 
-
+  .dashboard-menu .menu-divider.selected a{
+    background-color: var(--color-gurkha-100);
+    color: var(--color-gurkha-700);
+    border-radius: 0.5rem;
+  }
   .dashboard-menu .menu-divider.selected a svg{
-
-    fill: var(--color-text-primary);
-
+    fill: var(--color-gurkha-700);
   }
-
-
 
   /* Resetamos el estilo del dropdown para que sea parte del flujo normal */
-
   .dashboard-menu nav .dropdown {
-
     opacity: 1;
-
     visibility: visible;
-
     position: static;
-
     transform: none;
-
     pointer-events: auto;
-
     background-color: transparent;
-
     box-shadow: none;
-
     padding: 0;
-
     padding-left: 1.5rem; /* Indentación para mostrar jerarquía */
-
     max-width: none;
-
     max-height: none;
-
     border-radius: 0;
-
     margin-top: 0.5rem;
-
     display: none; /* Ocultamos por defecto */
-
   }
-
-
 
   /* Mostramos el dropdown que sigue a un divisor seleccionado */
-
   .dashboard-menu .menu-divider.selected + .dropdown {
-
-      display: block;
-
+    gap: 5px;
+    display: flex;
+    flex-direction: column;
   }
 
-
-
   /* Los items dentro del dropdown */
-
   .dashboard-menu .dropdown .menu-item a {
-
+    gap: 0.75rem;
+    display: flex;
+    color: var(--color-gurkha-700);
+    text-decoration: none;
     padding: 0.5rem 1rem;
-
+    background-color: transparent;
+    border-radius: 0.5rem;
+    border-left: 3px solid transparent;
+    transition: background-color 0.3s ease, border-left-color 0.3s ease;
   }
 
   .dashboard-menu .dropdown .menu-item a:hover {
-
-    border-left-color: var(--color-kaitoke-green-500);
-
+    background-color: white;
+    border-left: 3px solid var(--color-gurkha-200);
   }
 
 

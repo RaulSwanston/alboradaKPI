@@ -1,9 +1,13 @@
 /**
  * i18n.js
- * Sistema básico de internacionalización para rutas.
+ * Sistema de internacionalización dinámico.
+ * Maneja traducción de rutas y carga de diccionarios de contenido desde archivos JSON.
  */
 
-const translations = {
+let currentTranslations = {};
+let currentLang = 'es';
+
+const routeMaps = {
   es: {
     '/dashboard/requests': '/dashboard/solicitudes',
     '/dashboard/profile': '/dashboard/perfil',
@@ -14,32 +18,66 @@ const translations = {
 };
 
 /**
- * Traduce una URL amigable a su ruta interna buscando en TODOS los idiomas disponibles.
- * Esto hace que el sistema sea agnóstico al idioma configurado y "simplemente funcione".
+ * Carga el archivo de traducciones para un idioma específico.
+ * @param {string} lang - Código del idioma (ej. 'es', 'en').
+ */
+export async function loadTranslations(lang = 'es') {
+  if (currentLang === lang && Object.keys(currentTranslations).length > 0) return;
+
+  try {
+    const response = await fetch(`/app/core/lang/${lang}/translations.json`);
+    if (!response.ok) throw new Error(`No se pudo cargar el idioma: ${lang}`);
+    currentTranslations = await response.json();
+    currentLang = lang;
+    console.log(`🌍 Idioma cargado: ${lang}`);
+  } catch (error) {
+    console.error("❌ Error en i18n:", error);
+    // Fallback: Si no hay traducciones, al menos inicializamos el objeto
+    currentTranslations = currentTranslations || {};
+  }
+}
+
+/**
+ * Traduce una clave de contenido. Soporta claves anidadas (ej. 'config.languages.es').
+ * @param {string} key - La clave a traducir.
+ * @returns {string} - El texto traducido o la clave si no existe.
+ */
+export function t(key) {
+  const keys = key.split('.');
+  let value = currentTranslations;
+
+  for (const k of keys) {
+    value = value?.[k];
+    if (!value) break;
+  }
+
+  return value || key;
+}
+
+/**
+ * Traduce una URL amigable a su ruta interna.
  */
 export function getInternalPath(path) {
-  // Buscamos en todos los idiomas registrados en el objeto translations
-  for (const lang of Object.keys(translations)) {
-    const map = translations[lang];
-    
+  for (const lang of Object.keys(routeMaps)) {
+    const map = routeMaps[lang];
     for (const [internal, friendly] of Object.entries(map)) {
       const regex = new RegExp('^' + friendly.replace(/:(\w+)/g, '([^\\/]+)') + '$');
-      if (path.match(regex)) {
-        return internal;
-      }
+      if (path.match(regex)) return internal;
     }
   }
-  
-  // Si no es un alias, devolvemos el path original (podría ser la ruta en inglés)
   return path;
 }
 
 /**
- * Traduce una ruta interna a su URL amigable para el usuario.
- * @param {string} internalPath - La ruta interna (ej. /dashboard/requests).
- * @param {string} lang - El idioma deseado.
- * @returns {string} - La URL traducida.
+ * Traduce una ruta interna a su URL amigable.
  */
 export function getFriendlyPath(internalPath, lang = 'es') {
-  return translations[lang]?.[internalPath] || internalPath;
+  return routeMaps[lang]?.[internalPath] || internalPath;
+}
+
+/**
+ * Obtiene el idioma cargado actualmente.
+ */
+export function getCurrentLang() {
+    return currentLang;
 }

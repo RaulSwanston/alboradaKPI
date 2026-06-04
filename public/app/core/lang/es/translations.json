@@ -1,0 +1,76 @@
+{
+  "config": {
+    "languages": {
+      "es": "Español",
+      "en": "Inglés"
+    },
+    "currencies": {
+      "usd": "Dólar Estadounidense (USD)",
+      "pab": "Balboa Panameño (PAB)"
+    }
+  },
+  "financialSummary": { "title": "Resumen Financiero" },
+  "recentActivity": { "title": "Actividad Reciente" },
+  "configManager": { 
+    "title": "Configuración del Sistema",
+    "tabs": {
+      "general": "General",
+      "roles": "Roles",
+      "views": "Vistas"
+    },
+    "general": {
+      "title": "Ajustes Generales",
+      "appName": "Nombre de la Aplicación",
+      "appLogo": "Logo de la Aplicación",
+      "logoInstructions": "Arrastra la imagen aquí o búscala en tu dispositivo",
+      "browseImage": "Buscar Imagen",
+      "logoUrlPlaceholder": "Pega la dirección URL de la imagen aquí",
+      "mainLanguage": "Idioma Principal",
+      "systemCurrency": "Moneda del Sistema"
+    },
+    "roles": {
+      "title": "Roles y Permisos",
+      "addRole": "Añadir Rol",
+      "loading": "Cargando matriz de permisos...",
+      "moduleColumn": "Módulo",
+      "userManagementTitle": "Asignación de Roles a Usuarios",
+      "searchPlaceholder": "Buscar usuario por email o nombre...",
+      "noUsersFound": "No se encontraron usuarios.",
+      "roleLabel": "Rol:",
+      "saveRole": "Actualizar Rol"
+    },
+    "views": {
+      "title": "Cascada de Módulos",
+      "selectView": "Seleccionar Vista",
+      "noModules": "No hay módulos definidos.",
+      "selectViewPrompt": "Selecciona una vista."
+    },
+    "actions": {
+      "save": "Publicar Configuración",
+      "saving": "Guardando...",
+      "success": "Configuración guardada localmente",
+      "reset": "Reestablecer Predeterminados",
+      "resetConfirm": "¿Estás seguro de que deseas reestablecer todos los valores? Se perderán los cambios no publicados."
+    },
+    "capabilities": {
+      "residents": {
+        "viewAll": "Ver todos los residentes",
+        "create": "Crear nuevos residentes",
+        "delete": "Eliminar residentes",
+        "editProfile": "Editar perfiles propios"
+      },
+      "transactions": {
+        "viewAll": "Ver historial completo",
+        "approve": "Aprobar pagos reportados",
+        "manualCharge": "Generar cargos manuales"
+      },
+      "properties": {
+        "viewAll": "Ver todas las propiedades",
+        "editBalance": "Ajustar saldos manualmente"
+      },
+      "financial": {
+        "viewGlobal": "Ver resumen financiero global"
+      }
+    }
+  }
+}

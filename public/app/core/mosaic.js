@@ -1,3 +1,5 @@
+import { t } from './i18n.js';
+
 export class Mosaic {
   constructor() {
     this.appView = document.getElementById('app-view');
@@ -11,7 +13,8 @@ export class Mosaic {
       MODULE: 'module',
       CONTENT: 'content',
       CSS: 'css',
-      CONTROLLER: 'controller' // NUEVO: Añadimos la directiva del controlador.
+      CONTROLLER: 'controller',
+      I18N: 'i18n'
     };
 
     // Pre-compilamos las expresiones regulares para eficiencia (soporte para guion medio)
@@ -20,7 +23,8 @@ export class Mosaic {
       module: new RegExp(`<!-- ::${this.directives.MODULE}\\.([\\w\\.-]+) -->`, 'g'),
       content: new RegExp(`<!-- ::${this.directives.CONTENT} -->`),
       css: new RegExp(`<!-- ::${this.directives.CSS}\\.([\\w\\.-]+) -->`, 'g'),
-      controller: new RegExp(`<!-- ::${this.directives.CONTROLLER}\\.([\\w\\.-]+) -->`, 'g')
+      controller: new RegExp(`<!-- ::${this.directives.CONTROLLER}\\.([\\w\\.-]+) -->`, 'g'),
+      i18n: new RegExp(`<!-- ::${this.directives.I18N}\\.([\\w\\.-]+) -->`, 'g')
     };
   }
 
@@ -120,10 +124,18 @@ export class Mosaic {
       if (iterations === MAX_ITERATIONS) {
         console.warn('Mosaic: Se alcanzó el límite máximo de iteraciones.');
       }
+
+      // 6. Procesar Traducciones i18n (NUEVO)
+      // Esto reemplaza marcadores del tipo <!-- ::i18n.modulo.clave --> por su texto traducido.
+      if (this.regex.i18n) {
+        currentHtml = currentHtml.replace(this.regex.i18n, (match, key) => {
+          return t(key);
+        });
+      }
       
       console.log(`✅ Vista ${viewUrl} compuesta exitosamente (con auto-discovery).`);
 
-      // 6. Devolver paquete de renderizado final
+      // 7. Devolver paquete de renderizado final
       return {
         finalHtml: currentHtml,
         cssUrls: [...cssUrls],

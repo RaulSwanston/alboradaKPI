@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "secondary": "#006c49",
+                        "inverse-primary": "#bcc7de",
+                        "inverse-surface": "#213145",
+                        "on-tertiary-fixed": "#191c1e",
+                        "surface-variant": "#d3e4fe",
+                        "error-container": "#ffdad6",
+                        "primary": "#091426",
+                        "inverse-on-surface": "#eaf1ff",
+                        "on-tertiary-container": "#8d9092",
+                        "surface-tint": "#545f73",
+                        "surface-container-highest": "#d3e4fe",
+                        "surface-container-low": "#eff4ff",
+                        "tertiary-fixed-dim": "#c4c7c9",
+                        "on-tertiary": "#ffffff",
+                        "outline": "#75777d",
+                        "surface-container": "#e5eeff",
+                        "primary-fixed-dim": "#bcc7de",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed": "#d8e3fb",
+                        "on-error-container": "#93000a",
+                        "secondary-container": "#6cf8bb",
+                        "tertiary": "#111516",
+                        "on-primary-fixed-variant": "#3c475a",
+                        "on-surface": "#0b1c30",
+                        "on-tertiary-fixed-variant": "#444749",
+                        "surface-dim": "#cbdbf5",
+                        "surface-bright": "#f8f9ff",
+                        "on-primary": "#ffffff",
+                        "surface": "#f8f9ff",
+                        "on-secondary-fixed": "#002113",
+                        "background": "#f8f9ff",
+                        "on-surface-variant": "#45474c",
+                        "tertiary-container": "#26292b",
+                        "tertiary-fixed": "#e0e3e5",
+                        "secondary-fixed-dim": "#4edea3",
+                        "surface-container-lowest": "#ffffff",
+                        "secondary-fixed": "#6ffbbe",
+                        "error": "#ba1a1a",
+                        "on-error": "#ffffff",
+                        "on-secondary-fixed-variant": "#005236",
+                        "on-background": "#0b1c30",
+                        "primary-container": "#1e293b",
+                        "on-secondary-container": "#00714d",
+                        "on-primary-container": "#8590a6",
+                        "outline-variant": "#c5c6cd",
+                        "surface-container-high": "#dce9ff",
+                        "on-primary-fixed": "#111c2d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    "spacing": {
+                        "gutter": "24px",
+                        "unit": "4px",
+                        "sidebar_width": "280px",
+                        "container_max": "1440px",
+                        "margin": "32px"
+                    },
+                    "fontFamily": {
+                        "mono-data": ["JetBrains Mono"],
+                        "display-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-sm": ["Inter"],
+                        "label-caps": ["Inter"],
+                        "headline-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "mono-data": ["13px", {"lineHeight": "18px", "fontWeight": "500"}],
+                        "display-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-md": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "body-lg": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "headline-sm": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "700"}],
+                        "headline-md": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "600"}]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        body { -webkit-tap-highlight-color: transparent; }
+        .active-tab { border-bottom: 2px solid #006c49; color: #091426; }
+        .drag-handle { cursor: grab; }
+        .drag-handle:active { cursor: grabbing; }
+        .glass-header { backdrop-filter: blur(12px); background: rgba(248, 249, 255, 0.8); }
+        .permission-pill-read { background: #f1f5f9; color: #475569; }
+        .permission-pill-write { background: #e0e7ff; color: #4338ca; }
+        .permission-pill-delete { background: #fee2e2; color: #b91c1c; }
+        .permission-pill-admin { background: #6cf8bb; color: #005236; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="fixed top-0 left-0 w-full z-50 flex justify-between items-center h-16 px-gutter bg-surface dark:bg-primary border-b border-outline-variant dark:border-outline flat no shadows">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center overflow-hidden border border-outline-variant">
+<img alt="Super-Admin Profile Avatar" class="w-full h-full object-cover" data-alt="A professional close-up portrait of a high-level systems administrator in a modern office. The lighting is crisp and clean, reflecting a high-contrast corporate aesthetic with subtle emerald green highlights in the background. The man wears a dark suit, projecting authority, precision, and vigilance. The overall mood is serious and focused, matching a mission control atmosphere." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCSHmwAqF7J047G4-Z38FxoV4-bCtgfPMEAc7l16uEfbYQM5Fld2Af36NiLej4E8c8wNA4d3cM0TjIOTAZmwxaXgSaTw8rPdeVqsTDwAk3_HBR1WIe3RH61nIIzAidFRE13ErTaWbVN9URUWGjR9AtspCyYTkiYF0p5nLXdhiiCSybdODXhtuhl6CDQgBv40iXExJ4Py4BZHke_cfUQ8z2BxXjHVH1Hx2zzgMhl_3WRU43suz-90MMxvHkoFkWpxvYtRp374gIlh4g"/>
+</div>
+<h1 class="text-headline-md font-headline-md font-bold text-primary dark:text-inverse-primary">Control Master</h1>
+</div>
+<div class="flex items-center">
+<button class="p-2 rounded-full hover:bg-surface-container-low dark:hover:bg-primary-container text-on-surface-variant dark:text-on-primary-container">
+<span class="material-symbols-outlined" data-icon="sensors">sensors</span>
+</button>
+</div>
+</header>
+<!-- Content Area -->
+<main class="flex-1 mt-16 mb-20 overflow-y-auto px-4 py-6">
+<!-- Segmented Controls (Tabs) -->
+<div class="bg-surface-container-low p-1 rounded-xl flex mb-6">
+<button class="flex-1 py-2 text-label-caps font-label-caps text-center rounded-lg bg-surface shadow-sm text-primary transition-all duration-200" id="tab-resident">
+                PORTAL RESIDENTE
+            </button>
+<button class="flex-1 py-2 text-label-caps font-label-caps text-center text-on-surface-variant hover:text-primary transition-all duration-200" id="tab-admin">
+                PORTAL ADMIN
+            </button>
+</div>
+<section class="space-y-4" id="module-list">
+<div class="flex items-center justify-between mb-2 px-1">
+<h2 class="text-headline-sm font-headline-sm text-primary">Módulos Activos</h2>
+<span class="text-mono-data text-on-surface-variant px-2 py-1 bg-surface-container rounded">3 TOTAL</span>
+</div>
+<!-- Module Card: Gastos Comunes -->
+<div class="bg-surface-container-lowest border border-outline-variant p-4 rounded-xl flex items-center justify-between shadow-sm hover:shadow-md transition-all">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant drag-handle" data-icon="drag_indicator">drag_indicator</span>
+<div class="flex flex-col">
+<span class="text-body-lg font-semibold text-primary">Gastos Comunes</span>
+<span class="text-label-caps font-label-caps text-on-surface-variant">FINANZAS</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-high rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+</label>
+<span class="material-symbols-outlined text-secondary" data-icon="visibility">visibility</span>
+</div>
+</div>
+<!-- Module Card: Reservas -->
+<div class="bg-surface-container-lowest border border-outline-variant p-4 rounded-xl flex items-center justify-between shadow-sm hover:shadow-md transition-all">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant drag-handle" data-icon="drag_indicator">drag_indicator</span>
+<div class="flex flex-col">
+<span class="text-body-lg font-semibold text-primary">Reservas</span>
+<span class="text-label-caps font-label-caps text-on-surface-variant">AMENIDADES</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<label class="relative inline-flex items-center cursor-pointer">
+<input checked="" class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-high rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+</label>
+<span class="material-symbols-outlined text-secondary" data-icon="visibility">visibility</span>
+</div>
+</div>
+<!-- Module Card: Chat Directo -->
+<div class="bg-surface-container-lowest border border-outline-variant p-4 rounded-xl flex items-center justify-between shadow-sm hover:shadow-md transition-all">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant drag-handle" data-icon="drag_indicator">drag_indicator</span>
+<div class="flex flex-col">
+<span class="text-body-lg font-semibold text-primary">Chat Directo</span>
+<span class="text-label-caps font-label-caps text-on-surface-variant">COMUNICACIÓN</span>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<label class="relative inline-flex items-center cursor-pointer">
+<input class="sr-only peer" type="checkbox"/>
+<div class="w-11 h-6 bg-surface-container-high rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-secondary"></div>
+</label>
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="visibility_off">visibility_off</span>
+</div>
+</div>
+</section>
+<!-- Granular Logic Section -->
+<section class="mt-10">
+<div class="flex items-center gap-2 mb-4">
+<span class="material-symbols-outlined text-primary" data-icon="shield_person">shield_person</span>
+<h3 class="text-headline-sm font-headline-sm text-primary">Lógica de Acción Granular</h3>
+</div>
+<div class="bg-primary-container p-5 rounded-2xl shadow-inner border border-outline">
+<div class="flex items-center justify-between mb-4">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-lg bg-secondary-container flex items-center justify-center">
+<span class="material-symbols-outlined text-on-secondary-container" data-icon="badge">badge</span>
+</div>
+<div>
+<p class="text-on-primary-container text-body-md font-semibold">Rol: Conserje</p>
+<p class="text-on-primary-container opacity-60 text-label-caps">CONFIGURACIÓN ESPECÍFICA</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-on-primary-container opacity-40" data-icon="settings">settings</span>
+</div>
+<div class="space-y-3">
+<div class="flex items-center justify-between bg-primary p-3 rounded-xl">
+<span class="text-on-primary text-body-md">Ver Reportes</span>
+<div class="flex gap-1">
+<span class="text-[10px] px-2 py-0.5 rounded-full permission-pill-admin font-bold">MINT</span>
+<span class="material-symbols-outlined text-secondary-fixed text-sm" data-icon="check_circle" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</div>
+<div class="flex items-center justify-between bg-primary p-3 rounded-xl opacity-50">
+<span class="text-on-primary text-body-md">Borrar Transacciones</span>
+<div class="flex gap-1">
+<span class="text-[10px] px-2 py-0.5 rounded-full bg-error text-on-error font-bold">BLOCK</span>
+<span class="material-symbols-outlined text-error text-sm" data-icon="cancel" style="font-variation-settings: 'FILL' 1;">cancel</span>
+</div>
+</div>
+</div>
+<button class="w-full mt-4 py-3 bg-secondary text-on-secondary rounded-xl font-bold flex items-center justify-center gap-2 hover:bg-on-secondary-fixed-variant transition-colors">
+<span class="material-symbols-outlined text-sm" data-icon="add_moderator">add_moderator</span>
+                    AÑADIR EXCEPCIÓN
+                </button>
+</div>
+</section>
+<!-- System Health Mini Dashboard -->
+<section class="mt-8 mb-6">
+<h4 class="text-label-caps font-label-caps text-on-surface-variant mb-3">ESTADO DEL SERVIDOR</h4>
+<div class="bg-surface-container p-4 rounded-xl">
+<div class="flex justify-between items-center mb-1">
+<span class="text-mono-data text-primary">Sincronización de Módulos</span>
+<span class="text-mono-data text-secondary">92%</span>
+</div>
+<div class="w-full h-2 bg-surface-variant rounded-full overflow-hidden">
+<div class="h-full bg-secondary transition-all duration-1000" style="width: 92%;"></div>
+</div>
+</div>
+</section>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 left-0 w-full z-50 flex justify-around items-center h-20 px-2 pb-safe bg-surface dark:bg-primary border-t border-outline-variant dark:border-outline shadow-lg">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-primary-container hover:text-secondary dark:hover:text-secondary-fixed" href="#">
+<span class="material-symbols-outlined" data-icon="admin_panel_settings">admin_panel_settings</span>
+<span class="font-label-caps text-label-caps">Gobernanza</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-primary-container hover:text-secondary dark:hover:text-secondary-fixed" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-label-caps text-label-caps">Identidad</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-on-secondary-fixed-variant text-on-secondary-container dark:text-secondary-fixed rounded-full px-4 py-1 scale-95 transition-transform duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="settings_input_component" style="font-variation-settings: 'FILL' 1;">settings_input_component</span>
+<span class="font-label-caps text-label-caps">Módulos</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-on-primary-container hover:text-secondary dark:hover:text-secondary-fixed" href="#">
+<span class="material-symbols-outlined" data-icon="history_edu">history_edu</span>
+<span class="font-label-caps text-label-caps">Auditoría</span>
+</a>
+</nav>
+<script>
+        // Tab switching micro-interaction
+        const tabResident = document.getElementById('tab-resident');
+        const tabAdmin = document.getElementById('tab-admin');
+
+        tabResident.addEventListener('click', () => {
+            tabResident.classList.add('bg-surface', 'shadow-sm', 'text-primary');
+            tabResident.classList.remove('text-on-surface-variant');
+            tabAdmin.classList.remove('bg-surface', 'shadow-sm', 'text-primary');
+            tabAdmin.classList.add('text-on-surface-variant');
+        });
+
+        tabAdmin.addEventListener('click', () => {
+            tabAdmin.classList.add('bg-surface', 'shadow-sm', 'text-primary');
+            tabAdmin.classList.remove('text-on-surface-variant');
+            tabResident.classList.remove('bg-surface', 'shadow-sm', 'text-primary');
+            tabResident.classList.add('text-on-surface-variant');
+        });
+
+        // Toggle visibility logic
+        document.querySelectorAll('input[type="checkbox"]').forEach(toggle => {
+            toggle.addEventListener('change', (e) => {
+                const icon = e.target.closest('div').querySelector('.material-symbols-outlined');
+                if (e.target.checked) {
+                    icon.innerText = 'visibility';
+                    icon.classList.replace('text-on-surface-variant', 'text-secondary');
+                } else {
+                    icon.innerText = 'visibility_off';
+                    icon.classList.replace('text-secondary', 'text-on-surface-variant');
+                }
+            });
+        });
+    </script>
+</body></html>

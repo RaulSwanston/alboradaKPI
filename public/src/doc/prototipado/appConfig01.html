@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0, viewport-fit=cover" name="viewport"/>
+<title>Mosaic Config Manager</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-secondary-fixed": "#1f1c05",
+                    "on-secondary-fixed-variant": "#4c472c",
+                    "inverse-primary": "#96d4b3",
+                    "on-error": "#ffffff",
+                    "surface-bright": "#fcf9f8",
+                    "inverse-on-surface": "#f3f0ef",
+                    "surface-tint": "#2d694f",
+                    "primary": "#002f1e",
+                    "on-tertiary-container": "#e39590",
+                    "tertiary-fixed": "#ffdad7",
+                    "surface-container-high": "#eae7e7",
+                    "surface-container": "#f0eded",
+                    "on-primary": "#ffffff",
+                    "tertiary-container": "#652d2b",
+                    "primary-container": "#004830",
+                    "surface": "#fcf9f8",
+                    "primary-fixed-dim": "#96d4b3",
+                    "surface-container-low": "#f6f3f2",
+                    "surface-container-lowest": "#ffffff",
+                    "outline-variant": "#bfc9c1",
+                    "on-tertiary-fixed": "#390b0b",
+                    "secondary-fixed": "#ece3be",
+                    "surface-variant": "#e5e2e1",
+                    "on-tertiary-fixed-variant": "#703533",
+                    "secondary-fixed-dim": "#cfc7a4",
+                    "on-secondary-container": "#6b6548",
+                    "error": "#ba1a1a",
+                    "on-primary-fixed-variant": "#0f5138",
+                    "on-surface": "#1c1b1b",
+                    "on-error-container": "#93000a",
+                    "on-primary-container": "#79b697",
+                    "outline": "#707973",
+                    "on-tertiary": "#ffffff",
+                    "tertiary": "#4a1817",
+                    "on-background": "#1c1b1b",
+                    "primary-fixed": "#b1f0ce",
+                    "inverse-surface": "#313030",
+                    "on-primary-fixed": "#002114",
+                    "background": "#fcf9f8",
+                    "secondary-container": "#ece3be",
+                    "on-surface-variant": "#404943",
+                    "on-secondary": "#ffffff",
+                    "secondary": "#645f42",
+                    "error-container": "#ffdad6",
+                    "tertiary-fixed-dim": "#ffb3af",
+                    "surface-dim": "#dcd9d9",
+                    "surface-container-highest": "#e5e2e1",
+                    "gurkha": "#989171",
+                    "kaitoke-green": "#004830",
+                    "solid-pink": "#893843"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "unit": "4px",
+                    "margin-desktop": "32px",
+                    "lg": "24px",
+                    "xs": "4px",
+                    "sm": "8px",
+                    "gutter": "20px",
+                    "margin-mobile": "16px",
+                    "md": "16px",
+                    "xl": "40px"
+            },
+            "fontFamily": {
+                    "display-lg": ["Inter"],
+                    "label-md": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "body-md": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "label-sm": ["Inter"]
+            },
+            "fontSize": {
+                    "display-lg": ["48px", {"lineHeight": "1.1", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "label-md": ["14px", {"lineHeight": "1.4", "letterSpacing": "0.01em", "fontWeight": "500"}],
+                    "body-lg": ["18px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "1.2", "fontWeight": "600"}],
+                    "body-md": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                    "label-sm": ["12px", {"lineHeight": "1.4", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #989171; /* Gurkha base */
+            background-image: radial-gradient(#ffffff 0.5px, transparent 0.5px);
+            background-size: 20px 20px;
+            font-family: 'Inter', sans-serif;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .card {
+            background: #ffffff;
+            border-radius: 8px;
+            border: 1px solid rgba(152, 145, 113, 0.1);
+            box-shadow: 0px 4px 12px rgba(0, 0, 0, 0.05);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .draggable-active {
+            transform: scale(1.02);
+            box-shadow: 0px 12px 32px rgba(0, 0, 0, 0.12);
+            z-index: 10;
+        }
+        .custom-checkbox {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border: 2px solid #989171;
+            border-radius: 4px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .custom-checkbox:checked {
+            background-color: #004830;
+            border-color: #004830;
+        }
+        .custom-checkbox:checked::after {
+            content: 'check';
+            font-family: 'Material Symbols Outlined';
+            font-size: 14px;
+            color: white;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 44px;
+            height: 24px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #e5e2e1;
+            transition: .4s;
+            border-radius: 24px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: .4s;
+            border-radius: 50%;
+        }
+        input:checked + .slider { background-color: #004830; }
+        input:checked + .slider:before { transform: translateX(20px); }
+
+        .hide-scroll::-webkit-scrollbar { display: none; }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="min-h-screen pb-24">
+<!-- TopAppBar -->
+<header class="fixed top-0 w-full z-50 bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-on-surface-variant flex justify-between items-center px-margin-mobile h-16">
+<div class="flex items-center gap-4">
+<button class="material-symbols-outlined text-primary dark:text-primary-fixed hover:bg-surface-container transition-colors active:scale-95 duration-150 p-2">menu</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">configManager</h1>
+</div>
+<button class="material-symbols-outlined text-primary dark:text-primary-fixed hover:bg-surface-container transition-colors active:scale-95 duration-150 p-2">settings</button>
+</header>
+<main class="pt-20 px-4 flex flex-col gap-6 max-w-lg mx-auto">
+<!-- Visual Identity (Branding) -->
+<section class="card p-md">
+<h2 class="font-headline-md text-headline-md text-primary mb-4">Visual Identity</h2>
+<div class="space-y-4">
+<div class="flex flex-col">
+<label class="font-label-sm text-label-sm text-on-surface-variant mb-1">App Name</label>
+<input class="bg-[#F2F0E9] border-b-2 border-gurkha px-2 py-2 focus:border-kaitoke-green focus:outline-none font-body-md text-body-md" type="text" value="Mosaic Engine"/>
+</div>
+<div class="flex flex-col">
+<label class="font-label-sm text-label-sm text-on-surface-variant mb-2">Primary Brand Color</label>
+<div class="flex gap-3">
+<button class="w-10 h-10 rounded-full bg-kaitoke-green border-2 border-white ring-2 ring-kaitoke-green"></button>
+<button class="w-10 h-10 rounded-full bg-[#004830] opacity-80"></button>
+<button class="w-10 h-10 rounded-full bg-[#2d694f]"></button>
+<button class="w-10 h-10 rounded-full bg-[#79b697]"></button>
+<div class="flex-1"></div>
+<div class="font-label-sm text-label-sm bg-surface-container px-3 py-2 rounded-xl flex items-center">#004830</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Roles & Permissions Matrix -->
+<section class="card p-md overflow-hidden">
+<h2 class="font-headline-md text-headline-md text-primary mb-4">Roles &amp; Permissions</h2>
+<div class="overflow-x-auto hide-scroll -mx-md px-md">
+<table class="w-full min-w-[400px]">
+<thead>
+<tr class="text-left border-b border-gurkha border-opacity-20">
+<th class="py-3 font-label-sm text-label-sm text-on-surface-variant">MODULE</th>
+<th class="py-3 font-label-sm text-label-sm text-on-surface-variant text-center">VIEW</th>
+<th class="py-3 font-label-sm text-label-sm text-on-surface-variant text-center">CREATE</th>
+<th class="py-3 font-label-sm text-label-sm text-on-surface-variant text-center">EDIT</th>
+<th class="py-3 font-label-sm text-label-sm text-on-surface-variant text-center">DEL</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-gurkha divide-opacity-10">
+<tr>
+<td class="py-4 font-body-md text-body-md">Financial Summary</td>
+<td class="text-center"><input checked="" class="custom-checkbox" type="checkbox"/></td>
+<td class="text-center"><input checked="" class="custom-checkbox" type="checkbox"/></td>
+<td class="text-center"><input class="custom-checkbox" type="checkbox"/></td>
+<td class="text-center"><input class="custom-checkbox" type="checkbox"/></td>
+</tr>
+<tr>
+<td class="py-4 font-body-md text-body-md">Recent Activity</td>
+<td class="text-center"><input checked="" class="custom-checkbox" type="checkbox"/></td>
+<td class="text-center"><input checked="" class="custom-checkbox" type="checkbox"/></td>
+<td class="text-center"><input checked="" class="custom-checkbox" type="checkbox"/></td>
+<td class="text-center"><input class="custom-checkbox" type="checkbox"/></td>
+</tr>
+<tr>
+<td class="py-4 font-body-md text-body-md">Payment Report</td>
+<td class="text-center"><input checked="" class="custom-checkbox" type="checkbox"/></td>
+<td class="text-center"><input class="custom-checkbox" type="checkbox"/></td>
+<td class="text-center"><input class="custom-checkbox" type="checkbox"/></td>
+<td class="text-center"><input class="custom-checkbox" type="checkbox"/></td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="mt-4 flex gap-2">
+<span class="px-3 py-1 bg-secondary-container text-on-secondary-container rounded-full font-label-sm text-label-sm">Admin</span>
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-full font-label-sm text-label-sm">Resident</span>
+<span class="px-3 py-1 bg-surface-container text-on-surface-variant rounded-full font-label-sm text-label-sm">Visitor</span>
+</div>
+</section>
+<!-- Module Cascade (Order) -->
+<section>
+<div class="flex justify-between items-end mb-4 px-1">
+<h2 class="font-headline-md text-headline-md text-primary">Module Cascade</h2>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Drag to reorder</span>
+</div>
+<div class="flex flex-col gap-3" id="draggable-list">
+<div class="card p-4 flex items-center gap-4 cursor-grab active:cursor-grabbing hover:bg-surface-container transition-all" draggable="true">
+<span class="material-symbols-outlined text-gurkha">drag_indicator</span>
+<div class="flex-1">
+<p class="font-body-md text-body-md font-semibold text-primary">Financial Summary</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Main dashboard widget</p>
+</div>
+<label class="switch">
+<input checked="" type="checkbox"/>
+<span class="slider"></span>
+</label>
+</div>
+<div class="card p-4 flex items-center gap-4 cursor-grab active:cursor-grabbing hover:bg-surface-container transition-all" draggable="true">
+<span class="material-symbols-outlined text-gurkha">drag_indicator</span>
+<div class="flex-1">
+<p class="font-body-md text-body-md font-semibold text-primary">Recent Activity</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Live event stream</p>
+</div>
+<label class="switch">
+<input checked="" type="checkbox"/>
+<span class="slider"></span>
+</label>
+</div>
+<div class="card p-4 flex items-center gap-4 cursor-grab active:cursor-grabbing hover:bg-surface-container transition-all" draggable="true">
+<span class="material-symbols-outlined text-gurkha">drag_indicator</span>
+<div class="flex-1">
+<p class="font-body-md text-body-md font-semibold text-primary">Payment Report</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Monthly revenue breakdown</p>
+</div>
+<label class="switch">
+<input type="checkbox"/>
+<span class="slider"></span>
+</label>
+</div>
+</div>
+</section>
+<!-- System Preferences -->
+<section class="card p-md">
+<h2 class="font-headline-md text-headline-md text-primary mb-4">System Preferences</h2>
+<div class="space-y-6">
+<div class="grid grid-cols-2 gap-4">
+<div class="flex flex-col">
+<label class="font-label-sm text-label-sm text-on-surface-variant mb-1">Language</label>
+<select class="bg-[#F2F0E9] border-b-2 border-gurkha px-2 py-2 focus:border-kaitoke-green focus:outline-none font-body-md text-body-md rounded-t-sm">
+<option>Inglés</option>
+<option>Español</option>
+</select>
+</div>
+<div class="flex flex-col">
+<label class="font-label-sm text-label-sm text-on-surface-variant mb-1">Currency</label>
+<select class="bg-[#F2F0E9] border-b-2 border-gurkha px-2 py-2 focus:border-kaitoke-green focus:outline-none font-body-md text-body-md rounded-t-sm">
+<option>USD</option>
+<option>EUR</option>
+</select>
+</div>
+</div>
+<div class="flex items-center justify-between p-3 bg-tertiary-fixed rounded-lg">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-solid-pink">warning</span>
+<div>
+<p class="font-body-md text-body-md font-bold text-tertiary">Maintenance Mode</p>
+<p class="font-label-sm text-label-sm text-on-tertiary-fixed-variant">Restrict access to admins</p>
+</div>
+</div>
+<label class="switch">
+<input type="checkbox"/>
+<span class="slider !bg-on-tertiary-fixed-variant"></span>
+</label>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-sm text-label-sm text-on-surface-variant">Interface Theme</label>
+<div class="flex bg-surface-container-high rounded-full p-1">
+<button class="flex-1 py-2 rounded-full bg-white shadow-sm font-label-sm text-label-sm text-primary">Claro</button>
+<button class="flex-1 py-2 rounded-full font-label-sm text-label-sm text-on-surface-variant">Oscuro</button>
+<button class="flex-1 py-2 rounded-full font-label-sm text-label-sm text-on-surface-variant">Sistema</button>
+</div>
+</div>
+</div>
+</section>
+<!-- Save Button -->
+<button class="w-full bg-kaitoke-green text-white py-4 rounded-xl font-headline-md text-headline-md flex items-center justify-center gap-2 active:scale-95 transition-transform border-b-4 border-[#002114]">
+<span class="material-symbols-outlined">save</span>
+            Deploy Configuration
+        </button>
+</main>
+<!-- BottomNavBar -->
+<nav class="fixed bottom-0 w-full z-50 bg-surface dark:bg-inverse-surface h-20 pb-safe px-4 flex justify-around items-center rounded-t-lg shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.1)]">
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="font-label-caps text-label-sm">Inventory</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">supervisor_account</span>
+<span class="font-label-caps text-label-sm">Users</span>
+</a>
+<a class="flex flex-col items-center justify-center bg-secondary-container dark:bg-on-secondary-fixed-variant text-on-secondary-container dark:text-secondary-fixed rounded-xl px-4 py-2" href="#">
+<span class="material-symbols-outlined">rule</span>
+<span class="font-label-caps text-label-sm">Rules</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant dark:text-surface-variant hover:text-primary transition-all" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-label-caps text-label-sm">Audit</span>
+</a>
+</nav>
+<script>
+        // Micro-interactions for draggable cards
+        const draggables = document.querySelectorAll('[draggable="true"]');
+        draggables.forEach(draggable => {
+            draggable.addEventListener('dragstart', () => {
+                draggable.classList.add('draggable-active');
+            });
+
+            draggable.addEventListener('dragend', () => {
+                draggable.classList.remove('draggable-active');
+            });
+        });
+
+        // Theme switcher toggle simulation
+        const themeButtons = document.querySelectorAll('.bg-surface-container-high button');
+        themeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                themeButtons.forEach(b => {
+                    b.classList.remove('bg-white', 'shadow-sm', 'text-primary');
+                    b.classList.add('text-on-surface-variant');
+                });
+                btn.classList.add('bg-white', 'shadow-sm', 'text-primary');
+                btn.classList.remove('text-on-surface-variant');
+            });
+        });
+    </script>
+</body></html>

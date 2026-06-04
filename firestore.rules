@@ -24,7 +24,7 @@ service cloud.firestore {
     // Perfiles de Usuario
     match /users/{userId} {
       allow read: if isAdmin() || isOwner(userId);
-      allow update: if isOwner(userId);
+      allow update: if isAdmin() || isOwner(userId);
       allow create: if request.auth != null;
     }
 

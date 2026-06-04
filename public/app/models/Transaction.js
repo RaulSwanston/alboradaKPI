@@ -14,9 +14,14 @@ export default class Transaction {
    */
   static async create(data, initiator = { type: 'SYSTEM', name: 'Sistema' }) {
     try {
+      const effectiveDate = data.effectiveDate || new Date();
+      const dateObj = effectiveDate instanceof Date ? effectiveDate : (effectiveDate.toDate ? effectiveDate.toDate() : new Date(effectiveDate));
+      
       const transData = {
         ...data,
+        effectiveDate: dateObj,
         createdAt: serverTimestamp(),
+        period: `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}`,
         status: data.propertyId === '__UNIDENTIFIED__' ? 'unidentified' : (data.status || 'verified')
       };
 
@@ -50,8 +55,17 @@ export default class Transaction {
    */
   static async update(id, data, initiator = { type: 'SYSTEM', name: 'Sistema' }) {
     try {
+      const updateData = { ...data, updatedAt: serverTimestamp() };
+      
+      // Si se está actualizando la fecha, recalculamos el periodo y aseguramos objeto Date
+      if (data.effectiveDate) {
+        const dateObj = data.effectiveDate instanceof Date ? data.effectiveDate : (data.effectiveDate.toDate ? data.effectiveDate.toDate() : new Date(data.effectiveDate));
+        updateData.effectiveDate = dateObj;
+        updateData.period = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}`;
+      }
+
       const docRef = doc(db, "transactions", id);
-      await updateDoc(docRef, { ...data, updatedAt: serverTimestamp() });
+      await updateDoc(docRef, updateData);
 
       // Registrar actividad de actualización
       await createActivity({
@@ -151,17 +165,73 @@ export default class Transaction {
   }
 
   /**
-   * Obtiene todas las transacciones (Libro Mayor Completo).
-   * @param {number|null} limitCount - Opcional: límite de registros.
+   * Obtiene transacciones de un periodo específico (AAAA-MM).
+   * Muy eficiente para cierres mensuales.
    */
-  static async getAll(limitCount = null) {
+  static async getByPeriod(period) {
     try {
-      let q;
+      const q = query(
+        collection(db, "transactions"),
+        where("period", "==", period),
+        orderBy("effectiveDate", "desc")
+      );
+      const querySnapshot = await getDocs(q);
+      const list = [];
+      querySnapshot.forEach((doc) => list.push({ id: doc.id, ...doc.data() }));
+      return list;
+    } catch (error) {
+      console.error(`[Transaction] Error al obtener periodo ${period}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Obtiene transacciones dentro de un rango de fechas.
+   * @param {Date|number} start - Fecha inicial.
+   * @param {Date|number} end - Fecha final.
+   * @param {number|null} limitCount - Límite opcional de resultados.
+   */
+  static async getByDateRange(start, end, limitCount = null) {
+    try {
+      const dStart = start instanceof Date ? start : new Date(start);
+      const dEnd = end instanceof Date ? end : new Date(end);
+      
+      // Normalizar horas para cubrir el día completo
+      dStart.setHours(0, 0, 0, 0);
+      dEnd.setHours(23, 59, 59, 999);
+
+      let q = query(
+        collection(db, "transactions"),
+        where("effectiveDate", ">=", dStart),
+        where("effectiveDate", "<=", dEnd),
+        orderBy("effectiveDate", "desc")
+      );
+
       if (limitCount) {
-        q = query(collection(db, "transactions"), orderBy("effectiveDate", "desc"), limit(limitCount));
-      } else {
-        q = query(collection(db, "transactions"), orderBy("effectiveDate", "desc"));
+        q = query(q, limit(limitCount));
       }
+
+      const querySnapshot = await getDocs(q);
+      const list = [];
+      querySnapshot.forEach((doc) => list.push({ id: doc.id, ...doc.data() }));
+      return list;
+    } catch (error) {
+      console.error("[Transaction] Error en getByDateRange:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Obtiene las transacciones más recientes (Feed).
+   * @param {number} limitCount - Cantidad de registros a traer (por defecto 100 para ahorrar).
+   */
+  static async getAll(limitCount = 100) {
+    try {
+      const q = query(
+        collection(db, "transactions"), 
+        orderBy("effectiveDate", "desc"), 
+        limit(limitCount)
+      );
       const querySnapshot = await getDocs(q);
       const list = [];
       querySnapshot.forEach((doc) => list.push({ id: doc.id, ...doc.data() }));

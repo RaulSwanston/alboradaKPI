@@ -24,13 +24,15 @@ async function initAnimateHome() {
   
   // Añadir comprobaciones para asegurar que los elementos existen antes de animar
   if (listElement.length > 0) {
+      // Primero animamos la aparición de los contenedores
       await runSequentialAnimations(listElement, "fadeIn");
   }
-  if (spans.length > 0) {
-      await runSequentialAnimations(spans, "fadeInDown");
-  }
-  if (paragraphs.length > 0) {
-      await runSequentialAnimations(paragraphs, "fadeInUp");
+
+  // 2. Ejecutamos las animaciones de los textos en paralelo
+  if (spans.length > 0 || paragraphs.length > 0) {
+      // Al no usar 'await' aquí para cada uno, se inician al mismo tiempo
+      runSequentialAnimations(spans, "fadeInDown");
+      runSequentialAnimations(paragraphs, "fadeInUp");
   }
 }
 

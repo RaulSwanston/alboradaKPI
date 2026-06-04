@@ -12,44 +12,16 @@
   <main class="report-main">
     <form id="payment-report-form" class="report-form">
       
-      <!-- Panel de Datos -->
-      <div class="report-card brand-watermark">
-        <div class="form-group">
-          <label for="propertyId" class="form-label">Unidad / Propiedad</label>
-          <select id="propertyId" name="propertyId" class="form-select" required>
-            <option value="" disabled selected>Selecciona una propiedad</option>
-          </select>
-        </div>
-
-        <div class="form-group">
-          <label for="amount" class="form-label">Monto Pagado</label>
-          <div class="input-prefix-wrapper">
-            <span class="input-prefix">$</span>
-            <input type="number" id="amount" name="amount" class="form-input" placeholder="0.00" step="0.01" required>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="paymentDate" class="form-label">Fecha del Pago</label>
-          <input type="date" id="paymentDate" name="paymentDate" class="form-input" required>
-        </div>
-
-        <div class="form-group">
-          <label for="notes" class="form-label">Notas Adicionales</label>
-          <textarea id="notes" name="notes" class="form-textarea" placeholder="¿Algún detalle importante?"></textarea>
-        </div>
-      </div>
-
-      <!-- Panel de Comprobante -->
-      <div class="report-card">
-        <label class="form-label">Comprobante de Pago</label>
+      <!-- Panel de Comprobante (Prioridad 1) -->
+      <div class="report-card primary-card">
+        <label class="form-label">1. Adjunta tu Comprobante de Pago</label>
         <div class="upload-zone" id="upload-zone">
           <input type="file" id="receipt-file" accept="image/*" class="hidden-input">
           <div class="upload-content">
             <div class="upload-icon" data-icon="camera"></div>
             <div class="upload-text">
-              <span class="upload-title">Adjuntar Imagen</span>
-              <span class="upload-subtitle">Haz clic para subir la foto</span>
+              <span class="upload-title">Tomar Foto o Subir Imagen</span>
+              <span class="upload-subtitle">Haz clic aquí para adjuntar el comprobante</span>
             </div>
           </div>
           <div id="file-preview" class="file-preview hidden">
@@ -61,11 +33,56 @@
         </div>
       </div>
 
-      <!-- Acciones (Sticky en móvil, debajo en Desktop) -->
+      <!-- Selección de Unidad (Solo visible si es Admin o tiene varias propiedades) -->
+      <div id="property-selection-container" class="report-card hidden">
+        <div class="form-group">
+          <label for="propertyId" class="form-label">Unidad / Propiedad</label>
+          <select id="propertyId" name="propertyId" class="form-select">
+            <option value="" disabled selected>Cargando unidades...</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Listado de Deudas Pendientes (Prioridad 2) -->
+      <div class="report-card" id="debts-section">
+        <label class="form-label">2. ¿Qué cargos estás pagando?</label>
+        <div id="debts-list" class="debts-grid">
+          <!-- Se inyectará dinámicamente: Cuotas, Multas, Servicios, Arreglos de Pago -->
+          <div class="loading-state">
+            <p>Buscando deudas pendientes...</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Resumen Financiero y Detalles -->
+      <div class="report-card brand-watermark">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="amount" class="form-label">Monto Total Pagado</label>
+            <div class="input-prefix-wrapper">
+              <span class="input-prefix">$</span>
+              <input type="number" id="amount" name="amount" class="form-input" placeholder="0.00" step="0.01" required>
+            </div>
+            <p class="input-help">Ingresa el monto exacto que aparece en tu comprobante.</p>
+          </div>
+
+          <div class="form-group">
+            <label for="paymentDate" class="form-label">Fecha del Pago</label>
+            <input type="date" id="paymentDate" name="paymentDate" class="form-input" required>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="notes" class="form-label">Notas Opcionales</label>
+          <textarea id="notes" name="notes" class="form-textarea" placeholder="Ej: Pago adelantado de febrero, abono a multa..."></textarea>
+        </div>
+      </div>
+
+      <!-- Acciones -->
       <div class="form-actions">
         <button type="submit" id="btn-submit-report" class="btn-primary">
           <div class="icon-slot-sm" data-icon="send"></div>
-          Enviar Reporte
+          Enviar Reporte de Pago
         </button>
       </div>
 

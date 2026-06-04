@@ -1,11 +1,22 @@
 import { auth, db, doc, getDoc, signOut, waitForAuth } from '../core/firebase.js';
 import { createUserProfile } from "../models/Profile.js";
+import { appConfig } from '../core/appConfig.js';
+import { loadTranslations } from '../core/i18n.js';
 
 /**
  * sessionGuard (Middleware para el Router)
  * Orquesta el flujo de acceso: Auth -> Email -> isActive -> Rol
  */
 export const sessionGuard = async (contexto) => {
+  // Inyectamos la configuración de la app (Capa de Configuración)
+  // PRIORIDAD: 1. LocalStorage (Pruebas), 2. appConfig.js (Default)
+  const localConfig = localStorage.getItem('gph_app_config');
+  contexto.data.appConfig = localConfig ? JSON.parse(localConfig) : appConfig;
+
+  // Aseguramos que las traducciones estén cargadas (NUEVO)
+  const lang = contexto.data.appConfig.systemDefaults?.language || 'es';
+  await loadTranslations(lang);
+
   const user = await waitForAuth();
 
   if (!user) {

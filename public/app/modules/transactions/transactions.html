@@ -1,35 +1,21 @@
 <div class="transactions-summary-bar" id="transactions-summary-bar">
     <div class="summary-item">
         <span class="summary-label">Balance Neto del Periodo</span>
-        <span class="summary-value" id="sum-total-net">$0.00</span>
+        <span class="summary-value" id="sum-total-net">--</span>
     </div>
 </div>
 
 <div class="module-header">
-    <div class="header-main">
-        <div class="title-group">
-            <h2>Libro Mayor (Maestro)</h2>
-            <p class="subtitle">Historial completo de movimientos contables.</p>
-        </div>
-        <div class="actions">
-            <a href="/dashboard/transactions/new" class="btn-primary" data-view="dashboard" id="btn-new-transaction">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M12 5v14M5 12h14"></path>
-                </svg>
-                Nuevo Movimiento
-            </a>
-        </div>
-    </div>
-
     <div class="header-filters">
+        <!-- Fila 1: Buscador y Presets de Fecha -->
         <div class="filter-row-top">
             <div class="search-bar-inline">
-                <input type="text" id="transactions-search" placeholder="Buscar por unidad o descripción...">
+                <input type="text" id="transactions-search" placeholder="Buscar por descripción o unidad...">
             </div>
             
             <div class="date-filters-group">
                 <select id="date-preset-select" class="filter-select">
-                    <option value="all">Todo el tiempo</option>
+                    <option value="">Filtrar por tiempo...</option>
                     <option value="today">Hoy</option>
                     <option value="yesterday">Ayer</option>
                     <option value="last7days">Últimos 7 días</option>
@@ -40,28 +26,49 @@
                     <option value="last6months">Últimos 6 meses</option>
                     <option value="thisYear">Este año</option>
                     <option value="lastYear">Año pasado</option>
-                    <option value="custom">Personalizado / Rango</option>
+                    <option value="all">Todo el tiempo</option>
+                    <option value="custom">Rango personalizado...</option>
                 </select>
 
                 <div id="custom-date-container" class="custom-dates hidden">
                     <input type="date" id="date-start">
-                    <span>a</span>
+                    <span>al</span>
                     <input type="date" id="date-end">
                     <button id="btn-apply-dates" class="btn-apply-dates">Buscar</button>
                 </div>
             </div>
         </div>
 
+        <!-- Fila 2: Chips de Tipo (Dinámicos) -->
         <div class="chips-container" id="transaction-filters">
-            <!-- Se generará dinámicamente según los datos del periodo -->
+            <!-- Los chips se inyectarán aquí -->
         </div>
     </div>
 </div>
 
-<div class="transactions-grid" id="transactions-list">
-    <!-- Cargando... -->
-</div>
+<!-- Nueva Estructura de Tabla -->
+<div class="transactions-table-container">
+    <div class="transactions-table">
+        <!-- Encabezado de Tabla (Solo Escritorio) -->
+        <div class="table-header">
+            <div class="col-date">Fecha</div>
+            <div class="col-desc">Descripción / Concepto</div>
+            <div class="col-type">Tipo</div>
+            <div class="col-prop">Unidad</div>
+            <div class="col-amount" style="text-align: right; padding-right: 2rem;">Monto</div>
+            <div class="col-actions">Acciones</div>
+        </div>
 
-<div class="pagination-container" id="pagination-controls">
-    <!-- Botones de página se inyectarán aquí -->
+        <!-- Cuerpo de la Tabla / Lista de Globos -->
+        <div id="transactions-list">
+            <!-- Las filas se inyectarán aquí -->
+        </div>
+    </div>
+
+    <!-- Paginación integrada en el footer de la tabla -->
+    <div class="table-footer">
+        <div class="pagination" id="pagination-controls">
+            <!-- Botones de página se inyectarán aquí -->
+        </div>
+    </div>
 </div>

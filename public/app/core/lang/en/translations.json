@@ -1,0 +1,76 @@
+{
+  "config": {
+    "languages": {
+      "es": "Spanish",
+      "en": "English"
+    },
+    "currencies": {
+      "usd": "US Dollar (USD)",
+      "pab": "Panamanian Balboa (PAB)"
+    }
+  },
+  "financialSummary": { "title": "Financial Summary" },
+  "recentActivity": { "title": "Recent Activity" },
+  "configManager": { 
+    "title": "System Configuration",
+    "tabs": {
+      "general": "General",
+      "roles": "Roles",
+      "views": "Views"
+    },
+    "general": {
+      "title": "General Settings",
+      "appName": "Application Name",
+      "appLogo": "Application Logo",
+      "logoInstructions": "Drag the image here or browse your device",
+      "browseImage": "Browse Image",
+      "logoUrlPlaceholder": "Paste the image URL here",
+      "mainLanguage": "Main Language",
+      "systemCurrency": "System Currency"
+    },
+    "roles": {
+      "title": "Roles and Permissions",
+      "addRole": "Add Role",
+      "loading": "Loading permissions matrix...",
+      "moduleColumn": "Module",
+      "userManagementTitle": "User Role Assignment",
+      "searchPlaceholder": "Search user by email or name...",
+      "noUsersFound": "No users found.",
+      "roleLabel": "Role:",
+      "saveRole": "Update Role"
+    },
+    "views": {
+      "title": "Module Cascade",
+      "selectView": "Select View",
+      "noModules": "No modules defined.",
+      "selectViewPrompt": "Select a view."
+    },
+    "actions": {
+      "save": "Publish Configuration",
+      "saving": "Saving...",
+      "success": "Configuration saved locally",
+      "reset": "Restore Defaults",
+      "resetConfirm": "Are you sure you want to restore all values? Unpublished changes will be lost."
+    },
+    "capabilities": {
+      "residents": {
+        "viewAll": "View all residents",
+        "create": "Create new residents",
+        "delete": "Delete residents",
+        "editProfile": "Edit own profiles"
+      },
+      "transactions": {
+        "viewAll": "View full history",
+        "approve": "Approve reported payments",
+        "manualCharge": "Generate manual charges"
+      },
+      "properties": {
+        "viewAll": "View all properties",
+        "editBalance": "Adjust balances manually"
+      },
+      "financial": {
+        "viewGlobal": "View global financial summary"
+      }
+    }
+  }
+}

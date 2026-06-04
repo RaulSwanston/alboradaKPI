@@ -1,150 +1,245 @@
 /* 
   Module: paymentReport
-  Style: Full Width Mobile & Split Surface Desktop
+  Style: Reconciliation Interface (Photo-first, then Debts)
 */
 
 .payment-report-wrapper {
-  gap: 1.5rem;
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 1400px;
+  padding: 1rem;
+  max-width: 900px;
   margin: 0 auto;
-  min-height: 100vh;
 }
 
-/* --- Header Section (Always Visible) --- */
-.detail-header {
-  display: flex;
-  align-items: center;
-  /* padding: 1.5rem 1rem; */
-  background-color: var(--color-canvas);
-  position: sticky;
-  top: 0;
-  z-index: 50;
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.btn-back {
-  background: white;
-  border: 1px solid var(--color-gurkha-200);
-  border-radius: 0.75rem;
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  color: var(--color-text-primary);
-  transition: transform 0.2s ease;
-}
-
-.btn-back:active { transform: scale(0.9); }
-
-.header-title { font-size: 1.25rem; font-weight: 800; color: var(--color-text-primary); margin: 0; }
-.header-subtitle { display: none; } /* Ocultar en móvil para ganar espacio */
-
-/* --- Form Layout (Mobile: Full Width) --- */
 .report-main {
-  flex: 1;
-  /* background-color: white; */
+  padding-bottom: 6rem;
 }
 
 .report-form {
   display: flex;
   flex-direction: column;
+  gap: 1.5rem;
+  margin-top: 1.5rem;
 }
 
 .report-card {
-  border-bottom: 1px solid var(--color-gurkha-100);
+  background: white;
+  border: 1px solid var(--color-gurkha-100);
+  border-radius: 1.5rem;
+  padding: 1.5rem;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.02);
   position: relative;
+  overflow: hidden;
 }
 
-/* Marca de agua integrada sutilmente */
-.brand-watermark::before {
-  content: "";
-  position: absolute;
-  top: 0; right: 0; width: 100%; height: 100%;
-  background-image: radial-gradient(circle at top right, rgba(40, 191, 99, 0.03) 0%, transparent 60%);
-  pointer-events: none;
+.report-card.primary-card {
+  border-top: 6px solid var(--color-kaitoke-green-500);
 }
-
-/* --- Form Elements --- */
-.form-group { margin-bottom: 1.5rem; }
-.form-group:last-child { margin-bottom: 0; }
 
 .form-label {
   display: block;
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 800;
-  color: var(--color-gurkha-400);
+  color: var(--color-gurkha-600);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 0.5rem;
+  margin-bottom: 1.25rem;
 }
 
-.form-input, .form-select, .form-textarea {
-  width: 100%;
-  padding: 1rem;
-  border-radius: 0.75rem;
-  border: 1px solid var(--color-gurkha-200);
-  background-color: var(--color-gurkha-50);
-  font-family: inherit;
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  transition: all 0.2s ease;
-}
-
-.form-input:focus, .form-select:focus, .form-textarea:focus {
-  outline: none;
-  border-color: var(--color-kaitoke-green-500);
-  background-color: white;
-}
-
-.input-prefix-wrapper { position: relative; display: flex; align-items: center; }
-.input-prefix { position: absolute; left: 1rem; font-weight: 800; color: var(--color-gurkha-400); }
-.input-prefix-wrapper .form-input { padding-left: 2rem; font-size: 1.5rem; }
-
-/* --- Upload Zone (Mobile Optimized) --- */
+/* --- Upload Zone --- */
 .upload-zone {
   border: 2px dashed var(--color-gurkha-200);
-  border-radius: 1rem;
-  padding: 2.5rem 1rem;
+  border-radius: 1.25rem;
+  padding: 2.5rem 1.5rem;
   text-align: center;
   background-color: var(--color-gurkha-50);
   cursor: pointer;
-  min-height: 180px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
 
-.upload-icon svg { width: 2.5rem; height: 2.5rem; fill: var(--color-kaitoke-green-500); margin-bottom: 0.5rem; }
-.upload-title { display: block; font-weight: 800; color: var(--color-text-primary); }
-.upload-subtitle { font-size: 0.75rem; color: var(--color-text-secondary); }
+.upload-zone:hover {
+  border-color: var(--color-kaitoke-green-500);
+  background-color: white;
+}
+
+.upload-icon {
+  width: 56px;
+  height: 56px;
+  margin-bottom: 1rem;
+  color: var(--color-kaitoke-green-600);
+}
+
+.upload-title {
+  display: block;
+  font-size: 1.1rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  margin-bottom: 0.25rem;
+}
+
+.upload-subtitle {
+  font-size: 0.85rem;
+  color: var(--color-gurkha-400);
+}
 
 .file-preview {
   position: absolute;
   top: 0; left: 0; width: 100%; height: 100%;
   background: white;
   z-index: 10;
+  padding: 0.5rem;
 }
-.file-preview img { width: 100%; height: 100%; object-fit: contain; }
 
-/* --- Fixed Footer Action --- */
+.file-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  border-radius: 1rem;
+}
+
+.btn-remove-file {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-error);
+  box-shadow: var(--shadow-md);
+  cursor: pointer;
+  z-index: 20;
+}
+
+/* --- Debts Grid --- */
+.debts-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.debt-card {
+  display: grid;
+  grid-template-columns: 48px 1fr auto;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  border: 1px solid var(--color-gurkha-100);
+  background: var(--color-gurkha-50);
+  border-radius: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.debt-card:hover {
+  border-color: var(--color-gurkha-300);
+  background: white;
+}
+
+.debt-card.selected {
+  border-color: var(--color-kaitoke-green-500);
+  background: #f0fff4;
+  box-shadow: 0 0 0 1px var(--color-kaitoke-green-500);
+}
+
+.debt-check {
+  color: var(--color-gurkha-200);
+  display: flex;
+  justify-content: center;
+}
+
+.debt-card.selected .debt-check {
+  color: var(--color-kaitoke-green-500);
+}
+
+.debt-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.debt-type {
+  font-size: 0.7rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.4rem;
+  width: fit-content;
+}
+
+.type-fee { background: #e0f2fe; color: #0369a1; }
+.type-fine { background: #fee2e2; color: #b91c1c; }
+.type-service { background: #fef3c7; color: #92400e; }
+
+.debt-desc {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--color-text-primary);
+}
+
+.debt-date {
+  font-size: 0.8rem;
+  color: var(--color-gurkha-400);
+}
+
+.debt-amount {
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--color-text-primary);
+}
+
+.debt-amount .currency {
+  font-size: 0.9rem;
+  color: var(--color-gurkha-400);
+}
+
+/* --- Form Fields --- */
+.form-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.form-input, .form-textarea {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-gurkha-200);
+  background-color: var(--color-gurkha-50);
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.input-prefix-wrapper .form-input {
+  padding-left: 2.2rem;
+  font-size: 1.75rem;
+}
+
+.input-prefix {
+  position: absolute;
+  left: 1rem;
+  font-weight: 800;
+  font-size: 1.2rem;
+  color: var(--color-gurkha-400);
+}
+
+/* --- Actions --- */
 .form-actions {
   position: fixed;
   bottom: 0; left: 0; width: 100%;
-  padding: 1rem;
+  padding: 1.25rem;
   background: white;
   border-top: 1px solid var(--color-gurkha-100);
-  box-shadow: 0 -10px 25px rgba(0,0,0,0.05);
+  box-shadow: 0 -10px 30px rgba(0,0,0,0.05);
   z-index: 40;
 }
 
@@ -155,76 +250,29 @@
   background-color: var(--color-kaitoke-green-600);
   color: white;
   font-weight: 800;
-  font-size: 1.125rem;
+  font-size: 1.1rem;
   border: none;
+  cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
 }
 
-/* --- DESKTOP: Split Surface (P02 style) --- */
+/* --- Responsive --- */
+@media (max-width: 600px) {
+  .form-row { grid-template-columns: 1fr; }
+  .report-card { padding: 1.25rem; }
+}
+
 @media (min-width: 1024px) {
-  .payment-report-wrapper { padding: 2rem; }
-  
-  .detail-header { background: transparent; padding: 0 0 2rem 0; position: static; }
-  .header-subtitle { display: block; }
-
-  .report-main {
-    background: transparent;
-  }
-
-  .report-form {
-    display: grid;
-    grid-template-columns: 1fr 1.2fr; /* Lado izquierdo datos, derecho comprobante */
-    gap: 2rem;
-    align-items: start;
-  }
-
-  .report-card {
-    border-radius: 2rem;
-    border: 1px solid var(--color-gurkha-100);
-    padding: 2.5rem;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.02);
-  }
-
-  /* El comprobante ocupa el lado derecho y es alto */
-  .report-card:nth-child(2) {
-    grid-row: span 2;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-  }
-
-  .upload-zone { flex: 1; height: 100%; }
-
   .form-actions {
     position: static;
-    grid-column: 1;
-    background: transparent;
+    margin-top: 1rem;
     padding: 0;
     box-shadow: none;
     border: none;
   }
-
-  .btn-primary { width: 100%; }
 }
 
-/* Modal simple */
-.modal-overlay {
-  position: fixed;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(31, 31, 20, 0.9);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-.modal-content {
-  background: white;
-  padding: 3rem;
-  border-radius: 2.5rem;
-  text-align: center;
-  max-width: 450px;
-}
 .hidden { display: none !important; }

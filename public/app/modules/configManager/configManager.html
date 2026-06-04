@@ -1,0 +1,145 @@
+<div class="config-manager-wrapper">
+    <!-- Navegación por Pestañas -->
+    <nav class="config-tabs-nav">
+        <button class="tab-btn active" data-tab="tab-general">
+            <svg width="18" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.1a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/><circle cx="12" cy="12" r="3"/></svg>
+            <span><!-- ::i18n.configManager.tabs.general --></span>
+        </button>
+        <button class="tab-btn" data-tab="tab-roles">
+            <svg width="18" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            <span><!-- ::i18n.configManager.tabs.roles --></span>
+        </button>
+        <button class="tab-btn" data-tab="tab-vistas">
+            <svg width="18" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+            <span><!-- ::i18n.configManager.tabs.views --></span>
+        </button>
+    </nav>
+
+    <div class="config-tabs-content">
+        <!-- PESTAÑA: GENERAL -->
+        <div id="tab-general" class="tab-pane active">
+            <section class="card p-md shadow-sm mb-lg">
+                <h2 class="config-section-title"><!-- ::i18n.configManager.general.title --></h2>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label class="config-label"><!-- ::i18n.configManager.general.appName --></label>
+                        <input type="text" id="config-app-name" class="form-input" placeholder="Ej: GPH Condominios">
+                    </div>
+                    <div class="form-group logo-management-section">
+                        <label class="config-label"><!-- ::i18n.configManager.general.appLogo --></label>
+                        <div id="logo-drop-zone" class="logo-upload-card">
+                            <div class="logo-current-preview">
+                                <img id="config-logo-preview" src="/src/img/alborada.svg" alt="Logo Preview">
+                                <div class="logo-edit-badge">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                                </div>
+                            </div>
+                            <div class="upload-center-icon">
+                                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                            </div>
+                            <p class="upload-instruction-text"><!-- ::i18n.configManager.general.logoInstructions --></p>
+                            <button type="button" id="btn-upload-logo" class="btn-upload-action"><!-- ::i18n.configManager.general.browseImage --></button>
+                            <input type="file" id="config-logo-file" accept="image/*" class="hidden">
+                            <div class="upload-separator"><span class="sep-line"></span><span class="sep-text">o</span><span class="sep-line"></span></div>
+                            <div class="url-input-field">
+                                <input type="text" id="config-logo-url" class="form-input" placeholder="<!-- ::i18n.configManager.general.logoUrlPlaceholder -->">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="config-label"><!-- ::i18n.configManager.general.mainLanguage --></label>
+                        <select id="config-language" class="form-select">
+                            <option value="es"><!-- ::i18n.config.languages.es --></option>
+                            <option value="en"><!-- ::i18n.config.languages.en --></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="config-label"><!-- ::i18n.configManager.general.systemCurrency --></label>
+                        <select id="config-currency" class="form-select">
+                            <option value="USD"><!-- ::i18n.config.currencies.usd --></option>
+                            <option value="PAB"><!-- ::i18n.config.currencies.pab --></option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- PESTAÑA: ROLES -->
+        <div id="tab-roles" class="tab-pane">
+            <section class="card p-md shadow-sm">
+                <div class="config-pane-header">
+                    <h2 class="config-section-title"><!-- ::i18n.configManager.roles.title --></h2>
+                    <button id="add-role" class="btn-icon-text">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                        <span><!-- ::i18n.configManager.roles.addRole --></span>
+                    </button>
+                </div>
+                <div id="roles-matrix-container" class="overflow-x-auto">
+                    <p class="config-empty-state"><!-- ::i18n.configManager.roles.loading --></p>
+                </div>
+            </section>
+
+            <!-- GESTIÓN DE USUARIOS: ASIGNACIÓN DE ROLES -->
+            <section class="card p-md shadow-sm mt-lg">
+                <div class="config-pane-header">
+                    <h2 class="config-section-title"><!-- ::i18n.configManager.roles.userManagementTitle --></h2>
+                </div>
+                
+                <div class="user-search-wrapper">
+                    <div class="search-controls-group">
+                        <div class="search-input-container flex-grow">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="search-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <input type="text" id="user-search-input" class="form-input" placeholder="<!-- ::i18n.configManager.roles.searchPlaceholder -->">
+                        </div>
+                        <select id="user-role-filter" class="form-select-sm">
+                            <option value="all">Todos los Roles</option>
+                            <!-- Opciones dinámicas -->
+                        </select>
+                    </div>
+                </div>
+
+                <div id="user-list-results" class="user-management-grid">
+                    <!-- Los resultados de usuarios se inyectarán aquí -->
+                    <p class="config-empty-state"><!-- ::i18n.configManager.roles.loading --></p>
+                </div>
+
+                <div class="pagination-footer mt-md">
+                    <button id="btn-load-more-users" class="btn-load-more hidden">
+                        <span>Cargar más usuarios</span>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <!-- PESTAÑA: VISTAS -->
+        <div id="tab-vistas" class="tab-pane">
+            <section class="card p-md shadow-sm section-cascade">
+                <div class="config-pane-header-view">
+                    <h2 class="config-section-title"><!-- ::i18n.configManager.views.title --></h2>
+                    <div class="form-group-inline">
+                        <label class="config-label"><!-- ::i18n.configManager.views.selectView --></label>
+                        <select id="config-view-selector" class="form-select-sm">
+                            <!-- Opciones dinámicas -->
+                        </select>
+                    </div>
+                </div>
+                <div id="draggable-modules-list" class="modules-cascade-list">
+                    <p class="config-empty-state"><!-- ::i18n.configManager.views.selectViewPrompt --></p>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- Acción Global (Siempre visible) -->
+    <div class="config-actions">
+        <button id="resetConfigGlobal" class="btn-reset-ghost">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+            <span><!-- ::i18n.configManager.actions.reset --></span>
+        </button>
+        <button id="saveConfigGlobal" class="btn-save-master">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z\"/><polyline points="17 21 17 13 7 13 7 21\"/><polyline points="7 3 7 8 15 8\"/></svg>
+            <span><!-- ::i18n.configManager.actions.save --></span>
+        </button>
+    </div>
+    </div>
