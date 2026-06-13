@@ -110,10 +110,48 @@ export class Mosaic {
           ]);
 
           if (cssCheck.ok) cssUrls.add(cssPath);
-          if (controllerCheck.ok) controllerPaths.add(controllerPath);
-
+          
           if (!htmlResponse.ok) return `<!-- Error: Módulo ${match[1]} no encontrado en ${htmlPath} -->`;
-          return await htmlResponse.text();
+          let html = await htmlResponse.text();
+
+          /**
+           * ESTRATEGIA DE ÁMBITOS Y AUTO-WRAPPER:
+           * Para que RenderView pueda gestionar cleanups y persistencia de forma quirúrgica, 
+           * cada módulo debe tener un ÚNICO elemento raíz que lleve el atributo 'data-module-controller'.
+           */
+          if (controllerCheck.ok) {
+            const parser = new DOMParser();
+            const modDoc = parser.parseFromString(html, 'text/html');
+            
+            // AUTO-WRAPPER DEFENSIVO:
+            // Si el módulo es "plano" (tiene varios elementos raíz) o no tiene un contenedor claro,
+            // lo envolvemos automáticamente en un div para garantizar la integridad del ámbito.
+            let root = modDoc.body.firstElementChild;
+            if (modDoc.body.children.length > 1 || !root) {
+              const wrapper = modDoc.createElement('div');
+              wrapper.className = `module-wrapper module-${moduleName}`;
+              // Movemos todos los nodos (incluyendo comentarios y texto) al wrapper
+              while (modDoc.body.firstChild) {
+                wrapper.appendChild(modDoc.body.firstChild);
+              }
+              modDoc.body.appendChild(wrapper);
+              root = wrapper;
+            }
+
+            if (root) {
+              root.setAttribute('data-module-controller', controllerPath);
+              /**
+               * IMPORTANTE: Devolvemos el innerHTML del body procesado. 
+               * Esto asegura que devolvemos la estructura normalizada (con el wrapper si fue necesario)
+               * y no solo el primer hijo, evitando que se pierdan elementos en estructuras planas.
+               */
+              html = modDoc.body.innerHTML;
+              // Mantenemos la lista total de controladores para la carga inicial (Full Render)
+              controllerPaths.add(controllerPath); 
+            }
+          }
+
+          return html;
         });
         
         const moduleContents = await Promise.all(modulePromises);

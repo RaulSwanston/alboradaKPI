@@ -8,47 +8,77 @@
 export class RenderView {
   constructor() {
     this.appView = document.getElementById('app-view');
-    // Almacena las funciones de limpieza devueltas por los controladores de la vista activa.
-    this.activeCleanups = [];
+    
+    /**
+     * GESTIÓN DE CICLO DE VIDA (CLEANUPS):
+     * Utilizamos un Map para organizar las funciones de limpieza según su "ámbito" (scope).
+     * Esto permite que al navegar en un renderizado parcial (ej. data-view="dashboard"),
+     * solo destruyamos la lógica de esa zona, manteniendo vivos los componentes globales (Navigator).
+     * 
+     * Estructura: Map<string, Array<Function>>
+     */
+    this.activeCleanups = new Map();
+    
     if (!this.appView) {
       console.error("El elemento #app-view no fue encontrado. Esencial para RenderView.");
     }
   }
 
   /**
-   * Ejecuta todas las funciones de limpieza registradas para la vista anterior.
-   * Esto es crucial para detener procesos como setIntervals o event listeners y evitar "fugas de memoria" y ejecuciones múltiples.
+   * Ejecuta las funciones de limpieza de forma selectiva.
+   * @param {string|null} scope - Nombre del ámbito a limpiar. 
+   * Si es null, se asume una carga total y se limpia TODA la aplicación.
    */
-  cleanupPreviousView() {
-    if (this.activeCleanups.length > 0) {
-      console.log(`Ejecutando ${this.activeCleanups.length} funciones de limpieza de la vista anterior.`);
-      // Llama a cada función de limpieza registrada.
-      this.activeCleanups.forEach(cleanup => {
-        try {
-          cleanup();
-        } catch (error) {
-          console.error("Error durante la ejecución de una función de limpieza:", error);
-        }
+  cleanupPreviousView(scope = null) {
+    if (scope === null) {
+      // Caso: Carga inicial o navegación a una página con estructura totalmente diferente
+      console.log("RenderView: Ejecutando limpieza TOTAL (Reset de aplicación).");
+      this.activeCleanups.forEach(cleanups => {
+        cleanups.forEach(cleanup => {
+          try { cleanup(); } catch (e) { console.error("Error en cleanup global:", e); }
+        });
       });
-      // Resetea el array para la nueva vista.
-      this.activeCleanups = [];
+      this.activeCleanups.clear();
+    } else if (this.activeCleanups.has(scope)) {
+      // Caso: Renderizado parcial (solo limpiamos el área que va a cambiar)
+      console.log(`RenderView: Ejecutando limpieza selectiva para el ámbito [${scope}].`);
+      const cleanups = this.activeCleanups.get(scope);
+      cleanups.forEach(cleanup => {
+        try { cleanup(); } catch (e) { console.error(`Error en cleanup de [${scope}]:`, e); }
+      });
+      this.activeCleanups.delete(scope);
     }
   }
 
   /**
-   * Toma una vista pre-compuesta y la "anima" (renderiza) en el DOM.
-   * Su trabajo incluye inyectar el HTML, cargar los assets y ejecutar los controladores de la vista.
-   * @param {object} composedView - El objeto de vista compuesto por Mosaic.
-   * @param {object} contexto - El contexto de la ruta actual.
+   * Registra una función de limpieza (devuelta por un controlador) en un ámbito.
+   * @param {string} scope - Ámbito donde vive el controlador (ej. 'dashboard' o 'global').
+   * @param {Function} cleanupFn - La función a ejecutar cuando el componente se destruya.
+   */
+  registerCleanup(scope, cleanupFn) {
+    if (!cleanupFn || typeof cleanupFn !== 'function') return;
+    const key = scope || 'global';
+    if (!this.activeCleanups.has(key)) {
+      this.activeCleanups.set(key, []);
+    }
+    this.activeCleanups.get(key).push(cleanupFn);
+  }
+
+  /**
+   * Renderiza la vista compuesta en el DOM.
+   * @param {object} composedView - Datos de la vista (HTML, CSS, JS) generados por Mosaic.
+   * @param {object} contexto - Datos de la ruta y sesión.
+   * @param {string} targetViewName - Nombre del ámbito de renderizado parcial (del atributo data-view).
    */
   async anima(composedView, contexto, targetViewName = null) {
-    console.log("composedView recibido en anima:", composedView);
-    // --- PASO 0: Limpiar la lógica de la vista anterior ---
-    // Esto previene la acumulación de listeners o intervalos de controladores previos.
-    this.cleanupPreviousView();
+    console.log(`RenderView: Iniciando animación (Ámbito: ${targetViewName || 'TOTAL'})`);
+    
+    // --- PASO 0: Limpieza Inteligente ---
+    // Solo matamos la lógica de la zona que va a ser reemplazada.
+    this.cleanupPreviousView(targetViewName);
 
     if (!composedView) {
-      this.appView.innerHTML = `<p>Error al componer la vista. Por favor, intente de nuevo.</p>`;
+      this.appView.innerHTML = `<p>Error al componer la vista.</p>`;
       return;
     }
 
@@ -56,87 +86,119 @@ export class RenderView {
     const parser = new DOMParser();
     const finalDoc = parser.parseFromString(finalHtml, 'text/html');
 
-    // --- PASO 1 (CORREGIDO): Cargar todo el CSS y ESPERAR a que esté listo ---
-    // Primero, agrega los CSS descubiertos por Mosaic al <head> del documento en memoria.
+    // --- PASO 1: Inyección de Estilos ---
     cssUrls.forEach(url => {
         const link = document.createElement('link');
         link.rel = 'stylesheet';
         link.href = url;
         finalDoc.head.appendChild(link);
     });
-    // Luego, fusiona el <head> del documento en memoria con el <head> real, evitando duplicados.
     await this.mergeHeadElements(finalDoc.head);
 
-    // --- PASO 2 (CORREGIDO): AHORA, inyectar el HTML en el DOM ---
+    // --- PASO 2: Inyección de HTML ---
+    // Identificamos si tenemos un contenedor específico para renderizado parcial.
     const targetContainer = targetViewName ? document.querySelector(`[data-content="${targetViewName}"]`) : null;
     
     if (targetContainer) {
-      // --- MODO DE RENDERIZADO PARCIAL ---
+      // RENDERIZADO PARCIAL: Solo cambiamos el "hijo" que ha mutado.
       const newContentBlock = finalDoc.querySelector(`[data-content="${targetViewName}"]`);
       if (newContentBlock) {
-        console.log(`Renderizado Inteligente: Actualizando solo el bloque [data-content="${targetViewName}"].`);
-        // Reemplaza el nodo DOM completo para una actualización más limpia y atómica.
+        console.log(`RenderView: Reemplazando contenido en [data-content="${targetViewName}"].`);
         targetContainer.replaceWith(newContentBlock);
       } else {
-        console.warn(`No se encontró el bloque [data-content="${targetViewName}"] en la nueva vista. Realizando renderizado completo.`);
+        // Fallback: Si no encontramos el bloque parcial en la nueva receta, hacemos renderizado completo.
         this.appView.innerHTML = finalDoc.body.innerHTML;
+        targetViewName = null; 
       }
     } else {
-      // --- MODO DE RENDERIZADO COMPLETO ---
-      console.log("Renderizado Completo: No se especificó un targetView o no se encontró el contenedor.");
+      // RENDERIZADO TOTAL: Reemplazo absoluto del contenedor principal.
       this.appView.innerHTML = finalDoc.body.innerHTML;
     }
     
     document.title = finalDoc.title || document.title;
     
-    // --- PASO 3: Cargar y ejecutar los controladores ---
-    if (controllerPaths && controllerPaths.length > 0) {
-      for (const controllerPath of controllerPaths) {
+    // --- PASO 3: Ejecución Selectiva de Controladores ---
+    /**
+     * LÓGICA DE ACTIVACIÓN:
+     * Para evitar el re-inicio innecesario de módulos (parpadeos), decidimos qué controladores
+     * ejecutar basándonos en si son nuevos en el DOM o parte del ámbito actualizado.
+     */
+    let controllersToRun = [];
+    
+    if (targetViewName) {
+      // En renderizado parcial, SOLO ejecutamos controladores que vivan dentro del bloque actualizado.
+      const updatedContainer = document.querySelector(`[data-content="${targetViewName}"]`);
+      if (updatedContainer) {
+        // Obtenemos los controladores de los módulos mediante la marca inyectada por Mosaic.
+        controllersToRun = Array.from(updatedContainer.querySelectorAll('[data-module-controller]'))
+          .map(el => el.getAttribute('data-module-controller'));
+          
+        // Añadimos también controladores de página que Mosaic haya detectado y que no sean módulos.
+        const moduleSet = new Set(controllersToRun);
+        controllerPaths.forEach(path => {
+          if (!moduleSet.has(path)) controllersToRun.push(path);
+        });
+      }
+    } else {
+      // En renderizado total, ejecutamos todos los controladores detectados.
+      controllersToRun = controllerPaths;
+    }
+
+    if (controllersToRun && controllersToRun.length > 0) {
+      for (const controllerPath of controllersToRun) {
+        // SEGURIDAD: Si el controlador ya está vivo en un ámbito persistente (Layout), 
+        // y estamos en un renderizado parcial, NO debemos ejecutarlo de nuevo.
+        if (targetViewName) {
+          const existingEl = document.querySelector(`[data-module-controller="${controllerPath}"]`);
+          const isPersistent = existingEl && existingEl.closest(`[data-content]`)?.getAttribute('data-content') !== targetViewName;
+          
+          // Si el elemento existe y NO está dentro del área que estamos actualizando, lo ignoramos.
+          if (isPersistent && !document.querySelector(`[data-content="${targetViewName}"]`).contains(existingEl)) {
+            console.log(`RenderView: Saltando controlador persistente [${controllerPath}].`);
+            continue;
+          }
+        }
+
         let objectUrl = null;
         try {
           const response = await fetch(controllerPath);
-          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+          if (!response.ok) continue;
+
+          // Procesamiento del script para resolver importaciones dinámicas relativas.
           const scriptText = await response.text();
-          const importRegex = /(import\s+.*?\s+from\s+)(['"])([^'"]+)(['"])/g;
-          const origin = window.location.origin;
-          const baseUrl = new URL(controllerPath, origin).href;
-          const processedScriptText = scriptText.replace(importRegex, (match, pre, quote, path, post) => {
-            if (path.startsWith('/') || path.startsWith('.')) {
-              const resolvedUrl = new URL(path, baseUrl).href;
-              return `${pre}${quote}${resolvedUrl}${post}`;
-            }
-            return match;
+          const baseUrl = new URL(controllerPath, window.location.origin).href;
+          const processedScriptText = scriptText.replace(/(import\s+.*?\s+from\s+)(['"])([^'"]+)(['"])/g, (match, pre, quote, path, post) => {
+            return (path.startsWith('/') || path.startsWith('.')) ? `${pre}${quote}${new URL(path, baseUrl).href}${post}` : match;
           });
+
           const blob = new Blob([processedScriptText], { type: 'application/javascript' });
           objectUrl = URL.createObjectURL(blob);
           const controllerModule = await import(objectUrl);
+
           if (controllerModule.default && typeof controllerModule.default === 'function') {
-            // Ejecuta el controlador y captura la función de limpieza si la devuelve.
-            // AÑADIDO: Bloque de seguridad para evitar caídas en cascada.
-            try {
-              const result = await controllerModule.default(contexto);
-              
-              if (typeof result === 'function') {
-                // La almacena para ejecutarla antes de la próxima navegación.
-                this.activeCleanups.push(result);
-              }
-            } catch (error) {
-              console.error(`❌ Error al ejecutar el controlador [${controllerPath}]:`, error);
-            }
-          }
-          else {
-            console.warn(`El controlador ${controllerPath} no tiene una exportación por defecto (función).`);
+            // Ejecutamos el controlador y capturamos su función de limpieza.
+            const cleanupFn = await controllerModule.default(contexto);
+            
+            /**
+             * DETERMINACIÓN DEL ÁMBITO DE REGISTRO:
+             * Buscamos el elemento en el DOM REAL para saber exactamente dónde vive.
+             * Si vive dentro de un [data-content], ese es su ámbito de limpieza.
+             * De lo contrario, es un componente 'global' (Layout).
+             */
+            const element = document.querySelector(`[data-module-controller="${controllerPath}"]`);
+            const parentContent = element?.closest('[data-content]');
+            const scope = parentContent ? parentContent.getAttribute('data-content') : (targetViewName || 'global');
+
+            this.registerCleanup(scope, cleanupFn);
           }
         } catch (error) {
-          console.error(`Error al cargar o ejecutar el controlador: ${controllerPath}`, error);
+          console.error(`❌ Fallo en controlador [${controllerPath}]:`, error);
         } finally {
-          if (objectUrl) {
-            URL.revokeObjectURL(objectUrl);
-          }
+          if (objectUrl) URL.revokeObjectURL(objectUrl);
         }
       }
     }
-    console.log(`✅ Vista renderizada y controladores ejecutados.`);
+    console.log(`✅ Ciclo de renderizado completado con éxito.`);
   }
 
   /**

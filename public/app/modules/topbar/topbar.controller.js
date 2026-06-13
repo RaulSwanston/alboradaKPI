@@ -1,6 +1,7 @@
 import Property from '../../models/Property.js';
 import { router } from '/router.js';
 import { auth } from '../../core/firebase.js';
+import { t } from '../../core/i18n.js';
 
 /**
  * Controlador para el módulo Topbar.
@@ -25,12 +26,12 @@ export default async function topbarController(contexto) {
 
     // 2. Mostrar propiedad o rol
     if (isAdmin) {
-      propertyElement.textContent = 'Administrador';
+      propertyElement.textContent = t('roles.admin') || 'Administrador';
     } else {
       if (contexto.data.property) {
         propertyElement.textContent = contexto.data.property.name;
       } else {
-        propertyElement.textContent = 'Residente';
+        propertyElement.textContent = t('roles.resident') || 'Residente';
       }
     }
 

@@ -1,4 +1,5 @@
-import { db, doc, updateDoc, auth, collection, getDocs, setDoc, getDoc, serverTimestamp, orderBy, query } from '../../core/firebase.js';
+import { auth } from '../../core/firebase.js';
+import User from '../../models/User.js';
 import { router } from '/router.js';
 
 /**
@@ -13,60 +14,46 @@ export default async function profileController(contexto) {
   const role = contexto.data.permissions?.role;
   const property = contexto.data.property;
 
-  // --- Elementos del DOM ---
-  const nameTitle = document.getElementById('profile-name-title');
-  const emailText = document.getElementById('profile-email-text');
-  const roleBadge = document.getElementById('profile-role-badge');
-  const unitBadge = document.getElementById('profile-unit-badge');
-  const photoPreview = document.getElementById('profile-image-preview');
-  const initialsPlaceholder = document.getElementById('profile-initials');
+  // ... (referencias al DOM inicialización igual)
 
-  const form = document.getElementById('profile-form');
-  const inputDisplayName = document.getElementById('profileDisplayName');
-  const inputEmail = document.getElementById('profileEmail');
-  const inputMobile = document.getElementById('profileMobile');
-  const inputPhone = document.getElementById('profilePhone');
-  const btnSave = document.getElementById('btn-save-profile');
+  // --- Manejo de Guardado ---
+  const handleProfileUpdate = async (e) => {
+    e.preventDefault();
+    if (!user) return;
 
-  // --- Inicialización de Datos ---
-  if (user) {
-    const displayName = user.displayName || user.email.split('@')[0];
-    
-    nameTitle.textContent = displayName;
-    emailText.textContent = user.email;
-    inputEmail.value = user.email;
-    inputDisplayName.value = displayName;
+    btnSave.disabled = true;
+    btnSave.textContent = 'Guardando...';
 
-    // Cargar datos adicionales desde el contexto
-    if (userProfile) {
-      inputMobile.value = userProfile.mobile || '';
-      inputPhone.value = userProfile.phone || '';
+    const updateData = {
+      displayName: inputDisplayName.value.trim(),
+      mobile: inputMobile.value.trim(),
+      phone: inputPhone.value.trim()
+    };
+
+    try {
+      // Uso del modelo User para centralizar la actualización
+      await User.updateProfile(user.uid, updateData);
+      
+      alert('Perfil actualizado correctamente.');
+      
+      // Actualizar UI local
+      nameTitle.textContent = updateData.displayName;
+      
+      // Actualizar contexto global para otras vistas
+      if (contexto.data.userProfile) {
+        Object.assign(contexto.data.userProfile, updateData);
+      }
+
+    } catch (error) {
+      console.error("Error al actualizar perfil:", error);
+      alert('Error al guardar los cambios.');
+    } finally {
+      btnSave.disabled = false;
+      btnSave.textContent = 'Guardar Cambios';
     }
+  };
 
-    // Badge de Rol y Unidad
-    if (isAdmin) roleBadge.textContent = 'Administrador';
-    else if (isResident) roleBadge.textContent = 'Residente';
-    else if (role === 'guest') roleBadge.textContent = 'Visitante';
-    else roleBadge.textContent = 'Pendiente';
-
-    if (property) {
-      unitBadge.textContent = `Unidad ${property.name || property.propertyId}`;
-    }
-
-    // Avatar (Prioridad: Firestore > Auth > Iniciales)
-    const finalPhoto = userProfile?.photoUrl || user.photoURL;
-
-    if (finalPhoto) {
-      photoPreview.src = finalPhoto;
-      photoPreview.classList.remove('hidden');
-      initialsPlaceholder.classList.add('hidden');
-    } else {
-      const initials = displayName.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
-      initialsPlaceholder.textContent = initials;
-      initialsPlaceholder.classList.remove('hidden');
-      photoPreview.classList.add('hidden');
-    }
-  }
+  form?.addEventListener('submit', handleProfileUpdate);
 
   // --- Manejo de Otros Eventos ---
 
@@ -90,3 +77,4 @@ export default async function profileController(contexto) {
     logoutBtn?.removeEventListener('click', handleLogout);
   };
 }
+

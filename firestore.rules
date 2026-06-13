@@ -72,5 +72,13 @@ service cloud.firestore {
       allow create, read, list: if request.auth != null;
       allow update, delete: if false; // Nadie puede modificar o borrar lo ya registrado.
     }
+
+    // Configuración de la Aplicación y Estadísticas Globales
+    match /appConfig/{document=**} {
+      // Todos los usuarios autenticados pueden leer la configuración.
+      allow read: if request.auth != null;
+      // Solo el administrador puede modificar la configuración o estadísticas.
+      allow write: if isAdmin();
+    }
   }
 }

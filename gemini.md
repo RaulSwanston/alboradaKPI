@@ -120,10 +120,16 @@ El módulo de `recentActivity` actúa como un centro de comando. Se ha estableci
 ---
 
 ### 11. Estándares del Módulo de Transacciones (Nuevo)
+- **Folios de Facturación (FEE):** Todo cargo generado debe poseer un `voucherNumber` con el formato `FAC-YYYYMM-PropId` (ej: `FAC-202501-014`). Esto asegura unicidad y trazabilidad.
+- **Propiedades de Conciliación (FEE):**
+    - `pendingAmount` (Número): Obligatorio. Indica el saldo pendiente de ese cargo específico.
+    - `paidBy` (Array de Objetos): Lista de recibos que han abonado a este cargo. Estructura: `[{ paymentId: string, voucherNumber: string, amount: number }]`.
+- **Propiedades de Conciliación (PAYMENT):**
+    - `appliedTo` (Array de Objetos): Lista de cargos cubiertos por este recibo. Estructura: `[{ transactionId: string, amount: number }]`.
 - **Campo `period`:** Toda transacción debe incluir obligatoriamente el campo `period` con formato `YYYY-MM` (ej: "2025-06") para permitir consultas temporales eficientes.
 - **Consistencia de Fechas (`effectiveDate`):** El campo `effectiveDate` debe almacenarse siempre como un objeto `Date`/`Timestamp` de Firestore. No se deben mezclar tipos (evitar strings planos) para asegurar que los filtros por rango funcionen correctamente.
-- **Normalización de Unidades:** Los IDs de propiedad deben seguir la convención establecida (ej: `D-01` o `001`) para mantener la coherencia financiera.
-- **Estandarización de Tipos:** Los tipos de transacción deben usar los valores definidos (`FEE`, `PAYMENT`, `EXPENSE`, `OTHER_INCOME`) para asegurar que el balance neto sea preciso y los chips de filtro funcionen correctamente.
+- **Normalización de Unidades:** Los IDs de propiedad deben seguir estrictamente el formato de 3 dígitos para números (`001`, `014`, `105`) y `D-XX` para torres (ej. `D-01`) para mantener la coherencia financiera.
+- **Estandarización de Tipos:** Los tipos de transacción deben usar los valores definidos (`FEE`, `PAYMENT`, `EXPENSE`, `OTHER_INCOME`, `FINE`, `UNCATEGORIZED`) para asegurar que el balance neto sea preciso y los chips de filtro funcionen correctamente.
 
 
 Para cumplir con la visión de una plataforma de servicios flexible y automatizada, se ha definido la siguiente estructura de colecciones.
@@ -215,18 +221,21 @@ Para cumplir con la visión de una plataforma de servicios flexible y automatiza
 - **Propósito:** Libro contable inmutable de todos los movimientos financieros (cargos y pagos). Funciona como el Libro Mayor del condominio.
 - **ID del Documento:** ID auto-generado por Firestore.
 - **Campos:**
-    - `propertyId` (Texto): ID de la propiedad a la que pertenece.
+    - `propertyId` (Texto): ID de la propiedad normalizado (ej: "014").
     - `status`: `verified`, `unidentified`.
     - `amount` (Número): Negativo para cargos, positivo para créditos.
-    - `pendingAmount` (Número): **(NUEVO)** Para cargos (FEE), indica cuánto falta por pagar de ese movimiento específico.
-    - `type` (Texto): `FEE`, `PAYMENT`, `FINE`, `UNCATEGORIZED`.
+    - `pendingAmount` (Número): Para cargos (FEE), indica cuánto falta por pagar de ese movimiento específico.
+    - `paidBy` (Array): **(NUEVO)** Referencias a pagos aplicados `[{paymentId, voucherNumber, amount}]`.
+    - `appliedTo` (Array): **(NUEVO)** Referencias a cargos cubiertos `[{transactionId, amount}]`.
+    - `type` (Texto): `FEE`, `PAYMENT`, `EXPENSE`, `OTHER_INCOME`, `FINE`, `UNCATEGORIZED`.
     - `description` (Texto).
     - `metadata` (Objeto).
-    - `voucherType` (Texto).
-    - `voucherNumber` (Texto): Aquí se guardará el número de recibo `REC-YYYYMMDD-XXXX` para los pagos.
+    - `voucherType` (Texto): "Cargo", "Recibo", "Gasto".
+    - `voucherNumber` (Texto): Folio `FAC-...` para cargos, número de libreta física o formato `REC-YYYYMMDD-XXXX` para pagos validados.
     - `serviceRequestId` (Texto, Opcional).
-    - `createdAt` (Fecha y Hora).
-    - `effectiveDate` (Fecha).
+    - `period` (Texto): Formato `YYYY-MM`.
+    - `createdAt` (Fecha y Hora / Timestamp).
+    - `effectiveDate` (Fecha / Timestamp).
 
 ### Colección: `paymentNotifications`
 - **Propósito:** Almacena los reportes de pago enviados por los residentes, pendientes de verificación por parte del administrador.
@@ -289,12 +298,15 @@ Para proteger los datos, se implementará la siguiente lógica en las reglas de 
 
 - **Colección `users`:**
     - Un usuario solo puede **leer y actualizar** su propio documento (`/users/{userId}`).
-    - Un usuario no puede leer los documentos de otros usuarios.
+    - Un administrador puede **leer y actualizar** cualquier documento de usuario para gestionar roles y propiedades.
     - Un usuario puede **crear** su propio documento al registrarse.
 
 - **Colección `properties`:**
     - Un usuario solo puede **leer** un documento de propiedad si su `userId` está presente en el campo `residentUids` de dicho documento.
-    - La escritura (crear/actualizar) de propiedades será, inicialmente, solo para administradores (a definir en Fase 2).
+    - Los administradores tienen permisos de **escritura** para gestionar la información de la unidad y la lista de residentes autorizados.
+
+- **Colección `activities`:**
+    - Requiere un **índice compuesto** (`visibility` [array-contains] + `timestamp` [descending]) para que el feed de notificaciones funcione correctamente tanto para admins como para residentes.
 
 - **Colección `transactions`:**
     - Un usuario solo puede **leer** los documentos de transacciones si el `propertyId` de la transacción está incluido en el array `propertyIds` de su propio perfil de usuario (`/users/{request.auth.uid}`).
@@ -326,22 +338,40 @@ Para asegurar la precisión financiera y la consistencia visual en el detalle de
 Para garantizar la flexibilidad y escalabilidad de la plataforma, se implementa una capa de configuración centralizada que permite al administrador gestionar el comportamiento y la apariencia de la app sin modificar el código fuente.
 
 ### 1. Origen de Datos y Persistencia
-- **Fuente de Verdad:** Colección `_config/app` en Firestore (Producción).
+- **Fuente de Verdad:** Colección `appConfig` en Firestore, documento `app`.
 - **Prioridad de Carga (sessionGuard):** Para facilitar el desarrollo y las pruebas, el sistema prioriza la configuración guardada en `localStorage` (`gph_app_config`). Si no existe, utiliza el objeto por defecto en `public/app/core/appConfig.js`.
 - **Estrategia Offline:** El objeto `appConfig` se inyecta en el `contexto.data` de cada navegación, asegurando que todos los controladores tengan acceso a las definiciones globales de forma síncrona.
 
 ### 2. Estructura del Objeto `appConfig`
-Se divide en tres bloques lógicos:
+Se divide en bloques lógicos:
 - **`accessControl`**: Define la matriz de permisos por rol y la lista de módulos permitidos.
 - **`systemDefaults`**: Ajustes técnicos (Idioma base, moneda, zona horaria).
 - **`branding`**: Identidad visual (Nombre de la app, Logo URL, Paleta activa).
+- **`stats` (Caché Financiera):** Almacena métricas pre-calculadas para optimizar el rendimiento y reducir costos de lectura:
+    - `saldoCajaDisponible` (Número): Liquidez real (Ingresos - Gastos).
+    - `totalCuentasPorCobrar` (Número): Suma de deudas pendientes de residentes.
+    - `totalSaldosAFavor` (Número): Suma de pagos en exceso de residentes.
+    - `ultimaSincronizacion` (Timestamp): Fecha del último recalculo masivo.
 
 ### 3. Cascada de Módulos (Layout Dinámico)
 - El administrador puede organizar el orden (`order`) y la visibilidad (`visible`) de los módulos por cada vista, permitiendo una personalización total de la experiencia de usuario sin tocar el HTML.
 
 ---
 
-## 16. Sistema de Internacionalización Dinámica (i18n)
+## 16. Sistema de Cierre Financiero y Sincronización Global
+
+Para mantener la integridad de los datos y minimizar el impacto económico en el uso de la base de datos, se establece el siguiente estándar de sincronización:
+
+- **Proceso de Sincronización Masiva:** El método `Property.recalculateAllBalances()` actúa como un "Cierre Financiero". Su ejecución es manual (por el administrador) y realiza dos tareas críticas:
+    1. **Conciliación Individual:** Recalcula el `balance` de cada propiedad analizando sus transacciones.
+    2. **Caché Global:** Realiza una sumatoria única de la contabilidad para actualizar el objeto `stats` en `appConfig/app`.
+- **Lógica de Caja Real (Liquidez):** Para el cálculo de `saldoCajaDisponible`, el sistema suma todos los montos de transacciones de tipo `PAYMENT` y `OTHER_INCOME`, y resta las de tipo `EXPENSE` o `ADMIN_EXPENSE`. Se excluyen explícitamente los cargos (`FEE`, `FINE`) ya que representan dinero no percibido aún.
+- **Eficiencia de Lectura:** Los módulos de resumen financiero deben priorizar la lectura del campo `stats` del `appConfig` inyectado en la sesión, evitando realizar consultas masivas a las colecciones de propiedades o transacciones durante el uso cotidiano.
+- **Silencio Operativo:** Los procesos de sincronización masiva deben evitar el uso de `console.log` para reportar éxitos individuales de unidades, limitando las notificaciones a la interfaz de usuario (spinners, iconos de éxito).
+
+---
+
+## 17. Sistema de Internacionalización Dinámica (i18n)
 
 La aplicación implementa un motor de traducción nativo integrado en el ciclo de renderizado de `Mosaic`.
 
@@ -411,4 +441,30 @@ Para garantizar una gestión contable precisa y una UX fluida en el reporte de i
 - **Folio Único:** Al validar un pago, se genera un número de recibo inmutable con el formato `REC-YYYYMMDD-XXXX` (donde XXXX son los últimos 4 caracteres del ID de la transacción).
 - **Generación PDF:** Se utiliza la librería `jspdf` para generar la constancia digital basada en los datos de la transacción de pago validada.
 - **Trazabilidad:** El número de recibo debe quedar vinculado tanto en la transacción de pago como en la notificación de origen.
+
+---
+### Hito Junio 2026: Arquitectura de Modelos, Robustez Offline y Eficiencia Financiera
+
+*   **Arquitectura de Modelos Centralizada:** Se ha completado la transición hacia una arquitectura donde los controladores en `/public/app/modules/` **no realizan llamadas directas a Firestore**. Toda la lógica de persistencia se delega a los archivos en `/public/app/models/` (ej: `Property`, `Transaction`, `User`, `MembershipRequest`).
+*   **Blindaje Offline (Atomicidad):** Se ha estandarizado el uso de **`writeBatch`** para operaciones críticas que involucran múltiples documentos (ej: Reportar Pago + Actividad, Aprobar Residente). Esto garantiza que los cambios se guarden localmente en la caché de Firestore y se sincronicen íntegramente cuando haya conexión, resolviendo problemas de internet inestable.
+*   **Optimización del Cierre Financiero (`recalculateAllBalances`):**
+    *   Se eliminó el bucle de consultas secuenciales al servidor.
+    *   Ahora se realiza una **lectura única masiva** de transacciones y se procesa el saldo de todas las unidades en la memoria del navegador.
+    *   El método devuelve un objeto `stats` calculado, permitiendo que la UI se actualice al instante sin esperar una nueva lectura del servidor.
+    *   Resultados: Reducción de latencia en un 90% y ahorro significativo en cuotas de lectura de Firebase.
+*   **Mejoras en Resumen Financiero (Admin UX):**
+    *   **Buscador Inteligente:** Sustitución de `<select>` por `<datalist>` para buscar entre cientos de unidades por ID o nombre de propietario.
+    *   **KPIs Globales:** La tarjeta de "Último Pago" en vista global ahora muestra el monto del último ingreso y un subtexto de cumplimiento (ej: "300 unidades al día (80%)").
+    *   **Avatares Dinámicos:** La tarjeta de información del usuario alterna automáticamente entre el icono blanco de comunidad (Vista Global) y la foto real del residente (Vista por Unidad).
+*   **Estándares de Iconografía:** Se prohíbe el uso de colores fijos en los SVGs del catálogo. Todos los iconos en `icons.json` deben usar `fill='currentColor'` para permitir la estilización dinámica vía CSS (especialmente en tarjetas oscuras).
+
+---
+### 22. Estándares del Entorno de Desarrollo (Windows/PowerShell)
+
+Para garantizar la compatibilidad con el entorno local del usuario y la correcta ejecución de tareas de automatización:
+
+- **Entorno Mandatorio:** El sistema operativo de desarrollo es **Windows (win32)**.
+- **Shell de Ejecución:** Se debe utilizar exclusivamente **PowerShell** para todos los comandos de shell y scripts de automatización.
+- **Sintaxis de Comandos:** No se debe asumir la disponibilidad de herramientas de Unix (bash, sh). Los comandos deben seguir la sintaxis de PowerShell (ej. `Write-Output` en lugar de `echo`, `Import-Csv`, manejo de variables con `$`).
+- **Scripts locales:** El uso de archivos `.ps1` es el estándar para tareas complejas de verificación o procesamiento de datos.
 

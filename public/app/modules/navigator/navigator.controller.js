@@ -1,48 +1,35 @@
 import { router } from '/router.js';
 import { db, collection, query, where, onSnapshot } from '../../core/firebase.js';
-import { getInternalPath } from '../../core/i18n.js';
+import { getInternalPath, t } from '../../core/i18n.js';
 
-export default function navigator(contexto) {
-  console.log("Ejecutando inicialización del 'navigator'.");
+export default async function navigator(contexto) {
+  console.log("Ejecutando inicialización del 'navigator' dinámico.");
   const permissions = contexto.data.permissions;
   const user = contexto.data.user;
+  const config = contexto.data.appConfig;
 
   // --- Clase Interna Modular para Notificaciones ---
   class NotificationManager {
-    constructor(elementId) {
-      this.element = document.getElementById(elementId);
-      this.watchers = new Map(); // Mapa de desuscripciones [nombre -> unsubscribeFunc]
-      this.counts = new Map();   // Mapa de conteos [nombre -> cantidad]
+    constructor() {
+      this.watchers = new Map(); 
+      this.counts = new Map();   
     }
 
-    /**
-     * Registra una nueva "antena" (listener en tiempo real)
-     */
-    registerWatcher(name, firestoreQuery) {
+    registerWatcher(name, firestoreQuery, callback) {
       if (this.watchers.has(name)) return;
-
       const unsubscribe = onSnapshot(firestoreQuery, (snapshot) => {
         this.counts.set(name, snapshot.size);
-        this.updateUI();
+        callback(this.getTotal());
       }, (error) => {
         console.warn(`⚠️ Error en antena '${name}':`, error.message);
       });
-
       this.watchers.set(name, unsubscribe);
     }
 
-    /**
-     * Evalúa si debe mostrar el punto rojo
-     */
-    updateUI() {
-      if (!this.element) return;
-      const totalPending = Array.from(this.counts.values()).reduce((a, b) => a + b, 0);
-      this.element.classList.toggle('has-updates', totalPending > 0);
+    getTotal() {
+      return Array.from(this.counts.values()).reduce((a, b) => a + b, 0);
     }
 
-    /**
-     * Apaga todos los listeners
-     */
     destroy() {
       this.watchers.forEach(unsub => unsub());
       this.watchers.clear();
@@ -50,28 +37,125 @@ export default function navigator(contexto) {
     }
   }
 
-  // --- Referencias a Elementos del DOM ---
-  const dashboardMenu = document.getElementById("dashboard-menu");
-  const dividers = dashboardMenu?.querySelectorAll(".menu-divider");
-  const buttonMenu = document.getElementById("button-menu");
+  const notifier = new NotificationManager();
 
-  if (!dashboardMenu || !dividers || !buttonMenu || dividers.length === 0) {
+  // --- Referencias a Elementos del DOM ---
+  const navList = document.getElementById("nav-list");
+  const buttonMenu = document.getElementById("button-menu");
+  const navLogo = document.getElementById("nav-logo");
+  const navAppName = document.getElementById("nav-app-name");
+
+  if (!navList || !buttonMenu) {
       console.warn("Elementos del navegador no encontrados.");
       return;
   }
 
-  // --- Sincronización Inicial con la Ruta Actual ---
+  /**
+   * Renderiza el branding (Logo y Nombre)
+   */
+  const renderBranding = () => {
+    if (config.branding) {
+      if (navLogo && config.branding.logoUrl) {
+        navLogo.src = config.branding.logoUrl;
+        navLogo.alt = config.branding.appName || "App Logo";
+      }
+      if (navAppName && config.branding.appName) {
+        // Si el nombre tiene espacios, podemos intentar poner un <br> en el primer espacio
+        // para mantener el estilo visual original, o simplemente usar el nombre.
+        // Por ahora, lo usaremos tal cual pero con soporte para el estilo de dos líneas si el usuario lo desea.
+        const nameParts = config.branding.appName.split(' ');
+        if (nameParts.length > 1) {
+          navAppName.innerHTML = `${nameParts[0]}<br>${nameParts.slice(1).join(' ')}`;
+        } else {
+          navAppName.textContent = config.branding.appName;
+        }
+      }
+    }
+  };
+
+  /**
+   * Inyecta los iconos SVG desde el repositorio central.
+   */
+  const handleIcons = async (container = document) => {
+    try {
+        const response = await fetch('/src/img/icons.json');
+        const data = await response.json();
+        const iconRepo = data.icons;
+
+        const inject = (c, iconName) => {
+            const iconData = iconRepo.find(i => i.name === iconName);
+            if (iconData && c) {
+                c.innerHTML = iconData.svg;
+            }
+        };
+
+        container.querySelectorAll('[data-icon]').forEach(el => {
+            inject(el, el.dataset.icon);
+        });
+    } catch (error) {
+        console.error("Error al cargar icons.json en navigator:", error);
+    }
+  };
+
+  /**
+   * Renderiza el menú basado en la configuración y roles
+   */
+  const renderMenu = async () => {
+    const sidebarConfig = config.navigation?.sidebar || [];
+    const userRole = permissions.role;
+
+    let html = '';
+
+    sidebarConfig.forEach(group => {
+      // Verificar si el rol del usuario tiene permiso para este grupo
+      if (group.roles && !group.roles.includes(userRole) && !permissions.isAdmin) return;
+
+      const hasItems = group.items && group.items.length > 0;
+      
+      html += `
+        <li class="menu-divider" id="${group.id}">
+          <a href="${group.path}" data-view="dashboard">
+            <div class="icon-slot" data-icon="${group.icon}"></div>
+            <span>${t(group.labelKey)}</span>
+          </a>
+        </li>
+      `;
+
+      if (hasItems) {
+        html += `<div class="dropdown">`;
+        group.items.forEach(item => {
+          if (item.roles && !item.roles.includes(userRole) && !permissions.isAdmin) return;
+
+          html += `
+            <li class="menu-item">
+              <a href="${item.path}" data-view="dashboard">
+                <div class="icon-slot-sm" data-icon="${item.icon}"></div>
+                <span>${t(item.labelKey)}</span>
+              </a>
+            </li>
+          `;
+        });
+        html += `</div>`;
+      }
+    });
+
+    navList.innerHTML = html;
+    await handleIcons(navList);
+    syncActiveRoute();
+    attachEvents();
+    initNotifiers();
+  };
+
   const syncActiveRoute = () => {
     const currentInternalPath = getInternalPath(window.location.pathname);
-    const allLinks = dashboardMenu.querySelectorAll("a[href]");
+    const dividers = navList.querySelectorAll(".menu-divider");
+    const allLinks = navList.querySelectorAll("a[href]");
     
     let activeDivider = null;
 
     allLinks.forEach(link => {
       const linkPath = getInternalPath(link.getAttribute("href"));
       if (linkPath === currentInternalPath) {
-        // Si el link está en un divider directamente, ese es el activo.
-        // Si está en un dropdown, el activo es el divider inmediatamente anterior al dropdown.
         const parentDivider = link.closest(".menu-divider");
         if (parentDivider) {
           activeDivider = parentDivider;
@@ -90,32 +174,11 @@ export default function navigator(contexto) {
     }
   };
 
-  syncActiveRoute();
-
-  // --- Inicializar Notificaciones ---
-  const notifier = new NotificationManager('nav-notifications');
-
-  if (permissions.isAdmin) {
-    // Antena Admin 1: Membresías pendientes
-    notifier.registerWatcher('memberships', query(
-      collection(db, "membershipRequests"), 
-      where("status", "==", "pending")
-    ));
-    // Antena Admin 2: Servicios pendientes (preparado para el futuro)
-    notifier.registerWatcher('services', query(
-      collection(db, "serviceRequests"), 
-      where("status", "==", "pending")
-    ));
-  } else if (user) {
-    // Antena Residente: Sus propias solicitudes aprobadas/notificadas recientemente
-    // Por ahora, solo detectamos si tiene solicitudes activas (opcional)
-  }
-
-  // --- Handlers ---
   const handleDividerClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
     const divider = e.currentTarget;
+    const dividers = navList.querySelectorAll(".menu-divider");
     const isDesktop = window.matchMedia("(min-width: 768px)");
 
     if (isDesktop.matches) {
@@ -132,23 +195,52 @@ export default function navigator(contexto) {
     }
   };
 
+  const attachEvents = () => {
+    const dividers = navList.querySelectorAll(".menu-divider");
+    dividers.forEach((divider) => {
+      divider.addEventListener("click", handleDividerClick);
+    });
+  };
+
+  const initNotifiers = () => {
+    const notificationElement = document.getElementById('nav-notifications');
+    if (!notificationElement) return;
+
+    const updateBadge = (total) => {
+      notificationElement.classList.toggle('has-updates', total > 0);
+    };
+
+    if (permissions.isAdmin) {
+      notifier.registerWatcher('memberships', query(
+        collection(db, "membershipRequests"), 
+        where("status", "==", "pending")
+      ), updateBadge);
+      
+      notifier.registerWatcher('services', query(
+        collection(db, "serviceRequests"), 
+        where("status", "==", "pending")
+      ), updateBadge);
+    }
+  };
+
   const handleMenuButtonClick = () => {
     buttonMenu.classList.toggle('open');
   };
 
-  // --- Suscripción ---
-  dividers.forEach((divider) => {
-    divider.addEventListener("click", handleDividerClick);
-  });
   buttonMenu.addEventListener("click", handleMenuButtonClick);
+
+  // Ejecutar render inicial
+  renderBranding();
+  await renderMenu();
 
   // --- Limpieza ---
   return () => {
-    console.log("Limpiando listeners del 'navigator' y apagando antenas.");
+    console.log("Limpiando listeners del 'navigator'.");
     notifier.destroy();
+    buttonMenu.removeEventListener("click", handleMenuButtonClick);
+    const dividers = navList.querySelectorAll(".menu-divider");
     dividers.forEach((divider) => {
       divider.removeEventListener("click", handleDividerClick);
     });
-    buttonMenu.removeEventListener("click", handleMenuButtonClick);
   };
 }

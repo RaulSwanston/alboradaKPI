@@ -105,6 +105,37 @@ export default class Transaction {
   }
 
   /**
+   * Obtiene todos los cargos (amount < 0) pendientes de una propiedad.
+   * @param {string} propertyId 
+   * @returns {Promise<Array>}
+   */
+  static async getPendingDebts(propertyId) {
+    try {
+      const q = query(
+        collection(db, "transactions"),
+        where("propertyId", "==", propertyId),
+        where("amount", "<", 0), // Solo cargos
+        orderBy("createdAt", "asc")
+      );
+
+      const querySnapshot = await getDocs(q);
+      const list = [];
+      querySnapshot.forEach(doc => {
+        const data = doc.data();
+        // Solo incluimos si tiene monto pendiente (si el campo no existe, asumimos el total negativo)
+        const pending = data.pendingAmount !== undefined ? data.pendingAmount : Math.abs(data.amount);
+        if (pending > 0) {
+          list.push({ id: doc.id, ...data, pending });
+        }
+      });
+      return list;
+    } catch (error) {
+      console.error(`[Transaction] Error al obtener deudas de ${propertyId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
    * Obtiene una transacción específica por ID.
    */
   static async getById(id) {

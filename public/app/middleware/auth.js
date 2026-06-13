@@ -8,12 +8,32 @@ import { loadTranslations } from '../core/i18n.js';
  * Orquesta el flujo de acceso: Auth -> Email -> isActive -> Rol
  */
 export const sessionGuard = async (contexto) => {
-  // Inyectamos la configuración de la app (Capa de Configuración)
-  // PRIORIDAD: 1. LocalStorage (Pruebas), 2. appConfig.js (Default)
-  const localConfig = localStorage.getItem('gph_app_config');
-  contexto.data.appConfig = localConfig ? JSON.parse(localConfig) : appConfig;
+  // --- Capa de Configuración Dinámica (Estrategia de Fusión) ---
+  // Iniciamos con la configuración local por defecto como base sólida
+  let currentConfig = { ...appConfig };
 
-  // Aseguramos que las traducciones estén cargadas (NUEVO)
+  try {
+    const configDoc = await getDoc(doc(db, "appConfig", "app"));
+    if (configDoc.exists()) {
+      // FUSIONAMOS: La nube sobreescribe los campos que tenga (ej: stats)
+      // pero preserva lo que no tenga (ej: navigation, accessControl)
+      currentConfig = { ...currentConfig, ...configDoc.data() };
+      localStorage.setItem('gph_app_config', JSON.stringify(currentConfig));
+    } else {
+      // Si no hay nube, intentamos recuperar del caché local
+      const cached = localStorage.getItem('gph_app_config');
+      if (cached) currentConfig = JSON.parse(cached);
+    }
+  } catch (error) {
+    // Modo offline: Usamos localStorage o nos quedamos con el default del archivo JS
+    console.log("Modo offline: Cargando configuración desde caché.");
+    const cached = localStorage.getItem('gph_app_config');
+    if (cached) currentConfig = JSON.parse(cached);
+  }
+
+  contexto.data.appConfig = currentConfig;
+
+  // Aseguramos que las traducciones estén cargadas
   const lang = contexto.data.appConfig.systemDefaults?.language || 'es';
   await loadTranslations(lang);
 

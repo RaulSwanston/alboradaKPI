@@ -7,7 +7,9 @@
 
 import { appConfig } from '../../core/appConfig.js';
 import { t } from '../../core/i18n.js';
-import { storage, ref, uploadBytes, getDownloadURL, db, doc, setDoc, collection, query, getDocs, where, updateDoc, limit, startAfter, orderBy } from '../../core/firebase.js';
+import { storage, ref, uploadBytes, getDownloadURL, db, doc, getDoc } from '../../core/firebase.js';
+import User from '../../models/User.js';
+import AppConfig from '../../models/AppConfig.js';
 
 export default async function configManagerController(contexto) {
     console.log("Iniciando configManager con contexto:", contexto);
@@ -277,39 +279,25 @@ export default async function configManagerController(contexto) {
         if (btnLoadMore) btnLoadMore.classList.add('hidden');
 
         try {
-            const usersRef = collection(db, "users");
-            const constraints = [orderBy("email"), limit(USERS_PER_PAGE)];
-            if (currentRoleFilter !== 'all') constraints.unshift(where("role", "==", currentRoleFilter));
-            if (lastUserDoc) constraints.push(startAfter(lastUserDoc));
-
-            const snapshot = await getDocs(query(usersRef, ...constraints));
+            // Uso del modelo User para búsqueda y paginación
+            const result = await User.queryUsers({
+                role: currentRoleFilter,
+                searchTerm: currentSearchTerm,
+                pageSize: USERS_PER_PAGE,
+                lastDoc: lastUserDoc
+            });
             
-            if (!isLoadMore && snapshot.empty) {
+            if (!isLoadMore && result.users.length === 0) {
                 resultsContainer.innerHTML = `<p class="config-empty-state">${t('configManager.roles.noUsersFound')}</p>`;
                 return;
             }
 
             if (!isLoadMore) resultsContainer.innerHTML = '';
 
-            const users = [];
-            snapshot.forEach(doc => {
-                const data = doc.data();
-                if (currentSearchTerm) {
-                    const matches = (data.displayName || '').toLowerCase().includes(currentSearchTerm) || 
-                                  (data.email || '').toLowerCase().includes(currentSearchTerm);
-                    if (matches) users.push({ id: doc.id, ...data });
-                } else {
-                    users.push({ id: doc.id, ...data });
-                }
-            });
+            lastUserDoc = result.lastDoc;
+            renderUserResults(result.users, isLoadMore);
 
-            if (snapshot.docs.length > 0) {
-                lastUserDoc = snapshot.docs[snapshot.docs.length - 1];
-            }
-            
-            renderUserResults(users, isLoadMore);
-
-            if (snapshot.size === USERS_PER_PAGE) {
+            if (result.size === USERS_PER_PAGE) {
                 btnLoadMore.classList.remove('hidden');
             }
 
@@ -440,21 +428,21 @@ export default async function configManagerController(contexto) {
             saveBtn.innerHTML = `<span>${t('configManager.actions.saving')}</span>`;
             saveBtn.disabled = true;
             try {
-                // 1. Logo a Storage
+                // 1. Logo a Storage (Independiente)
                 const remoteUrl = await uploadLogoToFirebase();
                 if (remoteUrl) localConfig.branding.logoUrl = remoteUrl;
 
-                // 2. Roles de Usuario a Firestore
+                // 2. Roles de Usuario (Uso del modelo User)
                 const userUpdatePromises = Object.entries(pendingUserUpdates).map(([uid, newRole]) => {
-                    return updateDoc(doc(db, "users", uid), { role: newRole });
+                    return User.updateRole(uid, newRole);
                 });
                 if (userUpdatePromises.length > 0) {
                     await Promise.all(userUpdatePromises);
                     console.log(`✅ ${userUpdatePromises.length} roles de usuario actualizados.`);
                 }
 
-                // 3. Configuración Global a Firestore
-                await setDoc(doc(db, "_config", "app"), localConfig, { merge: true });
+                // 3. Configuración Global (Uso del modelo AppConfig)
+                await AppConfig.save(localConfig);
                 
                 localStorage.setItem('gph_app_config', JSON.stringify(localConfig));
                 saveBtn.innerHTML = `<span>${t('configManager.actions.success')}</span>`;

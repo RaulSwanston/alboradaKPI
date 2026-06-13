@@ -390,6 +390,27 @@
   color: var(--color-text-secondary);
 }
 
+.recon-indicator {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-top: 0.4rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-kaitoke-green-600);
+  background: rgba(40, 191, 99, 0.08);
+  padding: 0.2rem 0.6rem;
+  border-radius: 0.5rem;
+  width: fit-content;
+  border: 1px solid rgba(40, 191, 99, 0.15);
+}
+
+.recon-indicator svg {
+  color: var(--color-kaitoke-green-500);
+  flex-shrink: 0;
+}
+
+
 .ref-badge {
   padding: 0.25rem 0.55rem;
   background: var(--color-gurkha-100);

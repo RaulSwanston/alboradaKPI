@@ -1,4 +1,6 @@
 import { db, doc, collection, getDocs, setDoc, getDoc, serverTimestamp, query, limit, where, orderBy, writeBatch } from '../../core/firebase.js';
+import Property from '../../models/Property.js';
+import MembershipRequest from '../../models/MembershipRequest.js';
 
 /**
  * Controlador para el módulo de Solicitud de Residencia.
@@ -36,17 +38,12 @@ export default async function residencyRequestController(contexto) {
   residencyCard.classList.remove('hidden');
 
   const checkStatus = async () => {
-    // 1. Buscar solicitudes existentes del usuario
+    // 1. Buscar solicitudes existentes del usuario mediante el modelo
     try {
-      const q = query(
-        collection(db, "membershipRequests"), 
-        where("userId", "==", user.uid)
-      );
-      const querySnap = await getDocs(q);
+      const requests = await MembershipRequest.getByUserId(user.uid);
 
-      if (!querySnap.empty) {
-        requestStatusList.innerHTML = querySnap.docs.map(doc => {
-          const data = doc.data();
+      if (requests.length > 0) {
+        requestStatusList.innerHTML = requests.map(data => {
           const statusMap = {
             'pending': '⏳ Pendiente de revisión',
             'approved': '✅ Aprobada',
@@ -57,29 +54,15 @@ export default async function residencyRequestController(contexto) {
         }).join('');
         
         requestStatusContainer.classList.remove('hidden');
-        // No ocultamos el buscador por defecto para permitir nuevas solicitudes
       }
     } catch (error) {
       console.warn("⚠️ Error al verificar solicitudes previas:", error.message);
     }
 
-    // 2. Carga segura de catálogo
+    // 2. Carga segura de catálogo mediante el modelo Property
     try {
       console.log("📂 Cargando catálogo completo de unidades...");
-      // Aumentamos el límite a 1000 para cubrir todas las residencias (>360)
-      const propertiesRef = collection(db, "properties");
-      const q = query(propertiesRef, orderBy("name"), limit(1000));
-      const querySnap = await getDocs(q);
-      
-      if (querySnap.empty) {
-        console.warn("⚠️ La colección 'properties' parece estar vacía.");
-      }
-
-      allProperties = querySnap.docs.map(doc => ({
-        id: doc.id,
-        name: doc.data().name || `Unidad ${doc.id}`,
-        street: doc.data().address?.street || ''
-      }));
+      allProperties = await Property.getAll('name');
       console.log(`✨ ${allProperties.length} unidades cargadas para búsqueda.`);
     } catch (error) {
       console.error("❌ Error al cargar propiedades:", error);
@@ -91,8 +74,6 @@ export default async function residencyRequestController(contexto) {
   // --- Gestión de Chips (Manipulación Quirúrgica) ---
   const updateUIState = () => {
     const hasSelection = selectedProperties.size > 0;
-    // El contenedor de chips ahora SIEMPRE es visible por CSS.
-    // Solo controlamos la visibilidad del formulario/botón de envío.
     residencyForm.classList.toggle('hidden', !hasSelection);
   };
 
@@ -131,7 +112,6 @@ export default async function residencyRequestController(contexto) {
     if (chip) {
       chip.classList.add('fade-out');
       
-      // Esperamos a que la transición CSS termine (300ms)
       chip.addEventListener('transitionend', () => {
         chip.remove();
         selectedProperties.delete(id);
@@ -179,7 +159,6 @@ export default async function residencyRequestController(contexto) {
     if (!item || !item.dataset.id) return;
 
     const { id, name } = item.dataset;
-    // Por defecto marcamos como Propietario al añadir
     selectedProperties.set(id, { name, relationship: 'Propietario' });
     searchInput.value = '';
     suggestionsList.classList.add('hidden');
@@ -203,41 +182,11 @@ export default async function residencyRequestController(contexto) {
     btnSubmit.textContent = 'Enviando...';
 
     try {
-      const batch = writeBatch(db);
-
-      selectedProperties.forEach((data, id) => {
-        const requestId = `residency_${user.uid}_${id}`;
-        const requestRef = doc(db, "membershipRequests", requestId);
-        
-        // 1. Guardar la solicitud de membresía
-        batch.set(requestRef, {
-          userId: user.uid,
-          userEmail: user.email,
-          userName: user.displayName || user.email.split('@')[0],
-          requestedPropertyId: id,
-          requestedPropertyName: data.name,
-          relationship: data.relationship,
-          status: 'pending',
-          createdAt: serverTimestamp()
-        });
-
-        // 2. Registrar la actividad para el administrador
-        const activityRef = doc(collection(db, "activities"));
-        batch.set(activityRef, {
-          type: 'MEMBERSHIP_REQUESTED',
-          timestamp: serverTimestamp(),
-          description: `${user.displayName || user.email} solicitó vinculación como ${data.relationship} de ${data.name}.`,
-          initiator: { type: 'USER', id: user.uid, name: user.displayName || user.email },
-          target: { type: 'PROPERTY', id: id, name: data.name },
-          visibility: ['admin']
-        });
-      });
-
-      await batch.commit();
+      // Uso del modelo para envío atómico
+      await MembershipRequest.createMany(user, selectedProperties);
       
       alert(`Se han enviado ${selectedProperties.size} solicitudes correctamente.`);
       
-      // Limpieza post-envío
       selectedProperties.clear();
       selectedList.innerHTML = '';
       updateUIState();
@@ -247,6 +196,7 @@ export default async function residencyRequestController(contexto) {
     } catch (error) {
       console.error("Error al enviar solicitudes:", error);
       alert("Error al procesar las solicitudes.");
+    } finally {
       btnSubmit.disabled = false;
       btnSubmit.textContent = originalText;
     }

@@ -1,7 +1,8 @@
-import { db, storage, collection, addDoc, serverTimestamp, ref, uploadBytes, getDownloadURL, query, where, getDocs, orderBy } from "../../core/firebase.js";
+import { db, storage, serverTimestamp, ref, uploadBytes, getDownloadURL, query, where, getDocs, orderBy } from "../../core/firebase.js";
 import User from "../../models/User.js";
 import Property from "../../models/Property.js";
 import Transaction from "../../models/Transaction.js";
+import PaymentNotification from "../../models/PaymentNotification.js";
 
 /**
  * paymentReport.controller.js
@@ -66,24 +67,7 @@ export default async function paymentReportController(contexto) {
     updateTotalAmount();
 
     try {
-      const q = query(
-        collection(db, "transactions"),
-        where("propertyId", "==", propertyId),
-        where("amount", "<", 0), // Solo cargos
-        orderBy("createdAt", "asc")
-      );
-
-      const querySnapshot = await getDocs(q);
-      pendingDebts = [];
-      querySnapshot.forEach(doc => {
-        const data = doc.data();
-        // Solo incluimos si tiene monto pendiente (si el campo no existe, asumimos el total negativo)
-        const pending = data.pendingAmount !== undefined ? data.pendingAmount : Math.abs(data.amount);
-        if (pending > 0) {
-          pendingDebts.push({ id: doc.id, ...data, pending });
-        }
-      });
-
+      pendingDebts = await Transaction.getPendingDebts(propertyId);
       renderDebts();
     } catch (error) {
       console.error("Error al cargar deudas:", error);
@@ -215,17 +199,11 @@ export default async function paymentReportController(contexto) {
         residentName: user.displayName || user.email
       };
 
-      await addDoc(collection(db, "paymentNotifications"), reportData);
-
-      // 4. Crear Actividad para el Admin
-      await addDoc(collection(db, "activities"), {
-        timestamp: serverTimestamp(),
-        type: 'PAYMENT_REPORTED',
-        description: `Nuevo reporte de pago de ${currentPropertyId} por $${reportedAmount}`,
-        initiator: { type: 'USER', id: user.uid, name: user.displayName || user.email },
-        target: { type: 'PROPERTY', id: currentPropertyId, name: `Unidad ${currentPropertyId}` },
-        visibility: ['admin'],
-        details: { amount: reportedAmount }
+      // 3. Registrar Notificación y Actividad de forma atómica
+      await PaymentNotification.create(reportData, { 
+        id: user.uid, 
+        name: user.displayName, 
+        email: user.email 
       });
 
       showModal("¡Reporte Enviado!", "Tu pago ha sido registrado y el administrador ha sido notificado para su verificación.", "check-circle");

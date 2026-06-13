@@ -10,8 +10,10 @@
   box-sizing: border-box;
   position: sticky;
   top: 0;
+  position: -webkit-sticky; /* Para Safari */
   z-index: 100;
-  margin: -1.5rem -1.5rem 0 -1.5rem; /* Compensar el padding de dashboard-main */
+  /* Compensar el padding de dashboard-main */
+  margin: -1.5rem -1.5rem 0 -1.5rem; 
   width: calc(100% + 3rem);
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
 }

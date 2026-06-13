@@ -1,4 +1,5 @@
 import { db, collection, getDocs, doc, updateDoc, query, where, arrayUnion, writeBatch, serverTimestamp } from '../../core/firebase.js';
+import MembershipRequest from '../../models/MembershipRequest.js';
 
 /**
  * Controlador para la gestión administrativa de membresías.
@@ -23,10 +24,9 @@ export default async function adminMembershipController(contexto) {
     container.innerHTML = '<div class="loading-state">Cargando solicitudes...</div>';
     
     try {
-      const q = query(collection(db, "membershipRequests"), where("status", "==", "pending"));
-      const querySnap = await getDocs(q);
+      const requests = await MembershipRequest.getByStatus('pending');
 
-      if (querySnap.empty) {
+      if (requests.length === 0) {
         container.innerHTML = '<div class="empty-state">No hay solicitudes pendientes de revisión.</div>';
         return;
       }
@@ -34,8 +34,7 @@ export default async function adminMembershipController(contexto) {
       container.innerHTML = '';
       const template = document.getElementById('request-card-template');
 
-      querySnap.forEach(snap => {
-        const data = snap.data();
+      requests.forEach(data => {
         const clone = template.content.cloneNode(true);
         const card = clone.querySelector('.request-card');
         
@@ -48,8 +47,8 @@ export default async function adminMembershipController(contexto) {
         const btnApprove = card.querySelector('.btn-approve');
         const btnReject = card.querySelector('.btn-reject');
 
-        btnApprove.addEventListener('click', () => handleAction(snap.id, data, 'approved', btnApprove));
-        btnReject.addEventListener('click', () => handleAction(snap.id, data, 'rejected', btnReject));
+        btnApprove.addEventListener('click', () => handleAction(data.id, data, 'approved', btnApprove));
+        btnReject.addEventListener('click', () => handleAction(data.id, data, 'rejected', btnReject));
 
         container.appendChild(clone);
       });
@@ -69,42 +68,8 @@ export default async function adminMembershipController(contexto) {
     btnElement.textContent = 'Procesando...';
 
     try {
-      const batch = writeBatch(db);
-
-      // 1. Actualizar estado de la solicitud
-      const requestRef = doc(db, "membershipRequests", requestId);
-      batch.update(requestRef, { 
-        status: newStatus,
-        processedAt: serverTimestamp()
-      });
-
-      if (newStatus === 'approved') {
-        // 2. Vincular propiedad al usuario
-        const userRef = doc(db, "users", requestData.userId);
-        batch.update(userRef, {
-          role: 'resident', // Elevamos el rol a residente
-          propertyIds: arrayUnion(requestData.requestedPropertyId)
-        });
-
-        // 3. Vincular usuario a la propiedad
-        const propertyRef = doc(db, "properties", requestData.requestedPropertyId);
-        batch.update(propertyRef, {
-          residentUids: arrayUnion(requestData.userId)
-        });
-
-        // 4. Registrar actividad de sistema (Notificación de éxito)
-        const activityRef = doc(collection(db, "activities"));
-        batch.set(activityRef, {
-          type: 'MEMBERSHIP_APPROVED',
-          timestamp: serverTimestamp(),
-          description: `Solicitud de ${requestData.userName} para ${requestData.requestedPropertyName} aprobada.`,
-          initiator: { type: 'SYSTEM', name: 'Administración' },
-          target: { type: 'PROPERTY', id: requestData.requestedPropertyId, name: requestData.requestedPropertyName },
-          visibility: ['admin', requestData.userId]
-        });
-      }
-
-      await batch.commit();
+      // Uso del modelo para procesamiento atómico
+      await MembershipRequest.process(requestId, requestData, newStatus);
       
       // Remover la tarjeta de la UI con una pequeña animación
       const card = btnElement.closest('.request-card');

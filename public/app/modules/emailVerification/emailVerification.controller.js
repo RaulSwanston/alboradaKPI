@@ -1,4 +1,5 @@
-import { reload, sendEmailVerification, db, doc, updateDoc } from '../../core/firebase.js';
+import { reload, sendEmailVerification } from '../../core/firebase.js';
+import User from '../../models/User.js';
 
 /**
  * Controlador para el módulo de verificación de email.
@@ -31,11 +32,10 @@ export default async function emailVerificationController(contexto) {
       if (user.emailVerified) {
         console.log("¡Email verificado con éxito!");
         
-        // Transición de Rol: De 'pending' a 'guest' en Firestore
+        // Transición de Rol: De 'pending' a 'guest' en Firestore mediante modelo
         if (profile && profile.role === 'pending') {
           console.log("Actualizando rol a 'guest'...");
-          const userDocRef = doc(db, "users", user.uid);
-          await updateDoc(userDocRef, { role: 'guest' });
+          await User.updateRole(user.uid, 'guest');
         }
 
         console.log("Redirigiendo...");

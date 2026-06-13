@@ -70,6 +70,29 @@ export default async function transactionsDetailController(contexto) {
                 }
             }
 
+            // --- Renderizar Vínculos de Reconciliación ---
+            const reconCard = document.getElementById('reconciliation-card');
+            const reconContent = document.getElementById('reconciliation-content');
+            
+            const isFee = trans.amount < 0;
+            const links = isFee ? (trans.paidBy || []) : (trans.appliedTo || []);
+
+            if (links.length > 0) {
+                reconCard.classList.remove('hidden');
+                reconContent.innerHTML = `
+                    <p class="recon-intro">${isFee ? 'Este cargo ha sido abonado por los siguientes recibos:' : 'Este pago se ha aplicado a los siguientes conceptos:'}</p>
+                    <div class="recon-grid">
+                        ${links.map(link => `
+                            <div class="recon-item">
+                                <span class="recon-desc">${link.description || (isFee ? 'Recibo' : 'Cargo')}</span>
+                                <span class="recon-amount">$${Math.abs(link.amount).toFixed(2)}</span>
+                                <span class="recon-ref">${link.voucherNumber || link.transactionId || ''}</span>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+
         } catch (error) {
             console.error("[TransactionsDetail] Error al cargar:", error);
             alert("Ocurrió un error al intentar cargar los detalles de la transacción.");

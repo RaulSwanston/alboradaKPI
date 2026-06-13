@@ -1,33 +1,82 @@
-<!--
-  Módulo: Resumen Financiero (financialSummary)
-  Propósito: Muestra una vista de alto nivel de la salud financiera del condominio,
-             separando las cuentas por cobrar, la deuda atrasada y los saldos a favor.
--->
-<div id="financial-summary-card" class="card">
-  <p class="card-subtitle">Resumen Financiero</p>
-
-  <!-- Métrica Principal: Total de dinero que se debe al condominio -->
-  <div class="hero-metric">
-    <a href="/dashboard/properties">
-      <h2 class="amount" id="fs-total-receivable"></h2>
-    </a>
-    <p class="description">Cuentas por Cobrar Totales</p>
-  </div>
-
-  <!-- Métricas Secundarias: Desglose de la deuda y saldos a favor -->
-  <div class="secondary-metrics">
-    <div class="metric-item" id="fs-past-due-section">
-      <span class="label">Deuda Atrasada</span>
-      <strong class="value" id="fs-past-due-amount"></strong>
+<div class="financial-summary-module">
+    <div class="fs-header">
+        <h3 class="fs-title"><!-- ::i18n.financialSummary.title --></h3>
     </div>
-    <div class="metric-item" id="fs-credit-balance-section">
-      <span class="label">Saldo a Favor</span>
-      <strong class="value" id="fs-credit-balance-amount"></strong>
-    </div>
-  </div>
 
-  <!-- Botones de Acción -->
-  <div class="action-buttons">
-    <button class="button button-primary">Ver Reporte Detallado</button>
-  </div>
+    <div class="fs-grid">
+        <!-- Tarjeta: Saldo Actual -->
+        <div class="summary-card brand-watermark" id="fs-balance-card">
+            <div class="card-header">
+                <div class="icon-wrapper bg-primary-light text-primary">
+                    <div class="fs-card-icon" data-icon="bank-note"></div>
+                </div>
+                <span class="card-label"><!-- ::i18n.financialSummary.currentBalance --></span>
+            </div>
+            <div class="card-content">
+                <h2 class="amount" id="fs-total-receivable">$0.00</h2>
+                <div id="fs-balance-status" class="status-indicator">
+                    <!-- Dinámico -->
+                </div>
+            </div>
+            <!-- Botón de Sincronización (Solo Admin) -->
+            <button id="fs-btn-sync" class="btn-sync-full hidden">
+                <div class="icon-sync" data-icon="refresh"></div>
+                <span><!-- ::i18n.financialSummary.syncBalances --></span>
+            </button>
+        </div>
+
+        <!-- Tarjeta: Último Pago / Saldo a Favor -->
+        <div class="summary-card brand-watermark" id="fs-last-move-card">
+            <div class="card-header">
+                <div class="icon-wrapper bg-orange-light text-orange">
+                    <div class="fs-card-icon" data-icon="graph"></div>
+                </div>
+                <span class="card-label"><!-- ::i18n.financialSummary.lastPayment --></span>
+            </div>
+            <div class="card-content">
+                <h2 class="amount" id="fs-credit-balance-amount">$0.00</h2>
+                <p class="card-footer-text" id="fs-last-payment-date">Sin registros recientes</p>
+            </div>
+        </div>
+
+        <!-- Tarjeta: Información del Usuario / Unidad (Dark Brand Watermark) -->
+        <div class="summary-card dark brand-watermark" id="fs-user-card">
+            <div class="card-header">
+                <div class="icon-wrapper">
+                    <div class="fs-card-icon" data-icon="users" id="fs-user-icon"></div>
+                    <img id="fs-user-photo" class="user-avatar-summary hidden" src="" alt="User">
+                </div>
+                <div class="header-titles-dark">
+                    <!-- Para Administradores: Buscador Inteligente Integrado -->
+                    <div id="fs-admin-controls" class="fs-controls hidden">
+                        <div class="search-input-wrapper">
+                            <input type="text" id="fs-property-search" list="fs-properties-list" 
+                                   class="form-input-dark" 
+                                   placeholder="Buscar unidad o propietario...">
+                            <datalist id="fs-properties-list">
+                                <option value="<!-- ::i18n.financialSummary.viewGlobal -->"></option>
+                            </datalist>
+                        </div>
+                    </div>
+                    <!-- Para Residentes: Texto Estático (se oculta si es admin) -->
+                    <p class="card-main-text" id="fs-property-name">...</p>
+                    <p class="card-sub-text" id="fs-user-role">...</p>
+                </div>
+            </div>
+            <div class="card-info-list">
+                <div class="info-row border-bottom">
+                    <span class="info-label"><!-- ::i18n.financialSummary.userName --></span>
+                    <span class="info-value" id="fs-user-display-name">---</span>
+                </div>
+                <div class="info-row border-bottom">
+                    <span class="info-label"><!-- ::i18n.financialSummary.location --></span>
+                    <span class="info-value" id="fs-property-address">---</span>
+                </div>
+                <div class="info-row">
+                    <span class="info-label"><!-- ::i18n.financialSummary.phone --></span>
+                    <span class="info-value" id="fs-user-phone">---</span>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

@@ -175,6 +175,62 @@
     box-shadow: 0 4px 12px rgba(192, 62, 76, 0.2);
 }
 
+/* --- Sección de Reconciliación --- */
+.reconciliation-section {
+    margin-top: 2rem;
+    padding: 2.5rem;
+}
+
+.reconciliation-section .section-title {
+    font-size: 1.25rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+}
+
+.recon-intro {
+    font-size: 0.95rem;
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+}
+
+.recon-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.recon-item {
+    display: flex;
+    align-items: center;
+    padding: 1.25rem;
+    background: var(--bg-canvas);
+    border-radius: 1rem;
+    border: 1px solid var(--card-border);
+}
+
+.recon-desc {
+    flex: 1;
+    font-weight: 700;
+    color: var(--text-primary);
+}
+
+.recon-amount {
+    font-weight: 800;
+    color: var(--button-principal-background);
+    margin: 0 1.5rem;
+    font-size: 1.1rem;
+}
+
+.recon-ref {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    font-family: monospace;
+    background: white;
+    padding: 0.4rem 0.8rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--card-border);
+}
+
 /* --- Responsive --- */
 @media (max-width: 768px) {
     .form-grid {

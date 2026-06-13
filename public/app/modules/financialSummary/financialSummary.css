@@ -1,105 +1,411 @@
-/*
-  Estilos para el Módulo: Resumen Financiero (financialSummary)
-  Enfoque: Mobile-First
+/* 
+  Module: financialSummary
+  Architecture: Bento Grid Layout (Property Detail Look)
+  Standards: Clean CSS, No !important, Variable-based, Brand Watermark
 */
 
-/* Contenedor principal de la tarjeta */
-#financial-summary-card {
-  background-color: var(--bg-surface, #f6f5ef);
-  border-radius: 1rem; /* 16px */
-  padding: 1.5rem; /* 24px */
-  border: 1px solid var(--card-border, #d8d6be);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  display: flex;
-  flex-direction: column;
-  gap: 1rem; /* 16px */
+.financial-summary-module {
+    /* padding: 1.5rem; */
 }
 
-/* Subtítulo: "Resumen Financiero" */
-.card-subtitle {
-  font-size: 0.875rem; /* 14px */
-  font-weight: 600;
-  color: var(--text-secondary, #555536);
-  margin: 0;
+/* --- Header Section --- */
+.fs-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
 }
 
-/* Estilo para la métrica principal (Hero) */
-.hero-metric {
-  text-align: center;
-  border-bottom: 1px solid var(--card-border, #d8d6be);
-  padding-bottom: 1rem;
-  & a{
-    text-decoration: none;
-  }
+.fs-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--color-text-primary);
+    letter-spacing: -0.02em;
 }
 
-.hero-metric .amount {
-  font-size: 2.25rem; /* 36px */
-  font-weight: 800;
-  color: var(--text-primary, #3b3c2b);
-  line-height: 1.2;
-  margin: 0;
+/* --- Bento Grid --- */
+.fs-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+    width: 100%;
+    margin: 0 auto;
 }
 
-.hero-metric .description {
-  font-size: 0.875rem; /* 14px */
-  color: var(--text-secondary, #555536);
-  margin: 0.25rem 0 0 0;
-}
-
-/* Contenedor para las métricas secundarias */
-.secondary-metrics {
-  display: flex;
-  flex-direction: column; /* Apilado en móvil */
-  gap: 1rem; /* Espacio entre items */
-}
-
-.metric-item {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.02);
-  padding: 0.75rem 1rem;
-  border-radius: 0.75rem;
-}
-
-.metric-item .label {
-  font-size: 0.875rem; /* 14px */
-  color: var(--text-secondary, #555536);
-  font-weight: 500;
-}
-
-.metric-item .value {
-  font-size: 1rem; /* 16px */
-  font-weight: 700;
-  color: var(--text-primary, #3b3c2b);
-}
-
-/* Contenedor para los botones de acción */
-.action-buttons {
-  margin-top: 0.5rem;
-}
-
-.action-buttons .button {
-  width: 100%;
-}
-
-
-/* --- Estilos para Escritorio --- */
-@media (min-width: 768px) {
-  .secondary-metrics {
-    flex-direction: row; /* Lado a lado en escritorio */
-    gap: 1.5rem;
-  }
-
-  .metric-item {
-    flex: 1; /* Ocupan el mismo espacio */
+.summary-card {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 1.25rem;
+    box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    gap: 0.25rem;
-  }
+    min-height: 180px; /* Altura mínima consistente */
+}
 
-  .hero-metric .amount {
-    font-size: 2.75rem; /* 44px, un poco más grande en escritorio */
-  }
+.summary-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+/* Variante Oscura */
+.summary-card.dark {
+    background-color: var(--color-gurkha-900);
+    color: white;
+    border: none;
+}
+
+/* Marca de Agua */
+.brand-watermark::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 100%;
+    height: 100%;
+    background-image: radial-gradient(circle at top right, rgba(40, 191, 99, 0.05) 0%, transparent 70%);
+    pointer-events: none;
+}
+
+.summary-card.dark.brand-watermark::before {
+    background-image: radial-gradient(circle at top right, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
+}
+
+/* --- Elementos de Tarjeta --- */
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+/* Botón de Sincronización Full Width */
+.btn-sync-full {
+    width: 100%;
+    margin-top: 1.5rem;
+    padding: 0.75rem 1rem;
+    background-color: var(--color-gurkha-50);
+    border: 1px solid var(--color-gurkha-200);
+    border-radius: 0.75rem;
+    color: var(--color-text-secondary);
+    font-size: 0.8125rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    transition: all 0.3s ease;
+}
+
+.btn-sync-full:hover {
+    background-color: var(--color-kaitoke-green-50);
+    border-color: var(--color-kaitoke-green-200);
+    color: var(--color-kaitoke-green-700);
+}
+
+.btn-sync-full.loading {
+    cursor: wait;
+    opacity: 1; /* Quitamos opacidad para que se vea bien el color de progreso */
+    background: linear-gradient(to right, 
+        rgba(40, 191, 99, 0.15) var(--progress, 0%), 
+        var(--color-gurkha-100) var(--progress, 0%));
+    position: relative;
+    border-color: var(--color-kaitoke-green-200);
+}
+
+.btn-sync-full.loading::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    width: var(--progress, 0%);
+    background-color: var(--color-kaitoke-green-600);
+    transition: width 0.2s ease;
+}
+
+.btn-sync-full.loading .icon-sync {
+    animation: spin 1s linear infinite;
+}
+
+.btn-sync-full.success {
+    background-color: var(--color-kaitoke-green-600);
+    color: white;
+    border-color: var(--color-kaitoke-green-600);
+}
+
+.icon-sync {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.25rem;
+    height: 1.25rem;
+}
+
+.icon-sync svg {
+    width: 100%;
+    height: 100%;
+}
+
+.fs-card-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+.fs-card-icon svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.status-indicator [data-icon] {
+    width: 1rem;
+    height: 1rem;
+    display: inline-flex;
+    align-items: center;
+}
+
+.status-indicator [data-icon] svg {
+    width: 100%;
+    height: 100%;
+}
+
+.summary-card.dark .fs-card-icon {
+    color: white;
+}
+
+.user-avatar-summary {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+.icon-wrapper {
+    padding: 0.5rem;
+    border-radius: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.5rem;
+    height: 2.5rem;
+}
+
+.summary-card.dark .icon-wrapper {
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+.bg-primary-light { background-color: rgba(40, 191, 99, 0.1); }
+.bg-orange-light { background-color: rgba(234, 88, 12, 0.1); }
+
+.text-primary { color: var(--color-kaitoke-green-600); }
+.text-orange { color: #ea580c; }
+
+.card-label {
+    font-size: 0.625rem;
+    font-weight: 800;
+    color: var(--color-gurkha-400);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.summary-card.dark .card-label {
+    color: rgba(255, 255, 255, 0.5);
+}
+
+.card-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.amount {
+    font-size: 2.25rem;
+    font-weight: 800;
+    color: var(--color-text-primary);
+    letter-spacing: -0.025em;
+    margin: 0;
+}
+
+.summary-card.dark .amount {
+    font-size: 1.75rem;
+    color: white;
+}
+
+.status-indicator {
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.card-footer-text {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    margin: 0.5rem 0 0 0;
+}
+
+/* --- Lista de Información (Estilo Dark) --- */
+.header-titles-dark {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    text-align: right;
+}
+
+.card-main-text {
+    font-size: 1.125rem;
+    font-weight: 700;
+    line-height: 1.2;
+    margin: 0;
+    color: white;
+}
+
+.card-sub-text {
+    font-size: 0.625rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: rgba(255, 255, 255, 0.6);
+    margin: 0;
+}
+
+.card-info-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 0.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.info-row.border-bottom {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.info-label {
+    color: rgba(255, 255, 255, 0.4);
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.info-value {
+    color: white;
+    text-align: right;
+}
+
+/* --- Estados de Saldo --- */
+.status-ok { color: var(--color-kaitoke-green-600); }
+.status-debt { color: var(--color-solid-pink-600); }
+.status-credit { color: #2563eb; }
+
+/* --- Select Admin --- */
+.form-select-sm {
+    padding: 0.6rem 2rem 0.6rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 700;
+    border: 1px solid var(--color-gurkha-200);
+    border-radius: 0.75rem;
+    background-color: white;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23555536'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+}
+
+.form-input-dark {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 0.75rem;
+    padding: 0.5rem 1rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    width: 100%;
+    margin-bottom: 0.5rem;
+    max-width: 250px;
+    transition: all 0.2s ease;
+    text-align: right;
+}
+
+.form-input-dark:focus {
+    outline: none;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-color: var(--color-kaitoke-green-400);
+    box-shadow: 0 0 0 3px rgba(119, 219, 154, 0.15);
+}
+
+.form-input-dark::placeholder {
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.8rem;
+    font-weight: 400;
+}
+
+/* Ocultar flecha por defecto de datalist en algunos navegadores */
+.form-input-dark::-webkit-calendar-picker-indicator {
+    display: none !important;
+}
+
+/* --- Responsive --- */
+@media (min-width: 1024px) {
+    .fs-grid {
+        grid-template-columns: repeat(3, minmax(0, 400px));
+        justify-content: space-between;
+    }
+}
+
+@media (max-width: 1023px) and (min-width: 768px) {
+    .fs-grid {
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    }
+}
+
+@media (max-width: 767px) {
+    .fs-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .amount {
+        font-size: 1.75rem;
+    }
+    
+    .fs-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    
+    .form-select-sm {
+        width: 100%;
+    }
+
+    .summary-card.dark {
+        order: -1; /* En móvil la info de usuario arriba */
+    }
 }
