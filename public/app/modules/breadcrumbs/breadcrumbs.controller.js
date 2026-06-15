@@ -1,4 +1,4 @@
-import { t, getInternalPath } from '../../core/i18n.js';
+import { t, getInternalPath, getFriendlyPath } from '../../core/i18n.js';
 import { router } from '/router.js';
 
 /**
@@ -9,77 +9,95 @@ export default async function breadcrumbsController(contexto) {
     const list = document.getElementById('breadcrumbs-list');
     if (!list) return;
 
-    const path = window.location.pathname;
-    const internalPath = getInternalPath(path);
-    const config = contexto.data.appConfig;
+    const render = async () => {
+        const path = window.location.pathname;
+        const internalPath = getInternalPath(path);
+        const sidebarConfig = contexto.data.appConfig.navigation?.sidebar || [];
 
-    // Mapa extendido para rutas que no están en el sidebar
-    const pathLabelMap = {
-        '/': 'navigation.home',
-        '/dashboard/resumen': 'navigation.resumen',
-        '/dashboard/transactions': 'navigation.transactions',
-        '/dashboard/properties': 'navigation.properties',
-        '/residents': 'navigation.residents',
-        '/services': 'navigation.catalog',
-        '/dashboard/requests': 'navigation.requests',
-        '/dashboard/profile': 'navigation.profile',
-        '/dashboard/config': 'navigation.systemSettings',
-        '/notifications': 'navigation.notifications',
-        '/dashboard/payments/report': 'navigation.reportPayment',
-        '/dashboard/payments/pending': 'navigation.approvePayments'
-    };
+        /**
+         * Crea un mapa de rutas a labelKeys escaneando recursivamente el sidebar
+         */
+        const createPathMap = (items) => {
+            const map = {};
+            items.forEach(item => {
+                if (item.path) map[getInternalPath(item.path)] = item.labelKey;
+                if (item.items) Object.assign(map, createPathMap(item.items));
+            });
+            return map;
+        };
 
-    // Agregar rutas dinámicas (detalles)
-    if (internalPath.startsWith('/dashboard/properties/')) pathLabelMap[internalPath] = 'navigation.propertyDetail';
-    if (internalPath.startsWith('/dashboard/transactions/')) pathLabelMap[internalPath] = 'navigation.transactionDetail';
+        const pathLabelMap = createPathMap(sidebarConfig);
 
-    const segments = internalPath.split('/').filter(s => s);
-    let currentPath = '';
-    
-    let html = `
-        <li class="breadcrumb-item">
-            <a href="/" data-view="dashboard">
-                <span>${t('navigation.home') || 'Inicio'}</span>
-            </a>
-        </li>
-    `;
+        // Claves adicionales para rutas de detalle o fuera del sidebar
+        const extraLabels = {
+            '/': 'navigation.home',
+            '/dashboard': 'navigation.dashboard',
+            '/dashboard/properties': 'navigation.properties',
+            '/dashboard/transactions': 'navigation.transactions',
+            '/dashboard/payments/report': 'navigation.reportPayment'
+        };
 
-    segments.forEach((segment, index) => {
-        currentPath += `/${segment}`;
-        const isLast = index === segments.length - 1;
+        const segments = internalPath.split('/').filter(s => s);
+        let currentPath = '';
         
-        // Intentar encontrar label en el mapa o usar el segmento capitalizado
-        let labelKey = pathLabelMap[currentPath];
-        
-        // Si es una ruta de detalle con ID, buscamos la base
-        if (!labelKey) {
-            if (currentPath.includes('/properties/')) labelKey = 'navigation.properties';
-            if (currentPath.includes('/transactions/')) labelKey = 'navigation.transactions';
-            if (currentPath.includes('/payments/')) labelKey = 'navigation.reportPayment';
-        }
-
-        const label = labelKey ? t(labelKey) : segment.charAt(0).toUpperCase() + segment.slice(1);
-
-        html += `
-            <li class="breadcrumb-item ${isLast ? 'active' : ''}">
-                ${isLast ? `<span>${label}</span>` : `<a href="${currentPath}" data-view="dashboard">${label}</a>`}
+        let html = `
+            <li class="breadcrumb-item">
+                <a href="/" data-view="dashboard">
+                    <span>${t('navigation.home') || 'Inicio'}</span>
+                </a>
             </li>
         `;
-    });
 
-    list.innerHTML = html;
+        segments.forEach((segment, index) => {
+            currentPath += `/${segment}`;
+            const isLast = index === segments.length - 1;
+            
+            // 1. Buscar en el mapa dinámico del sidebar
+            // 2. Buscar en el mapa de extras
+            // 3. Fallback: Ver si es un detalle (/:id) basándose en la base
+            let labelKey = pathLabelMap[currentPath] || extraLabels[currentPath];
+            
+            if (!labelKey) {
+                if (currentPath.includes('/properties/')) labelKey = 'navigation.propertyDetail';
+                if (currentPath.includes('/transactions/')) labelKey = 'navigation.transactionDetail';
+                if (currentPath.includes('/payments/')) labelKey = 'navigation.reportPayment';
+            }
 
-    // Inyectar iconos
-    const handleIcons = async (container) => {
-        try {
-            const response = await fetch('/src/img/icons.json');
-            const data = await response.json();
-            container.querySelectorAll('[data-icon]').forEach(el => {
-                const icon = data.icons.find(i => i.name === el.dataset.icon);
-                if (icon) el.innerHTML = icon.svg;
-            });
-        } catch (e) {}
+            const label = labelKey ? t(labelKey) : segment.charAt(0).toUpperCase() + segment.slice(1);
+
+            html += `
+                <li class="breadcrumb-item ${isLast ? 'active' : ''}">
+                    ${isLast ? `<span>${label}</span>` : `<a href="${getFriendlyPath(currentPath)}" data-view="dashboard">${label}</a>`}
+                </li>
+            `;
+        });
+
+        list.innerHTML = html;
+
+        // Inyectar iconos
+        const handleIcons = async (container) => {
+            try {
+                const response = await fetch('/src/img/icons.json');
+                const data = await response.json();
+                container.querySelectorAll('[data-icon]').forEach(el => {
+                    const icon = data.icons.find(i => i.name === el.dataset.icon);
+                    if (icon) el.innerHTML = icon.svg;
+                });
+            } catch (e) {}
+        };
+
+        await handleIcons(list);
     };
 
-    await handleIcons(list);
+    // Ejecutar render inicial
+    await render();
+
+    // Suscribirse a cambios de ruta
+    const onRouteChanged = () => render();
+    window.addEventListener('app:route-changed', onRouteChanged);
+
+    // Retornar función de limpieza
+    return () => {
+        window.removeEventListener('app:route-changed', onRouteChanged);
+    };
 }

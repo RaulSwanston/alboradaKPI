@@ -31,14 +31,14 @@
   },
   "recentActivity": { "title": "Actividad Reciente" },
   "navigation": {
-    "resumen": "Resumen",
+    "dashboard": "Panel",
     "financialSummary": "Resumen Financiero",
     "transactions": "Transacciones",
     "properties": "Propiedades",
-    "servicios": "Servicios",
+    "services": "Servicios",
     "residents": "Residentes",
     "requests": "Solicitudes",
-    "catalog": "Catálogo de Servicios",
+    "catalog": "Catálogo",
     "reportPayment": "Reportar Pago",
     "approvePayments": "Aprobar Pagos",
     "notifications": "Notificaciones",
@@ -48,6 +48,18 @@
     "home": "Inicio",
     "propertyDetail": "Detalle de Propiedad",
     "transactionDetail": "Detalle de Transacción"
+  },
+  "routes": {
+    "/dashboard": "/panel",
+    "/dashboard/resumen": "/panel/inicio",
+    "/dashboard/transactions": "/panel/transacciones",
+    "/dashboard/properties": "/panel/propiedades",
+    "/dashboard/requests": "/panel/solicitudes",
+    "/dashboard/profile": "/panel/perfil",
+    "/dashboard/notifications": "/panel/notificaciones",
+    "/residents": "/residentes",
+    "/dashboard/payments/report": "/panel/pagos/reportar",
+    "/dashboard/payments/pending": "/panel/pagos/pendientes"
   },
   "quickActions": {
     "title": "Acciones Rápidas",

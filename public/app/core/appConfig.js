@@ -125,8 +125,8 @@ export const appConfig = {
   navigation: {
     sidebar: [
       {
-        id: "nav-resumen",
-        labelKey: "navigation.resumen",
+        id: "nav-dashboard",
+        labelKey: "navigation.dashboard",
         path: "/dashboard/resumen",
         icon: "layout-dashboard",
         roles: ["admin", "resident"],
@@ -137,15 +137,15 @@ export const appConfig = {
         ]
       },
       {
-        id: "nav-servicios",
-        labelKey: "navigation.servicios",
+        id: "nav-services",
+        labelKey: "navigation.services",
         path: "/services",
         icon: "heart",
         roles: ["admin", "resident", "guest"],
         items: [
-          { labelKey: "navigation.residents", path: "/residents", icon: "users", roles: ["admin"] },
-          { labelKey: "navigation.requests", path: "/dashboard/requests", icon: "file-text" },
           { labelKey: "navigation.catalog", path: "/services", icon: "box", roles: ["resident", "guest"] },
+          { labelKey: "navigation.requests", path: "/dashboard/requests", icon: "file-text" },
+          { labelKey: "navigation.residents", path: "/residents", icon: "users", roles: ["admin"] },
           { labelKey: "navigation.reportPayment", path: "/dashboard/payments/report", icon: "megaphone", roles: ["resident"] },
           { labelKey: "navigation.approvePayments", path: "/dashboard/payments/pending", icon: "wallet", roles: ["admin"] }
         ]
@@ -153,9 +153,12 @@ export const appConfig = {
       {
         id: "nav-notifications",
         labelKey: "navigation.notifications",
-        path: "/notifications",
+        path: "/dashboard/notifications",
         icon: "bell",
-        roles: ["admin", "resident"]
+        roles: ["admin", "resident"],
+        items: [
+          { labelKey: "navigation.catalog", path: "/dashboard/notifications", icon: "bell", roles: ["admin", "resident", "guest"] },
+        ]
       },
       // {
       //   id: "nav-settings",

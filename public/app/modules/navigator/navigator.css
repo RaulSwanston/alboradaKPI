@@ -237,7 +237,7 @@ nav:has(+ #button-menu.open) .menu-divider.selected + .dropdown{
   /* Reseteamos el contenedor principal a una barra lateral clásica */
   .dashboard-menu {
     width: 260px; /* Ancho fijo para la barra lateral */
-    height: 100vh; /* Altura completa */
+    height: 100dvh; /* Altura completa con dVH para móviles/escritorio */
     padding-top: 1.5rem; /* Para dejar espacio al header */
     position: fixed; /* Fijo en la pantalla */
     top: 0; left: 0; bottom: auto; /* Anulamos el 'bottom' de móvil */
@@ -378,6 +378,15 @@ nav:has(+ #button-menu.open) .menu-divider.selected + .dropdown{
   .dashboard-menu .dropdown .menu-item a:hover {
     background-color: white;
     border-left: 3px solid var(--color-gurkha-200);
+  }
+
+  /* Clase para el ítem seleccionado en el dropdown */
+  .dashboard-menu .dropdown .menu-item a.dropdown-selected {
+    background-color: white;
+    color: var(--color-gurkha-900);
+    font-weight: 700;
+    border-left: 3px solid var(--color-kaitoke-green-800);
+    box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.05);
   }
 
 

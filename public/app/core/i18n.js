@@ -7,16 +7,6 @@
 let currentTranslations = {};
 let currentLang = 'es';
 
-const routeMaps = {
-  es: {
-    '/dashboard/requests': '/dashboard/solicitudes',
-    '/dashboard/profile': '/dashboard/perfil',
-    '/dashboard/residents': '/dashboard/residentes',
-    '/dashboard/properties': '/dashboard/propiedades',
-    '/dashboard/transactions': '/dashboard/transacciones'
-  }
-};
-
 /**
  * Carga el archivo de traducciones para un idioma específico.
  * @param {string} lang - Código del idioma (ej. 'es', 'en').
@@ -58,12 +48,12 @@ export function t(key) {
  * Traduce una URL amigable a su ruta interna.
  */
 export function getInternalPath(path) {
-  for (const lang of Object.keys(routeMaps)) {
-    const map = routeMaps[lang];
-    for (const [internal, friendly] of Object.entries(map)) {
-      const regex = new RegExp('^' + friendly.replace(/:(\w+)/g, '([^\\/]+)') + '$');
-      if (path.match(regex)) return internal;
-    }
+  const routes = currentTranslations.routes || {};
+  for (const [internal, friendly] of Object.entries(routes)) {
+    // Escapar barras y manejar parámetros dinámicos (:id)
+    const regexSource = '^' + friendly.replace(/\//g, '\\/').replace(/:(\w+)/g, '([^\\/]+)') + '$';
+    const regex = new RegExp(regexSource);
+    if (path.match(regex)) return internal;
   }
   return path;
 }
@@ -71,8 +61,9 @@ export function getInternalPath(path) {
 /**
  * Traduce una ruta interna a su URL amigable.
  */
-export function getFriendlyPath(internalPath, lang = 'es') {
-  return routeMaps[lang]?.[internalPath] || internalPath;
+export function getFriendlyPath(internalPath) {
+  const routes = currentTranslations.routes || {};
+  return routes[internalPath] || internalPath;
 }
 
 /**

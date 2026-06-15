@@ -1,6 +1,6 @@
 import { Mosaic } from './mosaic.js';
 import { RenderView } from './RenderView.js';
-import { getInternalPath } from './i18n.js';
+import { getInternalPath, loadTranslations } from './i18n.js';
 
 /**
  * @class Router
@@ -178,5 +178,10 @@ export class Router {
     
     // Limpia el destino de renderizado parcial para la próxima navegación.
     this.currentTargetView = null;
+
+    // TRADUCCIÓN i18n: Notificamos a la app que la ruta ha cambiado para que módulos persistentes (Navigator, Breadcrumbs) se sincronicen.
+    window.dispatchEvent(new CustomEvent('app:route-changed', { 
+      detail: { path: urlPath, internalPath: currentPath } 
+    }));
   }
 }

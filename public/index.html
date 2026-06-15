@@ -7,8 +7,10 @@
   <link rel="icon" href="/src/img/favicon.png" type="image/png">
   <script type="module">
     import { initRouter } from '/router.js';
-    document.addEventListener('DOMContentLoaded', () => { initRouter(); });
+    document.addEventListener('DOMContentLoaded', async () => { await initRouter(); });
   </script>
 </head>
-<body id="app-view"></body>
+<body>
+  <div id="app-view"></div>
+</body>
 </html>

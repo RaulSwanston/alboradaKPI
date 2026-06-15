@@ -23,7 +23,7 @@ router
   .get('/dashboard/requests', 'dashboard/requests', [sessionGuard])
   .get('/dashboard/transactions', 'dashboard/transactions', [sessionGuard])
   .get('/dashboard/transactions/:id', 'dashboard/transactions-detail', [sessionGuard])
-  .get('/notifications', 'dashboard/notifications', [sessionGuard])
+  .get('/dashboard/notifications', 'dashboard/notifications', [sessionGuard])
   .get('/residents', 'dashboard/residents', [sessionGuard])
   .get('/import-residents', 'dashboard/importResidents', [sessionGuard])
   .get('/import-properties', 'dashboard/importProperties', [sessionGuard])
@@ -35,7 +35,22 @@ router
   .get('/dashboard/payments/:id', 'dashboard/payments/detail', [sessionGuard]);
 
 
+import { loadTranslations } from './app/core/i18n.js';
+
+// ... resto del código ...
+
 // La función que se exporta para ser llamada desde el script principal.
-export function initRouter() {
+export async function initRouter() {
+  // Estrategia de Carga Dinámica Síncrona:
+  // Intentamos recuperar el idioma del usuario desde el caché local (localStorage)
+  // para cargar el mapa de rutas antes de que el router procese la URL actual.
+  try {
+    const cached = localStorage.getItem('gph_app_config');
+    const lang = cached ? JSON.parse(cached).systemDefaults?.language : 'es';
+    await loadTranslations(lang);
+  } catch (e) {
+    await loadTranslations('es'); // Fallback de seguridad
+  }
+  
   router.listen();
 }

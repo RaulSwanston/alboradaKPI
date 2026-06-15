@@ -1,6 +1,6 @@
 import { router } from '/router.js';
 import { db, collection, query, where, onSnapshot } from '../../core/firebase.js';
-import { getInternalPath, t } from '../../core/i18n.js';
+import { getInternalPath, getFriendlyPath, t } from '../../core/i18n.js';
 
 export default async function navigator(contexto) {
   console.log("Ejecutando inicialización del 'navigator' dinámico.");
@@ -114,7 +114,7 @@ export default async function navigator(contexto) {
       
       html += `
         <li class="menu-divider" id="${group.id}">
-          <a href="${group.path}" data-view="dashboard">
+          <a href="${getFriendlyPath(group.path)}" data-view="dashboard">
             <div class="icon-slot" data-icon="${group.icon}"></div>
             <span>${t(group.labelKey)}</span>
           </a>
@@ -128,7 +128,7 @@ export default async function navigator(contexto) {
 
           html += `
             <li class="menu-item">
-              <a href="${item.path}" data-view="dashboard">
+              <a href="${getFriendlyPath(item.path)}" data-view="dashboard">
                 <div class="icon-slot-sm" data-icon="${item.icon}"></div>
                 <span>${t(item.labelKey)}</span>
               </a>
@@ -150,28 +150,37 @@ export default async function navigator(contexto) {
     const currentInternalPath = getInternalPath(window.location.pathname);
     const dividers = navList.querySelectorAll(".menu-divider");
     const allLinks = navList.querySelectorAll("a[href]");
+    const dropdownLinks = navList.querySelectorAll(".dropdown a");
     
-    let activeDivider = null;
+    // Limpiar estados previos
+    dividers.forEach(el => el.classList.remove("selected"));
+    dropdownLinks.forEach(el => el.classList.remove("dropdown-selected"));
 
     allLinks.forEach(link => {
-      const linkPath = getInternalPath(link.getAttribute("href"));
+      const linkPath = getInternalPath(new URL(link.href).pathname);
       if (linkPath === currentInternalPath) {
-        const parentDivider = link.closest(".menu-divider");
-        if (parentDivider) {
-          activeDivider = parentDivider;
-        } else {
-          const dropdown = link.closest(".dropdown");
-          if (dropdown && dropdown.previousElementSibling?.classList.contains("menu-divider")) {
-            activeDivider = dropdown.previousElementSibling;
-          }
+        // 1. Resaltar el link específico si está en un dropdown
+        if (link.closest('.dropdown')) {
+          link.classList.add("dropdown-selected");
+        }
+
+        // 2. Resaltar (y abrir) el divisor padre
+        const parentDivider = link.closest(".menu-divider") || 
+                             link.closest(".dropdown")?.previousElementSibling;
+        
+        if (parentDivider && parentDivider.classList.contains("menu-divider")) {
+          parentDivider.classList.add("selected");
         }
       }
     });
+  };
 
-    if (activeDivider) {
-      dividers.forEach(el => el.classList.remove("selected"));
-      activeDivider.classList.add("selected");
-    }
+  /**
+   * Manejador de eventos para el cambio de ruta global
+   */
+  const onRouteChanged = () => {
+    console.log("Navigator: Sincronizando ruta activa...");
+    syncActiveRoute();
   };
 
   const handleDividerClick = (e) => {
@@ -182,8 +191,11 @@ export default async function navigator(contexto) {
     const isDesktop = window.matchMedia("(min-width: 768px)");
 
     if (isDesktop.matches) {
+      // En escritorio, solo abrimos/cerramos el acordeón. El enlace es 'inerte'.
       divider.classList.toggle("selected");
+      return;
     } else {
+      // En móvil, resaltamos y permitimos la navegación
       dividers.forEach(el => el.classList.remove("selected"));
       divider.classList.add("selected");
     }
@@ -200,6 +212,8 @@ export default async function navigator(contexto) {
     dividers.forEach((divider) => {
       divider.addEventListener("click", handleDividerClick);
     });
+    // Escuchamos el evento global del router
+    window.addEventListener('app:route-changed', onRouteChanged);
   };
 
   const initNotifiers = () => {
@@ -237,6 +251,7 @@ export default async function navigator(contexto) {
   return () => {
     console.log("Limpiando listeners del 'navigator'.");
     notifier.destroy();
+    window.removeEventListener('app:route-changed', onRouteChanged);
     buttonMenu.removeEventListener("click", handleMenuButtonClick);
     const dividers = navList.querySelectorAll(".menu-divider");
     dividers.forEach((divider) => {
