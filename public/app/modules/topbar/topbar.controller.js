@@ -2,6 +2,7 @@ import Property from '../../models/Property.js';
 import { router } from '/router.js';
 import { auth } from '../../core/firebase.js';
 import { t } from '../../core/i18n.js';
+import { initSessionUI } from '../../middleware/auth.js';
 
 /**
  * Controlador para el módulo Topbar.
@@ -58,22 +59,22 @@ export default async function topbarController(contexto) {
     }
   }
 
-  // --- Lógica de Menús Desplegables ---
-  const settingsTrigger = document.getElementById('settings-trigger');
-  const settingsMenu = document.getElementById('settings-menu');
+  // --- Inicializar visibilidad por roles ---
+  initSessionUI(contexto);
+
+  // --- Lógica de Menú Desplegable (único) ---
   const profileTrigger = document.getElementById('user-profile-trigger');
   const profileMenu = document.getElementById('profile-menu');
 
   /**
-   * Cierra todos los menús abiertos
+   * Cierra el menú
    */
   const closeAllMenus = () => {
-    settingsMenu?.classList.remove('active');
     profileMenu?.classList.remove('active');
   };
 
   /**
-   * Maneja el toggle de los menús
+   * Maneja el toggle del menú
    */
   const handleDropdownToggle = (e, menu) => {
     e.stopPropagation();
@@ -82,11 +83,8 @@ export default async function topbarController(contexto) {
     if (!isActive) menu.classList.add('active');
   };
 
-  // Listeners para los disparadores
-  const onSettingsClick = (e) => handleDropdownToggle(e, settingsMenu);
+  // Listener para el disparador
   const onProfileClick = (e) => handleDropdownToggle(e, profileMenu);
-  
-  settingsTrigger?.addEventListener('click', onSettingsClick);
   profileTrigger?.addEventListener('click', onProfileClick);
 
   // Cerrar al hacer clic fuera
@@ -98,24 +96,12 @@ export default async function topbarController(contexto) {
   window.addEventListener('click', onWindowClick);
 
   // --- Manejo de Acciones ---
-  
-  // Cerrar Sesión
-  const logoutBtn = document.getElementById('btn-logout');
-  const handleLogout = async () => {
-    try {
-      await auth.signOut();
-      router.navigate('/login');
-    } catch (error) {
-      console.error('Error al cerrar sesión:', error);
-    }
-  };
-  logoutBtn?.addEventListener('click', handleLogout);
 
   // Otras acciones (Placeholders)
   const appearanceBtn = document.getElementById('btn-appearance');
   const languageBtn = document.getElementById('btn-language');
-  const notificationsConfigBtn = document.getElementById('btn-notifications-config');
   const helpBtn = document.getElementById('btn-help');
+  const securityBtn = document.getElementById('btn-security');
 
   const onAppearanceClick = () => {
     console.log('Cambiar apariencia (Modo Oscuro/Claro)');
@@ -126,6 +112,11 @@ export default async function topbarController(contexto) {
 
   // --- Lógica de Búsqueda ---
   const searchInput = document.getElementById('topbar-search');
+
+  if (searchInput) {
+    searchInput.placeholder = t('topbar.searchPlaceholder');
+  }
+
   const handleSearch = (e) => {
     const query = e.target.value.trim();
     const searchEvent = new CustomEvent('app:search', {
@@ -139,10 +130,8 @@ export default async function topbarController(contexto) {
 
   // --- Función de Limpieza ---
   return () => {
-    settingsTrigger?.removeEventListener('click', onSettingsClick);
     profileTrigger?.removeEventListener('click', onProfileClick);
     window.removeEventListener('click', onWindowClick);
-    logoutBtn?.removeEventListener('click', handleLogout);
     appearanceBtn?.removeEventListener('click', onAppearanceClick);
     searchInput?.removeEventListener('input', handleSearch);
   };

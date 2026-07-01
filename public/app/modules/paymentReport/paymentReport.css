@@ -1,6 +1,6 @@
 /* 
   Module: paymentReport
-  Style: Reconciliation Interface (Photo-first, then Debts)
+  Style: Homologated with propertyDetail design system
 */
 
 .payment-report-wrapper {
@@ -20,32 +20,49 @@
   margin-top: 1.5rem;
 }
 
-.report-card {
+/* --- Cards (homologated with .summary-card from propertyDetail) --- */
+.summary-card {
   background: white;
-  border: 1px solid var(--color-gurkha-100);
-  border-radius: 1.5rem;
   padding: 1.5rem;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.02);
+  border-radius: 1.25rem;
+  border: 1px solid var(--color-gurkha-100);
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -1px rgba(0,0,0,0.03);
   position: relative;
   overflow: hidden;
 }
 
-.report-card.primary-card {
+.summary-card.accent-top {
   border-top: 6px solid var(--color-kaitoke-green-500);
 }
 
-.form-label {
+.card-label {
   display: block;
-  font-size: 0.85rem;
+  font-size: 0.625rem;
   font-weight: 800;
-  color: var(--color-gurkha-600);
+  color: var(--color-gurkha-400);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.1em;
   margin-bottom: 1.25rem;
 }
 
-/* --- Upload Zone --- */
+.brand-watermark::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background-image: radial-gradient(circle at top right, rgba(40, 191, 99, 0.05) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+/* --- Upload Zone (unique to this module) --- */
+.hidden-input {
+  display: none;
+}
+
 .upload-zone {
+  position: relative;
   border: 2px dashed var(--color-gurkha-200);
   border-radius: 1.25rem;
   padding: 2.5rem 1.5rem;
@@ -62,6 +79,18 @@
 .upload-zone:hover {
   border-color: var(--color-kaitoke-green-500);
   background-color: white;
+}
+
+.upload-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.upload-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .upload-icon {
@@ -117,7 +146,7 @@
   z-index: 20;
 }
 
-/* --- Debts Grid --- */
+/* --- Debts Grid (unique to this module) --- */
 .debts-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -135,11 +164,13 @@
   border-radius: 1rem;
   cursor: pointer;
   transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
 }
 
 .debt-card:hover {
   border-color: var(--color-gurkha-300);
   background: white;
+  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05);
 }
 
 .debt-card.selected {
@@ -207,6 +238,27 @@
   gap: 1.5rem;
 }
 
+.form-select {
+  width: 100%;
+  padding: 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--color-gurkha-200);
+  background-color: var(--color-gurkha-50);
+  font-family: inherit;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+  appearance: none;
+  cursor: pointer;
+}
+
+.form-select:focus {
+  border-color: var(--color-kaitoke-green-500);
+  box-shadow: 0 0 0 3px rgba(40, 191, 99, 0.1);
+}
+
 .form-input, .form-textarea {
   width: 100%;
   padding: 1rem;
@@ -217,6 +269,17 @@
   font-size: 1.1rem;
   font-weight: 700;
   color: var(--color-text-primary);
+  transition: border-color 0.2s, box-shadow 0.2s;
+  outline: none;
+}
+
+.form-input:focus, .form-textarea:focus {
+  border-color: var(--color-kaitoke-green-500);
+  box-shadow: 0 0 0 3px rgba(40, 191, 99, 0.1);
+}
+
+.input-prefix-wrapper {
+  position: relative;
 }
 
 .input-prefix-wrapper .form-input {
@@ -227,12 +290,21 @@
 .input-prefix {
   position: absolute;
   left: 1rem;
+  top: 50%;
+  transform: translateY(-50%);
   font-weight: 800;
   font-size: 1.2rem;
   color: var(--color-gurkha-400);
+  pointer-events: none;
 }
 
-/* --- Actions --- */
+.input-help {
+  font-size: 0.75rem;
+  color: var(--color-gurkha-400);
+  margin: 0.5rem 0 0 0;
+}
+
+/* --- Actions (fixed bottom bar) --- */
 .form-actions {
   position: fixed;
   bottom: 0; left: 0; width: 100%;
@@ -257,12 +329,89 @@
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
+  transition: background-color 0.2s;
+}
+
+.btn-primary:hover {
+  background-color: var(--color-kaitoke-green-700);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* --- Modal --- */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-overlay.hidden {
+  display: none;
+}
+
+.modal-content {
+  background: white;
+  padding: 2rem;
+  border-radius: 1.25rem;
+  box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 28rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.modal-icon {
+  width: 3rem;
+  height: 3rem;
+  color: var(--color-kaitoke-green-600);
+}
+
+.modal-title {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.modal-message {
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+}
+
+/* --- Loading & Info States --- */
+.loading-state {
+  text-align: center;
+  padding: 2rem;
+  color: var(--color-text-secondary);
+}
+
+.info-message {
+  text-align: center;
+  padding: 2rem;
+  color: var(--color-kaitoke-green-600);
+  font-weight: 600;
+}
+
+.error-text {
+  color: var(--color-error);
+  font-weight: 600;
 }
 
 /* --- Responsive --- */
 @media (max-width: 600px) {
   .form-row { grid-template-columns: 1fr; }
-  .report-card { padding: 1.25rem; }
+  .summary-card { padding: 1.25rem; }
 }
 
 @media (min-width: 1024px) {
@@ -274,5 +423,3 @@
     border: none;
   }
 }
-
-.hidden { display: none !important; }

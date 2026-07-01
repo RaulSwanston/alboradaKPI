@@ -1,0 +1,24 @@
+<section class="payment-history-wrapper">
+  <header class="detail-header">
+    <div class="header-left">
+      <button class="btn-back" onclick="router.navigate('/dashboard/resumen')" aria-label="<!-- ::i18n.paymentHistory.back -->">
+        <div class="icon-slot" data-icon="chevron-left"></div>
+      </button>
+      <h1 class="header-title"><!-- ::i18n.paymentHistory.title --></h1>
+    </div>
+  </header>
+
+  <div id="history-list" class="history-list">
+    <div class="loading-state">
+      <p><!-- ::i18n.paymentHistory.loading --></p>
+    </div>
+  </div>
+
+  <div id="history-empty" class="empty-state hidden">
+    <div class="empty-icon-wrap">
+      <div class="icon-slot-lg" data-icon="receipt"></div>
+    </div>
+    <p class="empty-title"><!-- ::i18n.paymentHistory.emptyTitle --></p>
+    <p class="empty-desc"><!-- ::i18n.paymentHistory.emptyDesc --></p>
+  </div>
+</section>

@@ -2,10 +2,10 @@
   <!-- Page Header -->
   <header class="detail-header">
     <div class="header-left">
-      <button class="btn-back" onclick="history.back()" aria-label="Volver">
+      <button class="btn-back" onclick="history.back()" aria-label="<!-- ::i18n.paymentReport.back -->">
         <div class="icon-slot" data-icon="chevron-left"></div>
       </button>
-      <h1 class="header-title">Reportar Pago</h1>
+      <h1 class="header-title"><!-- ::i18n.paymentReport.title --></h1>
     </div>
   </header>
 
@@ -13,15 +13,15 @@
     <form id="payment-report-form" class="report-form">
       
       <!-- Panel de Comprobante (Prioridad 1) -->
-      <div class="report-card primary-card">
-        <label class="form-label">1. Adjunta tu Comprobante de Pago</label>
+      <div class="summary-card accent-top">
+        <label class="card-label"><!-- ::i18n.paymentReport.attachReceipt --></label>
         <div class="upload-zone" id="upload-zone">
           <input type="file" id="receipt-file" accept="image/*" class="hidden-input">
           <div class="upload-content">
             <div class="upload-icon" data-icon="camera"></div>
             <div class="upload-text">
-              <span class="upload-title">Tomar Foto o Subir Imagen</span>
-              <span class="upload-subtitle">Haz clic aquí para adjuntar el comprobante</span>
+              <span class="upload-title"><!-- ::i18n.paymentReport.uploadTitle --></span>
+              <span class="upload-subtitle"><!-- ::i18n.paymentReport.uploadSubtitle --></span>
             </div>
           </div>
           <div id="file-preview" class="file-preview hidden">
@@ -34,47 +34,46 @@
       </div>
 
       <!-- Selección de Unidad (Solo visible si es Admin o tiene varias propiedades) -->
-      <div id="property-selection-container" class="report-card hidden">
+      <div id="property-selection-container" class="summary-card hidden">
         <div class="form-group">
-          <label for="propertyId" class="form-label">Unidad / Propiedad</label>
+          <label for="propertyId" class="card-label"><!-- ::i18n.paymentReport.propertyLabel --></label>
           <select id="propertyId" name="propertyId" class="form-select">
-            <option value="" disabled selected>Cargando unidades...</option>
+            <option value="" disabled selected><!-- ::i18n.paymentReport.loadingUnits --></option>
           </select>
         </div>
       </div>
 
       <!-- Listado de Deudas Pendientes (Prioridad 2) -->
-      <div class="report-card" id="debts-section">
-        <label class="form-label">2. ¿Qué cargos estás pagando?</label>
+      <div class="summary-card" id="debts-section">
+        <label class="card-label"><!-- ::i18n.paymentReport.selectDebts --></label>
         <div id="debts-list" class="debts-grid">
-          <!-- Se inyectará dinámicamente: Cuotas, Multas, Servicios, Arreglos de Pago -->
           <div class="loading-state">
-            <p>Buscando deudas pendientes...</p>
+            <p><!-- ::i18n.paymentReport.searchingDebts --></p>
           </div>
         </div>
       </div>
 
       <!-- Resumen Financiero y Detalles -->
-      <div class="report-card brand-watermark">
+      <div class="summary-card brand-watermark">
         <div class="form-row">
           <div class="form-group">
-            <label for="amount" class="form-label">Monto Total Pagado</label>
+            <label for="amount" class="card-label"><!-- ::i18n.paymentReport.amountLabel --></label>
             <div class="input-prefix-wrapper">
               <span class="input-prefix">$</span>
               <input type="number" id="amount" name="amount" class="form-input" placeholder="0.00" step="0.01" required>
             </div>
-            <p class="input-help">Ingresa el monto exacto que aparece en tu comprobante.</p>
+            <p class="input-help"><!-- ::i18n.paymentReport.amountHelp --></p>
           </div>
 
           <div class="form-group">
-            <label for="paymentDate" class="form-label">Fecha del Pago</label>
+            <label for="paymentDate" class="card-label"><!-- ::i18n.paymentReport.dateLabel --></label>
             <input type="date" id="paymentDate" name="paymentDate" class="form-input" required>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="notes" class="form-label">Notas Opcionales</label>
-          <textarea id="notes" name="notes" class="form-textarea" placeholder="Ej: Pago adelantado de febrero, abono a multa..."></textarea>
+          <label for="notes" class="card-label"><!-- ::i18n.paymentReport.notesLabel --></label>
+          <textarea id="notes" name="notes" class="form-textarea"></textarea>
         </div>
       </div>
 
@@ -82,7 +81,7 @@
       <div class="form-actions">
         <button type="submit" id="btn-submit-report" class="btn-primary">
           <div class="icon-slot-sm" data-icon="send"></div>
-          Enviar Reporte de Pago
+          <!-- ::i18n.paymentReport.submit -->
         </button>
       </div>
 
@@ -95,7 +94,7 @@
       <div id="modal-icon" class="modal-icon"></div>
       <h3 id="modal-title" class="modal-title"></h3>
       <p id="modal-message" class="modal-message"></p>
-      <button type="button" id="btn-modal-close" class="btn-primary">Entendido</button>
+      <button type="button" id="btn-modal-close" class="btn-primary"><!-- ::i18n.paymentReport.gotIt --></button>
     </div>
   </div>
 </div>

@@ -3,6 +3,7 @@ import User from "../../models/User.js";
 import Property from "../../models/Property.js";
 import Transaction from "../../models/Transaction.js";
 import PaymentNotification from "../../models/PaymentNotification.js";
+import { t } from '../../core/i18n.js';
 
 /**
  * paymentReport.controller.js
@@ -33,19 +34,20 @@ export default async function paymentReportController(contexto) {
   let selectedDebtIds = new Set();
 
   // --- Inicialización ---
-  dateInput.value = new Date().toISOString().split('T')[0]; // Fecha de hoy por defecto
+  dateInput.value = new Date().toISOString().split('T')[0];
+  document.getElementById('notes').placeholder = t('paymentReport.notesPlaceholder');
 
   try {
     const userProfile = await User.getById(user.uid);
     const propertyIds = userProfile?.propertyIds || [];
 
     if (propertyIds.length === 0) {
-      debtsList.innerHTML = '<div class="info-message"><p>No tienes unidades vinculadas. Contacta al administrador.</p></div>';
+      debtsList.innerHTML = `<div class="info-message"><p>${t('paymentReport.noProperties')}</p></div>`;
     } else {
       if (propertyIds.length > 1 || userProfile.role === 'admin') {
         propertyContainer.classList.remove('hidden');
         const props = await Promise.all(propertyIds.map(id => Property.getById(id)));
-        propertySelect.innerHTML = '<option value="" disabled selected>Selecciona una unidad</option>' + 
+        propertySelect.innerHTML = `<option value="" disabled selected>${t('paymentReport.selectProperty')}</option>` + 
           props.map(p => `<option value="${p.id}">${p.name || `Unidad ${p.id}`}</option>`).join('');
         
         propertySelect.onchange = (e) => loadDebts(e.target.value);
@@ -62,7 +64,7 @@ export default async function paymentReportController(contexto) {
   // --- Carga de Deudas Pendientes ---
   async function loadDebts(propertyId) {
     currentPropertyId = propertyId;
-    debtsList.innerHTML = '<div class="loading-state"><p>Buscando cargos pendientes...</p></div>';
+    debtsList.innerHTML = `<div class="loading-state"><p>${t('paymentReport.searchingDebts')}</p></div>`;
     selectedDebtIds.clear();
     updateTotalAmount();
 
@@ -71,13 +73,13 @@ export default async function paymentReportController(contexto) {
       renderDebts();
     } catch (error) {
       console.error("Error al cargar deudas:", error);
-      debtsList.innerHTML = '<p class="error-text">No se pudieron cargar las deudas.</p>';
+      debtsList.innerHTML = `<p class="error-text">${t('paymentReport.debtsError')}</p>`;
     }
   }
 
   function renderDebts() {
     if (pendingDebts.length === 0) {
-      debtsList.innerHTML = '<div class="info-message"><p>No tienes deudas pendientes. Tu cuenta está al día.</p></div>';
+      debtsList.innerHTML = `<div class="info-message"><p>${t('paymentReport.noDebts')}</p></div>`;
       return;
     }
 
@@ -87,7 +89,7 @@ export default async function paymentReportController(contexto) {
           <div class="icon-slot-sm" data-icon="${selectedDebtIds.has(debt.id) ? 'check-circle' : 'circle'}"></div>
         </div>
         <div class="debt-info">
-          <span class="debt-type type-${debt.type?.toLowerCase() || 'fee'}">${debt.type || 'CARGO'}</span>
+          <span class="debt-type type-${debt.type?.toLowerCase() || 'fee'}">${debt.type || t('paymentReport.debtTypeFallback')}</span>
           <h4 class="debt-desc">${debt.description}</h4>
           <span class="debt-date">${new Date(debt.effectiveDate || debt.createdAt?.toDate?.() || Date.now()).toLocaleDateString()}</span>
         </div>
@@ -122,7 +124,7 @@ export default async function paymentReportController(contexto) {
   // --- Gestión de Archivos ---
   const handleFile = (file) => {
     if (!file || !file.type.startsWith('image/')) {
-      alert("Por favor, selecciona una imagen válida.");
+      alert(t('paymentReport.invalidImage'));
       return;
     }
     selectedFile = file;
@@ -149,17 +151,17 @@ export default async function paymentReportController(contexto) {
   form.onsubmit = async (e) => {
     e.preventDefault();
     if (!selectedFile) {
-      alert("Es obligatorio adjuntar el comprobante de pago.");
+      alert(t('paymentReport.requiredReceipt'));
       return;
     }
     if (!currentPropertyId) {
-      alert("Por favor, selecciona una unidad.");
+      alert(t('paymentReport.requiredProperty'));
       return;
     }
 
     const submitBtn = document.getElementById('btn-submit-report');
     submitBtn.disabled = true;
-    submitBtn.innerHTML = 'Enviando Reporte...';
+      submitBtn.innerHTML = t('paymentReport.sending');
 
     try {
       // 1. Subir Imagen
@@ -206,17 +208,17 @@ export default async function paymentReportController(contexto) {
         email: user.email 
       });
 
-      showModal("¡Reporte Enviado!", "Tu pago ha sido registrado y el administrador ha sido notificado para su verificación.", "check-circle");
+      showModal(t('paymentReport.successTitle'), t('paymentReport.successMessage'), "check-circle");
       form.reset();
       btnRemoveFile.click();
       loadDebts(currentPropertyId);
 
     } catch (error) {
       console.error("Error al enviar reporte:", error);
-      showModal("Error", "No se pudo enviar el reporte. Por favor, intenta de nuevo.", "x-circle");
+      showModal(t('paymentReport.errorTitle'), t('paymentReport.errorMessage'), "x-circle");
     } finally {
       submitBtn.disabled = false;
-      submitBtn.innerHTML = '<div class="icon-slot-sm" data-icon="send"></div> Enviar Reporte de Pago';
+      submitBtn.innerHTML = `<div class="icon-slot-sm" data-icon="send"></div> ${t('paymentReport.submit')}`;
       await handleIcons();
     }
   };

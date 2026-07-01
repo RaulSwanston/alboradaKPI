@@ -58,7 +58,7 @@ export const appConfig = {
         capabilities: ["*"] 
       },
       resident: {
-        allowedModules: ["financialSummary", "recentActivity", "navigator", "topbar", "paymentReport", "services", "breadcrumbs"],
+        allowedModules: ["financialSummary", "recentActivity", "navigator", "topbar", "paymentReport", "paymentHistory", "services", "breadcrumbs"],
         capabilities: ["residents.edit_profile", "services.view_all"]
       },
       guest: {
@@ -147,6 +147,7 @@ export const appConfig = {
           { labelKey: "navigation.requests", path: "/dashboard/requests", icon: "file-text" },
           { labelKey: "navigation.residents", path: "/residents", icon: "users", roles: ["admin"] },
           { labelKey: "navigation.reportPayment", path: "/dashboard/payments/report", icon: "megaphone", roles: ["resident"] },
+          { labelKey: "navigation.paymentHistory", path: "/dashboard/payments/history", icon: "clock", roles: ["resident"] },
           { labelKey: "navigation.approvePayments", path: "/dashboard/payments/pending", icon: "wallet", roles: ["admin"] }
         ]
       },

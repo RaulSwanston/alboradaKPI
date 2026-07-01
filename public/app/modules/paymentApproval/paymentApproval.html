@@ -1,0 +1,38 @@
+<section class="payment-approval-wrapper">
+  <header class="detail-header">
+    <div class="header-left">
+      <button class="btn-back" onclick="router.navigate('/dashboard/resumen')" aria-label="<!-- ::i18n.paymentApproval.back -->">
+        <div class="icon-slot" data-icon="chevron-left"></div>
+      </button>
+      <h1 class="header-title"><!-- ::i18n.paymentApproval.title --></h1>
+    </div>
+    <span id="pending-count" class="approval-count-badge"></span>
+  </header>
+
+  <div id="approval-list" class="approval-list">
+    <div class="loading-state">
+      <p><!-- ::i18n.paymentApproval.loading --></p>
+    </div>
+  </div>
+
+  <div id="approval-empty" class="empty-state hidden">
+    <div class="empty-icon-wrap">
+      <div class="icon-slot-lg" data-icon="check-circle"></div>
+    </div>
+    <p class="empty-title"><!-- ::i18n.paymentApproval.emptyTitle --></p>
+    <p class="empty-desc"><!-- ::i18n.paymentApproval.emptyDesc --></p>
+  </div>
+</section>
+
+<!-- Modal de Rechazo -->
+<div id="rejection-modal" class="modal-overlay hidden">
+  <div class="modal-content">
+    <div class="modal-icon" data-icon="x-circle"></div>
+    <h3 class="modal-title"><!-- ::i18n.paymentApproval.rejectTitle --></h3>
+    <textarea id="rejection-reason" class="form-textarea" placeholder="<!-- ::i18n.paymentApproval.rejectPlaceholder -->"></textarea>
+    <div class="modal-actions">
+      <button id="btn-reject-cancel" class="btn-secondary"><!-- ::i18n.paymentApproval.cancel --></button>
+      <button id="btn-reject-confirm" class="btn-danger"><!-- ::i18n.paymentApproval.confirmReject --></button>
+    </div>
+  </div>
+</div>
