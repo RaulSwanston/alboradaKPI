@@ -1,74 +1,82 @@
 <div class="transactions-summary-bar" id="transactions-summary-bar">
     <div class="summary-item">
-        <span class="summary-label">Balance Neto del Periodo</span>
+        <span class="summary-label"><!-- ::i18n.modules.transactions.netBalance --></span>
         <span class="summary-value" id="sum-total-net">--</span>
     </div>
 </div>
 
-<div class="module-header">
+<div class="transactions-header">
     <div class="header-filters">
-        <!-- Fila 1: Buscador y Presets de Fecha -->
         <div class="filter-row-top">
             <div class="search-bar-inline">
-                <input type="text" id="transactions-search" placeholder="Buscar por descripción o unidad...">
+                <input type="text" id="transactions-search">
             </div>
             
             <div class="date-filters-group">
                 <select id="date-preset-select" class="filter-select">
-                    <option value="">Filtrar por tiempo...</option>
-                    <option value="today">Hoy</option>
-                    <option value="yesterday">Ayer</option>
-                    <option value="last7days">Últimos 7 días</option>
-                    <option value="last30days">Últimos 30 días</option>
-                    <option value="thisMonth">Este mes</option>
-                    <option value="lastMonth">Mes pasado</option>
-                    <option value="last3months">Últimos 3 meses</option>
-                    <option value="last6months">Últimos 6 meses</option>
-                    <option value="thisYear">Este año</option>
-                    <option value="lastYear">Año pasado</option>
-                    <option value="all">Todo el tiempo</option>
-                    <option value="custom">Rango personalizado...</option>
+                    <option value=""><!-- ::i18n.modules.transactions.filterTime --></option>
+                    <option value="today"><!-- ::i18n.modules.transactions.presetToday --></option>
+                    <option value="yesterday"><!-- ::i18n.modules.transactions.presetYesterday --></option>
+                    <option value="last7days"><!-- ::i18n.modules.transactions.presetLast7 --></option>
+                    <option value="last30days"><!-- ::i18n.modules.transactions.presetLast30 --></option>
+                    <option value="thisMonth"><!-- ::i18n.modules.transactions.presetThisMonth --></option>
+                    <option value="lastMonth"><!-- ::i18n.modules.transactions.presetLastMonth --></option>
+                    <option value="last3months"><!-- ::i18n.modules.transactions.presetLast3 --></option>
+                    <option value="last6months"><!-- ::i18n.modules.transactions.presetLast6 --></option>
+                    <option value="thisYear"><!-- ::i18n.modules.transactions.presetThisYear --></option>
+                    <option value="lastYear"><!-- ::i18n.modules.transactions.presetLastYear --></option>
+                    <option value="all"><!-- ::i18n.modules.transactions.presetAll --></option>
+                    <option value="custom"><!-- ::i18n.modules.transactions.presetCustom --></option>
                 </select>
 
                 <div id="custom-date-container" class="custom-dates hidden">
                     <input type="date" id="date-start">
-                    <span>al</span>
+                    <span><!-- ::i18n.modules.transactions.dateTo --></span>
                     <input type="date" id="date-end">
-                    <button id="btn-apply-dates" class="btn-apply-dates">Buscar</button>
+                    <button id="btn-apply-dates" class="btn-apply-dates"><!-- ::i18n.modules.transactions.applyDate --></button>
                 </div>
             </div>
         </div>
 
-        <!-- Fila 2: Chips de Tipo (Dinámicos) -->
         <div class="chips-container" id="transaction-filters">
-            <!-- Los chips se inyectarán aquí -->
+        </div>
+    </div>
+    <a href="/dashboard/transactions/new" data-view="dashboard" class="btn-new-transaction">
+        <!-- ::i18n.modules.transactions.newTransaction -->
+    </a>
+</div>
+
+<div class="transactions-table-container">
+    <div class="transactions-table">
+        <div class="table-header">
+            <div class="col-date"><!-- ::i18n.modules.transactions.colDate --></div>
+            <div class="col-desc"><!-- ::i18n.modules.transactions.colDescription --></div>
+            <div class="col-type"><!-- ::i18n.modules.transactions.colType --></div>
+            <div class="col-prop"><!-- ::i18n.modules.transactions.colProperty --></div>
+            <div class="col-amount" style="text-align: right; padding-right: 2rem;"><!-- ::i18n.modules.transactions.colAmount --></div>
+            <div class="col-actions"><!-- ::i18n.modules.transactions.colActions --></div>
+        </div>
+
+        <div id="transactions-list">
+        </div>
+    </div>
+
+    <div class="table-footer">
+        <div class="pagination" id="pagination-controls">
         </div>
     </div>
 </div>
 
-<!-- Nueva Estructura de Tabla -->
-<div class="transactions-table-container">
-    <div class="transactions-table">
-        <!-- Encabezado de Tabla (Solo Escritorio) -->
-        <div class="table-header">
-            <div class="col-date">Fecha</div>
-            <div class="col-desc">Descripción / Concepto</div>
-            <div class="col-type">Tipo</div>
-            <div class="col-prop">Unidad</div>
-            <div class="col-amount" style="text-align: right; padding-right: 2rem;">Monto</div>
-            <div class="col-actions">Acciones</div>
-        </div>
-
-        <!-- Cuerpo de la Tabla / Lista de Globos -->
-        <div id="transactions-list">
-            <!-- Las filas se inyectarán aquí -->
-        </div>
+<div id="receipt-modal" class="modal-overlay hidden">
+  <div class="modal-content receipt-modal-content">
+    <div class="receipt-header">
+      <h2><!-- ::i18n.modules.transactions.receiptTitle --></h2>
+      <button class="modal-close-btn" id="receipt-modal-close">&times;</button>
     </div>
-
-    <!-- Paginación integrada en el footer de la tabla -->
-    <div class="table-footer">
-        <div class="pagination" id="pagination-controls">
-            <!-- Botones de página se inyectarán aquí -->
-        </div>
+    <div id="receipt-body" class="receipt-body">
     </div>
+    <div class="receipt-actions">
+      <button class="button button-accent" id="btn-print-receipt"><!-- ::i18n.modules.transactions.receiptPrint --></button>
+    </div>
+  </div>
 </div>

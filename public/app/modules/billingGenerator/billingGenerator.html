@@ -1,0 +1,46 @@
+<div class="billing-generator-module">
+  <div class="module-header">
+    <h2 class="module-title">Generar Cuotas de Mantenimiento</h2>
+    <p class="module-desc">Crea cuotas (FAC) recurrentes para todas las unidades del condominio en un periodo específico.</p>
+  </div>
+
+  <div class="billing-form-card">
+    <form id="billing-form">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="billing-concept">Concepto de Cobro</label>
+          <select id="billing-concept" class="form-select" required>
+            <option value="">Seleccione un concepto...</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="billing-period">Periodo (YYYY-MM)</label>
+          <input type="month" id="billing-period" class="form-input" required>
+        </div>
+
+        <div class="form-group">
+          <label for="billing-amount">Monto por Unidad ($)</label>
+          <input type="number" id="billing-amount" class="form-input" step="0.01" min="0" placeholder="Ej: 150.00" required>
+        </div>
+
+        <div class="form-group">
+          <label for="billing-description">Descripción</label>
+          <input type="text" id="billing-description" class="form-input" placeholder="Ej: Cuota de Mantenimiento">
+        </div>
+      </div>
+
+      <div class="billing-summary" id="billing-summary" style="display:none">
+        <p>Se generarán <strong id="billing-count">0</strong> cuotas por un total de <strong id="billing-total">$0.00</strong></p>
+      </div>
+
+      <div class="form-footer">
+        <button type="submit" class="button button-primary" id="btn-generate-billing">
+          Generar Cuotas
+        </button>
+      </div>
+    </form>
+  </div>
+
+  <div id="billing-result" class="billing-result" style="display:none"></div>
+</div>

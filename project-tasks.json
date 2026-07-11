@@ -1,8 +1,182 @@
 [
   {
-    "id": "2026-02-01T18:00:00Z",
-    "title": "Implementar Renderizado Parcial con Atributo data-link",
-    "description": "Modificar el Router para que el valor del atributo `data-link` se use como 'pista' para el renderizado. Un valor (ej: 'dashboard') indicará un refresco parcial de ese bloque. Un atributo vacío o sin valor (`data-link` o `data-link=''`) significará una navegación de página completa. Esto unifica la lógica y hace innecesario el atributo `data-view`.",
-    "status": "pending"
+    "id": "layer1.1",
+    "title": "Crear método _generateVoucher() con contadores atómicos + secuencial manual",
+    "description": "Crear Transaction._generateVoucher(type, dateObj) que: 1) usa runTransaction para leer/inicializar system/counters, 2) verifica appConfig.app.counters para secuencial manual del admin, 3) incrementa atómicamente, 4) retorna {voucherNumber, voucherType, pendingAmount}.",
+    "layer": 1,
+    "priority": "critical",
+    "status": "completed",
+    "gap_ids": ["C1", "C2", "M3"]
+  },
+  {
+    "id": "layer1.2",
+    "title": "Integrar _generateVoucher() y pendingAmount en Transaction.create()",
+    "description": "Modificar create() para: 1) si data.voucherNumber no fue provisto, llamar _generateVoucher(), 2) inyectar voucherNumber, voucherType, pendingAmount. FAC-YYYYMM-NNNNNN para cargos, REC-YYYYMMDD-NNNNNN para pagos.",
+    "layer": 1,
+    "priority": "critical",
+    "status": "completed",
+    "gap_ids": ["C1", "C2", "C5", "M3"]
+  },
+  {
+    "id": "layer2a.1",
+    "title": "Crear modelo ServiceRequest.js",
+    "description": "Modelo con create(), getPending(), getByProperty(), approve() (crea transacción FEE), reject(). Todo atómico con writeBatch.",
+    "layer": 2,
+    "priority": "critical",
+    "status": "completed",
+    "gap_ids": ["C4", "M5", "M6"]
+  },
+  {
+    "id": "layer2a.2",
+    "title": "Reparar botón Solicitar en módulo services",
+    "description": "Conectar botón 'Solicitar' a ServiceRequest.create() con writeBatch + actividad.",
+    "layer": 2,
+    "priority": "critical",
+    "status": "completed",
+    "gap_ids": ["C4"]
+  },
+  {
+    "id": "layer2a.3",
+    "title": "Crear módulo serviceApproval para admin",
+    "description": "Vista para admin donde aprueba/rechaza solicitudes de servicio pendientes.",
+    "layer": 2,
+    "priority": "moderate",
+    "status": "completed",
+    "gap_ids": ["M5", "M6"]
+  },
+  {
+    "id": "layer1.3",
+    "title": "Agregar sección counters a appConfig para secuencial manual",
+    "description": "Añadir campo counters: { fac: null, rec: null } en appConfig.app. Si el admin setea fac: 5000, _generateVoucher() inicializará system/counters con 5000. Si es null, arranca en 1.",
+    "layer": 1,
+    "priority": "moderate",
+    "status": "completed",
+    "gap_ids": ["M3"]
+  },
+  {
+    "id": "layer2a.4",
+    "title": "Crear módulo billingGenerator para generación manual de cuotas recurrentes",
+    "description": "Vista /dashboard/billing/generate: lista conceptos isRecurring, analiza estado (PENDIENTE/AL_DIA/EXPIRADO), permite seleccionar, genera facturas masivas sin duplicar por período+propiedad, feedback visual en tiempo real, guarda registro en billingLog.",
+    "layer": 2,
+    "priority": "moderate",
+    "status": "completed",
+    "gap_ids": ["C6"]
+  },
+  {
+    "id": "layer2b.1",
+    "title": "Modificar PaymentNotification.approve() para crear transacción PAYMENT",
+    "description": "Al aprobar un pago: crear PAYMENT en transactions, actualizar pendingAmount/paidBy/appliedTo de facturas vinculadas, recalcular balance propiedad. Todo en writeBatch.",
+    "layer": 2,
+    "priority": "critical",
+    "status": "completed",
+    "gap_ids": ["C3", "M1"]
+  },
+  {
+    "id": "layer2b.2",
+    "title": "Agregar paymentMethod a formularios y modelos",
+    "description": "Agregar campo paymentMethod a PaymentNotification y Transaction, con valores: cash, transfer, deposit, check, card, other. Actualizar formularios.",
+    "layer": 2,
+    "priority": "moderate",
+    "status": "completed",
+    "gap_ids": ["M2"]
+  },
+  {
+    "id": "layer3.1",
+    "title": "Crear vista /dashboard/payments/:id (detalle recibo)",
+    "description": "Vista con detalle del recibo: número, fecha, unidad, residente, monto, facturas pagadas, forma de pago, botón Imprimir.",
+    "layer": 3,
+    "priority": "moderate",
+    "status": "pending",
+    "gap_ids": ["m1", "M4"]
+  },
+  {
+    "id": "layer3.2",
+    "title": "Implementar impresión de recibo con jsPDF",
+    "description": "Usar jsPDF (ya disponible) para generar PDF del recibo con logo, datos condominio, detalle de pago.",
+    "layer": 3,
+    "priority": "moderate",
+    "status": "pending",
+    "gap_ids": ["M4"]
+  },
+  {
+    "id": "layer3.3",
+    "title": "Mostrar comprobante/recibo en tabla transacciones",
+    "description": "Botón 'Ver Recibo' en filas con voucherNumber, modal con datos del comprobante (tipo FAC/REC, fecha, monto, periodo, saldo pendiente), impresión nativa.",
+    "layer": 3,
+    "priority": "low",
+    "status": "completed",
+    "gap_ids": ["m3", "M4"]
+  },
+  {
+    "id": "layer3.4",
+    "title": "Agregar botón Nueva Transacción en transactions.html",
+    "description": "Restaurar botón que navegue a /dashboard/transactions/new.",
+    "layer": 3,
+    "priority": "low",
+    "status": "completed",
+    "gap_ids": ["m5"]
+  },
+  {
+    "id": "layer3.5",
+    "title": "Crear módulo paymentDetail",
+    "description": "Controlador + HTML + CSS para la ruta /dashboard/payments/:id.",
+    "layer": 3,
+    "priority": "moderate",
+    "status": "pending",
+    "gap_ids": ["m1", "m2"]
+  },
+  {
+    "id": "layer3.6",
+    "title": "Limpiar paymentModal (decidir si eliminar o completar)",
+    "description": "Evaluar si paymentModal.html se reutiliza o se elimina.",
+    "layer": 3,
+    "priority": "low",
+    "status": "pending",
+    "gap_ids": ["m2"]
+  },
+  {
+    "id": "i18n.1",
+    "title": "Migrar i18n paymentReport a modules.paymentReport",
+    "description": "Mover claves de paymentReport de raíz a modules.paymentReport y actualizar ::i18n / t() en el módulo.",
+    "layer": "i18n",
+    "priority": "low",
+    "status": "pending",
+    "gap_ids": []
+  },
+  {
+    "id": "i18n.2",
+    "title": "Migrar i18n paymentApproval a modules.paymentApproval",
+    "description": "Mover claves de paymentApproval a modules.paymentApproval.",
+    "layer": "i18n",
+    "priority": "low",
+    "status": "pending",
+    "gap_ids": []
+  },
+  {
+    "id": "i18n.3",
+    "title": "Migrar i18n paymentHistory a modules.paymentHistory",
+    "description": "Mover claves de paymentHistory a modules.paymentHistory.",
+    "layer": "i18n",
+    "priority": "low",
+    "status": "pending",
+    "gap_ids": []
+  },
+  {
+    "id": "i18n.4",
+    "title": "Migrar i18n financialSummary a modules.financialSummary",
+    "description": "Mover claves de financialSummary a modules.financialSummary.",
+    "layer": "i18n",
+    "priority": "low",
+    "status": "pending",
+    "gap_ids": []
+  },
+  {
+    "id": "i18n.5",
+    "title": "Migrar i18n restantes (topbar, quickActions, configManager, navigation, servicios) a modules.*",
+    "description": "Mover claves de topbar, quickActions, configManager, navigation, servicios a sus respectivos modules.*.",
+    "layer": "i18n",
+    "priority": "low",
+    "status": "pending",
+    "gap_ids": []
   }
 ]

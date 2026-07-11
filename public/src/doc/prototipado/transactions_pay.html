@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Nueva Transacción | Portal Alborada</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "error-container": "#fee2e2",
+                    "surface-container-low": "#ffffff",
+                    "tertiary-fixed": "#ffedd5",
+                    "secondary-fixed-dim": "#e5e7eb",
+                    "on-error-container": "#991b1b",
+                    "on-surface": "#111827",
+                    "on-primary": "#ffffff",
+                    "primary-fixed-dim": "#bfdbfe",
+                    "surface-container-lowest": "#ffffff",
+                    "on-primary-container": "#1e40af",
+                    "on-error": "#ffffff",
+                    "surface-container-highest": "#f3f4f6",
+                    "on-secondary-container": "#111827",
+                    "primary": "#2563eb",
+                    "error": "#dc2626",
+                    "background": "#f3f4f6",
+                    "inverse-on-surface": "#ffffff",
+                    "tertiary": "#ea580c",
+                    "surface-variant": "#f3f4f6",
+                    "surface-container-high": "#f3f4f6",
+                    "secondary": "#374151",
+                    "on-surface-variant": "#374151",
+                    "tertiary-container": "#ffedd5",
+                    "on-tertiary-fixed-variant": "#9a3412",
+                    "surface-tint": "#2563eb",
+                    "surface-container": "#f3f4f6",
+                    "inverse-primary": "#93c5fd",
+                    "surface-bright": "#ffffff",
+                    "secondary-fixed": "#f3f4f6",
+                    "surface": "#ffffff",
+                    "surface-dim": "#f3f4f6",
+                    "on-secondary-fixed-variant": "#374151",
+                    "secondary-container": "#f3f4f6",
+                    "primary-fixed": "#dbeafe",
+                    "outline-variant": "#f3f4f6",
+                    "inverse-surface": "#111827",
+                    "on-tertiary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "on-primary-fixed": "#1e3a8a",
+                    "on-tertiary-fixed": "#431407",
+                    "on-secondary-fixed": "#111827",
+                    "on-primary-fixed-variant": "#1d4ed8",
+                    "on-background": "#111827",
+                    "primary-container": "#eff6ff",
+                    "on-tertiary-container": "#9a3412",
+                    "tertiary-fixed-dim": "#fed7aa",
+                    "outline": "#e5e7eb"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "2xl": "1rem",
+                    "full": "9999px"
+            },
+            "fontFamily": {
+                    "headline": ["Manrope"],
+                    "display": ["Manrope"],
+                    "body": ["Manrope"],
+                    "label": ["Manrope"]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Manrope', sans-serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        .active-type-card {
+            background-color: #eff6ff; /* primary-container */
+            border: 2px solid #2563eb; /* primary */
+        }
+
+        .shadow-soft {
+            box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+        }
+
+        /* Subtle brand watermark */
+        .brand-watermark {
+            position: absolute;
+            top: -20px;
+            right: -20px;
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, rgba(37, 99, 235, 0.05) 0%, transparent 70%);
+            border-radius: 50%;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface min-h-screen flex flex-col pb-32">
+<!-- TopAppBar -->
+<header class="w-full top-0 sticky bg-surface shadow-[0_2px_12px_rgba(0,0,0,0.06)] z-50 flex justify-between items-center px-4 h-16">
+<div class="flex items-center gap-3">
+<button class="p-2 rounded-full hover:bg-surface-container transition-colors active:scale-95 duration-150 text-on-surface">
+<span class="material-symbols-outlined">arrow_back</span>
+</button>
+<h1 class="font-display font-extrabold text-xl tracking-tighter text-on-surface">Nueva Transacción</h1>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-10 h-10 rounded-full overflow-hidden border border-outline">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a Hispanic male administrator wearing a crisp blue business shirt, positioned against a neutral architectural background. The lighting is soft and studio-quality, emphasizing a modern and executive persona consistent with the high-end Alborada Azure design system's professional aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBk3TyJSFUi-8ojq24_to110IEJOwQ-l7S2BK_l417OHjieIGvAcgdNmbFlS8sS0FS8aiWvRbo3BxNzNMu9o7hoPnJBx2zGjd5walAWJoEaj5wfMu6AvOylUi6YcyYnMhPDNznPsdN0pshAGcRXYC4MR7u3SmpQqSOpq6m5eEHiOegQ3Q1YNY9SjhcKmMSQdRCJh9Rt9c5fDgVG0lg7V8BfilYtuN4uBm0ajLx8A1_p3II90Cl4mbNn"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 px-4 py-6 max-w-2xl mx-auto w-full">
+<!-- Breadcrumbs (Contextual Navigation) -->
+<nav class="flex items-center text-xs font-medium text-on-surface-variant/60 mb-6 gap-2">
+<span>Panel</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span>Transacciones</span>
+<span class="material-symbols-outlined text-[14px]">chevron_right</span>
+<span class="text-primary">Detalle</span>
+</nav>
+<section class="space-y-6">
+<!-- Section: Unidad / Propiedad -->
+<div class="bg-surface rounded-2xl p-5 shadow-soft relative overflow-hidden">
+<div class="brand-watermark"></div>
+<div class="flex items-center gap-3 mb-4">
+<div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-xl">home_work</span>
+</div>
+<h2 class="text-xs font-bold uppercase tracking-[0.05em] text-on-surface-variant">Unidad / Propiedad</h2>
+</div>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant/50">search</span>
+<input class="w-full pl-10 pr-4 py-3 bg-surface-container border-none rounded-xl text-sm focus:ring-2 focus:ring-primary transition-shadow placeholder:text-on-surface-variant/40" placeholder="Buscar unidad por ID o nombre..." type="text"/>
+</div>
+</div>
+<!-- Section: Tipo de Movimiento -->
+<div class="bg-surface rounded-2xl p-5 shadow-soft relative overflow-hidden">
+<div class="brand-watermark"></div>
+<div class="flex items-center gap-3 mb-4">
+<div class="w-8 h-8 rounded-lg bg-tertiary/10 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-xl">category</span>
+</div>
+<h2 class="text-xs font-bold uppercase tracking-[0.05em] text-on-surface-variant">Tipo de Movimiento</h2>
+</div>
+<div class="grid grid-cols-3 sm:grid-cols-5 gap-3">
+<!-- Icon Options -->
+<button class="flex flex-col items-center justify-center p-3 rounded-xl border border-outline hover:border-primary transition-all active:scale-95 group">
+<span class="material-symbols-outlined text-2xl text-on-surface-variant group-hover:text-primary mb-2">fact_check</span>
+<span class="text-[10px] font-bold text-on-surface-variant text-center">Cuota</span>
+</button>
+<button class="flex flex-col items-center justify-center p-3 rounded-xl border-2 border-primary bg-primary-container transition-all active:scale-95">
+<span class="material-symbols-outlined text-2xl text-primary mb-2" style="font-variation-settings: 'FILL' 1;">payments</span>
+<span class="text-[10px] font-bold text-primary text-center">Pago</span>
+</button>
+<button class="flex flex-col items-center justify-center p-3 rounded-xl border border-outline hover:border-primary transition-all active:scale-95 group">
+<span class="material-symbols-outlined text-2xl text-on-surface-variant group-hover:text-primary mb-2">shopping_cart</span>
+<span class="text-[10px] font-bold text-on-surface-variant text-center">Gasto</span>
+</button>
+<button class="flex flex-col items-center justify-center p-3 rounded-xl border border-outline hover:border-primary transition-all active:scale-95 group">
+<span class="material-symbols-outlined text-2xl text-on-surface-variant group-hover:text-primary mb-2">gavel</span>
+<span class="text-[10px] font-bold text-on-surface-variant text-center">Multa</span>
+</button>
+<button class="flex flex-col items-center justify-center p-3 rounded-xl border border-outline hover:border-primary transition-all active:scale-95 group">
+<span class="material-symbols-outlined text-2xl text-on-surface-variant group-hover:text-primary mb-2">more_horiz</span>
+<span class="text-[10px] font-bold text-on-surface-variant text-center">Otro</span>
+</button>
+</div>
+</div>
+<!-- Section: Detalle del Pago & Comprobante -->
+<div class="bg-surface rounded-2xl p-5 shadow-soft relative overflow-hidden">
+<div class="brand-watermark"></div>
+<div class="flex items-center gap-3 mb-4">
+<div class="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-xl">account_balance_wallet</span>
+</div>
+<h2 class="text-xs font-bold uppercase tracking-[0.05em] text-on-surface-variant">Detalle del Pago</h2>
+</div>
+<div class="space-y-4">
+<div>
+<label class="block text-[10px] font-bold text-on-surface-variant uppercase mb-2 ml-1">Método de Pago</label>
+<select class="w-full px-4 py-3 bg-surface-container border-none rounded-xl text-sm focus:ring-2 focus:ring-primary appearance-none">
+<option>Transferencia Bancaria</option>
+<option>Efectivo</option>
+<option>Tarjeta de Crédito/Débito</option>
+</select>
+</div>
+<div>
+<label class="block text-[10px] font-bold text-on-surface-variant uppercase mb-2 ml-1">Comprobante (Opcional)</label>
+<div class="border-2 border-dashed border-outline rounded-2xl p-8 flex flex-col items-center justify-center gap-4 hover:border-primary/40 transition-colors cursor-pointer group bg-surface-container/30">
+<div class="w-12 h-12 rounded-full bg-surface-container flex items-center justify-center text-primary group-hover:scale-110 transition-transform">
+<span class="material-symbols-outlined text-3xl">cloud_upload</span>
+</div>
+<div class="text-center">
+<p class="text-sm font-bold text-on-surface">Cargar comprobante</p>
+<p class="text-[11px] text-on-surface-variant/60">PDF, JPG o PNG hasta 10MB</p>
+</div>
+<button class="px-4 py-2 bg-surface text-primary border border-primary/20 rounded-lg text-xs font-bold hover:bg-primary hover:text-white transition-all">
+                                Buscar Archivo
+                            </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Section: Datos del Movimiento -->
+<div class="bg-surface rounded-2xl p-5 shadow-soft relative overflow-hidden">
+<div class="brand-watermark"></div>
+<div class="flex items-center gap-3 mb-6">
+<div class="w-8 h-8 rounded-lg bg-tertiary/10 flex items-center justify-center text-tertiary">
+<span class="material-symbols-outlined text-xl">description</span>
+</div>
+<h2 class="text-xs font-bold uppercase tracking-[0.05em] text-on-surface-variant">Datos del Movimiento</h2>
+</div>
+<div class="grid grid-cols-1 gap-5">
+<div>
+<label class="block text-[10px] font-bold text-on-surface-variant uppercase mb-2 ml-1">Descripción</label>
+<input class="w-full px-4 py-3 bg-surface-container border-none rounded-xl text-sm focus:ring-2 focus:ring-primary placeholder:text-on-surface-variant/40" placeholder="Ej: Cuota de Mantenimiento Enero 2024" type="text"/>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block text-[10px] font-bold text-on-surface-variant uppercase mb-2 ml-1">Monto (USD)</label>
+<div class="relative">
+<span class="absolute left-4 top-1/2 -translate-y-1/2 text-on-surface font-extrabold">$</span>
+<input class="w-full pl-8 pr-4 py-3 bg-surface-container border-none rounded-xl text-sm focus:ring-2 focus:ring-primary font-extrabold" placeholder="0.00" step="0.01" type="number"/>
+</div>
+</div>
+<div>
+<label class="block text-[10px] font-bold text-on-surface-variant uppercase mb-2 ml-1">Fecha</label>
+<input class="w-full px-4 py-3 bg-surface-container border-none rounded-xl text-sm focus:ring-2 focus:ring-primary text-on-surface-variant" type="date"/>
+</div>
+</div>
+<div>
+<label class="block text-[10px] font-bold text-on-surface-variant uppercase mb-2 ml-1">Referencia Bancaria</label>
+<input class="w-full px-4 py-3 bg-surface-container border-none rounded-xl text-sm focus:ring-2 focus:ring-primary placeholder:text-on-surface-variant/40" placeholder="Número de confirmación" type="text"/>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Bottom Actions Container -->
+<div class="fixed bottom-0 left-0 right-0 p-4 bg-surface/80 backdrop-blur-md border-t border-outline/30 z-[60] flex flex-col gap-3 pb-8">
+<button class="w-full h-14 bg-primary text-on-primary rounded-2xl font-bold text-base shadow-lg shadow-primary/20 active:scale-[0.98] transition-transform flex items-center justify-center gap-2">
+<span class="material-symbols-outlined">save</span>
+            Guardar Transacción
+        </button>
+<button class="w-full h-12 bg-transparent text-on-surface-variant font-bold text-sm rounded-xl active:opacity-70 transition-opacity">
+            Cancelar
+        </button>
+</div>
+<!-- BottomNavBar (Hidden on transaction pages as per focus rules, but defined for structure) -->
+<nav class="hidden md:flex fixed bottom-0 w-full z-50 rounded-t-xl bg-surface shadow-[0_-2px_12px_rgba(0,0,0,0.06)] justify-around items-center h-16 px-6 pb-safe">
+<a class="flex flex-col items-center justify-center text-primary font-bold" href="#">
+<span class="material-symbols-outlined text-2xl" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-body font-medium text-[10px] uppercase tracking-[0.05em]">Dashboard</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-60" href="#">
+<span class="material-symbols-outlined text-2xl">receipt_long</span>
+<span class="font-body font-medium text-[10px] uppercase tracking-[0.05em]">Transactions</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant opacity-60" href="#">
+<span class="material-symbols-outlined text-2xl">settings</span>
+<span class="font-body font-medium text-[10px] uppercase tracking-[0.05em]">Settings</span>
+</a>
+</nav>
+<script>
+        // Micro-interaction: Scroll reveal header shadow
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 10) {
+                header.classList.add('shadow-md');
+            } else {
+                header.classList.remove('shadow-md');
+            }
+        });
+
+        // Toggle type selection (visual only for demo)
+        const typeButtons = document.querySelectorAll('.grid button');
+        typeButtons.forEach(btn => {
+            btn.addEventListener('click', () => {
+                typeButtons.forEach(b => {
+                    b.classList.remove('border-2', 'border-primary', 'bg-primary-container');
+                    b.classList.add('border', 'border-outline');
+                    const icon = b.querySelector('.material-symbols-outlined');
+                    if(icon) {
+                        icon.style.fontVariationSettings = "'FILL' 0";
+                        icon.classList.remove('text-primary');
+                        icon.classList.add('text-on-surface-variant');
+                    }
+                    const text = b.querySelector('span:last-child');
+                    if(text) {
+                        text.classList.remove('text-primary');
+                        text.classList.add('text-on-surface-variant');
+                    }
+                });
+                
+                btn.classList.add('border-2', 'border-primary', 'bg-primary-container');
+                btn.classList.remove('border', 'border-outline');
+                const activeIcon = btn.querySelector('.material-symbols-outlined');
+                if(activeIcon) {
+                    activeIcon.style.fontVariationSettings = "'FILL' 1";
+                    activeIcon.classList.add('text-primary');
+                    activeIcon.classList.remove('text-on-surface-variant');
+                }
+                const activeText = btn.querySelector('span:last-child');
+                if(activeText) {
+                    activeText.classList.add('text-primary');
+                    activeText.classList.remove('text-on-surface-variant');
+                }
+            });
+        });
+    </script>
+</body></html>

@@ -33,7 +33,63 @@
 .summary-value.positive { color: var(--color-kaitoke-green-600); }
 .summary-value.negative { color: var(--color-solid-pink-600); }
 
-/* --- 2. Filtros y Búsqueda --- */
+/* --- 2. Filtros y Búsqueda (Mobile First) --- */
+.transactions-header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+.transactions-header .header-filters {
+  width: 100%;
+}
+
+.btn-new-transaction {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 0.7rem 1.25rem;
+  background: white;
+  border: 1px solid var(--color-gurkha-200);
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--color-gurkha-800);
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  width: 100%;
+  order: -1;
+}
+.btn-new-transaction:hover {
+  border-color: var(--color-kaitoke-green-500);
+  color: var(--color-kaitoke-green-700);
+  background: rgba(40, 191, 99, 0.04);
+  box-shadow: 0 4px 12px rgba(27, 158, 78, 0.12);
+  transform: translateY(-1px);
+}
+
+@media (min-width: 768px) {
+  .transactions-header {
+    flex-direction: row;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+  .transactions-header .header-filters {
+    flex: 1;
+    min-width: 0;
+  }
+  .btn-new-transaction {
+    width: auto;
+    order: 0;
+    flex-shrink: 0;
+  }
+}
+
 .module-header { margin-bottom: 2rem; }
 .header-filters { display: flex; flex-direction: column; gap: 1rem; }
 .filter-row-top { display: flex; flex-wrap: wrap; gap: 1rem; align-items: center; }
@@ -112,7 +168,7 @@
 
 .table-header {
   display: grid;
-  grid-template-columns: 100px 1fr 120px 100px 130px 120px;
+  grid-template-columns: 100px 1fr 120px 100px 130px 140px;
   background: rgba(246, 245, 239, 0.5);
   padding: 1rem 1.5rem;
   border-bottom: 1px solid var(--color-gurkha-50);
@@ -128,7 +184,7 @@
 
 .transaction-row {
   display: grid;
-  grid-template-columns: 100px 1fr 120px 100px 130px 120px;
+  grid-template-columns: 100px 1fr 120px 100px 130px 140px;
   align-items: center;
   padding: 1rem 1.5rem;
   border-bottom: 1px solid rgba(246, 245, 239, 0.8);
@@ -213,14 +269,24 @@
   #transactions-list { 
     display: flex;
     flex-direction: column;
-    gap: 1.25rem; /* Más espacio entre globos */
+    gap: 1.25rem;
+  }
+  
+  .transaction-row-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background: white;
+    border-radius: 1.25rem;
+    border: 1px solid var(--color-gurkha-100);
+    overflow: hidden;
   }
   
   .transaction-row {
-    background: white;
-    border-radius: 1.25rem;
+    background: transparent;
+    border-radius: 0;
     padding: 1.25rem;
-    border: 1px solid var(--color-gurkha-100);
+    border: none;
     display: grid;
     grid-template-areas: 
       "date amount"
@@ -231,13 +297,50 @@
     gap: 0.75rem;
   }
 
+  .transaction-row-wrapper.expanded > .transaction-row {
+    border-radius: 0;
+  }
+
   .col-date { grid-area: date; font-size: 0.6875rem; font-weight: 700; color: var(--color-gurkha-400); }
   .col-desc { grid-area: desc; }
   .col-type { grid-area: type; }
-  .col-prop { display: none; } /* En móvil se suele inferir de la descripción */
+  .col-prop { display: none; }
   .col-amount { grid-area: amount; text-align: right; font-size: 1.1rem; }
   .col-actions { grid-area: actions; }
   .col-status { grid-area: status; border-top: 1px solid var(--color-gurkha-50); padding-top: 0.5rem; }
+
+  /* Mobile: Conciliation Panel */
+  .conciliation-panel {
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    border-radius: 0;
+  }
+
+  .conciliation-panel-inner {
+    padding: 0.75rem 1rem 1rem;
+  }
+
+  .conciliation-debts {
+    max-height: 220px;
+  }
+
+  .conciliation-debt-card {
+    padding: 0.5rem 0.6rem;
+    gap: 0.5rem;
+  }
+
+  .conciliation-debt-title {
+    font-size: 0.75rem;
+  }
+
+  .conciliation-debt-amount {
+    font-size: 0.8125rem;
+  }
+
+  .conciliation-actions {
+    flex-direction: column;
+  }
 }
 
 /* --- 5. Paginación (Integrada en la Tabla) --- */
@@ -294,4 +397,333 @@
   background: var(--color-gurkha-50);
   border-color: var(--color-gurkha-100);
   box-shadow: none;
+}
+
+/* --- 6. Conciliation Panel (expandable) --- */
+.transaction-row-wrapper {
+  position: relative;
+}
+
+.transaction-row-wrapper.expanded > .transaction-row {
+  background: var(--color-kaitoke-green-50);
+  border-bottom: none;
+  border-radius: 1.25rem 1.25rem 0 0;
+}
+
+.conciliation-panel {
+  background: white;
+  border: 1px solid var(--color-kaitoke-green-200);
+  border-top: none;
+  border-radius: 0 0 1.25rem 1.25rem;
+  margin-top: -1px;
+  overflow: hidden;
+  animation: panelSlideIn 0.2s ease-out;
+}
+
+@keyframes panelSlideIn {
+  from { max-height: 0; opacity: 0; }
+  to { max-height: 600px; opacity: 1; }
+}
+
+.conciliation-panel-inner {
+  padding: 1rem 1.5rem 1.25rem;
+}
+
+.conciliation-header {
+  margin-bottom: 1rem;
+}
+
+.conciliation-title {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: var(--color-kaitoke-green-700);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.conciliation-subtitle {
+  display: block;
+  font-size: 0.6875rem;
+  color: var(--color-gurkha-500);
+  margin-top: 0.2rem;
+}
+
+.conciliation-debts {
+  display: flex;
+  flex-direction: column;
+  gap: 0.375rem;
+  max-height: 280px;
+  overflow-y: auto;
+  padding-right: 0.25rem;
+}
+
+.conciliation-loading,
+.conciliation-empty {
+  font-size: 0.8125rem;
+  color: var(--color-gurkha-500);
+  text-align: center;
+  padding: 1.5rem 0;
+}
+
+.conciliation-debt-card {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.6rem 0.75rem;
+  background: var(--color-gurkha-50);
+  border: 1px solid var(--color-gurkha-100);
+  border-radius: 0.75rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.conciliation-debt-card:hover {
+  border-color: var(--color-kaitoke-green-300);
+  background: rgba(40, 191, 99, 0.04);
+}
+
+.conciliation-debt-card.selected {
+  background: rgba(40, 191, 99, 0.06);
+  border-color: var(--color-kaitoke-green-400);
+}
+
+.conciliation-debt-check {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.conciliation-debt-check input {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.check-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--color-gurkha-300);
+  border-radius: 0.4rem;
+  background: white;
+  transition: all 0.15s ease;
+  color: transparent;
+}
+
+.conciliation-debt-card.selected .check-indicator {
+  background: var(--color-kaitoke-green-600);
+  border-color: var(--color-kaitoke-green-600);
+  color: white;
+}
+
+.conciliation-debt-info {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+.conciliation-debt-title {
+  font-size: 0.8125rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.conciliation-debt-voucher {
+  font-size: 0.6875rem;
+  color: var(--color-gurkha-500);
+  font-weight: 600;
+}
+
+.conciliation-debt-amount {
+  font-size: 0.875rem;
+  font-weight: 800;
+  color: var(--color-solid-pink-600);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.conciliation-actions {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  padding-top: 0.75rem;
+  border-top: 1px solid var(--color-gurkha-100);
+}
+
+.btn-save-conciliation {
+  flex: 1;
+  padding: 0.6rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  border: none;
+  background: var(--color-kaitoke-green-600);
+  color: white;
+  transition: all 0.2s;
+}
+
+.btn-save-conciliation:hover {
+  background: var(--color-kaitoke-green-700);
+}
+
+.btn-cancel-conciliation {
+  padding: 0.6rem 1rem;
+  font-size: 0.8125rem;
+  font-weight: 700;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  border: 1px solid var(--color-gurkha-200);
+  background: white;
+  color: var(--color-gurkha-700);
+  transition: all 0.2s;
+}
+
+.btn-cancel-conciliation:hover {
+  background: var(--color-gurkha-50);
+}
+
+/* Badge que muestra cuántos cargos están conciliados */
+.conciliate-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 0.35rem;
+  background: var(--color-kaitoke-green-600);
+  color: white;
+  font-size: 0.625rem;
+  font-weight: 800;
+  border-radius: 9999px;
+  line-height: 1;
+}
+
+/* --- 7. Modal de Recibo --- */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+}
+
+.modal-content {
+    background-color: white;
+    border-radius: 1.5rem;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    overflow: hidden;
+    padding: 1.5rem;
+}
+
+.receipt-modal-content {
+  max-width: 520px;
+  width: 90%;
+}
+
+.receipt-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.receipt-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.modal-close-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: var(--text-secondary);
+  padding: 0 4px;
+  line-height: 1;
+}
+
+.receipt-body {
+  background: #fafafa;
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 16px;
+  font-size: 0.9rem;
+}
+
+.receipt-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 6px 0;
+  border-bottom: 1px dashed #e0e0e0;
+}
+
+.receipt-row:last-child {
+  border-bottom: none;
+}
+
+.receipt-label {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+.receipt-value {
+  font-weight: 700;
+  text-align: right;
+  color: var(--text-primary);
+}
+
+.receipt-title-area {
+  text-align: center;
+  padding: 16px 0 12px;
+  border-bottom: 2px solid var(--color-kaitoke-green-600, #1a7a3a);
+  margin-bottom: 12px;
+}
+
+.receipt-title-area h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  color: var(--color-kaitoke-green-600, #1a7a3a);
+}
+
+.receipt-title-area .receipt-subtitle {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.receipt-amount-large {
+  font-size: 1.5rem;
+  font-weight: 800;
+  text-align: center;
+  padding: 12px 0;
+}
+
+.receipt-amount-large.positive { color: var(--color-kaitoke-green-600); }
+.receipt-amount-large.negative { color: var(--color-solid-pink-600); }
+
+@media print {
+  .modal-overlay { position: static; background: none; }
+  .modal-content { box-shadow: none; border: 1px solid #ccc; }
+  .receipt-header { display: none; }
+  .receipt-actions { display: none; }
+  body > *:not(#receipt-modal) { display: none; }
 }

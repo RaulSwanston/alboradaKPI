@@ -1,0 +1,122 @@
+.service-approval-wrapper {
+  padding: 0 0 24px;
+}
+
+.service-approval-wrapper .detail-header {
+  margin-bottom: 20px;
+}
+
+.service-approval-wrapper .detail-header .header-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.approval-list {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.approval-card {
+  background: var(--card-bg, #fff);
+  border: 1px solid var(--border-color, #e0e0e0);
+  border-radius: 12px;
+  padding: 16px;
+  transition: opacity .3s, transform .3s;
+}
+
+.approval-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.approval-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.approval-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--color-primary, #1a73e8);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 0.9rem;
+  text-transform: uppercase;
+}
+
+.approval-user small {
+  display: block;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+}
+
+.pending-label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: #f59e0b;
+  background: #fef3c7;
+  padding: 3px 10px;
+  border-radius: 20px;
+}
+
+.approval-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.field-row {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  font-size: 0.9rem;
+}
+
+.field-label {
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  min-width: 65px;
+}
+
+.field-value {
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.notes-row .field-value {
+  font-style: italic;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.approval-card-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-secondary);
+}
+
+.empty-state .icon-slot-lg svg {
+  width: 48px;
+  height: 48px;
+  color: #22c55e;
+}
+
+.hidden {
+  display: none !important;
+}

@@ -91,9 +91,13 @@ Un usuario puede ser simultáneamente **Residente y Proveedor**.
 2.  **Ejecución:** Una Cloud Function programada se ejecuta el primer día de cada mes.
 3.  **Proceso:** La función busca todos los conceptos marcados como recurrentes/mensuales y genera las transacciones de cargo para todas las propiedades del condominio de forma masiva. El administrador no interviene en este proceso mensual.
 
-### 6. Estándares de Ruteo y Assets (Crítico)
-*   **Rutas Absolutas:** Para soportar rutas profundas (ej. `/dashboard/properties`), todas las referencias a archivos en el Core (`Router`, `Mosaic`, `RenderView`) y en el `index.html` **deben comenzar con una barra inclinada (`/`)**. Ejemplo: `/router.js`, `/views/dashboard/home.html`, `/src/css/style.css`.
-*   **Evitar Puntos:** Nunca usar `./` o rutas relativas simples en la definición de rutas del sistema, ya que el navegador las interpreta mal desde URLs con subdirectorios.
+### 6. Estándares de Ruteo y Navegación Reactiva (Actualizado)
+*   **Contenedor Seguro (#app-view):** Para evitar conflictos con librerías externas (ej: reCAPTCHA v3) que inyectan elementos en el `body`, la aplicación debe renderizarse exclusivamente dentro del `<div id="app-view"></div>`. Nunca usar el `body` como contenedor principal del Router.
+*   **Friendly URLs Dinámicas:** Las rutas se definen como IDs en inglés en `appConfig.js` (ej: `/dashboard/requests`), pero se muestran al usuario en su idioma (ej: `/panel/solicitudes`) mediante el motor de `i18n.js`.
+*   **Evento Global `app:route-changed`:** El Router dispara este evento al finalizar cada navegación. Los componentes persistentes (Navigator, Breadcrumbs) deben suscribirse a este evento para sincronizar su estado visual sin recargar la página.
+*   **Comportamiento de Clic Inteligente:**
+    *   **Escritorio:** Los títulos de menú (`.menu-divider`) deben ser inertes (no navegar) y solo controlar la apertura del acordeón de submenús.
+    *   **Móvil:** Los títulos de menú navegan directamente a la ruta principal de la sección y el menú se cierra automáticamente al seleccionar un sub-ítem.
 
 ### 7. Comunicación entre Módulos
 *   **Eventos Personalizados:** Para mantener los módulos desacoplados, se prefiere el uso de eventos globales o burbujeados.

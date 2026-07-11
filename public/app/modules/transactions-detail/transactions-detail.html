@@ -1,80 +1,269 @@
-<div class="module-header">
-    <div class="header-main">
-        <div class="title-group">
-            <button class="btn-back" id="btn-back-to-list" type="button" onclick="window.history.back()">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                    <path d="M15 18l-6-6 6-6"></path>
+<div class="td-wrapper">
+  <!-- Header -->
+  <div class="td-header">
+    <div class="td-header-left">
+      <button class="btn-back" id="btn-back-list" type="button">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M15 18l-6-6 6-6"></path>
+        </svg>
+      </button>
+      <div>
+        <h1 class="td-header-title" id="td-header-title">Nueva Transacción</h1>
+        <p class="td-header-subtitle" id="td-header-subtitle">Complete los campos para registrar un movimiento</p>
+      </div>
+    </div>
+    <div class="td-header-actions">
+      <button class="btn-outline td-btn-delete hidden" id="td-btn-delete">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 6h18M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"></path>
+        </svg>
+        Eliminar
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Form Card -->
+  <div class="td-form-card">
+    <form id="td-form" novalidate>
+      <!-- === Section: Property Search === -->
+      <div class="td-section">
+        <div class="td-section-header">
+          <span class="td-section-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path>
+              <polyline points="9 22 9 12 15 12 15 22"></polyline>
+            </svg>
+          </span>
+          <span class="td-section-label">Unidad / Propiedad</span>
+        </div>
+        <div class="td-property-search">
+          <input type="text" class="td-input td-input-search" id="td-property-search" placeholder="Buscar unidad por ID o nombre..." autocomplete="off">
+          <datalist id="td-properties-list"></datalist>
+          <div class="td-property-meta" id="td-property-meta"></div>
+        </div>
+      </div>
+
+      <!-- === Section: Transaction Type === -->
+      <div class="td-section">
+        <div class="td-section-header">
+          <span class="td-section-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="12" y1="1" x2="12" y2="23"></line>
+              <path d="M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"></path>
+            </svg>
+          </span>
+          <span class="td-section-label">Tipo de Movimiento</span>
+        </div>
+        <div class="td-type-grid" id="td-type-grid">
+          <label class="td-type-option" data-type="FEE">
+            <input type="radio" name="td-type" value="FEE" checked>
+            <span class="td-type-indicator"></span>
+            <span class="td-type-content">
+              <span class="td-type-icon td-icon-fee">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line>
                 </svg>
-                Volver
-            </button>
-            <h2 id="trans-detail-title">Detalle de Transacción</h2>
+              </span>
+              <span class="td-type-name">Cuota / Cargo</span>
+            </span>
+          </label>
+          <label class="td-type-option" data-type="PAYMENT">
+            <input type="radio" name="td-type" value="PAYMENT">
+            <span class="td-type-indicator"></span>
+            <span class="td-type-content">
+              <span class="td-type-icon td-icon-payment">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M12 1a3 3 0 00-3 3v8a3 3 0 006 0V4a3 3 0 00-3-3z"></path><path d="M19 10v2a7 7 0 01-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line>
+                </svg>
+              </span>
+              <span class="td-type-name">Pago / Recibo</span>
+            </span>
+          </label>
+          <label class="td-type-option" data-type="EXPENSE">
+            <input type="radio" name="td-type" value="EXPENSE">
+            <span class="td-type-indicator"></span>
+            <span class="td-type-content">
+              <span class="td-type-icon td-icon-expense">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                </svg>
+              </span>
+              <span class="td-type-name">Gasto / Compra</span>
+            </span>
+          </label>
+          <label class="td-type-option" data-type="FINE">
+            <input type="radio" name="td-type" value="FINE">
+            <span class="td-type-indicator"></span>
+            <span class="td-type-content">
+              <span class="td-type-icon td-icon-fine">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+              </span>
+              <span class="td-type-name">Multa</span>
+            </span>
+          </label>
+          <label class="td-type-option" data-type="OTHER">
+            <input type="radio" name="td-type" value="OTHER">
+            <span class="td-type-indicator"></span>
+            <span class="td-type-content">
+              <span class="td-type-icon td-icon-other">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4M12 8h.01"></path>
+                </svg>
+              </span>
+              <span class="td-type-name">Otro</span>
+            </span>
+          </label>
         </div>
-        <div class="actions">
-            <button class="btn-accent" id="btn-delete-trans" type="button">Eliminar Movimiento</button>
+      </div>
+
+      <!-- === Section: Debt Cards (PAYMENT only) === -->
+      <div class="td-section hidden" id="td-debts-section">
+        <div class="td-section-header">
+          <span class="td-section-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+              <line x1="8" y1="21" x2="16" y2="21"></line>
+              <line x1="12" y1="17" x2="12" y2="21"></line>
+            </svg>
+          </span>
+          <span class="td-section-label">Cargos a pagar</span>
+          <span class="td-section-badge" id="td-debts-count">0 seleccionados</span>
         </div>
-    </div>
-</div>
-
-<div class="detail-card">
-    <form id="trans-form">
-        <div class="form-grid">
-            <div class="form-group full-width">
-                <label for="trans-description">Descripción del Movimiento</label>
-                <input type="text" id="trans-description" name="description" placeholder="Ej: Cuota de Mantenimiento Enero" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="trans-property-id">Unidad / Propiedad (ID)</label>
-                <input type="text" id="trans-property-id" name="propertyId" placeholder="Ej: 101" required>
-            </div>
-
-            <div class="form-group">
-                <label for="trans-amount">Monto (USD)</label>
-                <input type="number" id="trans-amount" name="amount" step="0.01" placeholder="0.00" required>
-            </div>
-
-            <div class="form-group">
-                <label for="trans-type">Tipo de Transacción</label>
-                <input type="text" id="trans-type" name="transactionType" list="trans-types-list" placeholder="Seleccione o escriba..." autocomplete="off" required>
-                <datalist id="trans-types-list">
-                    <option value="FEE">FEE (Cuota)</option>
-                    <option value="PAYMENT">PAYMENT (Pago)</option>
-                    <option value="EXPENSE">EXPENSE (Gasto)</option>
-                    <option value="FINE">FINE (Multa)</option>
-                    <option value="OTHER">OTHER (Otro)</option>
-                </datalist>
-            </div>
-
-            <div class="form-group">
-                <label for="trans-status">Estado de Verificación</label>
-                <select id="trans-status" name="status">
-                    <option value="verified">Verificado</option>
-                    <option value="unidentified">No Identificado</option>
-                </select>
-            </div>
-
-            <div class="form-group">
-                <label for="trans-effective-date">Fecha de Efectividad</label>
-                <input type="date" id="trans-effective-date" name="effectiveDate" required>
-            </div>
-
-            <div class="form-group">
-                <label for="trans-bank-ref">Referencia Bancaria</label>
-                <input type="text" id="trans-bank-ref" name="bankReference" placeholder="Opcional">
-            </div>
+        <div id="td-debts-container">
+          <p class="td-empty-hint">Seleccione una unidad para ver sus cargos pendientes</p>
         </div>
+      </div>
 
-        <div class="form-footer">
-            <button type="button" class="btn-back" onclick="window.history.back()">Cancelar</button>
-            <button type="submit" class="btn-primary" id="btn-save-trans">Guardar Transacción</button>
+      <!-- === Section: Payment Details (PAYMENT only) === -->
+      <div class="td-section hidden" id="td-payment-section">
+        <div class="td-section-header">
+          <span class="td-section-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+              <line x1="1" y1="10" x2="23" y2="10"></line>
+            </svg>
+          </span>
+          <span class="td-section-label">Detalle del Pago</span>
         </div>
+        <div class="td-payment-grid">
+          <div class="td-payment-field">
+            <label class="td-field-label" for="td-payment-method">Método de Pago</label>
+            <select class="td-select" id="td-payment-method">
+              <option value="">Seleccione...</option>
+              <option value="TRANSFER">Transferencia Bancaria</option>
+              <option value="ACH">ACH</option>
+              <option value="YAPPY">Yappy</option>
+              <option value="CASH">Efectivo</option>
+              <option value="CHECK">Cheque</option>
+              <option value="CARD">Tarjeta de Débito/Crédito</option>
+              <option value="DEPOSIT">Depósito en Cuenta</option>
+              <option value="OTHER">Otro</option>
+            </select>
+          </div>
+          <div class="td-payment-field td-upload-field">
+            <label class="td-field-label">Comprobante de Pago (opcional)</label>
+            <div class="td-upload-zone" id="td-upload-zone">
+              <input type="file" id="td-receipt-file" accept="image/*,.pdf" hidden>
+              <div class="td-upload-placeholder" id="td-upload-placeholder">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"></path>
+                  <polyline points="17 8 12 3 7 8"></polyline>
+                  <line x1="12" y1="3" x2="12" y2="15"></line>
+                </svg>
+                <span>Haga clic para adjuntar comprobante</span>
+              </div>
+              <div class="td-upload-preview hidden" id="td-upload-preview">
+                <span class="td-upload-filename" id="td-upload-filename"></span>
+                <button type="button" class="td-upload-remove" id="td-upload-remove">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- === Section: Details (always visible) === -->
+      <div class="td-section">
+        <div class="td-section-header">
+          <span class="td-section-icon">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="4 7 4 4 20 4 20 7"></polyline>
+              <line x1="9" y1="20" x2="15" y2="20"></line>
+              <line x1="12" y1="4" x2="12" y2="20"></line>
+            </svg>
+          </span>
+          <span class="td-section-label">Detalles del Movimiento</span>
+        </div>
+        <div class="td-detail-grid">
+          <div class="td-field full-width">
+            <label class="td-field-label" for="td-description">Descripción</label>
+            <input type="text" class="td-input" id="td-description" name="description" placeholder="Ej: Cuota de Mantenimiento Enero 2026" required>
+          </div>
+          <div class="td-field">
+            <label class="td-field-label" for="td-amount">Monto (USD)</label>
+            <input type="number" class="td-input td-input-amount" id="td-amount" name="amount" step="0.01" placeholder="0.00" required>
+          </div>
+          <div class="td-field">
+            <label class="td-field-label" for="td-effective-date">Fecha de Efectividad</label>
+            <input type="date" class="td-input" id="td-effective-date" name="effectiveDate" required>
+          </div>
+          <div class="td-field">
+            <label class="td-field-label" for="td-bank-ref">Referencia Bancaria</label>
+            <input type="text" class="td-input" id="td-bank-ref" name="bankReference" placeholder="Opcional">
+          </div>
+          <div class="td-field hidden" id="td-status-field">
+            <label class="td-field-label" for="td-status">Estado</label>
+            <select class="td-select" id="td-status" name="status">
+              <option value="verified">Verificado</option>
+              <option value="unidentified">No Identificado</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- Form Footer -->
+      <div class="td-form-footer">
+        <button type="button" class="btn-back td-btn-cancel" id="td-btn-cancel">Cancelar</button>
+        <button type="submit" class="td-btn-primary" id="td-btn-save">
+          <span id="td-btn-save-text">Guardar Transacción</span>
+          <span class="td-btn-loading hidden" id="td-btn-loading">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" class="td-spin">
+              <line x1="12" y1="2" x2="12" y2="6"></line>
+              <line x1="12" y1="18" x2="12" y2="22"></line>
+              <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+              <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+              <line x1="2" y1="12" x2="6" y2="12"></line>
+              <line x1="18" y1="12" x2="22" y2="12"></line>
+              <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+              <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+            </svg>
+            Guardando...
+          </span>
+        </button>
+      </div>
     </form>
-</div>
+  </div>
 
-<!-- Sección de Reconciliación (Visualización de Vínculos) -->
-<div class="detail-card reconciliation-section hidden" id="reconciliation-card">
-    <h3 class="section-title">Vínculos de Conciliación</h3>
-    <div id="reconciliation-content" class="reconciliation-list">
-        <!-- Se inyectarán los vínculos aquí -->
+  <!-- Reconciliation Section (editing only) -->
+  <div class="td-recon-card hidden" id="td-recon-card">
+    <div class="td-recon-header">
+      <span class="td-section-icon">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"></path>
+          <circle cx="8.5" cy="7" r="4"></circle>
+          <polyline points="17 11 19 13 23 9"></polyline>
+        </svg>
+      </span>
+      <span class="td-recon-title">Vínculos de Conciliación</span>
     </div>
+    <div id="td-recon-content">
+      <p class="td-empty-hint">Esta transacción no tiene vínculos registrados</p>
+    </div>
+  </div>
 </div>

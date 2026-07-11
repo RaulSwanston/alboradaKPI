@@ -1,4 +1,4 @@
-import { db, collection, addDoc, updateDoc, deleteDoc, doc, getDoc, getDocs, query, where, orderBy, limit, serverTimestamp } from "../core/firebase.js";
+import { db, collection, addDoc, updateDoc, deleteDoc, doc, getDoc, getDocs, query, where, orderBy, limit, serverTimestamp, runTransaction } from "../core/firebase.js";
 import { createActivity } from "./Activities.js";
 
 /**
@@ -6,6 +6,96 @@ import { createActivity } from "./Activities.js";
  * Implementa un CRUD completo con registro automático de actividades para auditoría.
  */
 export default class Transaction {
+  /**
+   * Genera un voucherNumber secuencial (FAC o REC) usando runTransaction.
+   * Lee el contador desde system/counters, lo incrementa atómicamente,
+   * y si no existe lo inicializa desde appConfig.app.counters (secuencial manual del admin).
+   * @param {string} type - Tipo de transacción (FEE, FINE, PAYMENT, etc.)
+   * @param {Date} effectiveDate - Fecha efectiva para el prefijo del voucher
+   * @returns {Promise<{voucherNumber: string, voucherType: string}|null>}
+   */
+  static async _generateVoucher(type, effectiveDate) {
+    const counterRef = doc(db, "system", "counters");
+
+    return await runTransaction(db, async (transaction) => {
+      const counterSnap = await transaction.get(counterRef);
+      let facCounter, recCounter;
+
+      if (!counterSnap.exists()) {
+        const configRef = doc(db, "appConfig", "app");
+        const configSnap = await transaction.get(configRef);
+        const manualCounters = configSnap.data()?.counters || {};
+        facCounter = manualCounters.fac || 0;
+        recCounter = manualCounters.rec || 0;
+        transaction.set(counterRef, { fac: facCounter, rec: recCounter });
+      } else {
+        facCounter = counterSnap.data().fac || 0;
+        recCounter = counterSnap.data().rec || 0;
+      }
+
+      const isCharge = type === 'FEE' || type === 'FINE';
+      const isPayment = type === 'PAYMENT';
+
+      if (isCharge) {
+        const newCount = facCounter + 1;
+        transaction.update(counterRef, { fac: newCount });
+        const seq = String(newCount).padStart(6, '0');
+        const yyyymm = `${effectiveDate.getFullYear()}${String(effectiveDate.getMonth() + 1).padStart(2, '0')}`;
+        return { voucherNumber: `FAC-${yyyymm}-${seq}`, voucherType: 'Cargo' };
+      }
+
+      if (isPayment) {
+        const newCount = recCounter + 1;
+        transaction.update(counterRef, { rec: newCount });
+        const seq = String(newCount).padStart(6, '0');
+        const yyyymmdd = `${effectiveDate.getFullYear()}${String(effectiveDate.getMonth() + 1).padStart(2, '0')}${String(effectiveDate.getDate()).padStart(2, '0')}`;
+        return { voucherNumber: `REC-${yyyymmdd}-${seq}`, voucherType: 'Recibo' };
+      }
+
+      return null;
+    });
+  }
+
+  /**
+   * Genera N vouchers en una sola runTransaction, incrementando el contador atómicamente.
+   * @param {number} count - Cantidad de vouchers a generar
+   * @param {string} type - 'FEE' | 'FINE' | 'PAYMENT'
+   * @param {Date} effectiveDate - Fecha base para el prefijo
+   * @returns {Promise<Array<{voucherNumber: string, voucherType: string}>>}
+   */
+  static async _generateBatchVouchers(count, type, effectiveDate) {
+    if (count <= 0) return [];
+    const counterRef = doc(db, "system", "counters");
+    return await runTransaction(db, async (transaction) => {
+      const counterSnap = await transaction.get(counterRef);
+      let facCounter, recCounter;
+      if (!counterSnap.exists()) {
+        const configRef = doc(db, "appConfig", "app");
+        const configSnap = await transaction.get(configRef);
+        const manualCounters = configSnap.data()?.counters || {};
+        facCounter = manualCounters.fac || 0;
+        recCounter = manualCounters.rec || 0;
+        transaction.set(counterRef, { fac: facCounter, rec: recCounter });
+      } else {
+        facCounter = counterSnap.data().fac || 0;
+        recCounter = counterSnap.data().rec || 0;
+      }
+
+      const isCharge = type === 'FEE' || type === 'FINE';
+      const vouchers = [];
+      if (isCharge) {
+        const start = facCounter + 1;
+        transaction.update(counterRef, { fac: facCounter + count });
+        const yyyymm = `${effectiveDate.getFullYear()}${String(effectiveDate.getMonth() + 1).padStart(2, '0')}`;
+        for (let i = 0; i < count; i++) {
+          const seq = String(start + i).padStart(6, '0');
+          vouchers.push({ voucherNumber: `FAC-${yyyymm}-${seq}`, voucherType: 'FAC' });
+        }
+      }
+      return vouchers;
+    });
+  }
+
   /**
    * Crea una nueva transacción y registra la actividad correspondiente.
    * @param {Object} data - Datos de la transacción (propertyId, amount, type, description, etc.)
@@ -16,7 +106,7 @@ export default class Transaction {
     try {
       const effectiveDate = data.effectiveDate || new Date();
       const dateObj = effectiveDate instanceof Date ? effectiveDate : (effectiveDate.toDate ? effectiveDate.toDate() : new Date(effectiveDate));
-      
+
       const transData = {
         ...data,
         effectiveDate: dateObj,
@@ -24,6 +114,18 @@ export default class Transaction {
         period: `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}`,
         status: data.propertyId === '__UNIDENTIFIED__' ? 'unidentified' : (data.status || 'verified')
       };
+
+      if (!data.voucherNumber) {
+        const voucher = await this._generateVoucher(data.type, dateObj);
+        if (voucher) {
+          transData.voucherNumber = voucher.voucherNumber;
+          transData.voucherType = voucher.voucherType;
+        }
+      }
+
+      if (transData.pendingAmount === undefined) {
+        transData.pendingAmount = data.amount < 0 ? Math.abs(data.amount) : 0;
+      }
 
       const docRef = await addDoc(collection(db, "transactions"), transData);
 
@@ -113,22 +215,23 @@ export default class Transaction {
     try {
       const q = query(
         collection(db, "transactions"),
-        where("propertyId", "==", propertyId),
-        where("amount", "<", 0), // Solo cargos
-        orderBy("createdAt", "asc")
+        where("propertyId", "==", propertyId)
       );
 
       const querySnapshot = await getDocs(q);
       const list = [];
       querySnapshot.forEach(doc => {
         const data = doc.data();
-        // Solo incluimos si tiene monto pendiente (si el campo no existe, asumimos el total negativo)
         const pending = data.pendingAmount !== undefined ? data.pendingAmount : Math.abs(data.amount);
-        if (pending > 0) {
+        if (data.amount < 0 && pending > 0) {
           list.push({ id: doc.id, ...data, pending });
         }
       });
-      return list;
+      return list.sort((a, b) => {
+        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0);
+        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt || 0);
+        return dateA - dateB;
+      });
     } catch (error) {
       console.error(`[Transaction] Error al obtener deudas de ${propertyId}:`, error);
       throw error;

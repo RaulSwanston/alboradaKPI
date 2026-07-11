@@ -1,5 +1,8 @@
 import ChargeConcept from "../../models/ChargeConcept.js";
+import ServiceRequest from "../../models/ServiceRequest.js";
+import User from "../../models/User.js";
 import { auth } from "../../core/firebase.js";
+import { t } from '../../core/i18n.js';
 
 /**
  * Controlador para la vista de servicios disponibles para los residentes.
@@ -7,6 +10,7 @@ import { auth } from "../../core/firebase.js";
 export default async function services(context) {
     const listContainer = document.getElementById('services-list-container');
     const fabAdmin = document.querySelector('.fab-button[admin]');
+    const user = context?.data?.user;
 
     if (!listContainer) return;
 
@@ -79,6 +83,9 @@ export default async function services(context) {
         services.forEach(service => {
             const card = document.createElement('div');
             card.className = 'service-card';
+            card.dataset.conceptId = service.id;
+            card.dataset.conceptName = service.name;
+            card.dataset.defaultAmount = service.defaultAmount || 0;
             
             // Mapeo de etiquetas legibles
             const typeLabels = {
@@ -122,4 +129,58 @@ export default async function services(context) {
 
     // Iniciar carga
     await loadServices();
+
+    // Delegación de eventos para botón "Solicitar"
+    listContainer.addEventListener('click', async (e) => {
+        const btn = e.target.closest('.btn-request');
+        if (!btn) return;
+
+        const card = btn.closest('.service-card');
+        if (!card) return;
+
+        const conceptId = card.dataset.conceptId;
+        const conceptName = card.dataset.conceptName;
+        const defaultAmount = parseFloat(card.dataset.defaultAmount) || 0;
+
+        if (!user) {
+            alert(t('services.loginRequired') || 'Debes iniciar sesión para solicitar servicios.');
+            return;
+        }
+
+        try {
+            const profile = await User.getById(user.uid);
+            const propertyIds = profile?.propertyIds || [];
+
+            if (propertyIds.length === 0) {
+                alert(t('services.noProperty') || 'No tienes una unidad asociada. Solicita al administrador que te vincule a una propiedad.');
+                return;
+            }
+
+            const propertyId = propertyIds[0];
+
+            if (!confirm(`¿Solicitar "${conceptName}" para la unidad ${propertyId} por $${defaultAmount.toFixed(2)}?`)) return;
+
+            btn.disabled = true;
+            btn.textContent = t('services.sending') || 'Enviando...';
+
+            await ServiceRequest.create({
+                propertyId: propertyId,
+                chargeConceptId: conceptId,
+                conceptName: conceptName,
+                finalAmount: defaultAmount
+            }, {
+                id: user.uid,
+                name: user.displayName || user.email
+            });
+
+            alert(t('services.requestSent') || `✅ Solicitud de "${conceptName}" enviada. El administrador la revisará pronto.`);
+            btn.disabled = false;
+            btn.innerHTML = 'Solicitar';
+        } catch (error) {
+            console.error("Error al solicitar servicio:", error);
+            alert(t('services.requestError') || 'Error al enviar la solicitud. Intenta de nuevo.');
+            btn.disabled = false;
+            btn.innerHTML = 'Solicitar';
+        }
+    });
 }

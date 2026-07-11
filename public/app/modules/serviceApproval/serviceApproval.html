@@ -1,0 +1,35 @@
+<div class="service-approval-wrapper">
+  <header class="detail-header">
+    <div class="header-left">
+      <button class="btn-back" onclick="history.back()" aria-label="Volver">
+        <div class="icon-slot" data-icon="chevron-left"></div>
+      </button>
+      <div>
+        <h1 class="header-title">Solicitudes de Servicio</h1>
+        <span class="header-subtitle" id="pending-count-svc"></span>
+      </div>
+    </div>
+  </header>
+
+  <div id="approval-list-svc" class="approval-list">
+    <div class="loading-state"><p>Cargando solicitudes...</p></div>
+  </div>
+
+  <div id="approval-empty-svc" class="empty-state hidden">
+    <div class="icon-slot-lg" data-icon="check-circle"></div>
+    <h3>No hay solicitudes pendientes</h3>
+    <p>Los residentes verán este panel cuando soliciten un servicio.</p>
+  </div>
+
+  <div id="rejection-modal-svc" class="modal-overlay hidden">
+    <div class="modal-content">
+      <h3>Rechazar Solicitud</h3>
+      <p>Indica el motivo del rechazo:</p>
+      <textarea id="rejection-reason-svc" class="form-textarea" rows="3" placeholder="Ej: El servicio no está disponible para esta fecha..."></textarea>
+      <div class="modal-actions">
+        <button id="btn-reject-cancel-svc" class="btn-back">Cancelar</button>
+        <button id="btn-reject-confirm-svc" class="btn-danger">Confirmar Rechazo</button>
+      </div>
+    </div>
+  </div>
+</div>

@@ -63,6 +63,17 @@ export default async function paymentApprovalController(contexto) {
                 <span class="approval-label"><!-- ::i18n.paymentApproval.reportedDate --></span>
                 <span class="approval-value">${formatDate(report.reportDate)}</span>
               </div>
+              <div class="approval-detail-item">
+                <span class="approval-label"><!-- ::i18n.paymentApproval.paymentMethod --></span>
+                <span class="approval-value">${({
+                  'cash': 'Efectivo',
+                  'transfer': 'Transferencia',
+                  'deposit': 'Depósito',
+                  'check': 'Cheque',
+                  'card': 'Tarjeta',
+                  'other': 'Otro'
+                })[report.paymentMethod] || report.paymentMethod || 'No especificado'}</span>
+              </div>
             </div>
             ${report.notes ? `
             <div class="approval-detail-item">
@@ -129,7 +140,8 @@ export default async function paymentApprovalController(contexto) {
         btn.disabled = true;
         btn.innerHTML = `<div class="icon-slot-sm" data-icon="loader"></div>`;
         try {
-          await PaymentNotification.approve(id, { uid: user.uid, name: user.displayName || user.email });
+          const result = await PaymentNotification.approve(id, { uid: user.uid, name: user.displayName || user.email });
+          alert(`✅ Pago aprobado. Recibo generado: ${result.voucherNumber}`);
           await loadPending();
         } catch (error) {
           console.error("Error al aprobar:", error);

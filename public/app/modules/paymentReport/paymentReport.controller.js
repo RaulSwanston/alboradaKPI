@@ -197,6 +197,7 @@ export default async function paymentReportController(contexto) {
         receiptUrl: downloadUrl,
         appliedTo: appliedTo,
         excessAmount: Math.max(0, remainingToApply),
+        paymentMethod: document.getElementById('paymentMethod').value || 'transfer',
         notes: document.getElementById('notes').value || '',
         residentName: user.displayName || user.email
       };

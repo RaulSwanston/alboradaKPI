@@ -186,24 +186,38 @@ export default async function navigator(contexto) {
   const handleDividerClick = (e) => {
     e.preventDefault();
     e.stopPropagation();
+    
     const divider = e.currentTarget;
-    const dividers = navList.querySelectorAll(".menu-divider");
     const isDesktop = window.matchMedia("(min-width: 768px)");
-
+    const link = divider.querySelector('a');
+    
     if (isDesktop.matches) {
       // En escritorio, solo abrimos/cerramos el acordeón. El enlace es 'inerte'.
       divider.classList.toggle("selected");
       return;
-    } else {
-      // En móvil, resaltamos y permitimos la navegación
-      dividers.forEach(el => el.classList.remove("selected"));
-      divider.classList.add("selected");
     }
 
-    const link = divider.querySelector('a');
+    // --- LÓGICA MÓVIL ---
     if (link && link.href) {
-      const path = new URL(link.href).pathname;
-      router.navigate(path, link.dataset.view);
+      const targetPath = new URL(link.href).pathname;
+      const currentPath = window.location.pathname;
+
+      // Evitamos navegar si ya estamos en el mismo sitio (evita parpadeos y recargas)
+      if (getInternalPath(targetPath) === getInternalPath(currentPath)) {
+        console.log("Navigator: Ya estamos en esta ruta, ignorando navegación.");
+        return;
+      }
+
+      router.navigate(targetPath, link.dataset.view);
+    }
+  };
+
+  /**
+   * Cierra el menú desplegable en móvil
+   */
+  const closeMobileMenu = () => {
+    if (buttonMenu.classList.contains('open')) {
+      buttonMenu.classList.remove('open');
     }
   };
 
@@ -212,6 +226,15 @@ export default async function navigator(contexto) {
     dividers.forEach((divider) => {
       divider.addEventListener("click", handleDividerClick);
     });
+
+    // Auto-cierre al hacer clic en cualquier sub-item (Dropdown)
+    const subLinks = navList.querySelectorAll(".menu-item a");
+    subLinks.forEach(link => {
+      link.addEventListener("click", () => {
+        closeMobileMenu();
+      });
+    });
+
     // Escuchamos el evento global del router
     window.addEventListener('app:route-changed', onRouteChanged);
   };

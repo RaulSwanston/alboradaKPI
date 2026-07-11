@@ -13,7 +13,7 @@ import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com
 import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithCredential, getAdditionalUserInfo, sendPasswordResetEmail, sendEmailVerification, reload } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
 
 // Cloud Firestore: Proporciona acceso a una base de datos NoSQL, escalable y en tiempo real. Se utiliza para almacenar, consultar y sincronizar datos (como perfiles de usuario, transacciones, etc.).
-import { getFirestore, doc, getDoc, setDoc, collection, query, where, orderBy, getDocs, getCountFromServer, serverTimestamp, addDoc, onSnapshot, deleteDoc, updateDoc, runTransaction, writeBatch, limit, startAfter, arrayUnion } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, collection, query, where, orderBy, getDocs, getCountFromServer, serverTimestamp, addDoc, onSnapshot, deleteDoc, updateDoc, runTransaction, writeBatch, limit, startAfter, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
 
 // Cloud Storage: Permite almacenar y gestionar archivos y objetos binarios (imágenes, documentos, videos). Ideal para subir y descargar contenido generado por el usuario, como comprobantes de pago.
 import { getStorage, ref, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-storage.js";
@@ -63,4 +63,4 @@ export function waitForAuth() {
   });
 }
 
-export { signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithCredential, getAdditionalUserInfo, sendPasswordResetEmail, sendEmailVerification, reload, doc, getDoc, setDoc, collection, query, where, orderBy, getDocs, getCountFromServer, serverTimestamp, addDoc, onSnapshot, deleteDoc, updateDoc, runTransaction, writeBatch, ref, uploadBytes, getDownloadURL, getGenerativeModel, limit, startAfter, arrayUnion };
+export { signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithCredential, getAdditionalUserInfo, sendPasswordResetEmail, sendEmailVerification, reload, doc, getDoc, setDoc, collection, query, where, orderBy, getDocs, getCountFromServer, serverTimestamp, addDoc, onSnapshot, deleteDoc, updateDoc, runTransaction, writeBatch, ref, uploadBytes, getDownloadURL, getGenerativeModel, limit, startAfter, arrayUnion, increment };

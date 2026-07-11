@@ -89,7 +89,15 @@ export const appConfig = {
     ultimaSincronizacion: null
   },
 
-  // 5. Identidad Visual y Branding
+  // 5. Contadores de Facturación (Secuencial Manual)
+  // Si el admin define fac o rec aquí, _generateVoucher() usará esos valores
+  // como semilla inicial para system/counters. Si son null, arranca desde 1.
+  counters: {
+    fac: null,
+    rec: null
+  },
+
+  // 6. Identidad Visual y Branding
   branding: {
     appName: "Alborada Residencial",
     logoUrl: "/src/img/alborada.svg",
@@ -99,7 +107,7 @@ export const appConfig = {
     }
   },
 
-  // 5. Configuración de Vistas (Layouts)
+  // 7. Configuración de Vistas (Layouts)
   viewLayouts: {
     dashboard: {
       theme: "dashboard",
@@ -121,7 +129,7 @@ export const appConfig = {
     ]
   },
 
-  // 6. Navegación Dinámica
+  // 8. Navegación Dinámica
   navigation: {
     sidebar: [
       {
@@ -175,7 +183,7 @@ export const appConfig = {
     ]
   },
 
-  // 7. Acciones Rápidas
+  // 9. Acciones Rápidas
   quickActions: [
     { id: "report-payment", labelKey: "quickActions.reportPayment", path: "/dashboard/payments/report", icon: "megaphone", roles: ["resident"] },
     { id: "approve-payments", labelKey: "quickActions.approvePayments", path: "/dashboard/payments/pending", icon: "wallet", roles: ["admin"] },

@@ -1,4 +1,5 @@
-import { db, collection, doc, writeBatch, serverTimestamp, query, where, orderBy, getDocs, updateDoc } from "../core/firebase.js";
+import { db, collection, doc, writeBatch, serverTimestamp, query, where, orderBy, getDocs, updateDoc, getDoc, arrayUnion } from "../core/firebase.js";
+import Transaction from "./Transaction.js";
 
 /**
  * Modelo para gestionar las notificaciones de pago enviadas por los residentes.
@@ -105,19 +106,111 @@ export default class PaymentNotification {
   }
 
   /**
-   * Aprueba un reporte de pago.
+   * Aprueba un reporte de pago: crea la transacción PAYMENT con recibo,
+   * concilia las facturas vinculadas y actualiza el balance de la propiedad.
+   * Todo en un writeBatch atómico.
    * @param {string} id - ID de la notificación.
    * @param {Object} adminData - Datos del admin que aprueba {uid, name}.
+   * @returns {Promise<{transactionId: string, voucherNumber: string}>}
    */
   static async approve(id, adminData) {
     try {
-      const ref = doc(db, "paymentNotifications", id);
-      await updateDoc(ref, {
-        status: "approved",
+      const notifRef = doc(db, "paymentNotifications", id);
+      const notifSnap = await getDoc(notifRef);
+      if (!notifSnap.exists()) throw new Error("Notificación no encontrada");
+      const notif = { id: notifSnap.id, ...notifSnap.data() };
+
+      const paymentDate = notif.paymentDate ? new Date(notif.paymentDate + 'T12:00:00') : new Date();
+      const dateObj = paymentDate instanceof Date ? paymentDate : new Date(paymentDate);
+
+      const voucher = await Transaction._generateVoucher('PAYMENT', dateObj);
+
+      // Leer valores actuales para reemplazar increment()
+      const propRef = doc(db, "properties", notif.propertyId);
+      const [propSnap, ...txSnaps] = await Promise.all([
+        getDoc(propRef),
+        ...(notif.appliedTo || []).filter(a => a.transactionId).map(a => getDoc(doc(db, "transactions", a.transactionId)))
+      ]);
+      const currentBalance = propSnap.exists() ? (propSnap.data().balance || 0) : 0;
+      const txPending = {};
+      txSnaps.forEach(s => { if (s.exists()) txPending[s.id] = s.data().pendingAmount || 0; });
+
+      const batch = writeBatch(db);
+
+      const paymentRef = doc(collection(db, "transactions"));
+      const period = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}`;
+
+      batch.set(paymentRef, {
+        propertyId: notif.propertyId,
+        amount: notif.amount,
+        type: 'PAYMENT',
+        description: notif.notes || `Pago registrado por administración`,
+        status: 'verified',
+        effectiveDate: dateObj,
+        period: period,
+        pendingAmount: 0,
+        voucherNumber: voucher.voucherNumber,
+        voucherType: voucher.voucherType,
+        paymentMethod: notif.paymentMethod || null,
+        appliedTo: (notif.appliedTo || []).map(a => ({
+          transactionId: a.transactionId,
+          amount: a.amount,
+          description: a.description || ''
+        })),
+        createdAt: serverTimestamp(),
+        metadata: {
+          paymentNotificationId: id,
+          receiptUrl: notif.receiptUrl || null,
+          adminReviewedBy: adminData.uid,
+          adminReviewedByName: adminData.name,
+          excessAmount: notif.excessAmount || 0
+        }
+      });
+
+      for (const applied of (notif.appliedTo || [])) {
+        if (!applied.transactionId) continue;
+        const currentPend = txPending[applied.transactionId] || 0;
+        batch.update(doc(db, "transactions", applied.transactionId), {
+          pendingAmount: Math.max(0, currentPend - applied.amount),
+          paidBy: arrayUnion({
+            paymentId: paymentRef.id,
+            voucherNumber: voucher.voucherNumber,
+            amount: applied.amount
+          })
+        });
+      }
+
+      batch.update(propRef, {
+        balance: currentBalance + notif.amount,
+        lastBalanceUpdate: new Date()
+      });
+
+      batch.update(notifRef, {
+        status: 'approved',
         reviewedBy: adminData.uid,
         reviewedByName: adminData.name,
-        reviewedAt: serverTimestamp()
+        reviewedAt: serverTimestamp(),
+        paymentTransactionId: paymentRef.id
       });
+
+      const activityRef = doc(collection(db, "activities"));
+      batch.set(activityRef, {
+        timestamp: serverTimestamp(),
+        type: 'PAYMENT_APPROVED',
+        description: `Pago de $${notif.amount} aprobado para unidad ${notif.propertyId} (Recibo: ${voucher.voucherNumber})`,
+        initiator: { type: 'USER', id: adminData.uid, name: adminData.name },
+        target: { type: 'PROPERTY', id: notif.propertyId, name: `Unidad ${notif.propertyId}` },
+        visibility: ['admin', notif.residentUid].filter(Boolean),
+        details: {
+          amount: notif.amount,
+          voucherNumber: voucher.voucherNumber,
+          notificationId: id,
+          transactionId: paymentRef.id
+        }
+      });
+
+      await batch.commit();
+      return { transactionId: paymentRef.id, voucherNumber: voucher.voucherNumber };
     } catch (error) {
       console.error("[PaymentNotification] Error al aprobar reporte:", error);
       throw error;
