@@ -1,21 +1,31 @@
 # Memoria de Sesiones - Bitácora de Proyecto
 
 ## Entrada: 12 de Julio de 2026
-**Estado:** Fix de conciliación al editar PAYMENT en transactions-detail.
+**Estado:** Fix conciliación PAYMENT-FEE, caché de cargos, correcciones CSS mobile y scroll.
 
 ### Resumen de cambios:
-- **Fix del gap crítico:** Se completó la conciliación al **editar** un PAYMENT existente en `transactions-detail.controller.js`. Ahora:
+- **Fix conciliación al editar PAYMENT** (`transactions-detail.controller.js`):
   - Compara `oldAppliedTo` vs `newAppliedTo` (diff added/removed)
   - **Cargos añadidos**: decrementa `pendingAmount` + agrega `paidBy` via `arrayUnion`
   - **Cargos removidos**: restaura `pendingAmount` + filtra `paidBy`
   - **Balance** de propiedad: ajusta por `(nuevoMonto - viejoMonto)`
   - Todo en un solo `writeBatch` atómico
-- **Nueva variable** `originalTransaction` para almacenar el estado previo al cargar una transacción existente.
+  - Nueva variable `originalTransaction` para almacenar estado previo
+- **Eliminado caché de cargos** (`transactions.controller.js`): `loadDebtsForPanel` ahora siempre consulta Firestore al abrir el panel de conciliación, evitando datos obsoletos al conciliar múltiples pagos de una misma propiedad.
+- **Fix scroll al seleccionar tarjetas** (`transactions.controller.js`): cambio de `<label>` a `<div>` con `e.preventDefault()` para que el checkbox no reciba foco y el navegador no haga scroll automático.
+- **Fix ancho en mobile** (`root.css` + `transactions.css`):
+  - Eliminado `display: flex` conflictivo en `.transactions-table` (≤768px) que impedía a `#transactions-list` ocupar el 100% del ancho
+  - Agregado `width: 100%` explícito en `#transactions-list` para mobile
+- **Centrado de columnas** (`transactions.css` + `transactions.html`): Tipo, Unidad y Monto centrados horizontalmente en escritorio. Mobile mantiene su alineación original. Eliminado inline style obsoleto en header.
 
 ### Archivos modificados:
 | Archivo | Cambio |
 |---------|--------|
 | `modules/transactions-detail/transactions-detail.controller.js` | +`originalTransaction`, lógica de conciliación con diff (added/removed) al editar PAYMENT |
+| `modules/transactions/transactions.controller.js` | Eliminado caché en `loadDebtsForPanel`; `<label>` → `<div>` + `e.preventDefault()` para evitar scroll |
+| `modules/transactions/transactions.css` | +`width:100%` en #transactions-list mobile; centrado de `.col-type`, `.col-prop`, `.col-amount` en desktop; revertido a right/left en mobile |
+| `modules/transactions/transactions.html` | Eliminado inline `style="text-align:right;padding-right:2rem"` del header |
+| `src/css/root.css` | Eliminado `.transactions-table { display: flex }` del media query ≤768px |
 | `docs/memory.md` | Esta entrada |
 
 ### Pendiente:
