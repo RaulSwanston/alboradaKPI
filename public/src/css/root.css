@@ -404,10 +404,6 @@ input[type='button'] {
     padding-bottom: 7.4rem;
   }
 
-  .transactions-table {
-    display: flex;
-  }
-
   .transactions-table thead {
     width: 20cqb;
   }

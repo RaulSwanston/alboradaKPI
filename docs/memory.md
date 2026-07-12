@@ -1,5 +1,29 @@
 # Memoria de Sesiones - Bitácora de Proyecto
 
+## Entrada: 12 de Julio de 2026
+**Estado:** Fix de conciliación al editar PAYMENT en transactions-detail.
+
+### Resumen de cambios:
+- **Fix del gap crítico:** Se completó la conciliación al **editar** un PAYMENT existente en `transactions-detail.controller.js`. Ahora:
+  - Compara `oldAppliedTo` vs `newAppliedTo` (diff added/removed)
+  - **Cargos añadidos**: decrementa `pendingAmount` + agrega `paidBy` via `arrayUnion`
+  - **Cargos removidos**: restaura `pendingAmount` + filtra `paidBy`
+  - **Balance** de propiedad: ajusta por `(nuevoMonto - viejoMonto)`
+  - Todo en un solo `writeBatch` atómico
+- **Nueva variable** `originalTransaction` para almacenar el estado previo al cargar una transacción existente.
+
+### Archivos modificados:
+| Archivo | Cambio |
+|---------|--------|
+| `modules/transactions-detail/transactions-detail.controller.js` | +`originalTransaction`, lógica de conciliación con diff (added/removed) al editar PAYMENT |
+| `docs/memory.md` | Esta entrada |
+
+### Pendiente:
+- Datos históricos: cargos sin `pendingAmount` se muestran como impagos (requiere estrategia de reconciliación).
+- Dashboard de resumen financiero para el residente.
+
+---
+
 ## Entrada: 10 de Julio de 2026
 **Estado:** Refactor visual de transactions-detail + Diagnóstico de conciliación de pagos.
 

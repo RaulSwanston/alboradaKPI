@@ -387,17 +387,10 @@ export default async function transactionsController(contexto) {
         const debtsContainer = panel?.querySelector('.conciliation-debts');
         if (!debtsContainer) return;
 
-        const cacheKey = tx.propertyId;
-        if (conciliationDataCache.has(cacheKey)) {
-            renderDebtsInPanel(debtsContainer, conciliationDataCache.get(cacheKey), tx);
-            return;
-        }
-
         debtsContainer.innerHTML = '<p class="conciliation-loading">Cargando deudas pendientes...</p>';
 
         try {
             const debts = await Transaction.getPendingDebts(tx.propertyId);
-            conciliationDataCache.set(cacheKey, debts);
             renderDebtsInPanel(debtsContainer, debts, tx);
         } catch (e) {
             console.error('[TX] Error loading debts for conciliation:', e);
@@ -421,7 +414,7 @@ export default async function transactionsController(contexto) {
             const desc = debt.description || 'Cargo sin descripción';
 
             return `
-                <label class="conciliation-debt-card ${isSelected ? 'selected' : ''}" data-transaction-id="${debtId}" data-amount="${Math.abs(pending).toFixed(2)}">
+                <div class="conciliation-debt-card ${isSelected ? 'selected' : ''}" data-transaction-id="${debtId}" data-amount="${Math.abs(pending).toFixed(2)}">
                     <div class="conciliation-debt-check">
                         <input type="checkbox" ${isSelected ? 'checked' : ''}>
                         <span class="check-indicator">
@@ -435,13 +428,15 @@ export default async function transactionsController(contexto) {
                         <span class="conciliation-debt-voucher">${voucherLabel}</span>
                     </div>
                     <span class="conciliation-debt-amount">$${Math.abs(pending).toFixed(2)}</span>
-                </label>
+                </div>
             `;
         }).join('');
 
         container.querySelectorAll('.conciliation-debt-card').forEach(card => {
-            const checkbox = card.querySelector('input[type="checkbox"]');
-            checkbox.addEventListener('change', () => {
+            card.addEventListener('click', (e) => {
+                const checkbox = card.querySelector('input[type="checkbox"]');
+                e.preventDefault();
+                checkbox.checked = !checkbox.checked;
                 card.classList.toggle('selected', checkbox.checked);
             });
         });

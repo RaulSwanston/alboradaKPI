@@ -57,6 +57,7 @@ export default async function transactionsDetailController(contexto) {
   let currentPropertyId = '';
   let isManualAmount = false;
   let _settingAmount = false;
+  let originalTransaction = null;
 
   // =============================================
   //  INIT
@@ -414,9 +415,55 @@ export default async function transactionsDetailController(contexto) {
         savedId = transId;
       }
 
-      // Decrementar pendingAmount de los cargos vinculados (solo PAYMENT nuevos)
-      if (isNew && type === 'PAYMENT' && data.appliedTo?.length > 0 && savedId) {
-        await applyPaymentToCharges(savedId, data.appliedTo, currentPropertyId, absAmount);
+      // Conciliar cargos vinculados/desvinculados
+      if (type === 'PAYMENT' && savedId) {
+        if (isNew && data.appliedTo?.length > 0) {
+          await applyPaymentToCharges(savedId, data.appliedTo, currentPropertyId, absAmount);
+        } else if (!isNew) {
+          const oldAT = originalTransaction?.appliedTo || [];
+          const newAT = data.appliedTo || [];
+          const oldIds = new Set(oldAT.map(a => a.transactionId));
+          const newIds = new Set(newAT.map(a => a.transactionId));
+          const added = newAT.filter(a => !oldIds.has(a.transactionId));
+          const removedIds = [...oldIds].filter(id => !newIds.has(id));
+          const oldAmount = Math.abs(originalTransaction?.amount || 0);
+
+          if (added.length > 0 || removedIds.length > 0 || absAmount !== oldAmount) {
+            const allIds = [...new Set([...newAT.map(a => a.transactionId), ...oldAT.map(a => a.transactionId)])];
+            const [chargeSnaps, propSnap] = await Promise.all([
+              Promise.all(allIds.map(id => getDoc(doc(db, "transactions", id)))),
+              getDoc(doc(db, "properties", currentPropertyId))
+            ]);
+            const chargeData = {};
+            chargeSnaps.forEach(s => { if (s.exists()) chargeData[s.id] = s.data(); });
+
+            const batch = writeBatch(db);
+            for (const item of added) {
+              const ch = chargeData[item.transactionId];
+              if (!ch) continue;
+              const cur = ch.pendingAmount !== undefined ? ch.pendingAmount : Math.abs(ch.amount || 0);
+              batch.update(doc(db, "transactions", item.transactionId), {
+                pendingAmount: Math.max(0, cur - item.amount),
+                paidBy: arrayUnion({ paymentId: savedId, amount: item.amount, description: item.description || '' })
+              });
+            }
+            for (const rid of removedIds) {
+              const ch = chargeData[rid];
+              if (!ch) continue;
+              const item = oldAT.find(a => a.transactionId === rid);
+              batch.update(doc(db, "transactions", rid), {
+                pendingAmount: (ch.pendingAmount || 0) + (item?.amount || 0),
+                paidBy: (ch.paidBy || []).filter(pb => pb.paymentId !== savedId)
+              });
+            }
+            const curBal = propSnap.exists() ? (propSnap.data().balance || 0) : 0;
+            batch.update(doc(db, "properties", currentPropertyId), {
+              balance: curBal + (absAmount - oldAmount),
+              lastBalanceUpdate: new Date()
+            });
+            await batch.commit();
+          }
+        }
       }
 
       if (receiptFile && savedId) {
@@ -530,6 +577,9 @@ export default async function transactionsDetailController(contexto) {
           await loadDebts(currentPropertyId, preSelectedIds);
         }
       }
+
+      // Store original for diff calculation on edit
+      originalTransaction = trans;
 
       // Trigger type change UI
       handleTypeChange(type);

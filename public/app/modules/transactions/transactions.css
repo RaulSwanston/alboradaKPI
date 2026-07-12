@@ -215,8 +215,9 @@
 .badge-payment { background: rgba(40, 191, 99, 0.1); color: var(--color-kaitoke-green-600); }
 .badge-fee { background: rgba(37, 99, 235, 0.1); color: #2563eb; }
 
-.col-prop { font-weight: 700; color: var(--color-text-primary); }
-.col-amount { font-weight: 800; text-align: right; font-size: 1rem; }
+.col-type { text-align: center; }
+.col-prop { font-weight: 700; color: var(--color-text-primary); text-align: center; }
+.col-amount { font-weight: 800; text-align: center; font-size: 1rem; }
 .amount-pos { color: var(--color-kaitoke-green-600); }
 .amount-neg { color: var(--color-solid-pink-600); }
 
@@ -270,6 +271,7 @@
     display: flex;
     flex-direction: column;
     gap: 1.25rem;
+    width: 100%;
   }
   
   .transaction-row-wrapper {
@@ -303,7 +305,7 @@
 
   .col-date { grid-area: date; font-size: 0.6875rem; font-weight: 700; color: var(--color-gurkha-400); }
   .col-desc { grid-area: desc; }
-  .col-type { grid-area: type; }
+  .col-type { grid-area: type; text-align: left; }
   .col-prop { display: none; }
   .col-amount { grid-area: amount; text-align: right; font-size: 1.1rem; }
   .col-actions { grid-area: actions; }
