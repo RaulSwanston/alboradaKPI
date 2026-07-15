@@ -1,5 +1,48 @@
 # Memoria de Sesiones - Bitácora de Proyecto
 
+## Entrada: 15 de Julio de 2026
+**Estado:** Refactor completo del módulo residencyRequest y profile con diseño moderno.
+
+### Resumen de cambios:
+- **MembershipRequest model:** IDs auto-generados (doc(collection(...))), nuevo campo `visibleToUser`, nuevo método `dismiss(requestId, userId)` via `updateDoc`.
+- **firestore.rules:** Permiso `update` para el usuario en sus propios documentos (`request.auth.uid == resource.data.userId`).
+- **profile.controller.js:** Referencias DOM corregidas (form, btnSave, inputs, nameTitle).
+- **profile.css:** Refactor completo — eliminados todos los selectores duplicados que pertenecían a residencyRequest (search, chips, status, card-header-with-icon). Brand watermark (`::before` radial gradient) en header y profile cards. Colores migrados a `--color-gurkha-*`/`--color-kaitoke-green-*`/`--color-solid-pink-*`. Selectores `.form-label`/`.form-input` scoped a `.profile-module` para evitar conflicto con root.css.
+- **residencyRequest.controller.js:**
+  - Status list renderizada como tarjetas (`.mc-card` con icono, título, badge, dismiss).
+  - Fix campo `address.street` (era `p.street`, Firestore usa `address.fullAddress` + `address.street`).
+  - Animación show/hide del formulario: `showFormContainer()` / `hideFormContainer()` con `@starting-style` para entrada y clase `.form-exit` + `transitionend` para salida suave.
+  - Filtro de propiedades con solicitud activa excluidas del search.
+  - Re-show del formulario al descartar la última solicitud.
+- **residencyRequest.css:** Rewrite completo:
+  - Brand watermark en el módulo.
+  - Tarjetas de estado (`.mc-card`) con animación escalonada, badges semánticos (pendiente/amarillo, aprobada/verde, rechazada/rojo).
+  - Search input scoped a `.search-input-wrapper .form-input` para no pisar profile form.
+  - Chips neutros (`--color-gurkha-100`/`--color-gurkha-700`) sin verde para no competir con botón primario.
+  - `btn-remove-chip` con `padding: 0` para que sea circular (root.css global `padding: 0.75rem 1rem` lo desbordaba).
+  - `@starting-style` en `#request-form-container` para entrada suave.
+  - `.form-exit` class para salida animada.
+  - Botón "Solicitar otra unidad": verde con texto blanco; en mobile full-width más grande.
+  - Botón "Cancelar" en `--color-solid-pink-600`.
+  - Gap de chip aumentado a 1rem en mobile para separar select de botón ×.
+- **residencyRequest.html:** HTML limpiado — icono y header inline eliminados del status container, estilos inline reemplazados por clases.
+
+### Archivos modificados:
+| Archivo | Cambio |
+|---------|--------|
+| `firestore.rules` | +permiso update para usuario en sus documentos |
+| `models/MembershipRequest.js` | +IDs auto-generados, +visibleToUser, +dismiss() |
+| `modules/profile/profile.controller.js` | Fix referencias DOM faltantes |
+| `modules/profile/profile.css` | Refactor completo, duplicados eliminados, brand watermark, colores gurkha/kaitoke |
+| `modules/residencyRequest/residencyRequest.controller.js` | Tarjetas mc-card, fix address.street, animación show/hide, helpers |
+| `modules/residencyRequest/residencyRequest.css` | Rewrite completo, diseño system, chips neutros, @starting-style, responsive |
+| `modules/residencyRequest/residencyRequest.html` | HTML limpio, inline styles → clases |
+
+### Pendiente:
+- N/A
+
+---
+
 ## Entrada: 12 de Julio de 2026
 **Estado:** Fix conciliación PAYMENT-FEE, caché de cargos, correcciones CSS mobile y scroll.
 
