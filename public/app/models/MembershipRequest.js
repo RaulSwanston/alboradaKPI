@@ -1,4 +1,4 @@
-import { db, collection, doc, writeBatch, serverTimestamp, query, where, getDocs, orderBy, arrayUnion } from "../core/firebase.js";
+import { db, collection, doc, writeBatch, serverTimestamp, query, where, getDocs, orderBy, arrayUnion, updateDoc } from "../core/firebase.js";
 
 /**
  * Modelo para gestionar las solicitudes de vinculación a propiedades.
@@ -113,8 +113,8 @@ export default class MembershipRequest {
       const batch = writeBatch(db);
 
       selectedProperties.forEach((data, id) => {
-        const requestId = `residency_${user.uid}_${id}`;
-        const requestRef = doc(db, "membershipRequests", requestId);
+        // ID auto-generado para permitir múltiples intentos
+        const requestRef = doc(collection(db, "membershipRequests"));
         
         // 1. Guardar la solicitud de membresía
         batch.set(requestRef, {
@@ -125,6 +125,7 @@ export default class MembershipRequest {
           requestedPropertyName: data.name,
           relationship: data.relationship,
           status: 'pending',
+          visibleToUser: true,
           createdAt: serverTimestamp()
         });
 
@@ -144,6 +145,23 @@ export default class MembershipRequest {
       return true;
     } catch (error) {
       console.error("[MembershipRequest] Error al crear múltiples solicitudes:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Permite al usuario descartar (ocultar) una solicitud rechazada.
+   * @param {string} requestId - ID de la solicitud a descartar.
+   * @param {string} userId - UID del usuario propietario.
+   */
+  static async dismiss(requestId, userId) {
+    try {
+      await updateDoc(doc(db, "membershipRequests", requestId), {
+        visibleToUser: false
+      });
+      return true;
+    } catch (error) {
+      console.error("[MembershipRequest] Error al descartar solicitud:", error);
       throw error;
     }
   }

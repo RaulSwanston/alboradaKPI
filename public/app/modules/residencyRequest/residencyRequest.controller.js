@@ -1,4 +1,3 @@
-import { db, doc, collection, getDocs, setDoc, getDoc, serverTimestamp, query, limit, where, orderBy, writeBatch } from '../../core/firebase.js';
 import Property from '../../models/Property.js';
 import MembershipRequest from '../../models/MembershipRequest.js';
 
@@ -32,7 +31,21 @@ export default async function residencyRequestController(contexto) {
   const btnShowSearch = document.getElementById('btn-show-search');
 
   let allProperties = [];
-  let selectedProperties = new Map(); // Usamos Map para evitar duplicados [id -> {name, relationship}]
+  let selectedProperties = new Map();
+  let requestedPropertyIds = new Set();
+
+  // --- Helpers de animación para requestFormContainer ---
+  const hideFormContainer = () => {
+    requestFormContainer.classList.add('form-exit');
+    requestFormContainer.addEventListener('transitionend', () => {
+      requestFormContainer.classList.add('hidden');
+      requestFormContainer.classList.remove('form-exit');
+    }, { once: true });
+  };
+
+  const showFormContainer = () => {
+    requestFormContainer.classList.remove('hidden');
+  };
 
   // --- Lógica Inicial ---
   residencyCard.classList.remove('hidden');
@@ -41,19 +54,46 @@ export default async function residencyRequestController(contexto) {
     // 1. Buscar solicitudes existentes del usuario mediante el modelo
     try {
       const requests = await MembershipRequest.getByUserId(user.uid);
+      const visibleRequests = requests.filter(r => r.visibleToUser !== false);
 
-      if (requests.length > 0) {
-        requestStatusList.innerHTML = requests.map(data => {
-          const statusMap = {
-            'pending': '⏳ Pendiente de revisión',
-            'approved': '✅ Aprobada',
-            'rejected': '❌ Rechazada'
-          };
-          const relLabel = data.relationship || 'Residente';
-          return `<div><strong>${data.requestedPropertyName}</strong> (${relLabel}): ${statusMap[data.status] || data.status}</div>`;
-        }).join('');
+      // Poblar Set de propiedades con solicitud activa
+      requestedPropertyIds = new Set(visibleRequests.map(r => r.requestedPropertyId));
+
+      if (visibleRequests.length > 0) {
+        const statusMap = {
+          'pending': { label: 'Pendiente', class: 'mc-badge-pending' },
+          'approved': { label: 'Aprobada', class: 'mc-badge-approved' },
+          'rejected': { label: 'Rechazada', class: 'mc-badge-rejected' }
+        };
+
+        requestStatusList.innerHTML = `<div class="membership-cards">${
+          visibleRequests.map(data => {
+            const status = statusMap[data.status] || { label: data.status, class: '' };
+            const relLabel = data.relationship || 'Residente';
+            const dateStr = data.createdAt?.toDate?.()?.toLocaleDateString() || '';
+            const dismissBtn = data.status === 'rejected'
+              ? `<button type="button" class="btn-dismiss-mc" data-id="${data.id}" data-property-id="${data.requestedPropertyId}">Descartar</button>`
+              : '';
+            return `
+              <div class="mc-card" style="animation-delay:${visibleRequests.indexOf(data) * 0.06}s">
+                <div class="mc-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+                </div>
+                <div class="mc-info">
+                  <span class="mc-title">${data.requestedPropertyName}</span>
+                  <span class="mc-sub">${relLabel} · ${dateStr}</span>
+                </div>
+                <div class="mc-actions">
+                  <span class="mc-badge ${status.class}">${status.label}</span>
+                  ${dismissBtn}
+                </div>
+              </div>
+            `;
+          }).join('')
+        }</div>`;
         
         requestStatusContainer.classList.remove('hidden');
+        hideFormContainer();
       }
     } catch (error) {
       console.warn("⚠️ Error al verificar solicitudes previas:", error.message);
@@ -130,10 +170,11 @@ export default async function residencyRequestController(contexto) {
     }
 
     const filtered = allProperties.filter(p => {
-      if (selectedProperties.has(p.id)) return false; 
+      if (selectedProperties.has(p.id)) return false;
+      if (requestedPropertyIds.has(p.id)) return false;
       const idMatch = p.id ? p.id.toLowerCase().includes(term) : false;
       const nameMatch = p.name ? p.name.toLowerCase().includes(term) : false;
-      const streetMatch = p.street ? p.street.toLowerCase().includes(term) : false;
+      const streetMatch = p.address?.street ? p.address.street.toLowerCase().includes(term) : false;
       return idMatch || nameMatch || streetMatch;
     }).slice(0, 5);
 
@@ -142,7 +183,7 @@ export default async function residencyRequestController(contexto) {
         <div class="suggestion-item" data-id="${p.id}" data-name="${p.name}">
           <div style="display:flex; flex-direction:column">
             <span class="unit-name">${p.name}</span>
-            <span class="unit-street">${p.street || 'Sin dirección'}</span>
+            <span class="unit-street">${p.address?.street || 'Sin dirección'}</span>
           </div>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
         </div>
@@ -192,7 +233,7 @@ export default async function residencyRequestController(contexto) {
       updateUIState();
       
       await checkStatus(); 
-      requestFormContainer.classList.add('hidden');
+      hideFormContainer();
     } catch (error) {
       console.error("Error al enviar solicitudes:", error);
       alert("Error al procesar las solicitudes.");
@@ -202,13 +243,55 @@ export default async function residencyRequestController(contexto) {
     }
   };
 
+  // --- Dismiss de solicitudes rechazadas ---
+  const handleDismiss = async (e) => {
+    const btn = e.target.closest('.btn-dismiss-mc');
+    if (!btn) return;
+
+    const requestId = btn.dataset.id;
+    const card = btn.closest('.mc-card');
+
+    try {
+      await MembershipRequest.dismiss(requestId, user.uid);
+      // Remover propiedad del Set para permitir re-solicitud
+      const propertyId = btn.dataset.propertyId;
+      if (propertyId) requestedPropertyIds.delete(propertyId);
+
+      card.style.opacity = '0';
+      card.style.transform = 'scale(0.95)';
+      card.style.transition = 'all 0.3s ease';
+      setTimeout(() => {
+        card.remove();
+        const cardsContainer = requestStatusList.querySelector('.membership-cards');
+        if (!cardsContainer || cardsContainer.children.length === 0) {
+          requestStatusContainer.classList.add('hidden');
+          showFormContainer();
+        }
+      }, 300);
+    } catch (error) {
+      console.error("Error al descartar solicitud:", error);
+    }
+  };
+
+  // --- Cancelar búsqueda ---
+  const handleCancelSearch = () => {
+    selectedProperties.clear();
+    selectedList.innerHTML = '';
+    searchInput.value = '';
+    suggestionsList.classList.add('hidden');
+    hideFormContainer();
+    residencyForm.classList.add('hidden');
+  };
+
   // --- Listeners ---
   searchInput?.addEventListener('input', handleInput);
   suggestionsList?.addEventListener('click', handleSuggestionClick);
   selectedList?.addEventListener('click', handleChipRemove);
   residencyForm?.addEventListener('submit', handleSubmit);
+  requestStatusList?.addEventListener('click', handleDismiss);
+  document.getElementById('btn-cancel-search')?.addEventListener('click', handleCancelSearch);
   btnShowSearch?.addEventListener('click', () => {
-    requestFormContainer.classList.remove('hidden');
+    showFormContainer();
   });
 
   // --- Limpieza ---
@@ -217,5 +300,7 @@ export default async function residencyRequestController(contexto) {
     suggestionsList?.removeEventListener('click', handleSuggestionClick);
     selectedList?.removeEventListener('click', handleChipRemove);
     residencyForm?.removeEventListener('submit', handleSubmit);
+    requestStatusList?.removeEventListener('click', handleDismiss);
+    document.getElementById('btn-cancel-search')?.removeEventListener('click', handleCancelSearch);
   };
 }

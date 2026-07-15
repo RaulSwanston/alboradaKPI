@@ -14,7 +14,33 @@ export default async function profileController(contexto) {
   const role = contexto.data.permissions?.role;
   const property = contexto.data.property;
 
-  // ... (referencias al DOM inicialización igual)
+  // --- Referencias al DOM ---
+  const form = document.getElementById('profile-form');
+  const inputDisplayName = document.getElementById('profileDisplayName');
+  const inputEmail = document.getElementById('profileEmail');
+  const inputMobile = document.getElementById('profileMobile');
+  const inputPhone = document.getElementById('profilePhone');
+  const btnSave = document.getElementById('btn-save-profile');
+  const nameTitle = document.getElementById('profile-name-title');
+
+  // Poblar datos iniciales
+  if (userProfile) {
+    inputDisplayName.value = userProfile.displayName || '';
+    inputEmail.value = user.email || '';
+    inputMobile.value = userProfile.mobile || '';
+    inputPhone.value = userProfile.phone || '';
+    nameTitle.textContent = userProfile.displayName || user.email?.split('@')[0] || 'Usuario';
+  }
+
+  const roleBadge = document.getElementById('profile-role-badge');
+  const unitBadge = document.getElementById('profile-unit-badge');
+  if (roleBadge) {
+    const roleMap = { admin: 'Administrador', resident: 'Residente', guest: 'Visitante', pending: 'Pendiente', provider: 'Proveedor', hybrid: 'Híbrido' };
+    roleBadge.textContent = roleMap[role] || role || 'Desconocido';
+  }
+  if (unitBadge) {
+    unitBadge.textContent = userProfile?.propertyIds?.length > 0 ? `${userProfile.propertyIds.length} unidad(es)` : 'Sin Unidad';
+  }
 
   // --- Manejo de Guardado ---
   const handleProfileUpdate = async (e) => {

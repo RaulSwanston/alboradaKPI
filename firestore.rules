@@ -38,8 +38,10 @@ service cloud.firestore {
     match /membershipRequests/{requestId} {
       // Permitimos crear, leer y listar a cualquier usuario autenticado.
       allow create, read, list: if request.auth != null;
-      // Los admins pueden gestionar las solicitudes (aprobar/rechazar/borrar).
-      allow update, delete: if isAdmin();
+      // El usuario puede modificar sus propias solicitudes (ej: descartar visibleToUser).
+      // El admin puede gestionar (aprobar/rechazar/borrar).
+      allow update: if isAdmin() || request.auth.uid == resource.data.userId;
+      allow delete: if isAdmin();
     }
 
     // Transacciones (Historial Financiero)

@@ -1,8 +1,5 @@
 <div id="residency-request-card" class="profile-card residency-request-module">
   <div class="card-header-with-icon">
-    <div class="icon-circle-bg">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
-    </div>
     <div>
       <h3 class="profile-card-title">Vínculo con el Condominio</h3>
       <p class="profile-card-desc">Selecciona tu unidad para que la administración valide tu perfil de residente.</p>
@@ -11,7 +8,10 @@
   
   <div id="request-form-container">
     <div class="search-selection-group">
-      <label for="property-search-input" class="form-label">Buscar mi Casa / Unidad</label>
+      <div style="display:flex;justify-content:space-between;align-items:center;">
+        <label for="property-search-input" class="form-label">Buscar mi Casa / Unidad</label>
+        <button type="button" id="btn-cancel-search" class="button-link">Cancelar</button>
+      </div>
       <div class="search-input-wrapper">
         <svg class="search-icon-inside" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         <input type="text" id="property-search-input" class="form-input" placeholder="Escribe el número o calle..." autocomplete="off">
@@ -40,16 +40,11 @@
   </div>
 
   <div id="request-status-container" class="hidden">
-    <div class="status-message info">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
-      <div>
-        <p class="status-title">Solicitudes enviadas</p>
-        <div id="request-status-list" class="status-desc">
-          <!-- Lista de solicitudes enviadas -->
-        </div>
-        <p style="font-size: 0.75rem; margin-top: 0.5rem; opacity: 0.8;">Puedes solicitar vincularte a más unidades si lo deseas.</p>
-        <button type="button" id="btn-show-search" class="button button-link" style="padding: 0; margin-top: 0.5rem; font-size: 0.875rem; color: var(--color-primary); background: none; text-decoration: underline;">Solicitar otra unidad</button>
-      </div>
+    <div id="request-status-list">
+      <!-- Lista de solicitudes enviadas (rendered by controller) -->
+    </div>
+    <div class="btn-show-search-wrap">
+      <button type="button" id="btn-show-search" class="button-link">Solicitar otra unidad</button>
     </div>
   </div>
 </div>
