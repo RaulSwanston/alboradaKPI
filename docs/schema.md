@@ -2,7 +2,9 @@
 
 ## Colección `users`
 - **ID:** UID de Firebase Auth.
-- **Campos:** `uid`, `email`, `displayName`, `photoUrl`, `role`, `isActive`, `propertyIds`, `createdAt`, `emergencyContact`, `communicationPreferences`.
+- **Campos:** `uid`, `email`, `displayName`, `photoUrl`, `role`, `isActive`, `propertyIds`, `createdAt`, `emergencyContact`, `communicationPreferences`, `mobiles` (Array de objetos `{code: string, number: string}`), `phones` (Array de objetos `{code: string, number: string}`).
+
+  *Campos legacy (compatibilidad):* `mobile` (string), `phone` (string) — se convierten a arrays al leer.
 
 ## Colección `properties`
 - **ID:** `propertyId` (legible, ej: "101", "D-15").

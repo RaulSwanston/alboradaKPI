@@ -20,29 +20,31 @@
   </div>
 
   <div class="profile-content-grid">
-    <!-- Módulo de Solicitud de Residencia (Independiente) -->
-    <!-- ::module.residencyRequest -->
-
     <!-- Formulario de Datos Personales -->
     <div class="profile-card">
       <h3 class="profile-card-title">Información Personal</h3>
+      <p class="profile-card-desc">Tus datos personales se utilizarán en facturación, recibos, historial de pagos y comunicaciones oficiales. Mantenerlos actualizados <strong>con información real</strong> nos permite ofrecerle un servicio más eficiente.</p>
       <form id="profile-form" class="profile-form">
         <div class="form-grid">
           <div class="form-group">
-            <label for="profileDisplayName" class="form-label">Nombre Completo</label>
-            <input type="text" id="profileDisplayName" class="form-input" placeholder="Tu nombre">
-          </div>
-          <div class="form-group">
+            <input type="email" id="profileEmail" class="form-input" placeholder=" " disabled>
             <label for="profileEmail" class="form-label">Email de Sesión</label>
-            <input type="email" id="profileEmail" class="form-input" disabled>
           </div>
           <div class="form-group">
-            <label for="profileMobile" class="form-label">Celular</label>
-            <input type="tel" id="profileMobile" class="form-input" placeholder="0000-0000">
+            <input type="text" id="profileDisplayName" class="form-input" placeholder=" " autocomplete="name">
+            <label for="profileDisplayName" class="form-label">Nombre Completo</label>
           </div>
+          
+          <!-- Teléfonos Móviles Dinámicos -->
           <div class="form-group">
-            <label for="profilePhone" class="form-label">Teléfono Fijo</label>
-            <input type="tel" id="profilePhone" class="form-input" placeholder="0000-0000">
+            <div id="mobiles-container" class="phone-list-container"></div>
+            <button type="button" id="add-mobile" class="button-add">+ Agregar Celular</button>
+          </div>
+
+          <!-- Teléfonos Fijos Dinámicos -->
+          <div class="form-group">
+            <div id="phones-container" class="phone-list-container"></div>
+            <button type="button" id="add-phone" class="button-add">+ Agregar Fijo</button>
           </div>
         </div>
         <div class="form-actions">
@@ -50,6 +52,9 @@
         </div>
       </form>
     </div>
+
+    <!-- Módulo de Solicitud de Residencia (Independiente) -->
+    <!-- ::module.residencyRequest -->
 
     <!-- Opciones de Seguridad y Preferencias -->
     <div class="profile-options-column">

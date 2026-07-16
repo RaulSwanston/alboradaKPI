@@ -1,5 +1,40 @@
 # Memoria de Sesiones - Bitácora de Proyecto
 
+## Entrada: 16 de Julio de 2026
+**Estado:** Refactor completo del módulo Profile — Teléfonos dinámicos, floating labels, diseño unificado.
+
+### Resumen de cambios:
+- **Profile Module — Teléfonos dinámicos con arrays:**
+  - `profile.html`: Reemplazados inputs estáticos `mobile`/`phone` por contenedores dinámicos `#mobiles-container` / `#phones-container` con botones "+ Agregar Celular/Fijo".
+  - `profile.controller.js`: Lógica completa de teléfonos dinámicos — `normalizeToArray()` (convierte string legacy a array), `renderPhoneList()` (puebla filas), `createPhoneRow()` (select código país + input + label + botón ×), `collectPhones()` (recolecta arrays para guardar).
+  - `profile.css`: Estilos para `.phone-row` (flex con select + input + label + btn-remove), floating label integrado en la fila (posicionado sobre el input considerando ancho del select), transiciones focus/blur, `.form-select` (código país), `.btn-remove` (× rojo), `.button-add` (+ verde), `.form-label-static` (encabezados).
+  - Modelo `User.updateProfile()` ya aceptaba cualquier campo; ahora se guardan arrays `mobiles[]` / `phones[]` con objetos `{code, number}`.
+
+- **Profile Module — Floating Labels refinados:**
+  - `profile.css`: `form-input` padding ajustado (`1.125rem 1rem 0.375rem`), `line-height: 1.3` para altura refinada (~47px). Label siempre en tamaño pequeño (`0.65rem`, uppercase, letter-spacing) y solo se desplaza (`top: 1.15rem → 0.4rem`) al focus/llenar — sin cambio de tamaño.
+  - Posición de label en focus ajustada a `top: 0.4rem` (respiro visual).
+
+- **Profile Module — Layout con Flex + Gap:**
+  - `.profile-card` ahora `display: flex; flex-direction: column; gap: 1.5rem` — espaciado uniforme entre hijos (título, descripción, formulario, opciones). Márgenes individuales eliminados de `.profile-card-title`, `.profile-card-desc`, `.dropdown-divider`.
+
+- **Botón Guardar:**
+  - Alineado a la izquierda (`justify-content: flex-start`) y tamaño homogéneo al botón "Solicitar otra unidad" de residencyRequest (`padding: 0.5rem 1.25rem`, `font-size: 0.8125rem`, `border-radius: 0.65rem`, `font-weight: 800`).
+
+- **Datos en Firestore — Migración esquemática:**
+  - Antes: `mobile: "6123-4567"`, `phone: "212-3456"` (strings)
+  - Después: `mobiles: [{code: "+507", number: "6123-4567"}]`, `phones: [{code: "+507", number: "212-3456"}]` (arrays de objetos)
+  - `normalizeToArray()` en controller maneja migración transparente al leer (string → array).
+
+### Archivos modificados:
+| Archivo | Cambio |
+|---------|--------|
+| `modules/profile/profile.html` | Contenedores dinámicos `#mobiles-container`, `#phones-container`, botones + |
+| `modules/profile/profile.css` | **Rewrite completo**: floating labels refinados, teléfonos dinámicos, flex+gap en card, botón guardar redimensionado |
+| `modules/profile/profile.controller.js` | **Rewrite completo**: teléfonos dinámicos (arrays), códigos país, migración legacy, collect/save |
+| `docs/schema.md` | Actualizado esquema `users` — `mobile`/`phone` → `mobiles[]`/`phones[]` arrays |
+
+---
+
 ## Entrada: 15 de Julio de 2026
 **Estado:** Refactor completo del módulo residencyRequest y profile con diseño moderno.
 
