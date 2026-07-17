@@ -33,6 +33,10 @@
 | `modules/profile/profile.controller.js` | **Rewrite completo**: teléfonos dinámicos (arrays), códigos país, migración legacy, collect/save |
 | `docs/schema.md` | Actualizado esquema `users` — `mobile`/`phone` → `mobiles[]`/`phones[]` arrays |
 
+- **Fix CSS scoping — floating labels leak a residencyRequest:**
+  - `profile.css`: Selectores `.profile-module .form-label`, `.form-input`, `.form-group` cambiados a `.profile-form .*` para evitar que `position: absolute` y paddings de floating labels se filtren al módulo `residencyRequest` (insertado dentro de `.profile-module`).
+  - El label "Buscar mi Casa / Unidad" y el input de búsqueda ahora mantienen su layout flex nativo sin herencia no deseada.
+
 ---
 
 ## Entrada: 15 de Julio de 2026
