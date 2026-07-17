@@ -150,6 +150,47 @@ export default class MembershipRequest {
   }
 
   /**
+   * Vincula directamente un administrador a una o múltiples propiedades,
+   * sin pasar por el flujo de solicitud/aprobación.
+   * @param {Object} user - Datos del usuario {uid, email, displayName}
+   * @param {Map} selectedProperties - Map con propertyId -> {name, relationship}
+   */
+  static async linkDirectly(user, selectedProperties) {
+    try {
+      const batch = writeBatch(db);
+      const propertyIds = Array.from(selectedProperties.keys());
+
+      const userRef = doc(db, "users", user.uid);
+      batch.update(userRef, {
+        propertyIds: arrayUnion(...propertyIds)
+      });
+
+      selectedProperties.forEach((data, propertyId) => {
+        const propertyRef = doc(db, "properties", propertyId);
+        batch.update(propertyRef, {
+          residentUids: arrayUnion(user.uid)
+        });
+
+        const activityRef = doc(collection(db, "activities"));
+        batch.set(activityRef, {
+          type: 'MEMBERSHIP_APPROVED',
+          timestamp: serverTimestamp(),
+          description: `Vinculación directa de ${user.displayName || user.email} a ${data.name}.`,
+          initiator: { type: 'USER', id: user.uid, name: user.displayName || user.email },
+          target: { type: 'PROPERTY', id: propertyId, name: data.name },
+          visibility: ['admin', user.uid]
+        });
+      });
+
+      await batch.commit();
+      return true;
+    } catch (error) {
+      console.error("[MembershipRequest] Error en vinculación directa:", error);
+      throw error;
+    }
+  }
+
+  /**
    * Permite al usuario descartar (ocultar) una solicitud rechazada.
    * @param {string} requestId - ID de la solicitud a descartar.
    * @param {string} userId - UID del usuario propietario.

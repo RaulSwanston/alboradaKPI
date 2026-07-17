@@ -11,13 +11,6 @@ export default async function residencyRequestController(contexto) {
 
   if (!user) return;
 
-  // Solo ocultar si el usuario es administrador total.
-  // Los residentes pueden querer agregar más propiedades.
-  if (permissions.isAdmin) {
-    document.getElementById('residency-request-card')?.classList.add('hidden');
-    return;
-  }
-
   // --- Referencias al DOM ---
   const residencyCard = document.getElementById('residency-request-card');
   const residencyForm = document.getElementById('residency-form');
@@ -33,6 +26,11 @@ export default async function residencyRequestController(contexto) {
   let allProperties = [];
   let selectedProperties = new Map();
   let requestedPropertyIds = new Set();
+
+  const btnSubmit = document.getElementById('btn-submit-residency');
+  if (permissions.isAdmin) {
+    btnSubmit.textContent = 'Vincularme';
+  }
 
   // --- Helpers de animación para requestFormContainer ---
   const hideFormContainer = () => {
@@ -223,10 +221,13 @@ export default async function residencyRequestController(contexto) {
     btnSubmit.textContent = 'Enviando...';
 
     try {
-      // Uso del modelo para envío atómico
-      await MembershipRequest.createMany(user, selectedProperties);
-      
-      alert(`Se han enviado ${selectedProperties.size} solicitudes correctamente.`);
+      if (permissions.isAdmin) {
+        await MembershipRequest.linkDirectly(user, selectedProperties);
+        alert(`Vinculación directa completada para ${selectedProperties.size} unidad(es).`);
+      } else {
+        await MembershipRequest.createMany(user, selectedProperties);
+        alert(`Se han enviado ${selectedProperties.size} solicitudes correctamente.`);
+      }
       
       selectedProperties.clear();
       selectedList.innerHTML = '';
@@ -279,8 +280,12 @@ export default async function residencyRequestController(contexto) {
     selectedList.innerHTML = '';
     searchInput.value = '';
     suggestionsList.classList.add('hidden');
-    hideFormContainer();
     residencyForm.classList.add('hidden');
+    if (requestStatusContainer.classList.contains('hidden')) {
+      requestFormContainer.classList.remove('hidden');
+    } else {
+      hideFormContainer();
+    }
   };
 
   // --- Listeners ---
