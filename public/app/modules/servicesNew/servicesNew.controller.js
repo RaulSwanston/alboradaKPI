@@ -3,6 +3,18 @@ import Property from "../../models/Property.js";
 import { auth } from "../../core/firebase.js";
 import { createActivity } from "../../models/Activities.js";
 
+function loadTinyMCE() {
+  return new Promise((resolve) => {
+    if (window.tinymce) return resolve(window.tinymce);
+    const script = document.createElement('script');
+    script.src = '/src/libs/tinymce/tinymce.min.js';
+    script.onload = () => {
+      if (window.tinymce) resolve(window.tinymce);
+    };
+    document.head.appendChild(script);
+  });
+}
+
 /**
  * Controlador para la creación de un nuevo concepto de cargo con catálogo local de iconos.
  */
@@ -34,7 +46,8 @@ export default async function servicesNewController(context) {
     let fullCatalog = []; 
     let allProperties = [];
     let searchTimeout;
-    let pendingConceptData = null; // Almacén temporal para el modal
+    let pendingConceptData = null;
+    let editorInstance = null;
 
     if (!form) return;
 
@@ -116,8 +129,8 @@ export default async function servicesNewController(context) {
             </div>
 
             <div class="summary-item">
-                <label>Descripción</label>
-                <div class="value">${data.description || 'Sin descripción'}</div>
+                <label>Descripción Corta</label>
+                <div class="value">${data.descriptionShort || 'Sin descripción'}</div>
             </div>
         `;
 
@@ -281,8 +294,10 @@ export default async function servicesNewController(context) {
         btnConfirmFinal.textContent = 'Guardando...';
 
         try {
+            const slug = ChargeConcept.slugify(pendingConceptData.name);
             const finalData = {
                 ...pendingConceptData,
+                slug,
                 billingFrequency: pendingConceptData.isRecurring ? 'monthly' : 'one-time',
                 isRequestableByResident: (pendingConceptData.type === 'service' || pendingConceptData.type === 'reservation'),
                 requiresApproval: true
@@ -345,16 +360,19 @@ export default async function servicesNewController(context) {
                 finalSvg = finalSvg.replace(/currentColor/g, selectedColor);
             }
 
+            const longDesc = editorInstance ? editorInstance.getContent() : formData.get('descriptionLong') || '';
+
             const conceptData = {
                 name: formData.get('name').trim(),
-                icon: finalSvg, // Campo único con el SVG coloreado
+                icon: finalSvg,
                 type: formData.get('type'),
                 defaultAmount: parseFloat(formData.get('defaultAmount')) || 0,
                 isRecurring: isRecurring,
                 billingFrequency: isRecurring ? 'monthly' : 'one-time',
                 applicableTo: applicableTo,
                 targetProperties: targetProperties,
-                description: formData.get('description').trim()
+                descriptionShort: formData.get('descriptionShort').trim(),
+                descriptionLong: longDesc
             };
 
             // En lugar de guardar directamente, mostramos el modal de confirmación
@@ -368,5 +386,34 @@ export default async function servicesNewController(context) {
     loadLocalCatalog();
     updatePreviewColor();
     validateForm();
+
+    loadTinyMCE().then(tinymceLib => {
+      tinymceLib.init({
+        selector: '#descriptionLong',
+        base_url: '/src/libs/tinymce',
+        height: 300,
+        menubar: false,
+        promotion: false,
+        branding: false,
+        placeholder: 'Descripción detallada del servicio',
+        plugins: 'lists link',
+        toolbar: 'undo redo | blocks | bold italic underline | bullist numlist | link | removeformat',
+        skin: 'oxide',
+        content_css: 'default',
+      content_style: `
+          body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; font-size: 14px; color: #333; padding: 14px 20px; margin: 0; }
+          p { margin: 0 0 0.5em; }
+          .mce-content-body:not([dir=rtl])[data-mce-placeholder]:not(.mce-visualblocks)::before { left: 20px; top: 14px; }
+        `,
+        setup: (editor) => { editorInstance = editor; }
+      });
+    });
+
+    return () => {
+      if (editorInstance) {
+        tinymce.remove(editorInstance);
+        editorInstance = null;
+      }
+    };
 }
 

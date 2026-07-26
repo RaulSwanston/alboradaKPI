@@ -28,11 +28,13 @@ export async function loadTranslations(lang = 'es') {
 }
 
 /**
- * Traduce una clave de contenido. Soporta claves anidadas (ej. 'config.languages.es').
+ * Traduce una clave de contenido. Soporta claves anidadas (ej. 'config.languages.es')
+ * e interpolación de parámetros (ej. t('saludo', { nombre: 'Juan' }) → "Hola, Juan").
  * @param {string} key - La clave a traducir.
+ * @param {Object} [params] - Opcional. Parámetros para interpolación {param} en el string.
  * @returns {string} - El texto traducido o la clave si no existe.
  */
-export function t(key) {
+export function t(key, params = {}) {
   const keys = key.split('.');
   let value = currentTranslations;
 
@@ -41,7 +43,12 @@ export function t(key) {
     if (!value) break;
   }
 
-  return value || key;
+  const str = value || key;
+  if (typeof str !== 'string') return str;
+
+  return str.replace(/\{(\w+)\}/g, (_, p) =>
+    params[p] !== undefined ? params[p] : `{${p}}`
+  );
 }
 
 /**

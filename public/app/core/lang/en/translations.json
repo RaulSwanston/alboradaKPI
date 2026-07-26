@@ -10,6 +10,13 @@
     }
   },
   "financialSummary": { "title": "Financial Summary" },
+  "services": {
+    "noProperty": "You do not have an associated unit. Ask the administrator to link you to a property.",
+    "loginRequired": "You must log in to request services.",
+    "sending": "Sending...",
+    "requestSent": "Request for \"{conceptName}\" sent. The administrator will review it shortly.",
+    "requestError": "Error sending the request. Try again."
+  },
   "recentActivity": { "title": "Recent Activity" },
   "configManager": { 
     "title": "System Configuration",

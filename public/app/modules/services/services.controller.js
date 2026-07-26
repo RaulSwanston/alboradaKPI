@@ -81,10 +81,16 @@ export default async function services(context) {
 
         listContainer.innerHTML = '';
         services.forEach(service => {
+            const expected = ChargeConcept.slugify(service.name);
+            if (!service.slug || service.slug !== expected) {
+                ChargeConcept.update(service.id, { slug: expected }).catch(() => {});
+                service.slug = expected;
+            }
             const card = document.createElement('div');
             card.className = 'service-card';
             card.dataset.conceptId = service.id;
             card.dataset.conceptName = service.name;
+            card.dataset.conceptSlug = service.slug;
             card.dataset.defaultAmount = service.defaultAmount || 0;
             
             // Mapeo de etiquetas legibles
@@ -112,7 +118,7 @@ export default async function services(context) {
                 </div>
                 <div class="service-info">
                     <h3>${service.name}</h3>
-                    <p class="service-description">${service.description || 'Sin descripción disponible.'}</p>
+                    <p class="service-description">${service.descriptionShort || service.description || 'Sin descripción disponible.'}</p>
                 </div>
                 <div class="service-footer">
                     <div class="service-price">
@@ -130,7 +136,7 @@ export default async function services(context) {
     // Iniciar carga
     await loadServices();
 
-    // Delegación de eventos para botón "Solicitar"
+    // Delegación de eventos para botones "Solicitar" y "Gestionar"
     listContainer.addEventListener('click', async (e) => {
         const btn = e.target.closest('.btn-request');
         if (!btn) return;
@@ -140,6 +146,20 @@ export default async function services(context) {
 
         const conceptId = card.dataset.conceptId;
         const conceptName = card.dataset.conceptName;
+        const conceptSlug = card.dataset.conceptSlug;
+
+        // Si es botón "Gestionar" (secondary), redirigir a la vista de detalle
+        if (btn.classList.contains('secondary')) {
+            const slug = conceptSlug || ChargeConcept.slugify(conceptName || 'concepto');
+            const url = `/services/${slug}`;
+            if (window.router) {
+                window.router.navigate(url);
+            } else {
+                window.location.href = url;
+            }
+            return;
+        }
+
         const defaultAmount = parseFloat(card.dataset.defaultAmount) || 0;
 
         if (!user) {
@@ -173,7 +193,7 @@ export default async function services(context) {
                 name: user.displayName || user.email
             });
 
-            alert(t('services.requestSent') || `✅ Solicitud de "${conceptName}" enviada. El administrador la revisará pronto.`);
+            alert(t('services.requestSent', { conceptName }) || `✅ Solicitud de "${conceptName}" enviada. El administrador la revisará pronto.`);
             btn.disabled = false;
             btn.innerHTML = 'Solicitar';
         } catch (error) {

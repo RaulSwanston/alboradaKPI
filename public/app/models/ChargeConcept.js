@@ -1,4 +1,4 @@
-import { db, collection, addDoc, getDoc, getDocs, updateDoc, deleteDoc, query, doc, serverTimestamp } from "../core/firebase.js";
+import { db, collection, addDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where, doc, serverTimestamp } from "../core/firebase.js";
 
 /**
  * La clase ChargeConcept gestiona las definiciones de cargos y servicios (el "catálogo").
@@ -49,6 +49,40 @@ export default class ChargeConcept {
       return concepts;
     } catch (error) {
       console.error("[ChargeConcept] Error al obtener la lista de conceptos:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Convierte un nombre en un slug URL-friendly.
+   * @param {string} text - Texto a convertir.
+   * @returns {string} Slug generado.
+   */
+  static slugify(text) {
+    return text
+      .toLowerCase()
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/^-+|-+$/g, '');
+  }
+
+  /**
+   * Busca un concepto por su slug único.
+   * @param {string} slug - Slug del concepto.
+   * @returns {Promise<object|null>} Los datos del concepto o null si no se encuentra.
+   */
+  static async getBySlug(slug) {
+    try {
+      const q = query(collection(db, this.collectionName), where('slug', '==', slug));
+      const querySnapshot = await getDocs(q);
+      if (!querySnapshot.empty) {
+        const docSnap = querySnapshot.docs[0];
+        return { id: docSnap.id, ...docSnap.data() };
+      }
+      return null;
+    } catch (error) {
+      console.error(`[ChargeConcept] Error al buscar concepto por slug "${slug}":`, error);
       throw error;
     }
   }

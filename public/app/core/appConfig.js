@@ -183,6 +183,15 @@ export const appConfig = {
     ]
   },
 
+  // 10. Tipos de Concepto de Cargo
+  chargeTypes: {
+    ordinary: { label: "Cuota Ordinaria", badgeClass: "badge-ordinary" },
+    extraordinary: { label: "Cuota Extraordinaria", badgeClass: "badge-extraordinary" },
+    fine: { label: "Multa", badgeClass: "badge-fine" },
+    service: { label: "Servicio", badgeClass: "badge-service" },
+    reservation: { label: "Reserva", badgeClass: "badge-reservation" }
+  },
+
   // 9. Acciones Rápidas
   quickActions: [
     { id: "report-payment", labelKey: "quickActions.reportPayment", path: "/dashboard/payments/report", icon: "megaphone", roles: ["resident"] },

@@ -17,6 +17,7 @@ router
   .get('/dashboard/resumen', 'dashboard/summary', [sessionGuard])
   .get('/services', 'dashboard/services', [sessionGuard])
   .get('/services-new', 'dashboard/services-new', [sessionGuard])
+  .get('/services/:id', 'dashboard/services-detail', [sessionGuard])
   .get('/dashboard/properties', 'dashboard/properties', [sessionGuard])
   .get('/dashboard/properties/:id', 'dashboard/property-detail', [sessionGuard])
   .get('/dashboard/profile', 'dashboard/profile', [sessionGuard])

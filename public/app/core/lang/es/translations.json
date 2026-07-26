@@ -29,6 +29,13 @@
     "residentTitular": "Residente Titular",
     "syncBalances": "Sincronizar saldos"
   },
+  "services": {
+    "noProperty": "No tienes una unidad asociada. Solicita al administrador que te vincule a una propiedad.",
+    "loginRequired": "Debes iniciar sesión para solicitar servicios.",
+    "sending": "Enviando...",
+    "requestSent": "Solicitud de \"{conceptName}\" enviada. El administrador la revisará pronto.",
+    "requestError": "Error al enviar la solicitud. Intenta de nuevo."
+  },
   "recentActivity": { "title": "Actividad Reciente" },
   "navigation": {
     "dashboard": "Panel",
@@ -131,7 +138,8 @@
     "/residents": "/residentes",
     "/dashboard/payments/report": "/panel/pagos/reportar",
     "/dashboard/payments/history": "/panel/pagos/mis-reportes",
-    "/dashboard/payments/pending": "/panel/pagos/pendientes"
+    "/dashboard/payments/pending": "/panel/pagos/pendientes",
+    "/services/:id": "/servicios/:id"
   },
   "quickActions": {
     "title": "Acciones Rápidas",

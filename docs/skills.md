@@ -69,7 +69,4 @@ El patrón de nombres debe coincidir con el del directorio (ej: `login/login.con
     1. **Propuesta:** Antes de cualquier cambio, el agente debe presentar el `oldString` y el `newString` al usuario.
     2. **Confirmación:** El agente DEBE obtener la aprobación explícita del usuario antes de aplicar `edit`.
     3. **Contexto:** El agente debe realizar un `read` del archivo antes de proponer cualquier edición para asegurar la precisión del contexto.
-- **Reglas del Entorno:**
-    - SO: Windows (win32).
-    - Shell: **PowerShell** (obligatorio).
-    - Scripts: `.ps1` para tareas de automatización.
+- **Reglas del Entorno:** Ver [`docs/environment.md`](./environment.md) para detalles del entorno local (SO, shell, tooling).

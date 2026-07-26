@@ -1,3 +1,16 @@
+#descriptionLong {
+  height: 300px;
+}
+
+.tox {
+  min-height: 300px;
+}
+
+.tox .tox-edit-area__iframe {
+  margin: 0;
+  padding: 0;
+}
+
 /* --- Estilos para Nuevo Concepto de Cargo --- */
 
 .new-concept-container {

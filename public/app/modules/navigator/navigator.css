@@ -231,6 +231,9 @@ nav:has(+ #button-menu.open) .menu-divider.selected + .dropdown{
     }
   }
 
+  /* Evitamos doble scrollbar: solo #app-view scrollea */
+  body { overflow: hidden; }
+
   /* Ocultamos el botón de menú flotante de móvil */
   .dashboard-menu #button-menu {display: none;}
 
