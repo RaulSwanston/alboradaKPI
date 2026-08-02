@@ -1,0 +1,52 @@
+/*
+  Module: calendar
+  Standards: Clean CSS, No !important, Variable-based, Semantic classes
+  Nota: el tema de schedule-x (@schedule-x/theme-default) se carga vía @import.
+  RenderView deduplica los estilos, por lo que es seguro que lo importe el módulo.
+*/
+
+@import url("/src/libs/schedule-x/theme-default/dist/index.css");
+
+.calendar-module {
+    width: 100%;
+}
+
+.calendar-module-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 1.5rem;
+}
+
+.calendar-module-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--color-text-primary);
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+.calendar-module-subtitle {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    margin: 0;
+}
+
+.calendar-module-container {
+    width: 100%;
+    height: 75vh;
+    min-height: 600px;
+    background: white;
+    border-radius: 1.25rem;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    overflow: hidden;
+    padding: 1rem;
+}
+
+@media (max-width: 767px) {
+    .calendar-module-container {
+        height: 85vh;
+        min-height: 480px;
+        padding: 0.5rem;
+    }
+}

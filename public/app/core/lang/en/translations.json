@@ -188,6 +188,12 @@
       "saved": "Cross-reference saved successfully",
       "error": "Error saving cross-reference",
       "badge": "charge(s) cross-referenced"
+    },
+    "calendar": {
+      "title": "Community Calendar",
+      "subtitle": "Condominium events and activities",
+      "sampleEvent": "General Assembly",
+      "sampleEventDescription": "Monthly community meeting"
     }
   },
   "paymentReport": {

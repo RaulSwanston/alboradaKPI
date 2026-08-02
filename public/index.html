@@ -5,6 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AlboradaKPI</title>
   <link rel="icon" href="/src/img/favicon.png" type="image/png">
+  <script type="importmap">
+    {
+      "imports": {
+        "preact": "/src/libs/schedule-x/preact/dist/preact.module.js",
+        "preact/hooks": "/src/libs/schedule-x/preact/hooks/dist/hooks.module.js",
+        "preact/jsx-runtime": "/src/libs/schedule-x/preact/jsx-runtime/dist/jsxRuntime.module.js",
+        "preact/compat": "/src/libs/schedule-x/preact/compat/dist/compat.module.js",
+        "@preact/signals": "/src/libs/schedule-x/@preact/signals/dist/signals.module.js",
+        "@preact/signals-core": "/src/libs/schedule-x/@preact/signals-core/dist/signals-core.module.js",
+        "temporal-polyfill/global": "/src/libs/schedule-x/temporal-polyfill/global.esm.js"
+      }
+    }
+  </script>
   <script type="module">
     import { initRouter } from '/router.js';
     document.addEventListener('DOMContentLoaded', async () => { await initRouter(); });

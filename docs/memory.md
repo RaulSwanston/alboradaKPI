@@ -1,5 +1,32 @@
 # Memoria de Sesiones - Bitácora de Proyecto
 
+## Entrada: 1 de Agosto de 2026
+**Estado:** Integración local de schedule-x (calendario) sin npm + módulo `calendar` + i18n.
+
+### Resumen de cambios:
+- **Librería vendored (sin npm):** Descargados 17 archivos a `public/src/libs/schedule-x/`:
+  - `@schedule-x/calendar@4.6.1` (ESM `dist/core.js`), `@schedule-x/theme-default@4.6.1` (`dist/index.css`), `preact@10.29.7`, `@preact/signals@2.3.0`, `@preact/signals-core@1.12.0`, `temporal-polyfill@0.3.0`.
+- **Import map en `public/index.html`:** 7 mapeos (preact, preact/hooks, preact/jsx-runtime, preact/compat, @preact/signals, @preact/signals-core, temporal-polyfill/global). Debe ir en `index.html`: Mosaic solo extrae `body.innerHTML`, los scripts inyectados por `innerHTML` no se ejecutan, y el import map tiene que preceder al primer fetch de módulo.
+- **Nuevo módulo `calendar`** (`app/modules/calendar/`): html + css + controller. **Aún no enlazado a ninguna vista** (decisión del usuario).
+  - `calendar.controller.js`: `import 'temporal-polyfill/global'` PRIMERO (define `Temporal`/`Intl.DateTimeFormat` en globalThis), luego `createCalendar` desde `../../../src/libs/schedule-x/calendar/dist/core.js`. API pública: `render(el)`, `destroy()`, `setTheme()`, `getTheme()`, `events.getAll()/add()/remove()/update()`.
+  - `calendar.css`: tema cargado vía `@import url("/src/libs/schedule-x/theme-default/dist/index.css")` al inicio (RenderView deduplica; usa variables `--sx-*`, sin conflicto con `--color-*`).
+- **i18n:** Claves `modules.calendar.*` (title, subtitle, sampleEvent, sampleEventDescription) en `es` y `en` (convención existente: los otros 18 idiomas tienen `modules` vacío; la app no tiene fallback automático → muestra la clave cruda).
+
+### Descubrimientos/Decisiones:
+- **schedule-x v4 exige objetos Temporal** para `start`/`end` (`validateEvents` lanza error con strings ISO, `core.js:6131`). El controlador convierte con `Temporal.ZonedDateTime`.
+- Exports reales de `core.js`: `createCalendar`, `createViewMonthGrid`, `createViewWeek`, `createViewDay`, `createViewMonthAgenda`, `createViewWeekAgenda`, `createViewList`, helpers `toDateString`/`toDateTimeString`/`toJSDate`/`toTimeString`.
+- El core bundlea traducciones nativas del UI (`esES`, `ptBR`, etc.) → `locale: 'es-ES'` funciona sin paquete extra.
+
+### Verificación:
+- Grafo de imports probado en Node con shim espejo del import map: `createCalendar` → `CalendarApp`, evento normalizado en `America/Panama`.
+- Smoke test HTTP 200: módulo, tema, core.js, global.esm.js, translations.
+- JSON de translations válido en es/en.
+
+### Pendiente:
+- Enlazar el módulo `calendar` a una vista/receta (`::module.calendar` + appConfig viewLayouts/allowedModules + ruta en router) cuando se decida.
+
+---
+
 ## Entrada: 16 de Julio de 2026
 **Estado:** Refactor completo del módulo Profile — Teléfonos dinámicos, floating labels, diseño unificado.
 

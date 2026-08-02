@@ -125,6 +125,12 @@
       "saved": "Conciliación guardada correctamente",
       "error": "Error al guardar conciliación",
       "badge": "cargo(s) conciliado(s)"
+    },
+    "calendar": {
+      "title": "Calendario Comunitario",
+      "subtitle": "Eventos y actividades del condominio",
+      "sampleEvent": "Asamblea General",
+      "sampleEventDescription": "Reunión mensual de la comunidad"
     }
   },
   "routes": {
