@@ -1,6 +1,6 @@
 # Plan de Tareas Pendientes — Backlog de Módulos
 
-> **Estado:** T4, T1, T5, T6, T2, T8 y T3 (núcleo) completadas. Pendiente: T7.
+> **Estado:** T4, T1, T5, T6, T2, T8, T3 y T7 completadas. Backlog de 8 tareas cerrado.
 > **Fecha:** 3 de Agosto de 2026.
 > A medida que se completen las tareas pueden surgir ajustes inmediatos; este plan es la guía inicial.
 
@@ -213,27 +213,26 @@ const PAGE_SIZE = 15;
 
 ---
 
-## T7 — "Cambiar Unidad" en el topbar
+## T7 — "Cambiar Unidad" en el topbar ✅
 
-**Problema:** El botón `#btn-change-unit` existe en `topbar.html:30-33` pero **no tiene ningún listener** (no aparece en `topbar.controller.js`) → está roto / no hace nada.
+**Problema:** El botón `#btn-change-unit` existe en `topbar.html:30-33` pero **no tenía ningún listener** → estaba roto / no hacía nada.
 
 **Contexto descubierto (clave):**
 - El usuario tiene `propertyIds[]` en su doc de Firestore (`users/{uid}`), poblado por `MembershipRequest.process()`/`linkDirectly()`.
-- `contexto.data.property` **se lee** en `topbar.controller.js:32-36` y `profile.controller.js:15`, **pero nunca se asigna** en `sessionGuard` ni en ningún middleware → siempre `undefined`. Es decir, hoy el topbar muestra el rol ("Residente") o "Administrador", nunca la unidad.
-- El sistema de vistas no tiene un estado de "unidad activa"; cada módulo consulta sus propios datos.
+- `contexto.data.property` **se lee** en `topbar.controller.js` y `profile.controller.js`, **pero nunca se asignaba** en `sessionGuard` → siempre `undefined`. El topbar mostraba el rol ("Residente"/"Administrador"), nunca la unidad.
 
-**Plan propuesto (diseño a discutir):**
-1. **Estado global de "unidad activa":** variable en `sessionGuard`/`auth.js` (p.ej. `contexto.data.activePropertyId`) + guardado en `localStorage` (`gph_active_property`). La fuente de verdad de unidades disponibles: `userProfile.propertyIds` (residente) o las propiedades administradas (admin).
-2. **Topbar:**
-   - Cargar las unidades del usuario (`Property.getById` para cada id en `propertyIds`).
-   - Al hacer click en "Cambiar Unidad": renderizar un submenú/dropdown con las unidades; al elegir una, setear `activePropertyId` en localStorage y **disparar recarga** de la vista actual (`window.dispatchEvent(new CustomEvent('app:unit-changed', {detail:{propertyId}}))` o recargar la ruta con `router.navigate`).
-3. **Contexto en módulos:** inyectar `contexto.data.property` (doc completo de la unidad activa) desde `sessionGuard` para que topbar y otros módulos lo usen.
-4. **Recarga de módulos:** el más simple y robusto: al cambiar de unidad, navegar a la misma ruta (los módulos se re-renderizan y leen la unidad activa). Los módulos que hoy consultan la unidad deben leer `activePropertyId` del contexto/localStorage en vez de hardcodear.
+**Solución implementada (según decisiones del cliente):**
+1. **Cambio global:** al elegir otra unidad, se guarda en `localStorage` (`gph_active_property`) y se recarga la vista actual (`window.location.reload()`). Los módulos re-leen la unidad activa al re-renderizarse.
+2. **Fuente de unidades:** `users/{uid}.propertyIds` (admin y residente la tienen vía `MembershipRequest.process()`/`linkDirectly()`).
+3. **Unidad activa por defecto:** la guardada en localStorage si sigue siendo válida; si no, la primera de `propertyIds`.
+4. **`sessionGuard` (auth.js):** ahora asigna `contexto.data.activePropertyId` y `contexto.data.property` (doc completo vía `Property.getById`).
+5. **Modal en topbar:** `#btn-change-unit` abre `#unit-modal-overlay` con la lista de unidades (loading spinner → items con la activa marcada con badge "Unidad actual"). Cierra con `#unit-modal-close`, `#unit-modal-cancel` o clic en el overlay. Selector de unidad → guarda en localStorage + `location.reload()`.
+6. **i18n:** nuevas claves `topbar.*` (changeUnit, changeUnitTitle, changeUnitSubtitle, loadingUnits, noUnits, unitsError, currentUnit, cancel) en es y en.
 
-**Preguntas para el cliente:**
-- ¿El cambio de unidad debe ser **global** (todo el dashboard cambia) o **solo visual** (topbar muestra la unidad activa y los módulos se refrescan)?
-- Para el **admin**: ¿sus unidades administradas salen de `properties.residentUids` o de `users.propertyIds`? Hoy el admin también tiene `propertyIds` vía `linkDirectly`. Confirmar la fuente.
-- ¿Requiere un selector visible en el topbar además del dropdown del menú?
+**Preguntas resueltas por el cliente:**
+- **Global** (recarga la vista actual). 
+- Fuente de unidades del admin = **`users.propertyIds`**.
+- Sin selector visible adicional en el topbar; basta el dropdown del menú.
 
 ---
 
@@ -259,7 +258,7 @@ const PAGE_SIZE = 15;
 | T8 ✅ | `models/AppConfig.js` (fix ruta), `core/firebase.js`?, `modules/configManager/*`, `modules/navigator/navigator.controller.js` |
 | T6 ✅ | `modules/emailVerification/emailVerification.html`, `emailVerification.css` (nuevo), `emailVerification.controller.js` |
 | T3 ✅ | `core/appConfig.js`, `modules/paymentReport/paymentReport.html|.controller.js`, `modules/paymentApproval/paymentApproval.controller.js`, `modules/transactions-detail/*` |
-| T7 | `middleware/auth.js`, `modules/topbar/*`, `modules/residencyRequest`, `modules/adminMembership`, `models/Property.js`, `models/MembershipRequest.js`, router |
+| T7 ✅ | `middleware/auth.js`, `modules/topbar/*` (html, controller, css), `core/lang/es|en/translations.json` |
 
 ---
 

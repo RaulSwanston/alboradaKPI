@@ -1,5 +1,6 @@
 import { auth, db, doc, getDoc, signOut, waitForAuth } from '../core/firebase.js';
 import { createUserProfile } from "../models/Profile.js";
+import Property from '../models/Property.js';
 import { appConfig } from '../core/appConfig.js';
 import { loadTranslations } from '../core/i18n.js';
 
@@ -72,7 +73,29 @@ export const sessionGuard = async (contexto) => {
     role: profile.role || 'pending'
   };
 
-  // 3. Lógica de Redirección e Intercepción Dinámica
+  // 3. Determinar la Unidad Activa
+  // Fuente de verdad: profile.propertyIds (admin y residente). Unidad por defecto:
+  // la guardada en localStorage si sigue siendo válida, si no la primera.
+  const propertyIds = profile.propertyIds || [];
+  const storedProperty = localStorage.getItem('gph_active_property');
+  const activePropertyId = propertyIds.includes(storedProperty)
+    ? storedProperty
+    : (propertyIds[0] || null);
+  contexto.data.activePropertyId = activePropertyId;
+
+  if (activePropertyId) {
+    try {
+      const activeProperty = await Property.getById(activePropertyId);
+      contexto.data.property = activeProperty;
+    } catch (error) {
+      console.error("[sessionGuard] Error al cargar unidad activa:", error);
+      contexto.data.property = null;
+    }
+  } else {
+    contexto.data.property = null;
+  }
+
+  // 4. Lógica de Redirección e Intercepción Dinámica
   const path = window.location.pathname;
 
   // --- Caso A: Email no verificado ---

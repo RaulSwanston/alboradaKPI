@@ -77,6 +77,25 @@
 - Trabajo futuro (fuera de T3): panel de edición de métodos de pago en configManager.
 - Verificación en navegador del logo (T8) requiere sesión real.
 
+## Entrada: 4 de Agosto de 2026 (T7 completada)
+**Estado:** Backlog de 8 tareas del plan cerrado (T4, T1, T5, T6, T2, T8, T3, T7 todas completadas).
+
+### Resumen de cambios (T7 — "Cambiar Unidad"):
+- **Decisiones del cliente:** (1) cambio de unidad **global** (recarga la vista actual vía `window.location.reload()` tras setear localStorage); (2) fuente de unidades = `users/{uid}.propertyIds` (admin y residente la tienen vía `MembershipRequest.process()`/`linkDirectly()`); (3) unidad activa por defecto = la guardada en `gph_active_property` si sigue siendo válida, si no la **primera** de `propertyIds`; (4) sin selector visible adicional, basta el dropdown del menú.
+- **`middleware/auth.js`:** sessionGuard ahora asigna `contexto.data.activePropertyId` (línea 84) y `contexto.data.property` (doc completo vía `Property.getById`, líneas 86-96). Fix del hallazgo histórico: `contexto.data.property` ya no es `undefined`.
+- **`topbar.controller.js`:** agregado listener de `#btn-change-unit` + lógica completa del modal — `openUnitModal()` (cierra menús, quita `hidden`, `body.modal-open`, render), `renderUnitList()` (spinner → `Property.getById` por cada `propertyIds` → items con clase `is-active` y badge "Unidad actual"; maneja vacío y error), `selectUnit()` (guarda en localStorage + `location.reload()`), cierre con `#unit-modal-close`, `#unit-modal-cancel` y clic en overlay. Limpieza de listeners en el cleanup. Eliminada variable muerta `isCurrent`.
+- **`topbar.html`:** la modal `#unit-modal-overlay` ya existía (título, subtítulo, lista con spinner, footer cancel); no requirió cambios.
+- **`topbar.css`:** estilos del modal (`.unit-modal-overlay`, `.unit-modal`, header/close, subtítulo, lista, item con badge/arrow, loading spinner, empty, footer/cancel) con tokens del design system (`--color-gurkha-*`, `--color-kaitoke-green-*`, `--color-text-*`, `--color-primary`). Regla `.unit-modal-overlay[hidden] { display:none }` (especificidad 0,2,0 — mismo patrón que calendar) para que `hidden` gane a `display:flex`. `body.modal-open { overflow:hidden }` para bloquear scroll de fondo. Spinner scoped (`.unit-modal-loading .spinner-small`) para no depender del CSS de otro módulo.
+- **i18n:** nuevas claves `topbar.*` en es y en: changeUnit, changeUnitTitle, changeUnitSubtitle, loadingUnits, noUnits, unitsError, currentUnit, cancel (el bloque `en` de topbar estaba incompleto — solo `systemSettings`; se completó con todas las claves existentes + las nuevas).
+- **`docs/plan-tareas-pendientes.md`:** T7 marcada ✅, estado del backlog actualizado, tabla de archivos actualizada.
+
+### Verificación:
+- Sintaxis OK (node --check como .mjs) de auth.js y topbar.controller.js; JSON de translations válido en es/en; balance de llaves CSS OK.
+
+### Pendiente:
+- Verificación en navegador del modal (sesión real): abrir dropdown → Cambiar Unidad → seleccionar unidad → recarga con la unidad activa.
+- Verificación en navegador del logo (T8) y la configuración Firebase (CORS Storage + AppCheck exchangeDebugToken 403) — el cliente decidió no configurar por ahora.
+
 ## Entrada: 3 de Agosto de 2026
 **Estado:** Backlog de 8 tareas pendientes analizado y documentado. Modal del calendario finalizado con animaciones de entrada/salida suaves.
 

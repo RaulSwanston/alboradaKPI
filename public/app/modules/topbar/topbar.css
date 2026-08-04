@@ -270,3 +270,201 @@
   background-color: var(--color-gurkha-100);
   margin: 0.25rem 0;
 }
+
+/* --- Modal Cambiar Unidad --- */
+.unit-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background-color: rgba(15, 23, 42, 0.5);
+  backdrop-filter: blur(2px);
+}
+
+.unit-modal-overlay[hidden] {
+  display: none;
+}
+
+.unit-modal {
+  width: 100%;
+  max-width: 28rem;
+  max-height: 85vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #FFFFFF;
+  border-radius: 0.75rem;
+  box-shadow: 0 1rem 2.5rem rgba(31, 31, 20, 0.18);
+}
+
+.unit-modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.25rem 1.5rem 0.5rem;
+}
+
+.unit-modal-header h3 {
+  margin: 0;
+  font-size: 1.125rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.unit-modal-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  background: none;
+  border: none;
+  border-radius: 0.375rem;
+  cursor: pointer;
+  color: var(--color-gurkha-500);
+}
+
+.unit-modal-close:hover {
+  background-color: var(--color-gurkha-100);
+  color: var(--color-gurkha-800);
+}
+
+.unit-modal-close svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.unit-modal-subtitle {
+  margin: 0;
+  padding: 0 1.5rem 1rem;
+  font-size: 0.875rem;
+  color: var(--color-text-secondary);
+}
+
+.unit-modal-list {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 1.5rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.unit-modal-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background-color: var(--color-gurkha-50);
+  border: 1px solid var(--color-gurkha-100);
+  border-radius: 0.5rem;
+  cursor: pointer;
+  text-align: left;
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.unit-modal-item:hover {
+  background-color: var(--color-gurkha-100);
+  border-color: var(--color-gurkha-200);
+}
+
+.unit-modal-item.is-active {
+  background-color: var(--color-gurkha-100);
+  border-color: var(--color-kaitoke-green-500);
+}
+
+.unit-modal-item-name {
+  flex: 1;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--color-text-primary);
+}
+
+.unit-modal-item-badge {
+  padding: 0.125rem 0.5rem;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  color: var(--color-kaitoke-green-700);
+  background-color: var(--color-kaitoke-green-500);
+  border-radius: 999px;
+}
+
+.unit-modal-item-arrow {
+  display: flex;
+  align-items: center;
+  color: var(--color-gurkha-500);
+}
+
+.unit-modal-item-arrow svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+.unit-modal-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 2rem 0;
+  color: var(--color-text-secondary);
+}
+
+.unit-modal-loading p {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+.unit-modal-empty {
+  margin: 0;
+  padding: 2rem 0;
+  text-align: center;
+  color: var(--color-text-secondary);
+}
+
+.unit-modal-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 1rem 1.5rem;
+  border-top: 1px solid var(--color-gurkha-100);
+}
+
+.unit-modal-btn-cancel {
+  padding: 0.5rem 1.25rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-gurkha-700);
+  background: none;
+  border: 1px solid var(--color-gurkha-200);
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+
+.unit-modal-btn-cancel:hover {
+  background-color: var(--color-gurkha-100);
+}
+
+/* Bloqueo de scroll del fondo mientras el modal está abierto */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Spinner de carga de unidades */
+.unit-modal-loading .spinner-small {
+  border: 3px solid var(--color-gurkha-200);
+  border-top: 3px solid var(--color-primary);
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  animation: unit-modal-spin 0.8s linear infinite;
+}
+
+@keyframes unit-modal-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

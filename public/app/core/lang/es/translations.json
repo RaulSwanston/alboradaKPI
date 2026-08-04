@@ -186,6 +186,13 @@
     "myAccount": "Mi Cuenta",
     "myProfile": "Mi Perfil",
     "changeUnit": "Cambiar de Unidad",
+    "changeUnitTitle": "Selecciona tu Unidad",
+    "changeUnitSubtitle": "Elige la unidad residencial para trabajar",
+    "loadingUnits": "Cargando unidades...",
+    "noUnits": "No tienes unidades vinculadas.",
+    "unitsError": "No se pudieron cargar las unidades.",
+    "currentUnit": "Unidad actual",
+    "cancel": "Cancelar",
     "security": "Seguridad",
     "logout": "Cerrar Sesión",
     "systemSettings": "Ajustes del Sistema"

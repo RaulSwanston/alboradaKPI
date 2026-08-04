@@ -60,4 +60,23 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal Cambiar Unidad -->
+  <div class="unit-modal-overlay" id="unit-modal-overlay" hidden>
+    <div class="unit-modal" role="dialog" aria-modal="true" aria-labelledby="unit-modal-title">
+      <div class="unit-modal-header">
+        <h3 id="unit-modal-title"><!-- ::i18n.topbar.changeUnitTitle --></h3>
+        <button type="button" class="unit-modal-close" id="unit-modal-close" aria-label="<!-- ::i18n.topbar.cancel -->">
+          <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <p class="unit-modal-subtitle"><!-- ::i18n.topbar.changeUnitSubtitle --></p>
+      <div class="unit-modal-list" id="unit-modal-list">
+        <div class="unit-modal-loading"><div class="spinner-small"></div><p><!-- ::i18n.topbar.loadingUnits --></p></div>
+      </div>
+      <div class="unit-modal-footer">
+        <button type="button" class="unit-modal-btn-cancel" id="unit-modal-cancel"><!-- ::i18n.topbar.cancel --></button>
+      </div>
+    </div>
+  </div>
 </div>

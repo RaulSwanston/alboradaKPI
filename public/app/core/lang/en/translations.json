@@ -81,6 +81,25 @@
     }
   },
   "topbar": {
+    "searchPlaceholder": "Search payments, services or notices...",
+    "notifications": "Notifications",
+    "settings": "Settings",
+    "preferences": "Preferences",
+    "appearance": "Appearance",
+    "language": "Language",
+    "help": "Help Center",
+    "myAccount": "My Account",
+    "myProfile": "My Profile",
+    "changeUnit": "Change Unit",
+    "changeUnitTitle": "Select Your Unit",
+    "changeUnitSubtitle": "Choose the residential unit to work with",
+    "loadingUnits": "Loading units...",
+    "noUnits": "You have no linked units.",
+    "unitsError": "Could not load units.",
+    "currentUnit": "Current unit",
+    "cancel": "Cancel",
+    "security": "Security",
+    "logout": "Log out",
     "systemSettings": "System Settings"
   },
   "paymentApproval": {
