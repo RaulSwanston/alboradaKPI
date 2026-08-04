@@ -267,6 +267,16 @@ const PAGE_SIZE = 15;
 1. **T1:** ¿El botón "Cargar más actividades" se mantiene (paginación de a 5) o se elimina (solo 5 siempre)? (Mantenido: paginación de a 5.)
 2. **T2:** ✅ Resuelta: residente ve solo lo suyo (`array-contains uid`); histórico migrado a `['admin']`.
 3. **T3:** ✅ Resuelta: aplica a ambos selects; valores en minúscula (7); labels en texto plano. Panel de edición en configManager = trabajo futuro.
-4. **T7:** ¿El cambio de unidad es global o solo topbar? ¿La fuente de unidades del admin es `users.propertyIds`? ¿Hace falta selector visible además del dropdown?
+4. **T7:** ✅ Resuelta: cambio global (recarga la vista); fuente = `users.propertyIds` (admin y residente); unidad activa por defecto = primera de propertyIds (o la guardada en `gph_active_property` si sigue válida); sin selector visible adicional.
 5. **T8:** ¿El logo aplica solo al sidebar (navigator) o también a topbar/login?
 6. **T6:** ✅ Completada (prototipo adaptado a design system).
+
+---
+
+## Backlog completado (T4, T1, T5, T6, T2, T8, T3, T7)
+
+Todas las tareas del plan están **completadas y commiteadas** (último commit `cdd62d3`, pusheado a `github main`).
+
+**Pendientes para futuras sesiones (ver docs/memory.md "Pendiente"):**
+- Verificaciones en navegador con sesión real: modal "Cambiar Unidad", logo (T8), configuración Firebase (CORS Storage + AppCheck).
+- Trabajo futuro: panel de edición de métodos de pago en configManager, vista `/dashboard/payments/:id`, dashboard de resumen financiero del residente, migración de traducciones a `modules.*` (i18n.1–i18n.5), pruebas en emulador, reconciliación de datos históricos, integración Cloudflare.

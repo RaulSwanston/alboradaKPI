@@ -1,5 +1,33 @@
 # Memoria de Sesiones - Bitácora de Proyecto
 
+## 📌 RETOMA AQUÍ (última sesión: 4 de Agosto de 2026)
+
+**Estado global:** Backlog de 8 tareas del plan **CERRADO y commiteado** (commit `cdd62d3` pusheado a `github main`). T4, T1, T5, T6, T2, T8, T3 y T7 completadas.
+
+**Último trabajo (T7 — Cambiar Unidad en topbar):**
+- `auth.js` sessionGuard asigna `contexto.data.activePropertyId` y `contexto.data.property` (fix del hallazgo histórico: antes siempre `undefined`).
+- Modal en topbar (`topbar.html` + `topbar.controller.js` + `topbar.css`): lista de unidades desde `users.propertyIds` vía `Property.getById`, selección → `localStorage('gph_active_property')` + `window.location.reload()` (cambio global).
+- i18n `topbar.*` completada en es/en (el bloque `en` estaba incompleto).
+- Estilos con tokens del design system; patrón `[hidden] { display:none }` especificidad 0,2,0 (como calendar) + `body.modal-open { overflow:hidden }`.
+
+**Verificaciones pendientes (requieren sesión real en navegador):**
+1. Modal "Cambiar Unidad": abrir dropdown → Cambiar Unidad → seleccionar → recarga con unidad activa.
+2. Logo (T8): subir → guardar → recargar (configManager Storage `config/branding/logo_*` → `branding.logoUrl` → navigator `#nav-logo`).
+3. Configuración Firebase pendiente del cliente: CORS Storage + AppCheck `exchangeDebugToken 403` (el cliente decidió no hacerla por ahora).
+
+**Trabajo futuro (fuera del backlog):**
+- Panel de edición de métodos de pago en configManager (origen en T3).
+- Vista `/dashboard/payments/:id` (ruta registrada, sin vista).
+- Dashboard de resumen financiero para el residente.
+- Migración de traducciones a `modules.*` (i18n.1–i18n.5).
+- Pruebas funcionales en emulador.
+- Reconciliación de datos históricos (cargos sin `pendingAmount`).
+- Integración Cloudflare (email u otros servicios).
+
+**Convenciones recordar (AGENTS.md):** staging selectivo (nunca `git add .`), push a `github main` (existe `gitlab` como alternativo), secretos excluidos por `.gitignore`, sintaxis JS validada con `node --check` como `.mjs`.
+
+---
+
 ## Entrada: 3 de Agosto de 2026 (parte 2)
 **Estado:** T4, T1 y T5 ejecutadas. T6 (emailVerification) rediseñada siguiendo el prototipo del usuario, adaptada al design system.
 
