@@ -1,0 +1,188 @@
+/* =============================================
+   MÓDULO: Verificación de Email (emailVerification)
+   Tarjeta centrada acorde al UI Kit Condo-Fresh.
+   ============================================= */
+
+.email-verification {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100dvh;
+  padding: 1.5rem;
+}
+
+.email-verification-card {
+  width: 100%;
+  max-width: 30rem;
+  background-color: #FFFFFF;
+  border-radius: .75rem;
+  box-shadow: 0 .5rem 1.5rem rgba(31, 31, 20, 0.1);
+  padding: 2rem 1.75rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+/* --- Icono principal (sobre) --- */
+.email-verification-icon {
+  width: 4.5rem;
+  height: 4.5rem;
+  border-radius: 50%;
+  background-color: var(--color-gurkha-100);
+  color: var(--color-gurkha-700);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 1.25rem;
+}
+
+.email-verification-icon svg {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.email-verification-icon svg path {
+  fill: var(--color-gurkha-600);
+}
+
+/* --- Título y subtítulo --- */
+.email-verification-title {
+  font-size: 1.5rem;
+  color: var(--color-text-primary);
+  margin-bottom: .5rem;
+}
+
+.email-verification-subtitle {
+  color: var(--color-text-secondary);
+  line-height: 1.5;
+  margin: 0 0 1.5rem;
+}
+
+/* --- Pasos --- */
+.email-verification-steps {
+  list-style: none;
+  margin: 0 0 1.5rem;
+  padding: 0;
+  width: 100%;
+  text-align: left;
+}
+
+.ev-step {
+  display: flex;
+  align-items: flex-start;
+  gap: .75rem;
+  padding: .5rem 0;
+}
+
+.ev-step-number {
+  flex: 0 0 1.75rem;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background-color: var(--color-gurkha-200);
+  color: var(--color-gurkha-700);
+  font-weight: 700;
+  font-size: .875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.ev-step-content {
+  padding-top: .34rem;
+}
+
+.ev-step-title {
+  font-size: .9375rem;
+  color: var(--color-text-primary);
+  margin: 0;
+}
+
+.ev-step-from {
+  font-size: .8125rem;
+  color: var(--color-text-secondary);
+  margin: .15rem 0 0;
+  overflow-wrap: anywhere;
+}
+
+/* --- Nota de spam --- */
+.email-verification-note {
+  display: flex;
+  align-items: flex-start;
+  gap: .5rem;
+  width: 100%;
+  text-align: left;
+  background-color: #FFF8E1;
+  border: 1px solid #FFD54F;
+  border-radius: .5rem;
+  padding: .75rem 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.email-verification-note p {
+  margin: 0;
+  font-size: .8125rem;
+  color: #6D4C00;
+  line-height: 1.4;
+}
+
+.ev-note-icon {
+  flex: 0 0 1.125rem;
+  width: 1.125rem;
+  height: 1.125rem;
+  color: #F9A825;
+  margin-top: .1rem;
+}
+
+/* --- Acciones --- */
+.email-verification-actions {
+  display: flex;
+  flex-direction: column;
+  gap: .75rem;
+  width: 100%;
+}
+
+.ev-btn {
+  width: 100%;
+  min-height: 2.75rem;
+  border-radius: .5rem;
+  border: 1px solid transparent;
+  font-size: .9375rem;
+  font-weight: 600;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  transition: background-color .15s ease, color .15s ease;
+}
+
+.ev-btn:disabled {
+  cursor: not-allowed;
+  opacity: .7;
+}
+
+.ev-btn-primary {
+  background-color: var(--button-principal-background);
+  color: #FFFFFF;
+}
+
+.ev-btn-primary:hover:not(:disabled) {
+  background-color: var(--color-kaitoke-green-800);
+}
+
+.ev-btn-primary .ev-btn-icon {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.ev-btn-secondary {
+  background-color: transparent;
+  color: var(--color-gurkha-600);
+  border-color: transparent;
+}
+
+.ev-btn-secondary:hover:not(:disabled) {
+  color: var(--color-gurkha-700);
+}

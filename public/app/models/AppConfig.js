@@ -10,7 +10,7 @@ export default class AppConfig {
    */
   static async get() {
     try {
-      const docRef = doc(db, "_config", "app");
+      const docRef = doc(db, "appConfig", "app");
       const docSnap = await getDoc(docRef);
       if (docSnap.exists()) {
         return docSnap.data();
@@ -28,7 +28,7 @@ export default class AppConfig {
    */
   static async save(config) {
     try {
-      const docRef = doc(db, "_config", "app");
+      const docRef = doc(db, "appConfig", "app");
       await setDoc(docRef, config, { merge: true });
       return true;
     } catch (error) {

@@ -1,4 +1,4 @@
-import { db, collection, addDoc, query, orderBy, limit, getDocs, serverTimestamp, startAfter } from "../core/firebase.js";
+import { db, collection, addDoc, query, where, orderBy, limit, getDocs, serverTimestamp, startAfter } from "../core/firebase.js";
 
 /**
  * Crea un nuevo documento en la colección 'activities'.
@@ -22,16 +22,25 @@ export async function createActivity(activityData) {
 
 /**
  * Obtiene las actividades más recientes de la base de datos con soporte para paginación.
+ * Filtra por visibilidad según el rol del usuario.
  * @param {number} count - El número de actividades a obtener.
  * @param {DocumentSnapshot} lastDoc - El último documento de la carga anterior para paginación.
+ * @param {string} visibilityKey - Clave de visibilidad para filtrar ('admin' o el UID del residente).
  * @returns {Promise<{activities: Array, lastVisible: DocumentSnapshot}>} Un objeto con el array de actividades y el último documento visible.
  */
-export async function getRecentActivities(count = 15, lastDoc = null) {
+export async function getRecentActivities(count = 15, lastDoc = null, visibilityKey = null) {
   try {
     const activitiesRef = collection(db, "activities");
     let q;
-    
-    if (lastDoc) {
+
+    if (visibilityKey) {
+      // Filtro por rol: admin → 'admin'; residente → su UID
+      if (lastDoc) {
+        q = query(activitiesRef, where("visibility", "array-contains", visibilityKey), orderBy("timestamp", "desc"), startAfter(lastDoc), limit(count));
+      } else {
+        q = query(activitiesRef, where("visibility", "array-contains", visibilityKey), orderBy("timestamp", "desc"), limit(count));
+      }
+    } else if (lastDoc) {
       q = query(activitiesRef, orderBy("timestamp", "desc"), startAfter(lastDoc), limit(count));
     } else {
       q = query(activitiesRef, orderBy("timestamp", "desc"), limit(count));

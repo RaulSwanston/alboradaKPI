@@ -23,6 +23,14 @@ export default async function paymentApprovalController(contexto) {
     return date.toLocaleDateString('es', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
   };
 
+  // Mapa de labels de método de pago desde appConfig (fuente única) + legacy en mayúscula
+  const paymentMethods = contexto?.data?.appConfig?.moduleRegistry?.transactions?.paymentMethods || [];
+  const paymentMethodLabels = Object.fromEntries(paymentMethods.map(m => [m.id, m.label]));
+  const legacyPaymentMap = {
+    'TRANSFER': 'transfer', 'ACH': 'deposit', 'YAPPY': 'yappy', 'CASH': 'cash',
+    'CHECK': 'check', 'CARD': 'card', 'DEPOSIT': 'deposit', 'OTHER': 'other'
+  };
+
   const loadPending = async () => {
     try {
       listEl.innerHTML = `<div class="loading-state"><p>${t('paymentApproval.loading')}</p></div>`;
@@ -65,14 +73,7 @@ export default async function paymentApprovalController(contexto) {
               </div>
               <div class="approval-detail-item">
                 <span class="approval-label"><!-- ::i18n.paymentApproval.paymentMethod --></span>
-                <span class="approval-value">${({
-                  'cash': 'Efectivo',
-                  'transfer': 'Transferencia',
-                  'deposit': 'Depósito',
-                  'check': 'Cheque',
-                  'card': 'Tarjeta',
-                  'other': 'Otro'
-                })[report.paymentMethod] || report.paymentMethod || 'No especificado'}</span>
+                <span class="approval-value">${paymentMethodLabels[report.paymentMethod] || paymentMethodLabels[legacyPaymentMap[report.paymentMethod]] || report.paymentMethod || 'No especificado'}</span>
               </div>
             </div>
             ${report.notes ? `

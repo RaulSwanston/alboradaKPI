@@ -1,18 +1,23 @@
 import { getRecentActivities } from '../../models/Activities.js';
 import { router } from '../../../router.js';
 
-export default async function recentActivityController() {
+export default async function recentActivityController(contexto) {
   const feedContainer = document.getElementById('activity-feed');
   const noActivityMessage = document.getElementById('no-activity-message');
   const loadMoreContainer = document.getElementById('load-more-container');
   const btnLoadMore = document.getElementById('btn-load-more');
   const template = document.getElementById('activity-item-template');
+  const user = contexto?.data?.user;
+  const permissions = contexto?.data?.permissions;
 
   // Icono de ojo extraído del JSON (adaptado para usar color de fuente)
   const eyeSvg = `<svg class="activity-eye-svg" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" fill="currentColor"><path d="M0 0h48v48H0z" fill="none"/><g id="Shopicon"><circle cx="24" cy="24" r="4"/><path d="M24,38c12,0,20-14,20-14s-8-14-20-14S4,24,4,24S12,38,24,38z M24,16c4.418,0,8,3.582,8,8s-3.582,8-8,8s-8-3.582-8-8S19.582,16,24,16z"/></g></svg>`;
 
+  // Clave de visibilidad según el rol (patrón de notificationsFeed)
+  const visibilityKey = permissions?.isAdmin ? 'admin' : (user?.uid || null);
+
   let lastDocVisible = null;
-  const PAGE_SIZE = 15;
+  const PAGE_SIZE = 5;
 
   /**
    * Mapea el tipo técnico de actividad a una configuración visual amigable con SVGs.
@@ -68,7 +73,7 @@ export default async function recentActivityController() {
         btnLoadMore.querySelector('span:first-child').textContent = 'Cargando...';
       }
 
-      const { activities, lastVisible } = await getRecentActivities(PAGE_SIZE, lastDocVisible);
+      const { activities, lastVisible } = await getRecentActivities(PAGE_SIZE, lastDocVisible, visibilityKey);
 
       const loadingEl = feedContainer.querySelector('.loading-message');
       if (loadingEl) loadingEl.remove();

@@ -16,15 +16,41 @@ export default async function emailVerificationController(contexto) {
     return;
   }
 
-  const refreshBtn = document.querySelector('#emailVerified button');
+  const refreshBtn = document.getElementById('btn-refresh-email');
+  const refreshLabel = refreshBtn?.querySelector('.ev-btn-label');
+  const resendBtn = document.getElementById('btn-resend-email');
+
+  // Inyecta iconos SVG desde el repositorio central (icons.json)
+  const handleIcons = async () => {
+    try {
+      const response = await fetch('/src/img/icons.json');
+      const data = await response.json();
+      const iconRepo = data.icons;
+      container.querySelectorAll('[data-icon]').forEach(el => {
+        const iconData = iconRepo.find(i => i.name === el.dataset.icon);
+        if (iconData) el.innerHTML = iconData.svg;
+      });
+    } catch (error) {
+      console.error("Error al cargar icons.json en emailVerification:", error);
+    }
+  };
+
   const container = document.getElementById('emailVerified');
+
+  const setRefreshText = (text) => {
+    if (refreshLabel) {
+      refreshLabel.textContent = text;
+    } else if (refreshBtn) {
+      refreshBtn.textContent = text;
+    }
+  };
 
   // 1. Lógica del botón Refrescar
   const handleRefresh = async (e) => {
     e.preventDefault();
     try {
       refreshBtn.disabled = true;
-      refreshBtn.textContent = 'Verificando...';
+      setRefreshText('Verificando...');
       
       // Forzamos a Firebase a actualizar el estado del usuario desde el servidor
       await reload(user);
@@ -43,13 +69,13 @@ export default async function emailVerificationController(contexto) {
       } else {
         alert("El correo aún no ha sido verificado. Por favor, revisa tu bandeja de entrada.");
         refreshBtn.disabled = false;
-        refreshBtn.textContent = 'refrescar';
+        setRefreshText('Refrescar');
       }
     } catch (error) {
       console.error("Error al refrescar el estado del usuario:", error);
       alert("Hubo un error al intentar verificar. Inténtalo de nuevo.");
       refreshBtn.disabled = false;
-      refreshBtn.textContent = 'refrescar';
+      setRefreshText('Refrescar');
     }
   };
 
@@ -57,17 +83,7 @@ export default async function emailVerificationController(contexto) {
     refreshBtn.addEventListener('click', handleRefresh);
   }
 
-  // 2. Añadir botón de Reenvío (Dinámico para no romper el HTML actual)
-  const resendContainer = document.createElement('div');
-  resendContainer.style.marginTop = '20px';
-  resendContainer.innerHTML = `
-    <p>¿No recibiste el correo?</p>
-    <button id="btn-resend-email" class="btn-secondary">Reenviar correo de verificación</button>
-  `;
-  container.appendChild(resendContainer);
-
-  const resendBtn = document.getElementById('btn-resend-email');
-  
+  // 2. Lógica del botón de Reenvío
   const handleResend = async () => {
     try {
       resendBtn.disabled = true;
@@ -99,6 +115,8 @@ export default async function emailVerificationController(contexto) {
   };
 
   resendBtn?.addEventListener('click', handleResend);
+
+  handleIcons();
 
   // --- Función de Limpieza ---
   return () => {

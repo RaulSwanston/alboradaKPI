@@ -139,6 +139,7 @@ export default class Transaction {
           id: data.propertyId,
           name: data.propertyId === '__UNIDENTIFIED__' ? 'Sin identificar' : `Unidad ${data.propertyId}`
         },
+        visibility: ['admin'],
         details: { transactionId: docRef.id, amount: data.amount }
       });
 
@@ -175,6 +176,7 @@ export default class Transaction {
         description: `Actualización de transacción ${id}`,
         initiator: initiator,
         target: { type: 'TRANSACTION', id: id },
+        visibility: ['admin'],
         details: { changes: Object.keys(data) }
       });
     } catch (error) {
@@ -198,7 +200,8 @@ export default class Transaction {
         type: 'TRANSACTION_DELETED',
         description: `Eliminación de transacción ${id}`,
         initiator: initiator,
-        target: { type: 'TRANSACTION', id: id }
+        target: { type: 'TRANSACTION', id: id },
+        visibility: ['admin']
       });
     } catch (error) {
       console.error(`[Transaction] Error al eliminar transacción ${id}:`, error);

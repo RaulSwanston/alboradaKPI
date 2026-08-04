@@ -192,8 +192,28 @@
     "calendar": {
       "title": "Community Calendar",
       "subtitle": "Condominium events and activities",
-      "sampleEvent": "General Assembly",
-      "sampleEventDescription": "Monthly community meeting"
+      "newEvent": "New Event",
+      "editEvent": "Edit Event",
+      "eventTitle": "Title",
+      "eventTitlePlaceholder": "E.g. General Assembly, Pool maintenance...",
+      "eventType": "Type",
+      "eventTypeSocial": "Social",
+      "eventTypeBirthday": "Birthday",
+      "eventTypeMeeting": "Meeting",
+      "eventTypeMaintenance": "Maintenance",
+      "eventTypeOther": "Other",
+      "eventAllDay": "All day",
+      "eventStart": "Start",
+      "eventEnd": "End",
+      "eventDescription": "Description",
+      "eventSave": "Save Event",
+      "eventCancel": "Cancel",
+      "eventDelete": "Delete",
+      "eventDeleteConfirm": "Delete this event?",
+      "eventSaved": "Event saved successfully",
+      "eventDeleted": "Event deleted",
+      "eventError": "Error saving event",
+      "eventDeleteError": "Error deleting event"
     }
   },
   "paymentReport": {
@@ -215,7 +235,6 @@
     "amountHelp": "Enter the exact amount shown on your receipt.",
     "dateLabel": "Payment Date",
     "notesLabel": "Optional Notes",
-    "notesPlaceholder": "E.g.: Advance payment for February, partial payment of fine...",
     "submit": "Submit Payment Report",
     "sending": "Sending Report...",
     "gotIt": "Got it",

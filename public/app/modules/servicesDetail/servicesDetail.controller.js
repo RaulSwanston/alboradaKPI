@@ -62,26 +62,6 @@ export default async function servicesDetailController(contexto) {
     const iconEl = getEl('detail-icon');
     if (iconEl) iconEl.innerHTML = concept.icon || '📦';
 
-    // Poblar select de tipos desde appConfig
-    const typeSelect = getEl('detail-type-select');
-    typeSelect.innerHTML = '';
-    Object.entries(chargeTypes).forEach(([value, cfg]) => {
-      const opt = document.createElement('option');
-      opt.value = value;
-      opt.textContent = cfg.label;
-      typeSelect.appendChild(opt);
-    });
-    typeSelect.value = chargeTypes[concept.type] ? concept.type : 'service';
-    // Sincronizar con el select oculto del formulario
-    getEl('edit-type').innerHTML = typeSelect.innerHTML;
-    getEl('edit-type').value = typeSelect.value;
-    const typeDesc = getEl('type-description');
-    if (typeDesc) typeDesc.textContent = chargeTypes[typeSelect.value]?.label || 'Selecciona el tipo del servicio';
-    typeSelect.addEventListener('change', function () {
-      getEl('edit-type').value = this.value;
-      if (typeDesc) typeDesc.textContent = chargeTypes[this.value]?.label || 'Selecciona el tipo del servicio';
-    });
-
     setVal('edit-name', concept.name);
     getEl('detail-name').textContent = concept.name;
     updateCounter(getEl('detail-name'), 'name-counter', 80);
@@ -93,18 +73,6 @@ export default async function servicesDetailController(contexto) {
     getEl('detail-amount').textContent = '$' + (concept.defaultAmount || 0).toFixed(2);
     setVal('edit-type', concept.type || 'service');
     setChecked('edit-recurring', concept.isRecurring === true);
-    const toggleBtn = getEl('btn-toggle-recurring');
-    const toggleSwitch = getEl('toggle-switch');
-    if (concept.isRecurring === true) {
-      toggleSwitch.classList.add('active');
-    }
-    if (toggleBtn) {
-      toggleBtn.addEventListener('click', () => {
-        const checkbox = getEl('edit-recurring');
-        checkbox.checked = !checkbox.checked;
-        toggleSwitch.classList.toggle('active');
-      });
-    }
     setChecked('edit-requestable', concept.isRequestableByResident === true);
     const headerCheck = getEl('edit-requestable-header');
     if (headerCheck) headerCheck.checked = getEl('edit-requestable').checked;
@@ -312,8 +280,7 @@ export default async function servicesDetailController(contexto) {
     const btnSave = getEl('btn-save');
     const btnDelete = getEl('btn-delete');
 
-    form.addEventListener('submit', async (e) => {
-      e.preventDefault();
+    btnSave.addEventListener('click', async () => {
       btnSave.disabled = true;
       btnSave.textContent = 'Guardando...';
 
@@ -390,6 +357,71 @@ export default async function servicesDetailController(contexto) {
         btnDelete.textContent = 'Eliminar Concepto';
       }
     });
+
+    // --- Cancel Button ---
+    const btnCancel = getEl('btn-cancel');
+    if (btnCancel) {
+      btnCancel.addEventListener('click', () => {
+        if (window.router) window.router.navigate('/services');
+      });
+    }
+
+    // --- Advanced Options Drawer ---
+    const drawerOverlay = getEl('advanced-drawer-overlay');
+    const drawerClose = getEl('btn-close-drawer');
+    const btnAdvanced = getEl('btn-advanced-options');
+    const drawerRecurringToggle = getEl('drawer-recurring');
+    const drawerTypeSelect = getEl('drawer-type-select');
+    const editRecurring = getEl('edit-recurring');
+    const editType = getEl('edit-type');
+
+    const openDrawer = () => {
+      drawerOverlay.classList.remove('hidden');
+      const panel = drawerOverlay.querySelector('.drawer-panel');
+      if (panel) requestAnimationFrame(() => panel.classList.add('open'));
+    };
+    const closeDrawer = () => {
+      const panel = drawerOverlay.querySelector('.drawer-panel');
+      if (panel) panel.classList.remove('open');
+      setTimeout(() => drawerOverlay.classList.add('hidden'), 300);
+    };
+
+    if (btnAdvanced) btnAdvanced.addEventListener('click', openDrawer);
+    if (drawerClose) drawerClose.addEventListener('click', closeDrawer);
+    if (drawerOverlay) drawerOverlay.addEventListener('click', (e) => {
+      if (e.target === drawerOverlay) closeDrawer();
+    });
+
+    // Sync drawer recurring toggle ↔ edit-recurring
+    if (drawerRecurringToggle) {
+      drawerRecurringToggle.checked = editRecurring?.checked || false;
+      drawerRecurringToggle.addEventListener('change', function () {
+        if (editRecurring) editRecurring.checked = this.checked;
+      });
+    }
+    if (editRecurring) {
+      editRecurring.addEventListener('change', function () {
+        if (drawerRecurringToggle) drawerRecurringToggle.checked = this.checked;
+      });
+    }
+
+    // Sync drawer type select ↔ edit-type
+    if (drawerTypeSelect && editType) {
+      drawerTypeSelect.innerHTML = '';
+      Object.entries(chargeTypes).forEach(([value, cfg]) => {
+        const opt = document.createElement('option');
+        opt.value = value;
+        opt.textContent = cfg.label;
+        drawerTypeSelect.appendChild(opt);
+      });
+      drawerTypeSelect.value = editType.value;
+      drawerTypeSelect.addEventListener('change', function () {
+        editType.value = this.value;
+      });
+      editType.addEventListener('change', function () {
+        drawerTypeSelect.value = this.value;
+      });
+    }
 
   } catch (error) {
     console.error('Error al cargar concepto:', error);

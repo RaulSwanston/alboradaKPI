@@ -1,5 +1,108 @@
 # Memoria de Sesiones - Bitácora de Proyecto
 
+## Entrada: 3 de Agosto de 2026 (parte 2)
+**Estado:** T4, T1 y T5 ejecutadas. T6 (emailVerification) rediseñada siguiendo el prototipo del usuario, adaptada al design system.
+
+### Fix topbar (desborde horizontal en vista emailVerification):
+- **Bug:** el `.topbar` usaba un truco full-bleed (`margin: -1.5rem; width: calc(100% + 3rem)`) para romper el `padding: 1.5rem` de `#app-view` (navigator.css en desktop). En las vistas auth (verify-email/account-status, `theme.simple` sin navigator.css) ese padding no existe → el topbar desbordaba 24px por lado → scroll horizontal.
+- **Causa adicional:** `topbar.css` usaba 10 variables inexistentes en root.css (`--card-border`, `--bg-canvas`, `--text-primary`, `--text-secondary`, `--input-border`, `--input-focus-border`, `--text-link`, `--bg-hero`, `--error`, `--solid-pink-50`) → bordes/fondos sin resolver.
+- **Fix (opción elegida por el usuario: "ancho normal + border en el contenido"):** quitar el full-bleed (margen negativo + width calc) → `width: 100%`; reemplazar todas las variables rotas por las del design system (`--color-border`, `--color-gurkha-100/200`, `--color-text-primary/secondary`, `--color-kaitoke-green-500/600`, `--color-error`, `--color-solid-pink-50`).
+- **Verificado con render headless:** en auth y dashboard (420px) el topbar ocupa `0→420` sin desborde (scrollWidth = viewport); en desktop dashboard queda contenido dentro del sidebar (260px) + padding (nuevo comportamiento).
+
+### Fix posterior (apariencia del emailVerification):
+- **Bug:** la vista se veía sin estilos porque **`root.css` no se cargaba** en las vistas auth `verify-email.html` y `account-status.html` (usaban `::theme.simple` pero **sin** la directiva `<!-- ::css.root -->` que sí tienen login/signup/recovery). Sin root.css, las variables `--color-*` y `--button-principal-background` no existen → el CSS del módulo no aplicaba colores.
+- **Fix:** se agregó `<!-- ::css.root -->` a `verify-email.html` y `account-status.html`.
+- **Verificado con render headless (Chromium vía playwright-core en /tmp/opencode):** las variables de root.css resuelven (kaitoke-green-500 `#28bf63`, `--button-principal-background` `#197c40`), y el módulo se ve correcto (tarjeta gurkha-50/borde gurkha-300/radius 12px/480px, pasos con número verde, nota gurkha-100, botones primario `#197c40` y secundario gurkha-100).
+- **Nota:** el modelo de trabajo no soporta entrada de imágenes (no se puede revisar screenshot).
+
+### Resumen de cambios:
+- **T4 (placeholder notas en blanco):** Eliminada la asignación del placeholder en `paymentReport.controller.js`; eliminadas claves `notesPlaceholder` de `es/translations.json:212` y `en/translations.json:238`. `t()` sigue en uso (22 usos) → import intacto.
+- **T1 (5 actividades recientes):** `recentActivity.controller.js:15`: `PAGE_SIZE = 15` → `5`. El botón "Cargar más" se mantiene (decisión del usuario), paginando de a 5.
+- **T5 (toggle ojo en signup):** `signup.html` botón `#toggle-password` con SVG inline; `signup.controller.js` alterna `password↔text` + icono ojo abierto/cerrado + aria-label; `signup.css` estilos `.password-toggle`. Ajustes: ojo a la DERECHA reordenando el DOM (`.field` usa `flex-direction: row-reverse`, primer hijo = botón) y eliminado `&:hover` verde (queda fijo en `--color-gurkha-400`).
+- **T6 (emailVerification):**
+  - `emailVerification.html`: Reesecrito como tarjeta centrada — icono circular de sobre (SVG inline `currentColor`), título, subtítulo, 4 pasos numerados con timeline, nota de spam con icono info, botón primario "Refrescar" (con icono refresh) + botón secundario "No recibí el correo".
+  - `emailVerification.css` (**NUEVO**): Estilos scoped con tokens del proyecto (`--color-surface`, `--color-border`, `--button-principal-background`, `--color-gurkha-*`, `--color-kaitoke-green-*`). Sin Tailwind/Material Symbols/Manrope del prototipo.
+  - `emailVerification.controller.js`: Actualizado a IDs explícitos (`#btn-refresh-email`, `#btn-resend-email`); eliminada la creación dinámica del botón de reenvío (ya está en el HTML); `setRefreshText()` actualiza solo el `.ev-btn-label` para conservar el icono SVG del botón primario.
+- **Nota:** `.auth-layout`/`.auth-content` de las vistas auth (verify-email, account-status) NO tienen estilos definidos en ningún CSS — clase huérfana. El centrado ahora lo da `.email-verification` (flex + min-height 100dvh).
+
+### Verificación:
+- Sintaxis del controller OK (validada como ES module).
+- HTTP 200 para html, css y controller del módulo en hosting local.
+
+### Pendiente (backlog):
+- T2 (filtrado por `visibility` en `getRecentActivities`), T3 (método de pago: una sola fuente para los selects de paymentReport y transactions-detail), T8 (persistencia del logo — bloqueado por bug `_config/app` vs `appConfig/app`), T7 (cambiar unidad).
+
+---
+
+## Entrada: 3 de Agosto de 2026 (T2 + T8 completadas)
+**Estado:** T2 (actividades por rol) y T8 (persistencia del logo) completadas. Correcciones de estilos de account-status y limpieza de residuos en root.css. Pendientes: T3, T7.
+
+### Resumen de cambios:
+- **Fix estilos account-status (punto 1 del usuario):** NUEVO `public/src/css/auth/account-status.css` (card blanca, `margin: 4rem auto`, max-width 30rem, radius .75rem, shadow `0 .5rem 1.5rem rgba(31,31,20,0.1)`, `.btn-primary` estilo kit) + `<!-- ::css.auth.account-status -->` en `account-status.html`.
+- **Fix residuos root.css (punto 2 del usuario):** eliminados `.sectionView.dashboard #emailVerified` y `.nota` de `public/src/css/root.css` (estilos huérfanos de una iteración previa de emailVerification). Verificado sin usos (grep → 0).
+- **T2 (actividades recientes por rol):**
+  - `Activities.js`: `getRecentActivities(count, lastDoc, visibilityKey)` → añade `where("visibility", "array-contains", visibilityKey)` cuando se pasa (patrón de notificationsFeed: admin='admin', residente=uid). Sin clave = comportamiento original.
+  - `recentActivity.controller.js`: recibe `contexto`, `visibilityKey = permissions.isAdmin ? 'admin' : (user?.uid || null)`.
+  - `Transaction.js:133,174,199`: añadido `visibility: ['admin']` a create/update/delete.
+  - **Backfill Firestore:** 36 de 48 actividades históricas sin `visibility` migradas a `['admin']` (script temporal en /tmp, fuera del repo). Verificado 48/48 con visibility (44 `['admin']`, 4 `['admin', uid]`). Índice compuesto ya existía.
+- **T8 (persistencia del logo):**
+  - `AppConfig.js:13,31`: ruta unificada `_config/app` → `appConfig/app`. Verificado en Firestore que `_config/app` no existe (sin migración de datos) y `appConfig/app` sí.
+  - Flujo confirmado: configManager (Storage `config/branding/logo_*` → `branding.logoUrl` → `AppConfig.save`) → navigator.controller.js:56-61,270 aplica a `#nav-logo`; preview al recargar usa `branding.logoUrl`.
+
+### Verificación:
+- Sintaxis OK (node --check como .mjs) para Activities.js, Transaction.js, recentActivity.controller.js y AppConfig.js.
+- Firestore verificado vía Admin SDK (solo lectura + backfill): distribución de `visibility` final correcta.
+
+### Pendiente (backlog):
+- T3 (método de pago: una sola fuente para selects de paymentReport y transactions-detail) y T7 (cambiar unidad, `contexto.data.property` nunca asignado).
+- Verificación en navegador del logo (subir → guardar → recargar) requiere sesión real.
+
+---
+
+## Entrada: 3 de Agosto de 2026 (T3 completada)
+**Estado:** T3 (método de pago: fuente única) completada según decisión del cliente. Pendiente solo T7.
+
+### Resumen de cambios (T3):
+- **`appConfig.js`:** NUEVA `moduleRegistry.transactions.paymentMethods` — fuente única con 7 métodos en minúsculas y labels en texto plano: `transfer/Transferencia, deposit/Depósito, cash/Efectivo, check/Cheque, card/Tarjeta, yappy/Yappy, other/Otro`. La fusión nube→local de sessionGuard (auth.js:20) la preserva (el doc Firestore solo tiene `stats`).
+- **`paymentReport.html`:** select vacío (sin `<option>` hardcodeadas). `paymentReport.controller.js` lo llena desde `contexto.data.appConfig.moduleRegistry.transactions.paymentMethods`.
+- **`transactions-detail.html`:** quitadas las 8 `<option>` hardcodeadas (eran en MAYÚSCULA: TRANSFER/ACH/YAPPY/...). `transactions-detail.controller.js` llena desde la misma fuente + `legacyPaymentMap` para normalizar valores antiguos guardados en mayúscula.
+- **`paymentApproval.controller.js`:** el objeto hardcodeado de labels se reemplaza por `paymentMethodLabels` derivado de la fuente única (+ `legacyPaymentMap`).
+- **Decisión del cliente:** aplica a ambos selects (residente y admin); valores minúsculas; labels texto plano (para futuro panel de edición del admin en configManager, fuera de T3).
+
+### Verificación:
+- Sintaxis OK (node --check) de appConfig.js, paymentReport/transactions-detail/paymentApproval controllers.
+
+### Pendiente (backlog):
+- **T7** (cambiar unidad: `#btn-change-unit` sin listener, `contexto.data.property` nunca asignado en sessionGuard).
+- Trabajo futuro (fuera de T3): panel de edición de métodos de pago en configManager.
+- Verificación en navegador del logo (T8) requiere sesión real.
+
+## Entrada: 3 de Agosto de 2026
+**Estado:** Backlog de 8 tareas pendientes analizado y documentado. Modal del calendario finalizado con animaciones de entrada/salida suaves.
+
+### Resumen de cambios:
+- **Modal del calendario (calendar):**
+  - Fix `::i18n` en atributo `placeholder` (docs/skills.md: Mosaic no lo procesa en atributos). Se setea vía `t()` en el controller (`calendar.controller.js`).
+  - Fix cascada CSS: `.calendar-modal-overlay.hidden { display:none }` (especificidad 0,2,0) para que `hidden` gane a `display:flex` del overlay (root.css:183 tenía igual especificidad y perdía por orden de inyección). servicesNew lo resolvía con `!important` (viola estándar).
+  - Animaciones de entrada (`calendar-fade-in` + `calendar-slide-up`) y salida (`calendar-fade-out` + `calendar-slide-down` con clase `.closing` + `setTimeout` 250ms en `closeEventModal`). Se maneja re-apertura durante cierre (clearTimeout + remove `.closing` en `openEventModal`).
+- **`docs/plan-tareas-pendientes.md` (NUEVO):** Backlog de 8 tareas analizado en detalle con orden tentativo de más fácil a más compleja (T4 → T1 → T5 → T2 → T8 → T6 → T3 → T7).
+
+### Hallazgo crítico (bug transversal):
+- **Ruta Firestore inconsistente para configuración global:** `AppConfig.js` usa `_config/app` pero `sessionGuard` (auth.js:16), `Transaction.js` y `Property.js` usan `appConfig/app`. `firestore.rules:87` solo protege `appConfig/**`. → La config guardada por configManager (incluido el logo, T8) se escribe en `_config/app` que nunca se lee y no está protegida. **Fix:** unificar a `appConfig/app`.
+- `contexto.data.property` se lee en topbar/profile pero **nunca se asigna** en ningún middleware → siempre undefined. Base para la T7 (Cambiar Unidad).
+- `#btn-change-unit` en topbar.html **no tiene listener** → enlace roto (T7).
+- Las actividades `activities` ya tienen campo `visibility` y notificationsFeed ya filtra por él; `getRecentActivities` (T2) aún no.
+- El select de métodos de pago está hardcodeado en `paymentReport.html:75-82`; hay otro distinto en `transactions-detail.html:157-160` (T3).
+
+### Verificación:
+- Sintaxis y grafo de imports del calendar.controller.js OK tras los cambios.
+- Claves i18n de calendar verificadas en es/en.
+
+### Pendiente (backlog):
+- Ver docs/plan-tareas-pendientes.md. Empezar por T4 (placeholder notas en blanco) y T1 (5 actividades recientes).
+
+---
+
 ## Entrada: 1 de Agosto de 2026
 **Estado:** Integración local de schedule-x (calendario) sin npm + módulo `calendar` + i18n.
 

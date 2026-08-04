@@ -62,6 +62,14 @@ service cloud.firestore {
       allow update, delete: if isAdmin();
     }
 
+    // Eventos del Calendario Comunitario
+    match /communityEvents/{eventId} {
+      // Cualquier usuario autenticado puede leer y crear eventos.
+      allow read, create: if request.auth != null;
+      // Solo el admin o el creador del evento pueden modificarlo/borrarlo.
+      allow update, delete: if isAdmin() || isOwner(resource.data.createdBy);
+    }
+
     // Notificaciones de Pago
     match /paymentNotifications/{notificationId} {
       allow create, read, list: if request.auth != null;

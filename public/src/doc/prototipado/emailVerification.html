@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+
+<html class="light" lang="es"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Portal Alborada - Verifica tu correo</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-dim": "#f3f4f6",
+                        "on-surface": "#111827",
+                        "background": "#f3f4f6",
+                        "secondary-container": "#f3f4f6",
+                        "on-secondary-fixed": "#111827",
+                        "on-tertiary-fixed-variant": "#9a3412",
+                        "on-tertiary-fixed": "#431407",
+                        "error": "#dc2626",
+                        "on-primary": "#ffffff",
+                        "surface-container-high": "#f3f4f6",
+                        "on-secondary-fixed-variant": "#374151",
+                        "surface-container-low": "#ffffff",
+                        "surface-bright": "#ffffff",
+                        "outline-variant": "#f3f4f6",
+                        "inverse-primary": "#93c5fd",
+                        "secondary-fixed-dim": "#e5e7eb",
+                        "surface": "#ffffff",
+                        "primary-container": "#eff6ff",
+                        "on-error-container": "#991b1b",
+                        "on-surface-variant": "#374151",
+                        "on-secondary-container": "#111827",
+                        "inverse-surface": "#111827",
+                        "surface-variant": "#f3f4f6",
+                        "primary-fixed-dim": "#bfdbfe",
+                        "tertiary-fixed-dim": "#fed7aa",
+                        "on-primary-fixed-variant": "#1d4ed8",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#9a3412",
+                        "surface-tint": "#2563eb",
+                        "on-primary-fixed": "#1e3a8a",
+                        "on-background": "#111827",
+                        "error-container": "#fee2e2",
+                        "tertiary-container": "#ffedd5",
+                        "secondary": "#374151",
+                        "primary-fixed": "#dbeafe",
+                        "surface-container-highest": "#f3f4f6",
+                        "on-tertiary": "#ffffff",
+                        "tertiary": "#ea580c",
+                        "tertiary-fixed": "#ffedd5",
+                        "on-secondary": "#ffffff",
+                        "on-primary-container": "#1e40af",
+                        "outline": "#e5e7eb",
+                        "inverse-on-surface": "#ffffff",
+                        "on-error": "#ffffff",
+                        "surface-container": "#f3f4f6",
+                        "secondary-fixed": "#f3f4f6",
+                        "primary": "#2563eb"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        "headline": ["Manrope", "sans-serif"],
+                        "display": ["Manrope", "sans-serif"],
+                        "body": ["Manrope", "sans-serif"],
+                        "label": ["Manrope", "sans-serif"]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Manrope', sans-serif;
+            background-color: #f3f4f6; /* background */
+            color: #111827; /* on-background */
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4 antialiased">
+<!-- Top App Bar (Semantic Shell - Suppressed visually as requested, but structurally present if needed. We'll stick to the focused linear flow as per guidelines) -->
+<!-- Navigation suppressed for linear/transactional intent -->
+<main class="w-full max-w-lg">
+<!-- Main Verification Card -->
+<div class="bg-surface rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.06)] overflow-hidden relative">
+<!-- Signature Texture: Subtle primary-tinted circle watermark -->
+<div class="absolute -top-16 -right-16 w-48 h-48 bg-primary rounded-full opacity-5 pointer-events-none"></div>
+<div class="p-8 md:p-10 flex flex-col items-center text-center">
+<!-- Icon Header -->
+<div class="w-20 h-20 bg-primary-container rounded-full flex items-center justify-center mb-6 shadow-sm">
+<span class="material-symbols-outlined text-primary text-4xl" style="font-variation-settings: 'FILL' 1;">
+                        mark_email_read
+                    </span>
+</div>
+<!-- Headlines -->
+<h1 class="font-headline font-extrabold text-[30px] leading-tight tracking-tight text-on-surface mb-4">
+                    Verifica tu correo
+                </h1>
+<p class="font-body text-base text-on-surface-variant mb-8 max-w-sm">
+                    Hemos enviado un enlace de verificación a tu bandeja de entrada. Por favor, sigue los pasos a continuación para activar tu cuenta.
+                </p>
+<!-- Steps List -->
+<div class="w-full bg-surface-container rounded-xl p-6 mb-8 text-left border border-outline-variant">
+<ol class="relative border-l border-outline ml-3 space-y-6">
+<li class="pl-6 relative">
+<span class="absolute -left-3 top-0.5 flex items-center justify-center w-6 h-6 bg-primary text-on-primary rounded-full font-label font-bold text-xs ring-4 ring-surface shadow-sm">
+                                1
+                            </span>
+<h3 class="font-headline font-bold text-sm text-on-surface">Abre tu aplicación de correo.</h3>
+</li>
+<li class="pl-6 relative">
+<span class="absolute -left-3 top-0.5 flex items-center justify-center w-6 h-6 bg-primary text-on-primary rounded-full font-label font-bold text-xs ring-4 ring-surface shadow-sm">
+                                2
+                            </span>
+<h3 class="font-headline font-bold text-sm text-on-surface">Busca el mensaje de:</h3>
+<p class="font-body text-sm font-semibold text-primary mt-1">noreplay@alboradakpi.firebaseapp.com</p>
+</li>
+<li class="pl-6 relative">
+<span class="absolute -left-3 top-0.5 flex items-center justify-center w-6 h-6 bg-primary text-on-primary rounded-full font-label font-bold text-xs ring-4 ring-surface shadow-sm">
+                                3
+                            </span>
+<h3 class="font-headline font-bold text-sm text-on-surface">Haz clic en el enlace de verificación.</h3>
+</li>
+<li class="pl-6 relative">
+<span class="absolute -left-3 top-0.5 flex items-center justify-center w-6 h-6 bg-primary text-on-primary rounded-full font-label font-bold text-xs ring-4 ring-surface shadow-sm">
+                                4
+                            </span>
+<h3 class="font-headline font-bold text-sm text-on-surface">Regresa aquí y presiona el botón 'Refrescar'.</h3>
+</li>
+</ol>
+</div>
+<!-- Info Box (Warning) -->
+<div class="w-full bg-tertiary-container rounded-xl p-4 mb-8 flex items-start text-left border border-tertiary-fixed-dim">
+<span class="material-symbols-outlined text-on-tertiary-container mr-3 mt-0.5" style="font-variation-settings: 'FILL' 1;">
+                        info
+                    </span>
+<p class="font-body text-sm text-on-tertiary-container font-medium">
+                        Si no encuentras el correo, por favor revisa tu bandeja de spam.
+                    </p>
+</div>
+<!-- Actions -->
+<div class="w-full flex flex-col gap-4">
+<button class="w-full bg-primary text-on-primary font-label font-bold text-base h-12 rounded-xl shadow-sm hover:bg-surface-tint active:scale-95 transition-all duration-200 flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[20px]">
+                            refresh
+                        </span>
+                        Refrescar
+                    </button>
+<button class="w-full bg-transparent text-secondary font-label font-bold text-sm h-12 rounded-xl hover:bg-surface-container transition-colors duration-200">
+                        No recibí el correo
+                    </button>
+</div>
+</div>
+</div>
+</main>
+</body></html>

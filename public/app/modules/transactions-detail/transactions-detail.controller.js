@@ -33,6 +33,17 @@ export default async function transactionsDetailController(contexto) {
   const paymentSection = document.getElementById('td-payment-section');
   const paymentMethod = document.getElementById('td-payment-method');
 
+  // --- Métodos de pago desde appConfig (fuente única) ---
+  const paymentMethods = contexto?.data?.appConfig?.moduleRegistry?.transactions?.paymentMethods || [];
+  const legacyPaymentMap = {
+    'TRANSFER': 'transfer', 'ACH': 'deposit', 'YAPPY': 'yappy', 'CASH': 'cash',
+    'CHECK': 'check', 'CARD': 'card', 'DEPOSIT': 'deposit', 'OTHER': 'other'
+  };
+  if (paymentMethod) {
+    paymentMethod.innerHTML = `<option value="">Seleccione...</option>` +
+      paymentMethods.map(m => `<option value="${m.id}">${m.label}</option>`).join('');
+  }
+
   const uploadZone = document.getElementById('td-upload-zone');
   const receiptFileInput = document.getElementById('td-receipt-file');
   const uploadPlaceholder = document.getElementById('td-upload-placeholder');
@@ -571,7 +582,7 @@ export default async function transactionsDetailController(contexto) {
       if (type === 'PAYMENT') {
         paymentSection.classList.remove('hidden');
         debtsSection.classList.remove('hidden');
-        paymentMethod.value = trans.paymentMethod || '';
+        paymentMethod.value = legacyPaymentMap[trans.paymentMethod] || trans.paymentMethod || '';
         if (currentPropertyId) {
           const preSelectedIds = (trans.appliedTo || []).map(a => a.transactionId).filter(Boolean);
           await loadDebts(currentPropertyId, preSelectedIds);

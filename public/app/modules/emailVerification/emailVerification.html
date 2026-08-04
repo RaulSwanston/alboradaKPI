@@ -1,13 +1,49 @@
-<div id="emailVerified">
-  <h2>Bienvenido</h2>
-  <p>Porfavor! <strong>revise la bandeja de entrada de su correo</strong> y siga el enlace de verificación. Si aún no ha verificado su dirección de correo electrónico siga los siguientes pasos:</p>
-  <ul>
-    <li>Abra su gestor (aplicacion) de correo con el cual se registró. No es necesario que cierre esta página aunque sí puede hacerlo.</li>
-    <li>Localize el correo de entrada: <strong>noreplay@alboradakpi.firebaseapp.com</strong> y haga click en el enlace de verificación.</li>
-    <li>Se abrirá una página que autenticará la verificación de su correo, tras unos segundos puede cerrarla.</li>
-    <li>Vuelva a esta página y haga click en el boton <strong>"refrescar"</strong>; si por alguna razón se cerro la página vuelva a iniciar sesión. Con ello ya podrá tener acceso a su panel de control.</li>
-  </ul>
-  <p class="nota"><strong>Nota:</strong> Algunas veces los correos de aplicaciones privadas suelen caer en la bandeja de spam (no deseado). porfavor revísela si no encuentra el correo en su bandeja de entrada.</p>
-  <p>Si ya a verificado su correo (email) haga click en botón refrescar.</p>
-  <a href=""><button>refrescar</button></a>
+<div id="emailVerified" class="email-verification">
+  <div class="email-verification-card">
+    <div class="email-verification-icon" data-icon="mail" aria-hidden="true"></div>
+
+    <h2 class="email-verification-title">Verifica tu correo</h2>
+    <p class="email-verification-subtitle">Hemos enviado un enlace de verificación a tu bandeja de entrada. Sigue los pasos a continuación para activar tu cuenta.</p>
+
+    <ol class="email-verification-steps">
+      <li class="ev-step">
+        <span class="ev-step-number">1</span>
+        <div class="ev-step-content">
+          <h3 class="ev-step-title">Abre tu aplicación de correo.</h3>
+        </div>
+      </li>
+      <li class="ev-step">
+        <span class="ev-step-number">2</span>
+        <div class="ev-step-content">
+          <h3 class="ev-step-title">Busca el mensaje de:</h3>
+          <p class="ev-step-from">noreplay@alboradakpi.firebaseapp.com</p>
+        </div>
+      </li>
+      <li class="ev-step">
+        <span class="ev-step-number">3</span>
+        <div class="ev-step-content">
+          <h3 class="ev-step-title">Haz clic en el enlace de verificación.</h3>
+        </div>
+      </li>
+      <li class="ev-step">
+        <span class="ev-step-number">4</span>
+        <div class="ev-step-content">
+          <h3 class="ev-step-title">Regresa aquí y presiona el botón "Refrescar".</h3>
+        </div>
+      </li>
+    </ol>
+
+    <div class="email-verification-note">
+      <svg class="ev-note-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm0 18a8 8 0 1 1 0-16 8 8 0 0 1 0 16zm-1-13h2v2h-2zm2 3v6h-2v-6z" fill="currentColor"/></svg>
+      <p>Si no encuentras el correo, por favor revisa tu bandeja de spam.</p>
+    </div>
+
+    <div class="email-verification-actions">
+      <button id="btn-refresh-email" class="ev-btn ev-btn-primary">
+        <svg class="ev-btn-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M17.65 6.35A8 8 0 1 0 19.73 14h-2.08a6 6 0 1 1-1.42-6.5L13 10h7V3z" fill="currentColor"/></svg>
+        <span class="ev-btn-label">Refrescar</span>
+      </button>
+      <button id="btn-resend-email" class="ev-btn ev-btn-secondary">No recibí el correo</button>
+    </div>
+  </div>
 </div>

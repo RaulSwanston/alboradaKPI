@@ -20,6 +20,7 @@ export default async function paymentReportController(contexto) {
   const debtsList = document.getElementById('debts-list');
   const amountInput = document.getElementById('amount');
   const dateInput = document.getElementById('paymentDate');
+  const paymentMethodSelect = document.getElementById('paymentMethod');
   const uploadZone = document.getElementById('upload-zone');
   const fileInput = document.getElementById('receipt-file');
   const filePreview = document.getElementById('file-preview');
@@ -33,9 +34,16 @@ export default async function paymentReportController(contexto) {
   let pendingDebts = [];
   let selectedDebtIds = new Set();
 
+  // --- Métodos de pago desde appConfig (fuente única) ---
+  const paymentMethods = contexto?.data?.appConfig?.moduleRegistry?.transactions?.paymentMethods || [];
+  if (paymentMethodSelect) {
+    paymentMethodSelect.innerHTML = paymentMethods.map(m =>
+      `<option value="${m.id}">${m.label}</option>`
+    ).join('');
+  }
+
   // --- Inicialización ---
   dateInput.value = new Date().toISOString().split('T')[0];
-  document.getElementById('notes').placeholder = t('paymentReport.notesPlaceholder');
 
   try {
     const userProfile = await User.getById(user.uid);

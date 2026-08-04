@@ -129,8 +129,28 @@
     "calendar": {
       "title": "Calendario Comunitario",
       "subtitle": "Eventos y actividades del condominio",
-      "sampleEvent": "Asamblea General",
-      "sampleEventDescription": "Reunión mensual de la comunidad"
+      "newEvent": "Nuevo Evento",
+      "editEvent": "Editar Evento",
+      "eventTitle": "Título",
+      "eventTitlePlaceholder": "Ej. Asamblea General, Mantenimiento de piscina...",
+      "eventType": "Tipo",
+      "eventTypeSocial": "Social",
+      "eventTypeBirthday": "Cumpleaños",
+      "eventTypeMeeting": "Reunión",
+      "eventTypeMaintenance": "Mantenimiento",
+      "eventTypeOther": "Otro",
+      "eventAllDay": "Todo el día",
+      "eventStart": "Inicio",
+      "eventEnd": "Fin",
+      "eventDescription": "Descripción",
+      "eventSave": "Guardar Evento",
+      "eventCancel": "Cancelar",
+      "eventDelete": "Eliminar",
+      "eventDeleteConfirm": "¿Eliminar este evento?",
+      "eventSaved": "Evento guardado correctamente",
+      "eventDeleted": "Evento eliminado",
+      "eventError": "Error al guardar el evento",
+      "eventDeleteError": "Error al eliminar el evento"
     }
   },
   "routes": {
@@ -189,7 +209,6 @@
     "amountHelp": "Ingresa el monto exacto que aparece en tu comprobante.",
     "dateLabel": "Fecha del Pago",
     "notesLabel": "Notas Opcionales",
-    "notesPlaceholder": "Ej: Pago adelantado de febrero, abono a multa...",
     "submit": "Enviar Reporte de Pago",
     "sending": "Enviando Reporte...",
     "gotIt": "Entendido",

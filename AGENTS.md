@@ -26,3 +26,11 @@ Para detalles específicos, consulta:
 - [Arquitectura y Flujos](./docs/architecture.md)
 - [Esquema de Datos](./docs/schema.md)
 - [Estándares y Skills](./docs/skills.md)
+
+## Alcance del Agente
+- No leer archivos fuera del workspace (`/home/raul/Proyectos/webapps/Gestión de Propiedad Horizontal en Condominios`) a menos que el usuario lo solicite explícitamente.
+- No cargar skills sin autorización explícita del usuario.
+
+## Publicación a GitHub
+- **Staging selectivo:** agregar SOLO los archivos del trabajo acordado (`git add <archivo>...`); no usar `git add .` sin revisar. El `.gitignore` excluye secretos (Firebase Admin key, `.env`, `node_modules/`, `scripts/`, `*.mjs`); verificar que ningún secreto nuevo quede rastreado.
+- **Push:** `git push github main` tras el commit. Existe también `gitlab` como remoto alternativo (`git push gitlab main`).

@@ -312,33 +312,6 @@ input[type='button'] {
   color: var(--color-text-primary);
 }
 
-.sectionView.dashboard #emailVerified {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  padding: 1em;
-  font-size: 1.2em;
-
-  & h2,
-  p,
-  ul {
-    margin: .5em;
-  }
-
-  & button {
-    color: var(--color-gurkha-100);
-    font-weight: bold;
-    background-color: var(--button-principal-background);
-  }
-}
-
-.nota {
-  border-left: solid 5px var(--color-gurkha-200);
-  padding-left: .5em;
-}
-
 .dashboard-main {
   display: flex;
   flex-direction: column;

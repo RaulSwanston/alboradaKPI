@@ -4,4 +4,59 @@
         <p class="calendar-module-subtitle"><!-- ::i18n.modules.calendar.subtitle --></p>
     </div>
     <div id="calendar-root" class="calendar-module-container"></div>
+
+    <!-- Modal de creación/edición de eventos -->
+    <div id="calendar-event-modal" class="calendar-modal-overlay hidden" role="dialog" aria-modal="true">
+        <div class="calendar-modal-content">
+            <div class="calendar-modal-header">
+                <h3 id="calendar-modal-title" class="calendar-modal-title"><!-- ::i18n.modules.calendar.newEvent --></h3>
+                <button type="button" class="calendar-modal-close" id="calendar-modal-close" aria-label="Close">&times;</button>
+            </div>
+            <form id="calendar-event-form" class="calendar-event-form" novalidate>
+                <div class="calendar-form-group">
+                    <label class="calendar-form-label" for="calendar-field-title"><!-- ::i18n.modules.calendar.eventTitle --></label>
+                    <input type="text" id="calendar-field-title" class="calendar-form-input" maxlength="120" required>
+                </div>
+                <div class="calendar-form-row">
+                    <div class="calendar-form-group">
+                        <label class="calendar-form-label" for="calendar-field-type"><!-- ::i18n.modules.calendar.eventType --></label>
+                        <select id="calendar-field-type" class="calendar-form-select">
+                            <option value="social"><!-- ::i18n.modules.calendar.eventTypeSocial --></option>
+                            <option value="birthday"><!-- ::i18n.modules.calendar.eventTypeBirthday --></option>
+                            <option value="meeting"><!-- ::i18n.modules.calendar.eventTypeMeeting --></option>
+                            <option value="maintenance"><!-- ::i18n.modules.calendar.eventTypeMaintenance --></option>
+                            <option value="other"><!-- ::i18n.modules.calendar.eventTypeOther --></option>
+                        </select>
+                    </div>
+                    <div class="calendar-form-group calendar-form-all-day">
+                        <label class="calendar-checkbox" for="calendar-field-allday">
+                            <input type="checkbox" id="calendar-field-allday">
+                            <span><!-- ::i18n.modules.calendar.eventAllDay --></span>
+                        </label>
+                    </div>
+                </div>
+                <div class="calendar-form-row">
+                    <div class="calendar-form-group">
+                        <label class="calendar-form-label" for="calendar-field-start"><!-- ::i18n.modules.calendar.eventStart --></label>
+                        <input type="datetime-local" id="calendar-field-start" class="calendar-form-input" required>
+                    </div>
+                    <div class="calendar-form-group">
+                        <label class="calendar-form-label" for="calendar-field-end"><!-- ::i18n.modules.calendar.eventEnd --></label>
+                        <input type="datetime-local" id="calendar-field-end" class="calendar-form-input">
+                    </div>
+                </div>
+                <div class="calendar-form-group">
+                    <label class="calendar-form-label" for="calendar-field-description"><!-- ::i18n.modules.calendar.eventDescription --></label>
+                    <textarea id="calendar-field-description" class="calendar-form-input calendar-form-textarea" rows="3" maxlength="1000"></textarea>
+                </div>
+                <div class="calendar-modal-actions">
+                    <button type="button" class="calendar-btn calendar-btn-danger" id="calendar-btn-delete"><!-- ::i18n.modules.calendar.eventDelete --></button>
+                    <div class="calendar-modal-actions-right">
+                        <button type="button" class="calendar-btn calendar-btn-secondary" id="calendar-btn-cancel"><!-- ::i18n.modules.calendar.eventCancel --></button>
+                        <button type="submit" class="calendar-btn calendar-btn-primary" id="calendar-btn-save"><!-- ::i18n.modules.calendar.eventSave --></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 </section>

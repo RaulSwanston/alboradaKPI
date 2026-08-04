@@ -22,6 +22,17 @@ export const appConfig = {
         { id: 'view_all', labelKey: 'configManager.capabilities.transactions.viewAll' },
         { id: 'approve_payment', labelKey: 'configManager.capabilities.transactions.approve' },
         { id: 'manual_charge', labelKey: 'configManager.capabilities.transactions.manualCharge' }
+      ],
+      // Métodos de pago aceptados. Fuente única para paymentReport (residente)
+      // y transactions-detail (admin). Editable a futuro desde configManager.
+      paymentMethods: [
+        { id: 'transfer', label: 'Transferencia' },
+        { id: 'deposit', label: 'Depósito' },
+        { id: 'cash', label: 'Efectivo' },
+        { id: 'check', label: 'Cheque' },
+        { id: 'card', label: 'Tarjeta' },
+        { id: 'yappy', label: 'Yappy' },
+        { id: 'other', label: 'Otro' }
       ]
     },
     properties: {
