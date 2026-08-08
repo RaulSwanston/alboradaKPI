@@ -1,0 +1,77 @@
+@import url("/src/libs/apexcharts/dist/apexcharts.css");
+
+.apex-charts-module {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.apex-charts-tabs {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.apex-charts-tab {
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: 0.8125rem;
+  font-weight: 700;
+  padding: 0.5rem 1.25rem;
+  border-radius: 0.65rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
+}
+
+.apex-charts-tab:hover {
+  border-color: var(--color-kaitoke-green-500);
+  color: var(--color-kaitoke-green-600);
+}
+
+.apex-charts-tab.is-active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-text-on-primary);
+}
+
+.apex-charts-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.apex-chart-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  box-shadow: 0 0.25rem 0.75rem rgba(31, 31, 20, 0.08);
+  padding: 1.25rem;
+}
+
+.apex-chart-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.apex-chart-card-title {
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+}
+
+.apex-chart-container {
+  width: 100%;
+}
+
+.apex-charts-empty {
+  color: var(--color-text-secondary);
+  font-size: 0.875rem;
+  text-align: center;
+  padding: 2rem 1rem;
+  border: 1px dashed var(--color-border);
+  border-radius: 0.75rem;
+}

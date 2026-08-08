@@ -35,6 +35,192 @@ export const appConfig = {
         { id: 'other', label: 'Otro' }
       ]
     },
+    // Gráficos ApexCharts (configuración centralizada).
+    // Donde se coloque ::module.apexCharts se renderizan los gráficos aquí definidos,
+    // agrupados en pestañas por público (audience: 'admin' | 'resident').
+    // dataSource.method → método del modelo Analytics que alimenta el gráfico.
+    apexCharts: {
+      charts: [
+        // ----- Tab Administración -----
+        {
+          id: 'flujo-caja',
+          audience: 'admin',
+          title: 'Flujo de Caja Mensual',
+          type: 'bar',
+          height: 320,
+          dataSource: { method: 'getCashFlow', params: { months: 6 } },
+          options: {
+            dataLabels: { enabled: false },
+            colors: ['#28bf63', '#d55e65']
+          }
+        },
+        {
+          id: 'recaudacion-facturacion',
+          audience: 'admin',
+          title: 'Recaudación vs Facturación',
+          type: 'bar',
+          height: 320,
+          dataSource: { method: 'getCollectionRate', params: { months: 6 } },
+          options: {
+            dataLabels: { enabled: false },
+            colors: ['#1b9e4e', '#e0b400']
+          }
+        },
+        {
+          id: 'unidades-salud',
+          audience: 'admin',
+          title: 'Unidades al día vs en mora',
+          type: 'donut',
+          height: 320,
+          dataSource: { method: 'getUnitsHealth', params: {} },
+          options: {
+            colors: ['#28bf63', '#d55e65'],
+            legend: { position: 'bottom' }
+          }
+        },
+        {
+          id: 'top-deudores',
+          audience: 'admin',
+          title: 'Top Deudores',
+          type: 'bar',
+          height: 320,
+          dataSource: { method: 'getTopDebtors', params: { top: 6 } },
+          options: {
+            plotOptions: { bar: { horizontal: true, barHeight: '45%' } },
+            dataLabels: { enabled: false },
+            colors: ['#d55e65']
+          }
+        },
+        {
+          id: 'saldos-favor',
+          audience: 'admin',
+          title: 'Saldos a Favor por Unidad',
+          type: 'bar',
+          height: 320,
+          dataSource: { method: 'getOverpayments', params: { top: 6 } },
+          options: {
+            plotOptions: { bar: { horizontal: true, barHeight: '45%' } },
+            dataLabels: { enabled: false },
+            colors: ['#e0b400']
+          }
+        },
+        {
+          id: 'metodos-pago',
+          audience: 'admin',
+          title: 'Cobros por Método de Pago',
+          type: 'donut',
+          height: 320,
+          dataSource: { method: 'getPaymentMethodDistribution', params: { months: 12 } },
+          options: {
+            legend: { position: 'bottom' }
+          }
+        },
+        {
+          id: 'ingresos-concepto',
+          audience: 'admin',
+          title: 'Ingresos por Concepto',
+          type: 'donut',
+          height: 320,
+          dataSource: { method: 'getIncomeByConcept', params: { months: 12 } },
+          options: {
+            legend: { position: 'bottom' }
+          }
+        },
+        {
+          id: 'gastos-categoria',
+          audience: 'admin',
+          title: 'Gastos por Categoría',
+          type: 'donut',
+          height: 320,
+          dataSource: { method: 'getExpensesByCategory', params: { months: 12 } },
+          options: {
+            legend: { position: 'bottom' }
+          }
+        },
+        {
+          id: 'estados-reportes',
+          audience: 'admin',
+          title: 'Estados de Reportes de Pago',
+          type: 'donut',
+          height: 320,
+          dataSource: { method: 'getPaymentReportStatus', params: {} },
+          options: {
+            legend: { position: 'bottom' }
+          }
+        },
+        {
+          id: 'estados-solicitudes',
+          audience: 'admin',
+          title: 'Estados de Solicitudes de Servicio',
+          type: 'donut',
+          height: 320,
+          dataSource: { method: 'getServiceRequestStatus', params: {} },
+          options: {
+            legend: { position: 'bottom' }
+          }
+        },
+        // ----- Tab Comunidad (residentes) -----
+        {
+          id: 'mi-estado',
+          audience: 'resident',
+          title: 'Mi Estado de Cuenta',
+          type: 'donut',
+          height: 320,
+          dataSource: { method: 'getMyBalance', params: {} },
+          options: {
+            colors: ['#d55e65', '#28bf63'],
+            legend: { position: 'bottom' }
+          }
+        },
+        {
+          id: 'salud-comunidad',
+          audience: 'resident',
+          title: 'Salud Financiera de la Comunidad',
+          type: 'radialBar',
+          height: 320,
+          dataSource: { method: 'getCommunityHealth', params: {} },
+          options: {
+            labels: ['Unidades al día'],
+            colors: ['#28bf63']
+          }
+        },
+        {
+          id: 'inversion-comunidad',
+          audience: 'resident',
+          title: '¿En qué se invierte la comunidad?',
+          type: 'donut',
+          height: 320,
+          dataSource: { method: 'getCommunityExpenses', params: { months: 12 } },
+          options: {
+            legend: { position: 'bottom' }
+          }
+        },
+        {
+          id: 'servicios-solicitados',
+          audience: 'resident',
+          title: 'Servicios más Solicitados',
+          type: 'bar',
+          height: 320,
+          dataSource: { method: 'getTopServices', params: { top: 6 } },
+          options: {
+            dataLabels: { enabled: false },
+            colors: ['#1b9e4e']
+          }
+        },
+        {
+          id: 'eventos-mes',
+          audience: 'resident',
+          title: 'Eventos Comunitarios por Mes',
+          type: 'bar',
+          height: 320,
+          dataSource: { method: 'getEventsByMonth', params: { months: 6 } },
+          options: {
+            dataLabels: { enabled: false },
+            colors: ['#d55e65']
+          }
+        }
+      ]
+    },
     properties: {
       capabilities: [
         { id: 'view_all', labelKey: 'configManager.capabilities.properties.viewAll' },

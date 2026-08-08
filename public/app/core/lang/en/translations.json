@@ -233,6 +233,15 @@
       "eventDeleted": "Event deleted",
       "eventError": "Error saving event",
       "eventDeleteError": "Error deleting event"
+    },
+    "apexCharts": {
+      "empty": "No charts configured",
+      "noData": "Not enough data for this chart",
+      "renderError": "Error rendering charts",
+      "tabs": {
+        "admin": "Administration",
+        "resident": "Community"
+      }
     }
   },
   "paymentReport": {

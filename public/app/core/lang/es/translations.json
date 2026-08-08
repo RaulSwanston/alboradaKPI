@@ -151,6 +151,15 @@
       "eventDeleted": "Evento eliminado",
       "eventError": "Error al guardar el evento",
       "eventDeleteError": "Error al eliminar el evento"
+    },
+    "apexCharts": {
+      "empty": "No hay gráficos configurados",
+      "noData": "Sin datos suficientes para este gráfico",
+      "renderError": "Error al renderizar los gráficos",
+      "tabs": {
+        "admin": "Administración",
+        "resident": "Comunidad"
+      }
     }
   },
   "routes": {
