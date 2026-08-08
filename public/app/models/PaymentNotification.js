@@ -157,13 +157,13 @@ export default class PaymentNotification {
           amount: a.amount,
           description: a.description || ''
         })),
+        overpayment: notif.excessAmount || 0,
         createdAt: serverTimestamp(),
         metadata: {
           paymentNotificationId: id,
           receiptUrl: notif.receiptUrl || null,
           adminReviewedBy: adminData.uid,
-          adminReviewedByName: adminData.name,
-          excessAmount: notif.excessAmount || 0
+          adminReviewedByName: adminData.name
         }
       });
 

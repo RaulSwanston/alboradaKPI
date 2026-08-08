@@ -1,6 +1,44 @@
 # Memoria de Sesiones - Bitácora de Proyecto
 
-## 📌 RETOMA AQUÍ (última sesión: 4 de Agosto de 2026)
+## 📌 RETOMA AQUÍ (última sesión: 6-7 de Agosto de 2026)
+
+**Estado:** Reconciliación de pagos (F1–F3/F4 del plan `docs/plan-reconciliacion-pagos.md`) avanzada. Procesados y **aplicados a Firestore**: Feb 2025 (histórico), **Marzo y Abril 2025**. Pendiente: **enero 2025** y mayo 2025 → junio 2026.
+
+### Flujo de trabajo (todo local en `scripts/`)
+1. `analyze_month.js <periodo>` — lee `scripts/data/allTransactions_2025-01_2026-06.json`, cruza PAYMENT↔FEE por descripción, genera `data/reconcile/<periodo>.json` (auto/revisar/excluir/yaReconciliado/extra).
+2. `build_write_batch_month.js <periodo>` — genera `data/reconcile/write_batch_<periodo>.json` (paymentUpdates con appliedTo+overpayment, feeUpdates con paidBy+pendingAmount).
+3. `apply_reconciliation_month.js <periodo> --commit` — escribe a Firestore en lotes de 400, con retry ante cuota (código 8/14). Sin `--commit` = dry-run. **Usa el snapshot local, sin lecturas a Firestore.**
+
+### Decisiones y hallazgos de esta sesión
+- **Campos de escritura (únicos, el resto intacto):** PAYMENT → `appliedTo` + `overpayment` (raíz, no `metadata.excessAmount`); FEE → `paidBy` + `pendingAmount`. El campo `amount` es **inviolable**.
+- **`overpayment` raíz:** decisión del cliente. Se cambió `PaymentNotification.js:166` (era `metadata.excessAmount`) a `overpayment: notif.excessAmount || 0` a nivel raíz de la transacción. `excessAmount` sigue viviendo en `paymentNotifications`.
+- **Acumulación de estado local:** `scripts/lib/accumulated_state.js` — `applyPriorBatches(all, targetPeriod)` aplica en memoria los batches de meses anteriores (que aun no están en Firestore) para que la regla "hacia atrás" y `pendingAmount` reflejen el estado real. Integrado en `analyze_month.js` y `build_write_batch_month.js`.
+- **Extras por periodo:** bug corregido — los `EXTRA_PAYMENT_UPDATES` (ajustes de pagos de otros periodos) estaban hardcodeados y se filtraban a **todos** los meses. Ahora `EXTRA_PAYMENT_UPDATES_BY_PERIOD[periodo]` (solo marzo tiene).
+- **`MANUAL_EXCLUDE`** (pag. no tocar por decisión humana) y **`MANUAL_OVERRIDES_2025_04`** (overrides por mes vía `Object.assign`).
+- **Casa 271 (Eneida):** patrón confirmado — paga $20 por cuota de $15 → **$5 overpayment en todos los meses** (ene–abr). Overrides en feb/mar/abr.
+- **Caso D-01 (Dayra Flores):** corrección aplicada a Firestore vía `scripts/correct_d01.js` — el pago `2025-02_D-01_PAYMENT_16810` ($45) quedó cubriendo **Ene+Feb+Mar** (antes Feb+Mar+Abr) y el de marzo `17046` ($30) cubre **Abr+May**. Sin doble pago.
+
+### Subido a Firestore (sesión 6-7 ago)
+- Corrección D-01 (3 docs).
+- Batch **marzo 2025**: 665 ops (232 pagos + 436 fees), $6,725 aplicado.
+- Batch **abril 2025**: 356 ops (144 pagos + 212 fees), $3,225 aplicado + $5 overpayment (271).
+- Sin tocar (revisión manual, `docs/revision-manual-reconciliacion.md`): pago Cueto `2025-04_*_PAYMENT_0` ($60, casa 002) y depósitos de cuenta de ahorros.
+
+### Estado real Firestore (FEEs con paidBy / total 358 por mes)
+- Ene 2025: 145 — **resuelto** (no hay pagos con periodo 2025-01; los que cubren enero están registrados en feb/mar y ya reconciliados)
+- Feb 2025: 226
+- Mar 2025: 205
+- Abr 2025: 126
+
+### Pendiente
+- Procesar **mayo → junio 2026** mes por mes con revisión humana. Enero/feb/mar/abr ya están reconciliados.
+- Mantener `docs/revision-manual-reconciliacion.md` con los casos manuales.
+
+**Convenciones recordar (AGENTS.md):** staging selectivo (nunca `git add .`), push a `github main` (existe `gitlab` como alternativo), secretos excluidos por `.gitignore`, sintaxis JS validada con `node --check` como `.mjs`. `scripts/` está en `.gitignore` (no se commitea).
+
+---
+
+## Entrada previa: 4 de Agosto de 2026
 
 **Estado global:** Backlog de 8 tareas del plan **CERRADO y commiteado** (commit `cdd62d3` pusheado a `github main`). T4, T1, T5, T6, T2, T8, T3 y T7 completadas.
 
