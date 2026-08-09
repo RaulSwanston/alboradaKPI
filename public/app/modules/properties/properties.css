@@ -257,5 +257,12 @@
     display: block;
 }
 
+/* --- Ocupar ambas columnas del grid padre [data-content="dashboard"] en escritorio --- */
+@media (min-width: 992px) {
+  [data-content="dashboard"] > .module-properties {
+    grid-column: 1 / -1;
+  }
+}
+
 
 

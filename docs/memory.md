@@ -1,6 +1,34 @@
 # Memoria de Sesiones - Bitácora de Proyecto
 
-## 📌 RETOMA AQUÍ (última sesión: 6-7 de Agosto de 2026)
+## 📌 RETOMA AQUÍ (última sesión: 8 de Agosto de 2026)
+
+**Estado:** Sesión de UI del dashboard. Grid de 2 columnas en dashboard, headers de módulos homologados al estilo calendar, ajustes de tarjetas de actividad reciente. **Pendiente de verificación en navegador.**
+
+### Resumen de cambios
+- **DPA (Contrato de Encargo de Tratamiento de Datos):** Creado `public/src/doc/legal/contrato-encargo-tratamiento-datos.md` — Ley 81 de 2019 + Decreto Ejecutivo 285 de 2021 (Panamá), adaptado a la arquitectura real (Firebase/Firestore/Auth/Storage). Roles: Condominio=Responsable, empresa operadora=Encargado, Google=subencargado. Completo con Anexos I (datos/finalidad), II (medidas seguridad), III (subencargados). Contiene placeholders `[corchetes]` para completar. Pendiente revisión por abogado.
+- **Grid dashboard (`root.css:321-332`):** `[data-content="dashboard"] { display:grid; gap:2rem; grid-template-columns: 1fr; }` + `@media (min-width:992px) { repeat(2, 1fr) }`. Aplica a TODAS las vistas dashboard (comparten el `data-content`); config.html (header) y transactions podrían requerir ajuste (`grid-column: 1/-1`).
+- **`financialSummary.css`:** `.financial-summary-module { grid-column: 1 / -1 }` (ocupa toda la fila).
+- **`quickActions.css`:** `.quick-actions-module { grid-column: 1 / -1 }`.
+- **Headers de módulos homologados al estilo calendar** (header en columna, gap .25rem, título 1.5rem/800/`--color-text-primary`, subtítulo .875rem/`--color-text-secondary`):
+  - `financialSummary.html` + `.fs-subtitle` (`.fs-header` ahora columna).
+  - `quickActions.html` + `.qa-header`/`.qa-subtitle`; `.qa-title` pasó de uppercase .875rem a 1.5rem/800.
+  - `recentActivity.html` — título migrado de texto hardcodeado "Actividad Reciente" a `::i18n.recentActivity.title` + `.recent-activity-subtitle`.
+- **i18n (es/en):** nuevas claves `subtitle` en `financialSummary`, `quickActions`, `recentActivity`. En `en` se creó el bloque `quickActions` (antes no existía → mostraba clave cruda). JSON validado con `node -e JSON.parse`.
+- **Tarjetas actividad reciente (`recentActivity.css`):**
+  - Fondo de `.activity-card`: `var(--color-surface)` → `#ffffff`.
+  - `.activity-card-left { flex: 3 1 0; min-width: 0 }` (3/4) y `.activity-card-right { flex: 1 1 0 }` (1/4) — misma fila. Se descartó el wrapper `.activity-card-inner` (lo probamos y el usuario lo eliminó manualmente; quedó huérfana la clase en CSS, pendiente de limpiar).
+  - **Nota UX:** `text-align: right` no mueve el ojo (contenedor flex); se requiere `justify-content: flex-end` en `.activity-card-right` para alinear el eye a la derecha. Aún no confirmado si se aplicó.
+- **Borde interno del calendario:** viene del tema schedule-x (`--sx-border: 1px solid var(--sx-color-outline-variant)`): `#c4c7c5` claro / `#444746` oscuro. El `.calendar-module-container` no tiene borde propio.
+
+### Pendiente
+- Limpiar `.activity-card-inner` huérfano en `recentActivity.css` (si aplica tras la edición manual).
+- Aplicar/verificar `justify-content: flex-end` en `.activity-card-right`.
+- Verificar en navegador: grid 2 columnas escritorio, headers de módulos, tarjetas de actividad con eye alineado a la derecha.
+- Revisar si `config.html` (header) y otras vistas dashboard necesitan `grid-column: 1 / -1`.
+
+---
+
+## Entrada previa: 6-7 de Agosto de 2026
 
 **Estado:** Reconciliación de pagos (F1–F3/F4 del plan `docs/plan-reconciliacion-pagos.md`) avanzada. Procesados y **aplicados a Firestore**: Feb 2025 (histórico), **Marzo y Abril 2025**. Pendiente: **enero 2025** y mayo 2025 → junio 2026.
 

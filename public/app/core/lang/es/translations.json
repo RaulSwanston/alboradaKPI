@@ -11,6 +11,7 @@
   },
   "financialSummary": { 
     "title": "Resumen Financiero",
+    "subtitle": "Resumen general de saldos, cobros y estado financiero del condominio",
     "totalReceivable": "Cuentas por Cobrar",
     "creditBalance": "Saldo a Favor",
     "pastDue": "Deuda Atrasada",
@@ -36,12 +37,14 @@
     "requestSent": "Solicitud de \"{conceptName}\" enviada. El administrador la revisará pronto.",
     "requestError": "Error al enviar la solicitud. Intenta de nuevo."
   },
-  "recentActivity": { "title": "Actividad Reciente" },
+  "recentActivity": { "title": "Actividad Reciente", "subtitle": "Últimos movimientos registrados en el condominio" },
   "navigation": {
     "dashboard": "Panel",
     "financialSummary": "Resumen Financiero",
     "transactions": "Transacciones",
     "properties": "Propiedades",
+    "events": "Eventos",
+    "providers": "Proveedores",
     "services": "Servicios",
     "residents": "Residentes",
     "requests": "Solicitudes",
@@ -58,6 +61,13 @@
     "transactionDetail": "Detalle de Transacción"
   },
   "modules": {
+    "providers": {
+      "title": "Proveedores",
+      "subtitle": "Directorio de proveedores del condominio",
+      "total": "Total de Proveedores",
+      "loading": "Cargando proveedores...",
+      "empty": "No se encontraron proveedores."
+    },
     "transactions": {
       "netBalance": "Balance Neto del Periodo",
       "searchPlaceholder": "Buscar por descripción o unidad...",
@@ -170,6 +180,8 @@
     "/dashboard/requests": "/panel/solicitudes",
     "/dashboard/profile": "/panel/perfil",
     "/dashboard/notifications": "/panel/notificaciones",
+    "/dashboard/events": "/eventos",
+    "/dashboard/providers": "/proveedores",
     "/residents": "/residentes",
     "/dashboard/payments/report": "/panel/pagos/reportar",
     "/dashboard/payments/history": "/panel/pagos/mis-reportes",
@@ -178,6 +190,7 @@
   },
   "quickActions": {
     "title": "Acciones Rápidas",
+    "subtitle": "Atajos a las funciones más utilizadas",
     "reportPayment": "Reportar Pago",
     "approvePayments": "Aprobar Pagos",
     "newResident": "Nuevo Residente",

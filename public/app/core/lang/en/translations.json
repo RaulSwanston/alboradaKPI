@@ -9,7 +9,7 @@
       "pab": "Panamanian Balboa (PAB)"
     }
   },
-  "financialSummary": { "title": "Financial Summary" },
+  "financialSummary": { "title": "Financial Summary", "subtitle": "General overview of balances, charges and the condominium's financial status" },
   "services": {
     "noProperty": "You do not have an associated unit. Ask the administrator to link you to a property.",
     "loginRequired": "You must log in to request services.",
@@ -17,7 +17,8 @@
     "requestSent": "Request for \"{conceptName}\" sent. The administrator will review it shortly.",
     "requestError": "Error sending the request. Try again."
   },
-  "recentActivity": { "title": "Recent Activity" },
+  "recentActivity": { "title": "Recent Activity", "subtitle": "Latest movements recorded in the condominium" },
+  "quickActions": { "title": "Quick Actions", "subtitle": "Shortcuts to the most used features" },
   "configManager": { 
     "title": "System Configuration",
     "tabs": {
@@ -273,5 +274,40 @@
     "invalidImage": "Please select a valid image.",
     "requiredReceipt": "You must attach the payment receipt.",
     "requiredProperty": "Please select a unit."
+  },
+  "navigation": {
+    "dashboard": "Dashboard",
+    "financialSummary": "Financial Summary",
+    "transactions": "Transactions",
+    "properties": "Properties",
+    "events": "Events",
+    "providers": "Providers",
+    "services": "Services",
+    "residents": "Residents",
+    "requests": "Requests",
+    "catalog": "Catalog",
+    "reportPayment": "Report Payment",
+    "paymentHistory": "My Reports",
+    "approvePayments": "Approve Payments",
+    "notifications": "Notifications",
+    "settings": "Settings",
+    "profile": "My Profile",
+    "systemSettings": "System Settings",
+    "home": "Home",
+    "propertyDetail": "Property Detail",
+    "transactionDetail": "Transaction Detail"
+  },
+  "modules": {
+    "providers": {
+      "title": "Providers",
+      "subtitle": "Condominium provider directory",
+      "total": "Total Providers",
+      "loading": "Loading providers...",
+      "empty": "No providers found."
+    }
+  },
+  "routes": {
+    "/dashboard/events": "/events",
+    "/dashboard/providers": "/providers"
   }
 }

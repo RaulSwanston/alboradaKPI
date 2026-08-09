@@ -318,6 +318,34 @@ input[type='button'] {
   gap: 2rem;
 }
 
+[data-content="dashboard"] {
+  display: grid;
+  gap: 2rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 25rem), 1fr));
+}
+
+@media (min-width: 992px) {
+  [data-content="dashboard"] {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+  }
+}
+
+@media (min-width: 992px) {
+  .dashboard-summary {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr);
+    grid-template-areas:
+      "summary  summary"
+      "actions  actions"
+      "activity calendar"
+      "charts   charts";
+  }
+  .dashboard-summary .financial-summary-module  { grid-area: summary; }
+  .dashboard-summary .quick-actions-module      { grid-area: actions; }
+  .dashboard-summary .recent-activity-section   { grid-area: activity; }
+  .dashboard-summary .calendar-module           { grid-area: calendar; }
+  .dashboard-summary .apex-charts-module        { grid-area: charts; }
+}
+
 
 
 .dashboard-summary-card,

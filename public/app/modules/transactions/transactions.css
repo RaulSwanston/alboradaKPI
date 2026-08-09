@@ -729,3 +729,10 @@
   .receipt-actions { display: none; }
   body > *:not(#receipt-modal) { display: none; }
 }
+
+/* --- Ocupar ambas columnas del grid padre [data-content="dashboard"] en escritorio --- */
+@media (min-width: 992px) {
+  [data-content="dashboard"] > .module-transactions {
+    grid-column: 1 / -1;
+  }
+}

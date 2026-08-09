@@ -1,6 +1,6 @@
 import 'temporal-polyfill/global';
 
-import { createCalendar, createViewMonthGrid, createViewWeek, createViewDay } from '../../../src/libs/schedule-x/calendar/dist/core.js';
+import { createCalendar, createViewMonthGrid, createViewWeek, createViewMonthAgenda, createViewDay } from '../../../src/libs/schedule-x/calendar/dist/core.js';
 import { createEventModalPlugin } from '../../../src/libs/schedule-x/event-modal/dist/core.js';
 import CommunityEvent from '../../models/CommunityEvent.js';
 import { getCurrentLang, t } from '../../core/i18n.js';
@@ -75,7 +75,7 @@ export default async function calendar(contexto) {
     {
       locale,
       timezone,
-      views: [createViewMonthGrid(), createViewWeek(), createViewDay()],
+      views: [createViewMonthGrid(), createViewWeek(), createViewMonthAgenda(), createViewDay()],
       callbacks: {
         async fetchEvents(range) {
           try {

@@ -3,15 +3,28 @@
 .quick-actions-module {
     padding: 0.5rem 0;
     width: 100%;
+    grid-column: 1 / -1;
+}
+
+.qa-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 1.5rem;
 }
 
 .qa-title {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--color-text-primary);
+    letter-spacing: -0.02em;
+    margin: 0;
+}
+
+.qa-subtitle {
     font-size: 0.875rem;
-    font-weight: 700;
     color: var(--color-text-secondary);
-    margin-bottom: 1rem;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    margin: 0;
 }
 
 .qa-grid {

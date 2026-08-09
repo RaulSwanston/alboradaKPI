@@ -25,6 +25,8 @@ router
   .get('/dashboard/transactions', 'dashboard/transactions', [sessionGuard])
   .get('/dashboard/transactions/:id', 'dashboard/transactions-detail', [sessionGuard])
   .get('/dashboard/notifications', 'dashboard/notifications', [sessionGuard])
+  .get('/dashboard/events', 'dashboard/events', [sessionGuard])
+  .get('/dashboard/providers', 'dashboard/providers', [sessionGuard])
   .get('/residents', 'dashboard/residents', [sessionGuard])
   .get('/import-residents', 'dashboard/importResidents', [sessionGuard])
   .get('/import-properties', 'dashboard/importProperties', [sessionGuard])

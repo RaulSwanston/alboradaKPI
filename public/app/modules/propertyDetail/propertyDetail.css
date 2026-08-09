@@ -666,3 +666,12 @@
     font-weight: 800;
   }
 }
+
+/* --- Ocupar ambas columnas del grid padre [data-content="dashboard"] en escritorio --- */
+@media (min-width: 992px) {
+  [data-content="dashboard"] > .property-detail-wrapper {
+    grid-column: 1 / -1;
+    max-width: none;
+    margin: 0;
+  }
+}

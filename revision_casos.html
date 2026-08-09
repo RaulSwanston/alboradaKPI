@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8">
+<title>Revisión manual — Reconciliación de pagos</title>
+<style>
+  body{font-family:system-ui,Segoe UI,Arial,sans-serif;margin:20px;color:#1a1a2e;background:#f4f6fb}
+  h1{font-size:20px} h2{font-size:16px;margin-top:32px;border-bottom:2px solid #445;padding-bottom:4px}
+  .count{color:#666;font-size:12px;margin-bottom:8px}
+  table{border-collapse:collapse;width:100%;font-size:12px;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.08)}
+  th{background:#2a2a4a;color:#fff;padding:6px 8px;text-align:left;position:sticky;top:0}
+  td{border:1px solid #ddd;padding:4px 6px;vertical-align:top}
+  tr:nth-child(even){background:#f0f2fa}
+  .editable{background:#fffbe6;min-width:140px}
+  .editable:focus{outline:2px solid #f0a500;background:#fff}
+  .ok{background:#e6f7e6} .pend{background:#fff}
+  .voucher{font-family:monospace} .id{font-family:monospace;color:#888;font-size:10px}
+  .flag{color:#b00020;font-size:11px}
+  .nota{font-size:11px;color:#555}
+  input[type=checkbox]{transform:scale(1.2)}
+  .controls{margin:10px 0;font-size:12px}
+  button{padding:5px 10px;margin-right:6px;cursor:pointer;border:1px solid #2a2a4a;background:#2a2a4a;color:#fff;border-radius:4px}
+  .grupo{border:1px solid #2a2a4a;background:#fff;padding:10px;margin:10px 0;border-radius:6px}
+  .grupo h3{margin:0 0 6px;font-size:13px;color:#2a2a4a}
+  .grupo .desc{margin:0;font-size:12px;color:#333}
+</style></head>
+<body>
+<h1>Casos a revisar manualmente — Reconciliación (mayo 2025 → junio 2026)</h1>
+<div class="controls">
+  <button onclick="document.querySelectorAll('input[type=checkbox].marcar').forEach(c=>c.checked=true)">Marcar todos como resueltos</button>
+  <button onclick="document.querySelectorAll('input[type=checkbox].marcar').forEach(c=>c.checked=false)">Desmarcar todos</button>
+  <button onclick="descargarCSV()">Descargar decisiones (CSV)</button>
+</div>
+<div class="count">Confusos: 26 · Dobles pagos: 248 · Total: 274</div>
+
+<h2>Análisis Grupo 1 — JAZMIN MENDOZA (Casa 170)</h2>
+<div class="grupo">
+<p class="desc">Total pagado 2025: <b>$75</b> = 5 cuotas (enero → mayo 2025). Desde mayo no registra más pagos.
+<ol class="desc">
+  <li>06/05/2025 — <b>$20</b> "mes de enero y abona febrero" → enero completo ($15) + abono febrero ($5).</li>
+  <li>06/19/2025 — <b>$20</b> sin descripción clara → desglose sugerido: $10 a febrero (completa) + $10 a marzo.</li>
+  <li>09/04/2025 — <b>$10</b> "MARZO $5 Y ABRIL $5" → marzo completa ($5) + abril ($5).</li>
+  <li>10/15/2025 — <b>$25</b> "ABRIL Y MAYO" → abril completa ($10) + mayo ($15).</li>
+</ol></p>
+</div><h2>1) Casos confusos (26)</h2><div class="count">Revisar uno a uno. Decidir appliedTo correcto.</div>
+<table id="t-confusos"><thead><tr>
+<th>✓</th><th>Mes</th><th>Casa</th><th>Voucher</th><th>Monto</th><th>Descripción (nombre)</th><th>Motivo / flags</th><th>appliedTo propuesto</th><th>Decisión</th><th>Nota</th><th>ID</th>
+</tr></thead><tbody><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-06</td><td>170</td><td class="voucher">17398</td><td>$20</td>
+  <td>YAPPY DE JAZMIN MENDOZA CASTRILLON mes de enero y abona febrero</td><td class="flag">monto $20 no múltiplo de $15 | meses dichos (2) para 1 prop(s) ≠ monto ($20 = 1 meses) | monto aplicado $30 > pago $20</td><td>2025-01, 2025-02</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">9NGJV51VoKAUXKtSz4V2</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-06</td><td>170</td><td class="voucher">17463</td><td>$20</td>
+  <td>YAPPY BG DE JAZMIN MENDOZA CASTRILLON POR Casa 170</td><td class="flag">monto $20 no múltiplo de $15 | sin meses ni propiedad utilizable, o monto no múltiplo de $15</td><td></td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">lkwMJicQNaPHtO2nkOKQ</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-07</td><td>030</td><td class="voucher">17548</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE ALIZA EMERITA JIMENEZ - JULIO Y AGOSTO</td><td class="flag">meses dichos (2) para 1 prop(s) ≠ monto ($15 = 1 meses) | monto aplicado $30 > pago $15</td><td>2025-07, 2025-08</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">4pniXgUHj1npY6QgNEbN</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-07</td><td>065</td><td class="voucher">17554</td><td>$60</td>
+  <td>YAPPY BG DE VIELKA GISELA MORAN MC COY de LOPEZ POR Casa 65 familia Lopez pago de Junio julio y agosto</td><td class="flag">meses dichos (3) para 1 prop(s) ≠ monto ($60 = 4 meses) | sobrante $15 (no aplicado)</td><td>2025-06, 2025-07, 2025-08</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">FlRaQKbrsg41UMWphgtL</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-07</td><td>240</td><td class="voucher">17571</td><td>$32</td>
+  <td>TRANSFERENCIA - DAYRA LUCILA CANALES casa 240 mes Julio y Agosto</td><td class="flag">monto $32 no múltiplo de $15 | sobrante $2 (no aplicado)</td><td>2025-07, 2025-08</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">OoTX7jS7rdG0NKViKQcw</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-07</td><td>333</td><td class="voucher">17603</td><td>$40</td>
+  <td>MARIA AVILA - EFECTIVO</td><td class="flag">monto $40 no múltiplo de $15 | sin meses ni propiedad utilizable, o monto no múltiplo de $15</td><td></td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">ZiyKnZobtCtOUMyJ8Nmi</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-07</td><td>059</td><td class="voucher">17549</td><td>$30</td>
+  <td>YAPPY BG DE ILKA MELISA MARK HOY- MES DE JULIO</td><td class="flag">meses dichos (1) para 1 prop(s) ≠ monto ($30 = 2 meses) | sobrante $15 (no aplicado)</td><td>2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">aM5H3tZYgyXoZofFZdNY</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-07</td><td>006</td><td class="voucher">17517</td><td>$40</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE MIGUEL ROGELIO SANCHEZ PALACIO (O) GICELLE NATALIA HENRIQUEZ-JULIO Y AGOSTO</td><td class="flag">monto $40 no múltiplo de $15 | meses dichos (2) para 1 prop(s) ≠ monto ($40 = 3 meses) | sobrante $10 (no aplicado)</td><td>2025-07, 2025-08</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">gNf3XNBgnsXnq3PaaTMd</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-07</td><td>167</td><td class="voucher">17590</td><td>$100</td>
+  <td>YAPPY BG DE ILUMINADA BONILLA VIDAL (EL PARKIN.)- junio a noviembre</td><td class="flag">monto $100 no múltiplo de $15 | sin meses ni propiedad utilizable, o monto no múltiplo de $15</td><td></td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">tbtGTwzULdPLCLlfrqQT</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-08</td><td>267</td><td class="voucher">17710</td><td>$30</td>
+  <td>YAPPY BG DE NIDIA EDITH RODRIGUEZ ORTIZ POR casa 267 fila Rodriguez- mes de mayo</td><td class="flag">meses dichos (1) para 1 prop(s) ≠ monto ($30 = 2 meses) | sobrante $15 (no aplicado)</td><td>2025-05</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">YBGgCHyjkTw6zPhBX2xo</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>170</td><td class="voucher">17802</td><td>$10</td>
+  <td>EFECTIVO - JAZMIN MENDOZA - MARZO $5 Y ABRIL $5</td><td class="flag">monto $10 no múltiplo de $15 | sin meses ni propiedad utilizable, o monto no múltiplo de $15</td><td></td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">HIwysok1PcPmuQIeqnnh</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>069</td><td class="voucher">17937</td><td>$25</td>
+  <td>YAPPY BG DE CELINDA DE LOURDES VALDES AGUILAR POR casa 69 familia valdes -MAYO Y JUNIO</td><td class="flag">monto $25 no múltiplo de $15 | monto aplicado $30 > pago $25</td><td>2025-05, 2025-06</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">UleY7pePMKR87OsUwlf1</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>D-09</td><td class="voucher">17888</td><td>$20</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE ADELSA AYARIS AGUILAR ALVARADO abono casa D9- mayo y junio abono </td><td class="flag">monto $20 no múltiplo de $15 | meses dichos (2) para 1 prop(s) ≠ monto ($20 = 1 meses) | monto aplicado $30 > pago $20</td><td>2025-05, 2025-06</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">YeTMs1HtP9OJHUbnjIE4</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>231</td><td class="voucher">17837</td><td>$15.55</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE GLADYS JASMINA MC KENZIE DE ANDERSON casa 231 familia  Anders- mes de abril</td><td class="flag">monto $15.55 no múltiplo de $15 | sobrante $0.5500000000000007 (no aplicado)</td><td>2025-04</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">itTp5HkJ1P4CRzW9paWj</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-10</td><td>170</td><td class="voucher">18031</td><td>$25</td>
+  <td>YAPPY - JAZMIN MENDOZA - ABRIL Y MAYO</td><td class="flag">monto $25 no múltiplo de $15 | monto aplicado $30 > pago $25</td><td>2025-04, 2025-05</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">DJWcKSwQr8RU2Yw2lSMw</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-10</td><td>274</td><td class="voucher">18071</td><td>$30</td>
+  <td>YAPPY BG DE LUZ MARIA BETEGON GARIBALDI POR casa 274 luz Betegon- MES DE AGOSTO</td><td class="flag">meses dichos (1) para 1 prop(s) ≠ monto ($30 = 2 meses) | sobrante $15 (no aplicado)</td><td>2025-08</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">QazO8k5bgCgKkFya64lc</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-11</td><td>D-09</td><td class="voucher">18218</td><td>$20</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE ADELSA AYARIS AGUILAR ALVARADO Casa D9 Adelsa Junio y abona Julio</td><td class="flag">monto $20 no múltiplo de $15 | sin meses ni propiedad utilizable, o monto no múltiplo de $15</td><td></td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">08L9v43jP7gwjKPyTYAE</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>263</td><td class="voucher">18338</td><td>$100</td>
+  <td>EFECTIVO-  Flia mckenzie- MAYO A NOVIEMBRE</td><td class="flag">monto $100 no múltiplo de $15 | sin meses ni propiedad utilizable, o monto no múltiplo de $15</td><td></td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">9UHwvN3bBr9pJUa1MxuP</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>208</td><td class="voucher">18322</td><td>$75</td>
+  <td>YAPPY BG DE IRIS DEL CARMEN GRIFFITH BETEGON POR casa 208 - cuota de mayo junio julio ago</td><td class="flag">meses dichos (4) para 1 prop(s) ≠ monto ($75 = 5 meses) | sobrante $15 (no aplicado)</td><td>2025-05, 2025-06, 2025-07, 2025-08</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">O3P3lmycv9tIHENzYUYU</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-03</td><td>-</td><td class="voucher">18720</td><td>$15</td>
+  <td>YAPPY BG DE LUIS ROBERTO ESCOBAR RODRIGUEZ</td><td class="flag">sin propertyId válido en doc | sin meses ni propiedad utilizable, o monto no múltiplo de $15</td><td></td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">GHXjelCFNoQUJMB9DkG9</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-03</td><td>-</td><td class="voucher">18687</td><td>$30</td>
+  <td>BANCA EN LINEA TRANSFERENCIA DE EVELLYS GISEL KIRCHMAN BELTRAN (LA PARRILLA DE EVELLYS) MI</td><td class="flag">sin propertyId válido en doc | sin meses ni propiedad utilizable, o monto no múltiplo de $15</td><td></td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">zdbb9zpRYAUGGNGVln0h</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-05</td><td>192</td><td class="voucher">18923</td><td>$15</td>
+  <td>YAPPY BG DE YUMITZIE ANNELIS HARWOOD de CEDEÑO POR mes de abril Familia Cedeno 192- MARZO/26</td><td class="flag">meses dichos (2) para 1 prop(s) ≠ monto ($15 = 1 meses) | monto aplicado $30 > pago $15</td><td>2026-03, 2026-04</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">BKAmAtRSddprHHm42KhL</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-05</td><td>110</td><td class="voucher">18917</td><td>$15</td>
+  <td>YAPPY BG DE CARLOS ANTONIO SIERRA ACOSTA POR cuota mes de abril seguridad casa 110- MAYO/26</td><td class="flag">meses dichos (2) para 1 prop(s) ≠ monto ($15 = 1 meses) | monto aplicado $30 > pago $15</td><td>2026-04, 2026-05</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">aaFClvNQWLz8zLCRZNb1</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-05</td><td>026</td><td class="voucher">18912</td><td>$20</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE NATIVIDAD VALENCIA de JIMENEZ Mes de abril casa 26 abono 5 de diciembre/25</td><td class="flag">monto $20 no múltiplo de $15 | meses dichos (2) para 1 prop(s) ≠ monto ($20 = 1 meses) | monto aplicado $30 > pago $20</td><td>2026-04, 2026-12</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">rdwZlpsUDmPlhEyDLg3s</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-06</td><td>026</td><td class="voucher">19022</td><td>$5</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE NATIVIDAD VALENCIA de JIMENEZ Cancela saldo pendiente casa 26 CANCELA DICIEMBRE/25</td><td class="flag">monto $5 no múltiplo de $15 | sin meses ni propiedad utilizable, o monto no múltiplo de $15</td><td></td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">xg5vdNDLN1oUE36eWNSi</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-06</td><td>026</td><td class="voucher">19022</td><td>$20</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE NATIVIDAD VALENCIA de JIMENEZ Casa 26 flia Jimenez mayo y abono DICIEMBRE/25</td><td class="flag">monto $20 no múltiplo de $15 | sobrante $5 (no aplicado)</td><td>2026-12</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">zMKAlAqFFWUOcvrTMnRF</td></tr></tbody></table><h2>2) Dobles pagos (248) — mismo FEE cubierto por 2+ pagos</h2>
+<div class="count">El FEE ya fue pagado por otro voucher. Decidir cuál pago conserva el FEE y cuál se marca como duplicado / se reasigna.</div>
+<table id="t-dobles"><thead><tr>
+<th>✓</th><th>Mes</th><th>Casa</th><th>Voucher</th><th>Monto</th><th>Descripción (nombre)</th><th>appliedTo propuesto</th><th>Decisión</th><th>Nota</th><th>ID</th>
+</tr></thead><tbody><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-02</td><td>001</td><td class="voucher">18609</td><td>$15</td>
+  <td>YAPPY BG DE ALAIN AMINT ARAUZ POWELL POR Casa1- DICIEMBRE</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">GsVRC5yUuwn898cNwPCH</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-04</td><td>001</td><td class="voucher">18861</td><td>$45</td>
+  <td>YAPPY BG DE ALAIN AMINT ARAUZ POWELL POR Casa 1 Mes de ENERO, Febrero marzo /26</td><td>2026-01, 2026-02, 2026-03</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">4wvaf7CfvIJVRP5siHQH</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-04</td><td>002</td><td class="voucher">18819</td><td>$60</td>
+  <td>OMAR CUETO - MES  JUNIO, JULIO, AGOSTO Y SEPT</td><td>2026-06, 2026-07, 2026-08, 2026-09</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">vnjHIrk13FFdNbTD8qhq</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-06</td><td>002</td><td class="voucher">19077</td><td>$45</td>
+  <td>EFECTIVO- OMAR CUETO - OCTUBRE, NOVI Y DICI/26</td><td>2026-06, 2026-07, 2026-08</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">A4RM63amCsG2490NvOuN</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-02</td><td>005</td><td class="voucher">18640</td><td>$15</td>
+  <td>YAPPY BG DE ANSELMO EMILIANO FORDE CHRISTOPHER POR Pago de Seguridad Mes de Marzo 2026 ca</td><td>2026-03</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">lB3Veq4AuvQYesicf7ca</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-03</td><td>005</td><td class="voucher">18776</td><td>$15</td>
+  <td>YAPPY BG DE ANSELMO EMILIANO FORDE CHRISTOPHER-ABRIL/26</td><td>2026-03</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">ZgHzkBR6c7Y3taG0E1Nv</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-05</td><td>013</td><td class="voucher">17303</td><td>$15</td>
+  <td>flia ceballos - mes de junio</td><td>2025-06</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">H8DmGklrs12Y3Zt0hpwf</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-06</td><td>013</td><td class="voucher">17472</td><td>$30</td>
+  <td>DEPOSITO- FLIA CEBALLOS - MES DE JUNIO Y JULIO</td><td>2025-06, 2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">TOUTnCVP3B7QfmLOAw3b</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>013</td><td class="voucher">17909</td><td>$45</td>
+  <td>DEPOSITO -FLIA CEBALLOS -SEPTIEMBRE, OCTUBRE Y NOVIEMBRE</td><td>2025-09, 2025-10, 2025-11</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">t4B8coEtkC8oWxOJzWLU</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-10</td><td>013</td><td class="voucher">18046</td><td>$30</td>
+  <td>DEPOSITO - Fliia Ceballos - Diciembre y Enero </td><td>2025-01, 2025-12</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">6niRLsWTSE6h7x10MmZO</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-11</td><td>016</td><td class="voucher">18156</td><td>$45</td>
+  <td>YAPPY BG DE VICTOR DE JESUS CASTILLO CORTEZ - OCTUBRE A DICIEMBRE</td><td>2025-11, 2025-12, 2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">MUwgk6UoeLE8X0n1RkoK</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>016</td><td class="voucher">18518</td><td>$30</td>
+  <td>YAPPY BG DE VICTOR DE JESUS CASTILLO CORTEZ- ENERO Y FEBRERO 2026</td><td>2026-01, 2026-02</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">Axo7TEAQfwZ8CNX4xBvk</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>019</td><td class="voucher">18269</td><td>$15</td>
+  <td>YAPPY BG DE QUERUBI LIZET NEREIDA de HILTON POR Mes de diciembre casa 19 familia Nereida</td><td>2025-12</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">VTWcOZNr3CtCGMOntR2i</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>019</td><td class="voucher">18512</td><td>$15</td>
+  <td>YAPPY BG DE QUERUBI LIZET NEREIDA de HILTON POR Mes enero casa19 Flia Nereida</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">LJazB00xsP7CJMT6k7wJ</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-07</td><td>020</td><td class="voucher">17561</td><td>$15</td>
+  <td>YAPPY BG DE VIELKA LUZMILA CUSATTI ANAYA- agosto</td><td>2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">vK9DGzB6aByEE5EdWvWX</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-07</td><td>020</td><td class="voucher">17637</td><td>$15</td>
+  <td>YAPPY BG DE VIELKA LUZMILA CUSATTI ANAYA- SEPTIEMBRE</td><td>2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">6CKtEApOoW9sovCU851i</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>020</td><td class="voucher">18285</td><td>$15</td>
+  <td>YAPPY BG DE VIELKA LUZMILA CUSATTI ANAYA- ENERO 2026</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">Rhh3RH8bQzTcHLhArQdh</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>020</td><td class="voucher">18432</td><td>$15</td>
+  <td>YAPPY BG DE VIELKA LUZMILA CUSATTI ANAYA- FEBRERO</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">V2hqdEkGDijVe4VJvtNh</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>021</td><td class="voucher">17869</td><td>$15</td>
+  <td>YAPPY BG DE HECTOR GABRIEL IBARGUEN MURILLO POR mes de agosto flia Ibarguen Ceballos casa</td><td>2025-08</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">DviBBf19oFDt7UBUGi8K</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-10</td><td>021</td><td class="voucher">17954</td><td>$15</td>
+  <td>YAPPY BG DE HECTOR GABRIEL IBARGUEN MURILLO POR flia Ibarguen Ceballos mes septiembre</td><td>2025-09</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">PnMrywadYYcU2wmSguyq</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-10</td><td>021</td><td class="voucher">18066</td><td>$15</td>
+  <td>YAPPY BG DE HECTOR GABRIEL IBARGUEN MURILLO POR flia Ibarguen casa 21- octubre</td><td>2025-10</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">U6HWB333el1qDwx7EImn</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-10</td><td>031</td><td class="voucher">17967</td><td>$90</td>
+  <td>YAPPY BG DE AURA MERCEDES PINEDA de SANTAMARIA POR Casa 31 Familia Santamaria - MAYO, JUNIO, JULIO, AGOSTO, SEPTIEMBRE Y</td><td>2025-05, 2025-06, 2025-07, 2025-08, 2025-09, 2025-10</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">qzCyL6iH0l1YFoGgK2Ne</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-07</td><td>035</td><td class="voucher">17618</td><td>$15</td>
+  <td>FLIA CEBALLOS - MAYO</td><td>2025-06</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">R93SrXN1PhkLvEMwHe1x</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>035</td><td class="voucher">17884</td><td>$45</td>
+  <td>YAPPY BG DE MALIBETZA FAUSTINA CEBALLOS de COMBE - junio, julio y agosto</td><td>2025-06, 2025-07, 2025-08</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">oxVPejfEZdl8D0Xbt3ts</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-11</td><td>040</td><td class="voucher">18096</td><td>$30</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE FELICIA OLIVIA GITTENS MERCHANT Casa 40 Mant Sep y Oct Fam Gi</td><td>2025-09, 2025-10</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">dd00IFEJj0tQlzCqMELZ</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-11</td><td>040</td><td class="voucher">18208</td><td>$15</td>
+  <td>YAPPY BG DE FELICIA OLIVIA GITTENS MERCHANT POR Casa 40 noviembre Fam Gittens Zachary</td><td>2025-10</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">gPgXyUguf7s8mKbIabeW</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-11</td><td>041</td><td class="voucher">18217</td><td>$15</td>
+  <td>YAPPY BG DE YARIBEL RUIZ DE GRACIA- MAYO</td><td>2025-10</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">apWZsVrSkdJtpcs100Xk</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-02</td><td>041</td><td class="voucher">18613</td><td>$30</td>
+  <td>YAPPY BG DE YARIBEL RUIZ DE GRACIA POR casa 41 familia Betegon- SEPTIEMBRE Y OCTUBRE /25</td><td>2025-09, 2025-10</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">vuUpWTDaeLwcHLnMmasV</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>047</td><td class="voucher">18396</td><td>$15</td>
+  <td>YAPPY BG DE LUZMILA ELENA PORTER DE QUINTERO POR Casa 47 Oeste Familia Quintero Dic25</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">QD1NMkrMA5mH0VqRIta3</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-02</td><td>047</td><td class="voucher">18554</td><td>$15</td>
+  <td>YAPPY BG DE LUZMILA ELENA PORTER DE QUINTERO POR ENERO 2026</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">xUHg8biXrixRIDzIOuSR</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-11</td><td>054</td><td class="voucher">18123</td><td>$15</td>
+  <td>YAPPY BG DE NAYRA DEL CARMEN RAMOS RAMOS  pago segurid- DICIEMBRE</td><td>2025-12</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">1I20hQSOthb03l5kebaX</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>054</td><td class="voucher">18344</td><td>$15</td>
+  <td>YAPPY BG DE NAYRA DEL CARMEN RAMOS RAMOS (O) JERONIMO VALENTIN HERNANDEZ POR - ENERO</td><td>2025-12</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">ucatRpnZAjrY5iV6Oazy</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-07</td><td>056</td><td class="voucher">17550</td><td>$15</td>
+  <td>YAPPY BG DE NITZIA ITZEL AGUILAR GALVAN POR Familia Aguilar Casa 56 2da calle oeste - ABRIL</td><td>2025-06</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">9b7KwBR8WQUACpVsV9XD</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>056</td><td class="voucher">18271</td><td>$30</td>
+  <td>YAPPY BG DE NITZIA ITZEL AGUILAR GALVAN POR abono mensualidadesseguridadCasa56- MAYO Y JUNIO</td><td>2025-05, 2025-06</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">WKv11edYd1DJgmTJ08Rr</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-02</td><td>056</td><td class="voucher">18638</td><td>$15</td>
+  <td>YAPPY BG DE NITZIA ITZEL AGUILAR GALVAN POR Familia Aguilar Casa 56- OCTUBRE</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">A2W7JkjEBmvCqHQl1vX3</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-04</td><td>056</td><td class="voucher">18804</td><td>$45</td>
+  <td>YAPPY BG DE NITZIA ITZEL AGUILAR GALVAN POR Casa 56 Calle 2da oeste Familia Aguilar- NOV, DIC Y ENERO/26</td><td>2025-11, 2025-12, 2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">mAqEaqTIJhD5kpary9m0</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-06</td><td>057</td><td class="voucher">19002</td><td>$15</td>
+  <td>EFECTIVO- PIEDAD DEL CID- ABRIL/26</td><td>2026-05</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">FUM6d39tqOEL4q0YTwzc</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-06</td><td>057</td><td class="voucher">19075</td><td>$15</td>
+  <td>EFECTIVO - PIEDAD DEL CID - MES DE MAYO/26</td><td>2026-05</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">QyTDGY5C2o5FQXGbOPdk</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-06</td><td>058</td><td class="voucher">17485</td><td>$45</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE ODALIS DEL CARMEN JAEN DE MENESES casa 58 Familia meneses pag - Mayo, Junio y Julio</td><td>2025-05, 2025-06, 2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">EhyGx9zchexdd8lqWQOV</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-07</td><td>058</td><td class="voucher">17629</td><td>$15</td>
+  <td>YAPPY BG DE MARTIN LUIS MENESES TESIS POR Pago de agostoFliaMeneses casa 58</td><td>2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">lCKOKkl413bLpVKCcpdm</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>058</td><td class="voucher">18400</td><td>$15</td>
+  <td>YAPPY BG DE MARTIN LUIS MENESES TESIS POR Enero casa 58</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">07WCVSHzqZX5GopP2oIs</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>058</td><td class="voucher">18467</td><td>$15</td>
+  <td>YAPPY BG DE MARTIN LUIS MENESES TESIS POR Febrero casa58 Meneses- febrero</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">dYmTO3sPWxP3Ab35xeB3</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-08</td><td>062</td><td class="voucher">17680</td><td>$15</td>
+  <td>YAPPY BG DE MIRNA CLOTILDE REED de LEE - MARZO</td><td>2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">ecHmPyTMMI7uZMRdlgpH</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-11</td><td>062</td><td class="voucher">18190</td><td>$30</td>
+  <td>YAPPY BG DE ENEIRA ESTHER BELTRAN DE KIRCHMAN POR CASA 62 Mirna Reed de Lee- JUNIO Y JULIO</td><td>2025-06, 2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">Ph8UYepPgQSuRZ1OtOWM</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-07</td><td>067</td><td class="voucher">17611</td><td>$15</td>
+  <td>ACH XPRESS - EMILIO STERLING LOVET WILSON - junio</td><td>2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">WevfkvMLm3gGpKyStU6F</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-10</td><td>067</td><td class="voucher">18058</td><td>$15</td>
+  <td>ACH XPRESS - EMILIO STERLING LOVET WILSON- julio 2025</td><td>2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">R87hs0YAWOOjd1vTOBbh</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>067</td><td class="voucher">18229</td><td>$15</td>
+  <td>ACH - EMILIO STERLING LOVET WILSON- AGOSTO</td><td>2025-11</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">3WmeLXIQBkg1S0NtPb8i</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>067</td><td class="voucher">18327</td><td>$30</td>
+  <td>ACH XPRESS - EMILIO STERLING LOVET WILSON - SEPTI Y OCTUBRE</td><td>2025-12, 2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">rZwtYrmBQJzF7WYj1bq5</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-02</td><td>067</td><td class="voucher">18557</td><td>$15</td>
+  <td>ACH XPRESS - EMILIO STERLING LOVET WILSON- NOVIEMBRE 2025</td><td>2025-11</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">e3DVR09pDQymq4JrJoOs</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-03</td><td>067</td><td class="voucher">18688</td><td>$15</td>
+  <td>ACH XPRESS - EMILIO STERLING LOVET WILSON- DICIEMBRE25</td><td>2026-02</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">qmiJkQLNTBYb1N1psGPP</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-04</td><td>067</td><td class="voucher">18809</td><td>$15</td>
+  <td>ACH XPRESS - EMILIO STERLING LOVET WILSON-enero 2026</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">M2BHHO7LAI8vrj6C56Tr</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-06</td><td>067</td><td class="voucher">19029</td><td>$15</td>
+  <td>YAPPY BG DE EMILIO LOVET WILSON- MES DE FEBRERO 2026</td><td>2026-02</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">sbmUToWWP3WgUylqsRYa</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-10</td><td>078</td><td class="voucher">17944</td><td>$30</td>
+  <td>YAPPY BG DE MARIET BROOKS SALAMANCA POR FliaBrooks casa 78 pago de seguridad sept y oct</td><td>2025-09, 2025-10</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">kaVnjvOXW0HWSLTH8h9g</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-11</td><td>078</td><td class="voucher">18147</td><td>$30</td>
+  <td>YAPPY BG DE MARIET BROOKS SALAMANCA POR Pago de seguridad Flia Brooks SEPTIEMBRE Y OCTUBRE</td><td>2025-09, 2025-10</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">tyNNF1ksiyFQG0VfZoa0</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>078</td><td class="voucher">18406</td><td>$60</td>
+  <td>EFECTIVO - FLIA BROOKS- NOV-DICI-ENERO Y FEBRERO 26</td><td>2026-01, 2026-02, 2026-03, 2026-04</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">TV7PL9dpoPbkRNl3ixdx</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-04</td><td>078</td><td class="voucher">18869</td><td>$30</td>
+  <td>YAPPY BG DE FLIA BROOKS, MARZO Y ABRIL/26</td><td>2026-03, 2026-04</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">ZD75HHQtTZ78EwT2cuK3</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-08</td><td>079</td><td class="voucher">17780</td><td>$15</td>
+  <td>YAPPY BG DE KAISHA TAMARA RIVAS JULIO- MES DE JULIO</td><td>2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">X5ReUly76wmAwJcSvBdP</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>079</td><td class="voucher">17932</td><td>$15</td>
+  <td>YAPPY BG DE KAISHA TAMARA RIVAS JULIO- mes de agosto</td><td>2025-08</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">b71Dsbs6RAfd50k9VZFL</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-10</td><td>079</td><td class="voucher">18062</td><td>$15</td>
+  <td>YAPPY BG DE KAISHA TAMARA RIVAS JULIO- mes de julio</td><td>2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">3FayDO8NMBiuNkpcLkOu</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-11</td><td>079</td><td class="voucher">18204</td><td>$15</td>
+  <td>YAPPY BG DE KAISHA TAMARA RIVAS JULIO POR Kaisha Rivas casa79- MES DE AGOSTO</td><td>2025-08</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">qStzKy1XgLBKavyjY7Ql</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>079</td><td class="voucher">18360</td><td>$15</td>
+  <td>YAPPY BG DE KAISHA TAMARA RIVAS JULIO POR Kaisha Rivas casa 79- SEPTIEMBRE</td><td>2025-11</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">cgmty2OYoFFU5bJTruPP</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-03</td><td>079</td><td class="voucher">18656</td><td>$15</td>
+  <td>YAPPY BG DE KAISHA TAMARA RIVAS JULIO- NOVIEMBRE/25</td><td>2025-11</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">Bi7s4Aur8inqNVbwRiJG</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-06</td><td>080</td><td class="voucher">17429</td><td>$30</td>
+  <td>YAPPY DE VANESSA VICTORIA PARNTHER LUZCANDO POR Mant casa 80 mes de julio y agosto Sra Flo</td><td>2025-07, 2025-08</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">vALjt3QPl5QehdhapYnk</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-08</td><td>080</td><td class="voucher">17723</td><td>$30</td>
+  <td>YAPPY BG DE VANESSA VICTORIA PARNTHER LUZCANDO POR MantSept y Oct casa 80 calle 2da este</td><td>2025-08, 2025-09</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">fESNtLkvn1fA2q70QAZq</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-08</td><td>085</td><td class="voucher">17658</td><td>$15</td>
+  <td>YAPPY BG DE WYLMA ISUALY MATURANA DE ESCOBAR- junio</td><td>2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">blAhRmkkf586PNXxSU1M</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>085</td><td class="voucher">17871</td><td>$15</td>
+  <td>YAPPY BG DE WYLMA ISUALY MATURANA DE ESCOBAR - MES DE JULIO</td><td>2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">cHG86ljCl5UXey4daPyV</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>092</td><td class="voucher">18418</td><td>$60</td>
+  <td>FLIA ROBERTS - AGOSTO A NOVIEMBRE 2025</td><td>2025-08, 2025-09, 2025-10, 2025-11</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">ouuSO2yY0Z57H9CwIdQp</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-02</td><td>092</td><td class="voucher">18492</td><td>$75</td>
+  <td>EFECTIVO - FLIA ROBERTS - AGOSTO A DICIEMBRE -2025</td><td>2025-08, 2025-09, 2025-10, 2025-11, 2025-12</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">ttMf54aY74gKuOtpWEGN</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-08</td><td>100</td><td class="voucher">17732</td><td>$15</td>
+  <td>YAPPY BG DE JAIRO ABDIEL BUITRAGO VASQUEZ POR Casa 100- AGOSTO</td><td>2025-08</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">YbUrKDuFkZvoMDS7WQ2J</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-11</td><td>100</td><td class="voucher">18160</td><td>$15</td>
+  <td>YAPPY BG DE JAIRO ABDIEL BUITRAGO VASQUEZ POR Octubre casa 100</td><td>2025-11</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">TaM7TeBTcVND7L0p0G84</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-11</td><td>100</td><td class="voucher">18164</td><td>$15</td>
+  <td>YAPPY BG DE JAIRO ABDIEL BUITRAGO VASQUEZ POR Noviembre Casa 100</td><td>2025-11</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">jS536nuZT02P2z1E9Gqx</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>104,121</td><td class="voucher">17941</td><td>$30</td>
+  <td>BANCA EN LINEA TRANSFERENCIA DE DALIA ZORAIDA PETERS PAYNE Familia Peters casa 121 y 104 octubre</td><td>2025-09, 2025-10</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">esm4bxetGBsBhG7i9i4V</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-11</td><td>104,121</td><td class="voucher">18221</td><td>$30</td>
+  <td>BANCA EN LINEA TRANSFERENCIA DE DALIA ZORAIDA PETERS PAYNE Familia Peters casa 121 y 104- DICIEMBRE</td><td>2025-11, 2025-12</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">HMGQ6VgkoqJmtsPUKZrB</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-03</td><td>104,121</td><td class="voucher">18773</td><td>$30</td>
+  <td>BANCA EN LINEA TRANSFERENCIA DE DALIA ZORAIDA PETERS PAYNE Familia Peters seguridad -abril/26</td><td>2026-04, 2026-04</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">R5UDXjFiApAnOjQR48fs</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-03</td><td>107</td><td class="voucher">18701</td><td>$15</td>
+  <td>YAPPY BG DE MELANY DEL CARMEN TAYLOR DELGADO POR Mes de abril familia Taylor casa 1073era</td><td>2026-04</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">XWzCEhFz1jI49BdfJ7gZ</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-04</td><td>107</td><td class="voucher">18833</td><td>$15</td>
+  <td>YAPPY BG DE MELANY DEL CARMEN TAYLOR DELGADO POR Mes de mayofamilia Taylor casa 107 3era</td><td>2026-04</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">nb4tC9YHrx75wvLeUKJR</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-05</td><td>110</td><td class="voucher">17235</td><td>$15</td>
+  <td>YAPPY DE YULIXA DEL CARMEN ESPADA de SIERRA POR Flia Sierra casa 110 marzo</td><td>2025-04</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">BKflRXCo3UTlQ8N8bkDR</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-05</td><td>110</td><td class="voucher">17364</td><td>$15</td>
+  <td>YAPPY DE YULIXA DEL CARMEN ESPADA de SIERRA CASA 110- FLIA SIERRA MES DE ABRIL</td><td>2025-04</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">hbHlJVDdM4Ej4JggmMNe</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-08</td><td>110</td><td class="voucher">17664</td><td>$15</td>
+  <td>YAPPY BG DE YULIXA DEL CARMEN ESPADA de SIERRA POR Casa 110 - JUNIO</td><td>2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">kJKBdYzAHJx0TR80dSGM</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>110</td><td class="voucher">17799</td><td>$15</td>
+  <td>YAPPY BG DE YULIXA DEL CARMEN ESPADA de SIERRA POR Casa 110 Flia Sierra MES DE JULIO</td><td>2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">1tbjdkosaRPtJ6GBl8Lx</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>110</td><td class="voucher">18276</td><td>$15</td>
+  <td>YAPPY BG DE CARLOS ANTONIO SIERRA ACOSTA- NOVIEMBRE</td><td>2025-12</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">Ajz1ft68LjnMnuMqRx4R</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>110</td><td class="voucher">18408</td><td>$15</td>
+  <td>YAPPY BG DE CARLOS ANTONIO SIERRA ACOSTA POR pago mes de DICIEMBRE casa110</td><td>2025-12</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">PrT4bSoV7yAqLKi81b05</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-05</td><td>111</td><td class="voucher">18946</td><td>$30</td>
+  <td>ACH - FLIA HAMILTON - MAYO Y JUNIO/26</td><td>2026-05, 2026-06</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">3b7XxNf5fnbwBjbozpNf</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-06</td><td>111</td><td class="voucher">19057</td><td>$60</td>
+  <td>ACH - FLIA HAMILTON - JULIO A OCTUBRE/26</td><td>2026-06, 2026-07, 2026-08, 2026-09</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">j54NsDh32B6NH3zT0yk9</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-08</td><td>113</td><td class="voucher">17689</td><td>$15</td>
+  <td>YAPPY BG DE YOHANA LISBETH MOLINAR DE GONDOLA - JUNIO</td><td>2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">EpWiYLrwHuoHogOCA5X5</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-08</td><td>113</td><td class="voucher">17764</td><td>$45</td>
+  <td>ACH - MARIO ENRIQUE GONDOLA TESIS - mes de ENERO, JULIO Y AGOSTO</td><td>2025-01, 2025-07, 2025-08</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">TP90KqTWo6QQZ6TrL1s5</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-11</td><td>113</td><td class="voucher">18222</td><td>$15</td>
+  <td>ACH XPRESS - YOHANA MOLINAR- MES DE DICIEMBRE</td><td>2025-12</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">AUiiQnJ46XYMxXiuV9us</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>113</td><td class="voucher">18362</td><td>$15</td>
+  <td>ACH XPRESS - YOHANA MOLINAR- ENERO</td><td>2025-12</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">a694UBJtrWrs3iLmJk7e</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>117</td><td class="voucher">18355</td><td>$15</td>
+  <td>YAPPY BG DE SARALIZ LORENA HUSBAND DE VELASQUEZ POR mes de enero 2026 casa 117 flia velas</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">2pDxDLVddKMbgq5MYpTB</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>117</td><td class="voucher">18524</td><td>$15</td>
+  <td>YAPPY BG DE SARALIZ LORENA HUSBAND DE VELASQUEZ POR casa 117 flia Velasquez3ra oeste febrero/26</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">tY4qwiRWnwMabfx55kq7</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>119</td><td class="voucher">17810</td><td>$15</td>
+  <td>EFECTIVO - IRACEMA DE SMALL- MES DE JULIO </td><td>2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">rWsaWdx0e9kGFwk4yv5o</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>119</td><td class="voucher">17885</td><td>$15</td>
+  <td>YAPPY BG DE IRASEMA ESTHER MURILLO DE SMALL POR Pago mes julio casa 119 Flia Small</td><td>2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">KWfnxBbCOalqWQfRtcBu</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>119</td><td class="voucher">17933</td><td>$30</td>
+  <td>YAPPY BG DE IRASEMA ESTHER MURILLO DE SMALL POR Casa 119 Flia Small sept y octubre</td><td>2025-08, 2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">A7hgHOTPxL344roRzJp8</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>119</td><td class="voucher">18223</td><td>$30</td>
+  <td>EFECTIVO- IRACEMA DE SMALL- NOVIEMBRE Y DICIEMBRE</td><td>2025-11, 2025-12</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">NJ0hT1pwPpmvOTwJU8NL</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>119</td><td class="voucher">18438</td><td>$15</td>
+  <td>YAPPY BG DE IRASEMA ESTHER MURILLO DE SMALL POR pago enero casa 119 Flia Small</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">3zCbVXEQeE4sMQNvntsV</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>119</td><td class="voucher">18502</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE IRASEMA ESTHER MURILLO DE SMALL segurida Flia Small casa 119- FEBRERO/26</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">GpgM8RYlqvDqhcEpmIkK</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-05</td><td>121,104</td><td class="voucher">17289</td><td>$90</td>
+  <td>BANCA EN LINEA TRANSFERENCIA DE DALIA ZORAIDA PETERS PAYNE Famila Peters casa 121 y 104 en</td><td>2025-04, 2025-03, 2025-02, 2025-01, 2025-05, 2025-06</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">zKNysbQnknY4TZFMBFWA</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-06</td><td>121,104</td><td class="voucher">17415</td><td>$60</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE DALIA ZORAIDA PETERS PAYNE Familia Peters casa 121 y 104 abriL Y MAYO</td><td>2025-04, 2025-05, 2025-04, 2025-05</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">jY07l4Zky8OaxmdCUoeF</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-07</td><td>121,104</td><td class="voucher">17587</td><td>$60</td>
+  <td>BANCA EN LINEA TRANSFERENCIA DE DALIA ZORAIDA PETERS PAYNE Familia Peters casa 121 y 104 junio y julio</td><td>2025-06, 2025-07, 2025-06, 2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">gjjAlgkU25yydqSicwQV</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-08</td><td>121,104</td><td class="voucher">17788</td><td>$30</td>
+  <td>BANCA EN LINEA TRANSFERENCIA DE DALIA ZORAIDA PETERS PAYNE Familia Peters casa 121 y 104 mes de SEPTIEMBRE</td><td>2025-09, 2025-09</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">TpZLwddhNh5UHhzLnaAp</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-10</td><td>121,104</td><td class="voucher">18064</td><td>$30</td>
+  <td>BANCA EN LINEA TRANSFERENCIA DE DALIA ZORAIDA PETERS PAYNE Familia Peters casa 121 y 104 Noviembre</td><td>2025-10, 2025-11</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">pKpEextRkRb1TDyIIFBE</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>121,104</td><td class="voucher">18361</td><td>$30</td>
+  <td>BANCA EN LINEA TRANSFERENCIA DE DALIA ZORAIDA PETERS PAYNE Familia Peters casa 121 y 104 - ENERO</td><td>2025-12, 2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">8U7WPh8t7aFNL7yrN6wm</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>121,104</td><td class="voucher">18513</td><td>$30</td>
+  <td>BANCA EN LINEA TRANSFERENCIA DE DALIA ZORAIDA PETERS PAYNE Familia Peters casa 121 y 104  FEBRERO 2026</td><td>2026-02, 2026-03</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">zM9QT4k0j6eq4tYNx9Cd</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-03</td><td>121,104</td><td class="voucher">18653</td><td>$30</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE DALIA ZORAIDA PETERS PAYNE seguridad casa 121 y 104 marzo</td><td>2026-03, 2026-04</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">hNlLGpkuqgIRZMfpDd4X</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>133</td><td class="voucher">18376</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE ADA ARGELIA CHONG CORREA- DICIEMBRE</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">IMAB0fi4wuCHfgsNpoXY</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-02</td><td>133</td><td class="voucher">18555</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE ADA ARGELIA CHONG CORREA- ENERO 2026</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">x4sZsVT9DlFG4D2ufwEY</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-05</td><td>135</td><td class="voucher">17288</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE NILKA LORENA DEL CASTILLO ZELAYA casa 135</td><td>2025-04</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">WzYRjpvRud312HpY0o00</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-08</td><td>135</td><td class="voucher">17746</td><td>$15</td>
+  <td>YAPPY BG DE NILKA LORENA DEL CASTILLO ZELAYA POR casa 135- mes de abril</td><td>2025-04</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">prKevVTu54PXpxQi12oA</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-11</td><td>137</td><td class="voucher">18138</td><td>$30</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE JOSE MANUEL TUÑON RAMOS Pago de Noviembre y Diciembre Casa 13</td><td>2025-11, 2025-12</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">t4AVWkPnKXeicEtXMKmR</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-05</td><td>150</td><td class="voucher">17219</td><td>$15</td>
+  <td>YAPPY DE KASHMAH SHAMMETH CADOGAN de LEWIS</td><td>2025-05</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">PsT9Bg8CFJy5cN1x9QPK</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-05</td><td>150</td><td class="voucher">17339</td><td>$15</td>
+  <td>YAPPY DE KASHMAH SHAMMETH CADOGAN de LEWIS</td><td>2025-05</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">zC5TeeG3HKl2oM6hpIkM</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>150</td><td class="voucher">18306</td><td>$15</td>
+  <td>YAPPY BG DE KASHMAH SHAMMETH CADOGAN de LEWIS POR pago mensualidad diciembre casa 150</td><td>2025-12</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">5ZijT3dVwV0a62waxSKO</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>150</td><td class="voucher">18441</td><td>$15</td>
+  <td>YAPPY BG DE KASHMAH SHAMMETH CADOGAN de LEWIS POR OCTUBRE casa 150</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">455QPnoAuNZM79vDsLlU</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-02</td><td>150</td><td class="voucher">18628</td><td>$15</td>
+  <td>YAPPY BG DE KASHMAH SHAMMETH CADOGAN de LEWIS- NOVIEMBRE/25</td><td>2026-02</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">ajRIWXtP1wxgIFSZSemi</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-04</td><td>150</td><td class="voucher">18795</td><td>$15</td>
+  <td>YAPPY BG DE KASHMAH SHAMMETH CADOGAN de LEWIS- DICIEMBRE 2025</td><td>2025-12</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">F8DSYYipGo8MiBb45EQv</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-05</td><td>150</td><td class="voucher">18951</td><td>$30</td>
+  <td>ACH - KASHMAH SHAMMETH CADOGAN FOSTER- ENERO Y FEBRERO/26</td><td>2026-01, 2026-02</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">07461Hdm1JhLhy0uY4Wd</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-05</td><td>154</td><td class="voucher">17353</td><td>$30</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE JOSE ALEJANDRO BARROWS ROBINSON casa 154</td><td>2025-05, 2025-06</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">E8Hbv2wvbCYhKcRWAZS1</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-07</td><td>154</td><td class="voucher">17606</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE JOSE ALEJANDRO BARROWS ROBINSON Casa 154 mes de junio</td><td>2025-06</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">DNql4vRaVDMKSRU2HqV2</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-05</td><td>157</td><td class="voucher">17239</td><td>$15</td>
+  <td>YAPPY DE YANETH YAMILKA BADILLA PINEDA POR cuota mayo casa 157</td><td>2025-05</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">D6XC2wikieVi1EbH95v3</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-05</td><td>157</td><td class="voucher">17373</td><td>$15</td>
+  <td>YAPPY DE YANETH YAMILKA BADILLA PINEDA POR junio 157</td><td>2025-05</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">CWIMZ3mCI3U50WfeVq9q</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>164</td><td class="voucher">18391</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE NIDIA SILGADO LEON Mes ENERO  casa 164</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">PuLyRS0W1eedQZYincY7</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>164</td><td class="voucher">18457</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE NIDIA SILGADO LEON Casa 164 mes FEBFRERO 26</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">vJollBLdmJVI6nvLxg1M</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-03</td><td>164</td><td class="voucher">18671</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE NIDIA SILGADO LEON Mes MARZO 2026 casa 164</td><td>2026-03</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">8JUUUTQvBhD7OqWfRtMM</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-04</td><td>164</td><td class="voucher">18856</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE NIDIA SILGADO LEON Pago mes marzo casa 164</td><td>2026-03</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">sKXvU7OezIk7IXKyypMf</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-08</td><td>169</td><td class="voucher">17642</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE FERNANDO JOSE PENAS BLANCO (O) FERNANDO ANTONIO PENAS DOMING - JUNIO</td><td>2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">qzWzX2wibrpod9SYPZim</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>169</td><td class="voucher">17817</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE FERNANDO JOSE PENAS BLANCO (O) FERNANDO ANTONIO PENAS DOMING- MES DE JULIO</td><td>2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">RlFJqnTr4uATOJ2nTtf0</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-11</td><td>169</td><td class="voucher">18133</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE FERNANDO JOSE PENAS BLANCO- SEPTIEMBRE</td><td>2025-10</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">alrQYlXfPqtR8SLP0y91</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>169</td><td class="voucher">18393</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE FERNANDO JOSE PENAS BLANCO- OCTUBRE 2025</td><td>2025-10</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">lMGA1X3oI2mYL49yqVpa</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-02</td><td>169</td><td class="voucher">18578</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE FERNANDO JOSE PENAS BLANCO-NOVIEMBRE/25</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">mpISMAfEPqORUcOZpzLe</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-03</td><td>169</td><td class="voucher">18719</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE FERNANDO JOSE PENAS BLANCO -DICIEMBRE/25</td><td>2026-02</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">KxzBe5SuvkO8mmJAZijt</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-04</td><td>169</td><td class="voucher">18872</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE FERNANDO JOSE PENAS BLANCO - ENERO 2026</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">GmeCvSHjxSV3E6cDAeK3</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-05</td><td>169</td><td class="voucher">18989</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE FERNANDO JOSE PENAS BLANCO MES DE FEBRERO/26</td><td>2026-02</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">PhkQiElpCxukNpToVtcN</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>174</td><td class="voucher">17874</td><td>$15</td>
+  <td>YAPPY BG DE YELENA DELIBETH ALVEAR ARCIA POR septiembre casa 174</td><td>2025-09</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">ShlPLMD19e6znWmbj8XZ</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>174</td><td class="voucher">18487</td><td>$60</td>
+  <td>YAPPY BG DE YELENA DELIBETH ALVEAR ARCIA POR casa 174 4ta oeste de octubre a enero/26</td><td>2026-01, 2026-02, 2026-03, 2026-04</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">jjhNhBz4GLK0gVNLjfhy</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-04</td><td>174</td><td class="voucher">18851</td><td>$30</td>
+  <td>YAPPY BG DE YELENA DELIBETH ALVEAR ARCIA POR casa 174- FEBRERO Y MARZO /26</td><td>2026-02, 2026-03</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">rTcqsevmM9NbRFxb3BpT</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-06</td><td>174</td><td class="voucher">19102</td><td>$45</td>
+  <td>YAPPY BG DE YELENA DELIBETH ALVEAR ARCIA POR casa 174 4ta oeste- MES DE ABRIL, MAYO Y JUNIO/26</td><td>2026-04, 2026-05, 2026-06</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">KoO8aJC5egvupEjRdwCz</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-11</td><td>175</td><td class="voucher">18177</td><td>$15</td>
+  <td>YAPPY BG DE NATIVIDAD SANCHEZ DE FORBES mes de noviembre</td><td>2025-11</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">Smvrx8oeAdfYflBey4KY</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>175</td><td class="voucher">18253</td><td>$15</td>
+  <td>YAPPY BG DE NATIVIDAD SANCHEZ DE FORBES POR casa 175 familia Forbes mes de Noviembre</td><td>2025-11</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">qyylJNAOAkNme4kNZ0o0</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-07</td><td>177</td><td class="voucher">17518</td><td>$45</td>
+  <td>ACH XPRESS - PAMELA PATRICIA PETERS BAILEY OR ALBERTO BELFORD MEL - MES DE JULIO AGOSTO Y SEPTIEMBRE</td><td>2025-07, 2025-08, 2025-09</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">ryCWrfVyrP9FzGkPngpe</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>177</td><td class="voucher">17806</td><td>$45</td>
+  <td>ACH XPRESS - PAMELA PATRICIA PETERS BAILEY OR ALBERTO BELFORD MEL</td><td>2025-09, 2025-10, 2025-11</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">39h7NIFu2znvfKs8DzNr</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-05</td><td>178</td><td class="voucher">17237</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE DALIS YADIRA BANDINI  MANT. MAYO AGUSTINE Pago de mantenimiento flia Band</td><td>2025-05</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">CJfyCX3Fe17w7f5VYXkv</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-05</td><td>178</td><td class="voucher">17333</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE DALIS YADIRA BANDINI AGUSTINE Pago mantenimiento flia Bandini</td><td>2025-05</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">3nxIoQ5X74bMmAFpieRD</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>178</td><td class="voucher">18465</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE DALIS YADIRA BANDINI AGUSTINE Pago seguridad -marzo</td><td>2026-03</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">Xhd8drPUKGar9UADKmiw</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-03</td><td>178</td><td class="voucher">18674</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE DALIS YADIRA BANDINI AGUSTINE - JUNIO/26</td><td>2026-03</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">gbFU1lpKikwvYFxPIyFP</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-06</td><td>181</td><td class="voucher">17395</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE MARLENE BOYCE DAWKINS Garita 181 Abril</td><td>2025-05</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">9fcVeU0etkLpBxonB3sx</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-08</td><td>181</td><td class="voucher">17714</td><td>$30</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE MARLENE BOYCE DAWKINS Casa 181 Mayo y Junio</td><td>2025-05, 2025-06</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">ADDnpdfAYjanKmqsJU5I</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-03</td><td>185</td><td class="voucher">18567</td><td>$15</td>
+  <td>EFECTIVO - ELOISA JAEN - ENERO/26</td><td>2026-02</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">7Go9hWbjLGtIX6zGMfpI</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-04</td><td>185</td><td class="voucher">18779</td><td>$45</td>
+  <td>YAPPY CCB DE LILIAM DEL CARMEN LAJON PAVIA POR Ene Feb y Mar casa 185</td><td>2026-01, 2026-02, 2026-03</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">ufosTSqqQrdIdjBvLXgG</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-05</td><td>188</td><td class="voucher">17321</td><td>$15</td>
+  <td>YAPPY DE FABIOLA DE JESUS RAMIREZ de ALVEY (O) SULAY DE JESUS ALVEY R POR mant Mayo casa 188</td><td>2025-05</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">qXzoQa9XLhjvIsLy8JyP</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-06</td><td>188</td><td class="voucher">17449</td><td>$15</td>
+  <td>YAPPY DE SULAY -fabiola de ALVEY R POR MES MAYO</td><td>2025-05</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">k7FsgxCE0JF2VZkkQHWD</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>196</td><td class="voucher">18378</td><td>$30</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE GREGORIA HEIDI BRYAN RAMOS enero febrero casa 196</td><td>2026-01, 2026-02</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">GfyZGL78K54N3JCsRyGG</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-02</td><td>196</td><td class="voucher">18572</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE GREGORIA HEIDI BRYAN RAMOS casa196 marzo</td><td>2026-02</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">1pAjr8bV1bzS6nglnULF</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-08</td><td>210</td><td class="voucher">17718</td><td>$15</td>
+  <td>YAPPY BG DE YESICA MARLENE CHIFUNDO DE PRESTAN POR mantenimiento de agosto Flia Prestan c</td><td>2025-08</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">QZo9bsd5x9rh0qBSUgT1</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>210</td><td class="voucher">17865</td><td>$30</td>
+  <td>YAPPY BG DE YESICA MARLENE CHIFUNDO DE PRESTAN POR mantenimiento de agosto y septiembre f</td><td>2025-08, 2025-09</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">MAG1qAlGVyQdiFd5aEnx</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>212</td><td class="voucher">17858</td><td>$45</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE KHALILA MITZOIE ASHBY DE BERMUDEZ Octubre a Diciembre casa 21</td><td>2025-08, 2025-09, 2025-10</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">wPOpO1zWILGQExVWZ4YV</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-05</td><td>213</td><td class="voucher">17349</td><td>$15</td>
+  <td>YAPPY DE SIXTA MARIA CARDALES de RIOS</td><td>2025-04</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">0C83ql4pbQfYsY0JPO6j</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-06</td><td>213</td><td class="voucher">17492</td><td>$30</td>
+  <td>YAPPY BG DE SIXTA MARIA CARDALES de RIOS -ABRIL Y MAYO</td><td>2025-04, 2025-05</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">chGnmus8s1ha1LPxBulN</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-06</td><td>218</td><td class="voucher">17440</td><td>$30</td>
+  <td>YAPPY DE LISSIBETH- FLIA BEJARANO -  MES DE MAYO Y JUNIO</td><td>2025-05, 2025-06</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">xlNV1TqS0p45UAlL7Fph</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-08</td><td>218</td><td class="voucher">17766</td><td>$45</td>
+  <td>YAPPY BG DE JULISSA HAYDEE BEJARANO GOMEZ POR Julio Bejarano casa 218 mayo junio y julio</td><td>2025-05, 2025-06, 2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">de1P88FaW2Q7mcPErShd</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>218</td><td class="voucher">18310</td><td>$45</td>
+  <td>YAPPY BG DE VANESSA ANNETTE TASCON RELUZ POR mes ENERO A MARZO/26 Julio Bejarano</td><td>2026-01, 2026-02, 2026-03</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">AI7iTV0XUTrDhSnMnVd8</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-02</td><td>218</td><td class="voucher">18536</td><td>$30</td>
+  <td>DEPOSITO - FLIA BEJARANO- ENERO Y FEBRERO 26</td><td>2026-01, 2026-02</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">bXnt6ClJitrc4iuy2x9m</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-11</td><td>238</td><td class="voucher">18110</td><td>$60</td>
+  <td>DEPOSITO FLIA AVILA - ABRIL A JULIO</td><td>2025-10, 2025-09, 2025-08, 2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">SVfsk2lQoqtIIeX81Hs8</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-11</td><td>238</td><td class="voucher">18188</td><td>$30</td>
+  <td>DEPOSITO -FLIA AVILA- AGOSTO Y SEPTIEMBRE</td><td>2025-08, 2025-09</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">KNRQ2mUzf4UURhq78OTK</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>238</td><td class="voucher">18247</td><td>$30</td>
+  <td>DEPOSITO- PEDRO AVILA - OCTUBRE Y NOVIEMBRE</td><td>2025-10, 2025-11</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">eiC5BO3aRcns8eo2rcfT</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-03</td><td>238</td><td class="voucher">18683</td><td>$45</td>
+  <td>YAPPY BG DE INDIANA ESTHER JORDAN CAMPOS- DICIEMBRE, ENERO Y FEBRERO/26</td><td>2025-12, 2026-01, 2026-02</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">jY2rP2znFmQzQ3PnCTHi</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-03</td><td>238</td><td class="voucher">18727</td><td>$15</td>
+  <td>YAPPY BG DE INDIANA ESTHER JORDAN CAMPOS- MARZO/26</td><td>2026-02</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">88g8W7FYuJRHuCiGX558</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>253</td><td class="voucher">17803</td><td>$30</td>
+  <td>EFECTIVO - FLIA CUERO - AGOSTO Y SEPTIEMBRE - CASA 253</td><td>2025-08, 2025-09</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">0b3wZror9JK2GqFi8eB9</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-02</td><td>253</td><td class="voucher">18540</td><td>$15</td>
+  <td>EFECTIVO - FLIA CUERO - AGOSTO 2025</td><td>2025-08</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">ZsoxUgngo6PGsn3GpzpL</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>259</td><td class="voucher">18448</td><td>$15</td>
+  <td>YAPPY BG DE OKIANIS DEL CARMEN ROBINSON DE KENTISH POR Diciembre casa 259</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">inChU1Ftkfp0JBsfm5zj</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>259</td><td class="voucher">18474</td><td>$30</td>
+  <td>YAPPY BG DE OKIANIS DEL CARMEN ROBINSON DE KENTISH POR Enero y Febrero casa 259 Familia K</td><td>2026-01, 2026-02</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">jjGqo9qVWPZlyD93YTxP</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>270</td><td class="voucher">18326</td><td>$15</td>
+  <td>YAPPY BG DE IDA CEMA JACKSON de VALENCIA - OCTUBRE</td><td>2025-11</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">nQo5xQIXK7OrCFgItaUj</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-02</td><td>270</td><td class="voucher">18556</td><td>$15</td>
+  <td>YAPPY BG DE IDA CEMA JACKSON de VALENCIA - NOVIEMBRE 2025</td><td>2025-11</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">ShgQLo6oERVRKNnoAWXQ</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>271</td><td class="voucher">18242</td><td>$20</td>
+  <td>YAPPY BG DE YOLANDA ENEIDA LOPER ALABARCA POR mantenimiento casa 271 diciembre 2025</td><td>2025-12</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">JryIJiWaja9DGekSU7aO</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>271</td><td class="voucher">18386</td><td>$20</td>
+  <td>YAPPY BG DE YOLANDA ENEIDA LOPER ALABARCA POR mantenimiento enero 2026 casa 271</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">sxcPQcTUTpuRGgIJEJd6</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>273</td><td class="voucher">18488</td><td>$15</td>
+  <td>YAPPY BG DE ANIUTKA YOHANI ISAAC SILVERA POR casa 273- NOVIEMBRE</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">Bz8XN0ZaLkFxg699sLQP</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-03</td><td>273</td><td class="voucher">18777</td><td>$15</td>
+  <td>YAPPY BG DE ANIUTKA YOHANI ISAAC SILVERA POR casa 273- ENERO 2026</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">rNS6BzdKN41DziJpd7cs</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-04</td><td>273</td><td class="voucher">18902</td><td>$15</td>
+  <td>YAPPY BG DE ANIUTKA YOHANI ISAAC SILVERA POR casa 273- febrero/26</td><td>2026-03</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">WrwjIxJED8m4gh3KcU3Z</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-06</td><td>273</td><td class="voucher">19112</td><td>$15</td>
+  <td>YAPPY BG DE ANIUTKA YOHANI ISAAC SILVERA POR casa 273- MES DE MARZO/26</td><td>2026-03</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">ySmMFgrCB26416AnHPsm</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-05</td><td>274</td><td class="voucher">17294</td><td>$30</td>
+  <td>YAPPY DE LUZ MARIA BETEGON GARIBALDI POR casa 274 LuzMariabetegonOrlandobarrios</td><td>2025-04, 2025-03</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">Xps9SkPkcd8pg8PnqNB9</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-08</td><td>274</td><td class="voucher">17768</td><td>$30</td>
+  <td>YAPPY BG DE LUZ MARIA BETEGON GARIBALDI POR casa 274 Luz Betegon- ABRIL- MAYO</td><td>2025-04, 2025-05</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">PrBt63MtPWE4vWkYfAoU</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-07</td><td>277</td><td class="voucher">17516</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE ISABEL RIQUELME MARTINEZ casa 277 flia Riquelme Luque mensual JULIO</td><td>2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">2SQnTXaiYGpd0rPf5GFk</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-07</td><td>277</td><td class="voucher">17610</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE ISABEL RIQUELME MARTINEZ casa 277 flia Riquelme Luque mensual -agosto</td><td>2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">4UksZ9lGwhBzQ28wj4RM</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-06</td><td>278</td><td class="voucher">17453</td><td>$15</td>
+  <td>DEPOSITO - YAMILKA PARRIS - CASA 278 MES DE MAYO</td><td>2025-05</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">H5koBinTKTIECkliSdPr</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-06</td><td>278</td><td class="voucher">17496</td><td>$15</td>
+  <td>YAPPY BG DE YAMILKA OSIRIS TUÑON de PARRIS CASA 278 JUNIO</td><td>2025-05</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">FdmctlMlb1Uw1UB33bvy</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>278</td><td class="voucher">17826</td><td>$15</td>
+  <td>DEPOSITO- YAMILKA PARRIS - MES DE AGOSTO</td><td>2025-08</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">N3cSj1GGDt2eN46CCy0Y</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>278</td><td class="voucher">17938</td><td>$15</td>
+  <td>DEPOSITO -YAMILKA PARRIS - SEPTIEMBRE</td><td>2025-08</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">5DPQU3gg5hSjqdWANS64</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-10</td><td>286</td><td class="voucher">17970</td><td>$90</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE EDWIN JAVIER ESCOBAR ROBINSON (YOUR PLUG) Flia Parris ENERO DE JUNIO</td><td>2025-09, 2025-08, 2025-07, 2025-06, 2025-05, 2025-04</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">RdFDsPWwmPKoFIYrbINy</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-11</td><td>286</td><td class="voucher">18089</td><td>$30</td>
+  <td>FLIA  PARRIS - CASA 286 - SEPTIEMBRE Y OCTUBRE</td><td>2025-09, 2025-10</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">2QdyhMoKOVnIWQdrqaGM</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-06</td><td>291</td><td class="voucher">17498</td><td>$15</td>
+  <td>YAPPY BG DE JULIO ENRIQUE MEJIA POR Mant Seg mes de julio flia Mejia Nino casa 291</td><td>2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">Oh2610rkOGw5DvSDQu4Z</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-07</td><td>291</td><td class="voucher">17588</td><td>$15</td>
+  <td>YAPPY BG DE JULIO ENRIQUE MEJIA POR Flia Mejia Nino 291Manty seg agosto</td><td>2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">2y1S7NNwx7BWpjLKa8du</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-07</td><td>292</td><td class="voucher">17527</td><td>$15</td>
+  <td>YAPPY BG DE SHANI NG de CHIU POR Familia Chiu pago de junio 2025</td><td>2025-06</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">IjtFhcCgyisy3HdVg4Wx</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-07</td><td>292</td><td class="voucher">17596</td><td>$15</td>
+  <td>YAPPY BG DE SHANI NG de CHIU POR Familia Chiu Casa 292 - julio</td><td>2025-06</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">NSEhrelGjwvRywRS0oXu</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-05</td><td>294</td><td class="voucher">17234</td><td>$30</td>
+  <td>MARIBEL LAGUNA - MANT. JULIO Y AGOSTO/25</td><td>2025-07, 2025-08</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">ZiUUF8WDJ5mRpPMBCT8g</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-08</td><td>294</td><td class="voucher">17753</td><td>$60</td>
+  <td>EFECTIVO - MARIBETH LAGUNA - SEPTIEMBRE A DICIEMBRE </td><td>2025-08, 2025-09, 2025-10, 2025-11</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">fxRUFiuoJ2iqjYXPsxPB</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>295</td><td class="voucher">17820</td><td>$45</td>
+  <td>YAPPY BG DE BOLIVAR RODRIGUEZ TORIBIO POR Alborada calle 6ta casa 295 flia Rodriguez Lee- ABRIL- MAYO Y JUNIO</td><td>2025-04, 2025-05, 2025-06</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">j5vovvPIpQQNFoKQVr7a</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>295</td><td class="voucher">17847</td><td>$45</td>
+  <td>YAPPY BG DE BOLIVAR RODRIGUEZ TORIBIO POR Casa 295 julio agost y sept</td><td>2025-08, 2025-07, 2025-06</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">N2PnvA5yDoJ7ABFXqLpg</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>296</td><td class="voucher">18251</td><td>$15</td>
+  <td>YAPPY BG DE MARIBEL ARISPE de VEGA</td><td>2025-12</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">IG4zH2mH0g6cqhZEsDPI</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>296</td><td class="voucher">18299</td><td>$15</td>
+  <td>ACH - JENISEL ELENA HOYTE ARISPE- mayo/25</td><td>2025-12</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">OFM0w2r3qv9KYX8RHvwc</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-11</td><td>297</td><td class="voucher">18106</td><td>$45</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE AIXA IVETTE HERNANDEZ SANTAMARIA AGOSTO - SEPT Y OCTUBRE casa 297</td><td>2025-10, 2025-11, 2025-12</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">Wl6BsgRzVYC4LwAKMjxN</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>297</td><td class="voucher">18430</td><td>$45</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE AIXA IVETTE HERNANDEZ SANTAMARIA- MES DE NOVIEMBRE, DICIEMBRE Y ENERO 26</td><td>2025-11, 2025-12, 2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">t06PpQhI1UaONce2yFmk</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>298</td><td class="voucher">17853</td><td>$15</td>
+  <td>YAPPY BG DE JACQUELINE YOVANIA VILLAMIL TORRES - mes de agosto</td><td>2025-08</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">SNj367TlaPou0ZWSWdOC</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>298</td><td class="voucher">17920</td><td>$15</td>
+  <td>YAPPY BG DE JACQUELINE YOVANIA VILLAMIL TORRES- septiembre</td><td>2025-08</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">b6fFD5evwMCb2t8pKPES</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>309</td><td class="voucher">18266</td><td>$30</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE VICENTE ROOK FRUTO Fla Rook casa 309</td><td>2025-11, 2025-12</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">2Ipm9AdwiUMzRYSwwIrw</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>309</td><td class="voucher">18364</td><td>$30</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE VICENTE Fla Rook casa 309- NOVIEMBRE Y DICIEMBRE</td><td>2025-11, 2025-12</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">C8FdL91kH0yfe7wk32Nf</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-02</td><td>309</td><td class="voucher">18551</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE VICENTE ROOK FRUTO Fla Rook casa 309- enero 2026</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">o3tY0o7JR7lMndMCynoH</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-02</td><td>309</td><td class="voucher">18626</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE VICENTE ROOK FRUTO Fla Rook Casa 309- febrero/26</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">7tZiW3vi4OacaWSl2OJ0</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-05</td><td>310</td><td class="voucher">17226</td><td>$45</td>
+  <td>nelson casa 31</td><td>2025-05, 2025-06, 2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">yNKJhebasFOHzVMFmPeW</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-05</td><td>310</td><td class="voucher">17367</td><td>$15</td>
+  <td>YAPPY DE NELSON AZARIAS MORENO MAGDALENO POR casa 310 oeste mes de junio</td><td>2025-06</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">AGEy6K6bhGGgZYw56NlC</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-07</td><td>310</td><td class="voucher">17513</td><td>$15</td>
+  <td>YAPPY BG DE NELSON AZARIAS MORENO MAGDALENO POR Casa 310 mes de junio</td><td>2025-06</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">urR6c5cp6Jj0WGfiRSSr</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-10</td><td>310</td><td class="voucher">17968</td><td>$15</td>
+  <td>YAPPY BG DE NELSON AZARIAS MORENO MAGDALENO POR buen dia15 mes de oct 30 3 tarjeta de CASA 310</td><td>2025-10</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">Cq5UOg7YLEZVZTHCEXjZ</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-11</td><td>310</td><td class="voucher">18202</td><td>$15</td>
+  <td>YAPPY BG DE NELSON AZARIAS MORENO MAGDALENO POR Pago SegMant Noviembre Casa 310 oeste</td><td>2025-11</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">nSUPYcgvWSLF1YfcggmT</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>313</td><td class="voucher">17819</td><td>$30</td>
+  <td>YAPPY BG DE ORLANDO ENRIQUE ARGUELLES CUESTA POR SEPTIEMBRE Y OCTUBRE casa 313</td><td>2025-09, 2025-10</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">ZUAK1KnJbNFADOeNEelD</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-04</td><td>316</td><td class="voucher">18826</td><td>$45</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE TWIRA TASHAWNNA ALLEYNE CLARK Casa 316 Ignacio Dreckett ABR aJUNIO/26</td><td>2026-04, 2026-05, 2026-06</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">aGLfMVMsdZFbk1768USj</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-04</td><td>316</td><td class="voucher">18873</td><td>$15</td>
+  <td>YAPPY BG DE YANIZA INDIRA ATENCIO DE DRECKETT- JULIO/26</td><td>2026-04</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">Jad8pN21MsgdZMHSI1TN</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-06</td><td>317</td><td class="voucher">17416</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE FERNANDO CHAVERRA PINEDA Fernando Chaverra 3 86 1038 casa 317 MES DE JULIO</td><td>2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">LDrnsCfrwzK5UxTkwLce</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-07</td><td>317</td><td class="voucher">17615</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE FERNANDO CHAVERRA PINEDA Fernando Chaverra casa 317- septiembre</td><td>2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">KimTYe904H325QAx0GOv</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-08</td><td>317</td><td class="voucher">17643</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE FERNANDO CHAVERRA PINEDA Fernando Chaverra casa 317 OCTUBRE</td><td>2025-08</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">fdFoTk9ugyR6VORABAkx</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-08</td><td>317</td><td class="voucher">17760</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE FERNANDO CHAVERRA PINEDA Fernando Chaverra casa 317 -  NOVIEMBRE</td><td>2025-08</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">t6elytzZoG8VfhQ0Qp2j</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-11</td><td>317</td><td class="voucher">18172</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE FERNANDO CHAVERRA PINEDA Fernando Chaverra casa 317 FEBRERO 2026</td><td>2026-02</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">t3chUEOQ630egriGNK74</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-02</td><td>317</td><td class="voucher">18622</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE FERNANDO CHAVERRA PINEDA Fernando Chaverra casa 317- JULIO/26</td><td>2026-02</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">v3C5eL3iiqnwalTk6aZf</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-06</td><td>323</td><td class="voucher">17489</td><td>$45</td>
+  <td>YAPPY BG DE EDGAR PAUL ORTEGA PIMENTEL POR Mant Casa 323 Flia Ortega JULIO, AGOSTO Y SEPTIEMBRE</td><td>2025-07, 2025-08, 2025-09</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">n7qA6Y4eLsI9AM2ZCARj</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>323</td><td class="voucher">17930</td><td>$45</td>
+  <td>YAPPY BG DE EDGAR PAUL ORTEGA PIMENTEL POR casa 323 octubre a dic2025 Flia Orteha</td><td>2025-09, 2025-10, 2025-11</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">Ju3vtV4AR2zJtnIWwqcI</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-03</td><td>326</td><td class="voucher">18664</td><td>$15</td>
+  <td>YAPPY BG DE SUGEIRIS YANIRETH BARRETT JIMENEZ- DICIEMBRE/25</td><td>2026-02</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">h6CzLql7441Y8q3d85Fq</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-06</td><td>326</td><td class="voucher">19087</td><td>$15</td>
+  <td>YAPPY BG DE SUGEIRIS YANIRETH BARRETT JIMENEZ- MES DE FEBRERO 2026</td><td>2026-02</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">whlEmA6hcuwPCrHNylhl</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-06</td><td>327</td><td class="voucher">17457</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE JOSSUA EMMIR WILLIAMS RIOS - Flia Williams - casa 327 Marzo</td><td>2025-06</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">cxF291Qen56JwCfsjJwL</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-06</td><td>327</td><td class="voucher">17461</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE JOSSUA EMMIR WILLIAMS RIOS flia Williams, casa 327 abril</td><td>2025-05</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">ai2sJy1fcGYMAuypxCR3</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-07</td><td>327</td><td class="voucher">17555</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE JOSSUA EMMIR WILLIAMS RIOS Flia Williams - mes de mayo</td><td>2025-05</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">09P0Jm8h9wcDiASriclt</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-08</td><td>327</td><td class="voucher">17679</td><td>$15</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE JOSSUA EMMIR WILLIAMS RIOS Mantenimiento y Seguridad - junio</td><td>2025-06</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">IHEHyvtq0cJJQcsqDicu</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-06</td><td>329</td><td class="voucher">17500</td><td>$15</td>
+  <td>YAPPY BG DE EDGARDO CHIARI FRANCO MES DE JULIO</td><td>2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">mq6mbZHfaibK13vnqLv8</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-07</td><td>329</td><td class="voucher">17635</td><td>$15</td>
+  <td>YAPPY BG DE EDGARDO CHIARI FRANCO - AGOSTO</td><td>2025-07</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">VUwx3t6wAmlYMtcsMCk5</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>329</td><td class="voucher">18248</td><td>$15</td>
+  <td>YAPPY BG DE EDGARDO CHIARI FRANCO -DICIEMBRE</td><td>2025-12</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">WT3MNV9nr8S3UTg9r7g6</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>329</td><td class="voucher">18369</td><td>$15</td>
+  <td>YAPPY BG DE EDGARDO CHIARI FRANCO- ENERO</td><td>2025-12</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">aanRf9Emw0vps6NvCyXW</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>332</td><td class="voucher">18440</td><td>$30</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE LILIAN JAZMIN TUÑON DE TOULIER Eneeo Febrero 2026</td><td>2026-02, 2026-03</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">wkLgpcssWs2LDFqZpxiP</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-03</td><td>332</td><td class="voucher">18767</td><td>$30</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE LILIAN JAZMIN TUÑON DE TOULIER pago marzo abril casa 332</td><td>2026-03, 2026-04</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">7ILOTbuZI5m5oM34zQz6</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>D-02</td><td class="voucher">18407</td><td>$15</td>
+  <td>"BANCA MOVIL TRANSFERENCIA DE MARITZA OTILIA LAWSON de MORA (""EVENTOS"") casa D2 Enero 2026"</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">Q0BdtB4EzakwNiBwWhzP</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>D-02</td><td class="voucher">18520</td><td>$15</td>
+  <td>"BANCA MOVIL TRANSFERENCIA DE MARITZA OTILIA LAWSON de MORA (""EVENTOS"") Casa D2 mtto febrero/26"</td><td>2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">v3dtya0AzRJ8WpvUftqT</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>D-09</td><td class="voucher">18337</td><td>$30</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE ADELSA AYARIS AGUILAR ALVARADO adelsa casa D9</td><td>2025-11, 2025-10</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">sLI1bgReOL9dtll0YNn8</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2026-01</td><td>D-09</td><td class="voucher">18451</td><td>$30</td>
+  <td>BANCA MOVIL TRANSFERENCIA DE ADELSA AYARIS AGUILAR ALVARADO Adelsa D9- octubre - noviembre</td><td>2025-10, 2025-11</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">Ma5iRyxKir1MZR5OBNzd</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-05</td><td>D-12</td><td class="voucher">17287</td><td>$15</td>
+  <td>YAPPY DE DAYANARA ITZEL BENJAMIN DE DE LEON POR casa D -12 mes de mayo familia De Leon</td><td>2025-05</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">ShXlpJeIa7SsfVBDXWjF</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-05</td><td>D-12</td><td class="voucher">17343</td><td>$30</td>
+  <td>YAPPY DE DAYANARA ITZEL BENJAMIN DE DE LEON POR casa D 12 familia De Leon</td><td>2025-05, 2025-06</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">NHMd9sKREsLiQl4eE35w</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-08</td><td>RIFA</td><td class="voucher">RIFA</td><td>$30</td>
+  <td>YAPPY BG DE JAIRO ABDIEL BUITRAGO VASQUEZ POR Libreta casa 100</td><td>2025-08, 2025-09</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">gSyPrSwjtBTSrPn13ntO</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>RIFA 2</td><td class="voucher">RIFA 2</td><td>$30</td>
+  <td>YAPPY BG DE YOLANDA ENEIDA LOPER ALABARCA POR pago rifa alborada casa 271</td><td>2025-12, 2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">2ptMhlo8E0V3JDpl5Ujb</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-12</td><td>RIFA 2</td><td class="voucher">RIFA 2</td><td>$30</td>
+  <td>YAPPY BG DE QUERUBI LIZET NEREIDA de HILTON POR Pago de rifa casa 19 primera calle</td><td>2025-12, 2026-01</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">OlvbMzSf2KqX9HdrsraJ</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>TARJETA</td><td class="voucher">TARJETA</td><td>$30</td>
+  <td>YAPPY BG DE YELENA DELIBETH ALVEAR ARCIA POR pago de tres tarjetas casa 174</td><td>2025-09, 2025-10</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">jQjjiqtl9h1hnJs07lqe</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-09</td><td>TARJETAS</td><td class="voucher">TARJETAS</td><td>$30</td>
+  <td>YAPPY BG DE ORLANDO ENRIQUE ARGUELLES CUESTA POR Compra de tres tarjetas casa 313 flia Ar</td><td>2025-09, 2025-10</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">DgEW9J8yUDG8K3Fza2l0</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-10</td><td>TARJETAS</td><td class="voucher">TARJETAS</td><td>$30</td>
+  <td>YAPPY BG DE CIARA LUZ JIMENEZ CONCEPCION casa 16</td><td>2025-10, 2025-11</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">SYEIQxaUSQSdhm1dXDrh</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-10</td><td>TARJETAS</td><td class="voucher">TARJETAS</td><td>$30</td>
+  <td>YAPPY BG DE NELSON AZARIAS MORENO MAGDALENO POR - 3  TARJETAS CASA 310</td><td>2025-10, 2025-11</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">mxLLDB1TqaDKP2xJfaPa</td></tr><tr><td><input type="checkbox" class="marcar"></td>
+  <td>2025-10</td><td>TEATRO</td><td class="voucher">TEATRO</td><td>$60</td>
+  <td>YAPPY BG DE IRASEMA ESTHER MURILLO DE SMALL POR Pago 5 boletos obra teatro casa 119 Flia</td><td>2025-09, 2025-10, 2025-11, 2025-12</td>
+  <td class="editable" contenteditable="true"></td><td class="editable" contenteditable="true"></td>
+  <td class="id">WuZLt6x5ztnULjQVrCEX</td></tr></tbody></table>
+<script>
+function descargarCSV(){
+  const filas=[];
+  document.querySelectorAll('table tbody tr').forEach(tr=>{
+    const tds=[...tr.children].map(td=>td.innerText.replace(/\n/g,' ').trim());
+    const marcar=tr.querySelector('input[type=checkbox]');
+    tds[0]=marcar && marcar.checked?'SI':'NO';
+    filas.push(tds.join('|'));
+  });
+  const blob=new Blob(['seccion,casa,voucher,monto,decision,nota,id\n'+filas.join('\n')],{type:'text/plain'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
+  a.download='revision_casos.txt';a.click();
+}
+</script>
+</body></html>

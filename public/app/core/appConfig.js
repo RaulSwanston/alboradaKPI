@@ -338,6 +338,7 @@ export const appConfig = {
         items: [
           { labelKey: "navigation.financialSummary", path: "/dashboard/resumen", icon: "layout-grid" },
           { labelKey: "navigation.transactions", path: "/dashboard/transactions", icon: "clock" },
+          { labelKey: "navigation.events", path: "/dashboard/events", icon: "calendar" },
           { labelKey: "navigation.properties", path: "/dashboard/properties", icon: "home", roles: ["admin"] }
         ]
       },
@@ -351,6 +352,7 @@ export const appConfig = {
           { labelKey: "navigation.catalog", path: "/services", icon: "box", roles: ["resident", "guest"] },
           { labelKey: "navigation.requests", path: "/dashboard/requests", icon: "file-text" },
           { labelKey: "navigation.residents", path: "/residents", icon: "users", roles: ["admin"] },
+          { labelKey: "navigation.providers", path: "/dashboard/providers", icon: "briefcase", roles: ["admin", "resident"] },
           { labelKey: "navigation.reportPayment", path: "/dashboard/payments/report", icon: "megaphone", roles: ["resident"] },
           { labelKey: "navigation.paymentHistory", path: "/dashboard/payments/history", icon: "clock", roles: ["resident"] },
           { labelKey: "navigation.approvePayments", path: "/dashboard/payments/pending", icon: "wallet", roles: ["admin"] }
