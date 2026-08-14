@@ -32,9 +32,11 @@ export default async function billingGeneratorController(contexto) {
     conceptSelect.innerHTML = '<option value="">Seleccione un concepto...</option>' +
       concepts.map(c => `<option value="${c.id}" data-amount="${c.defaultAmount || 0}">${c.name}</option>`).join('');
 
-    // Presetear periodo al mes actual
+    // Presetear periodo al mes actual y bloquear selección de meses futuros
     const now = new Date();
-    periodInput.value = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const currentPeriod = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    periodInput.value = currentPeriod;
+    periodInput.max = currentPeriod;
   } catch (error) {
     console.error("[billingGenerator] Error inicial:", error);
     resultDiv.className = 'billing-result error';
@@ -89,6 +91,16 @@ export default async function billingGeneratorController(contexto) {
       return;
     }
 
+    // No se permiten cuotas de periodos futuros (facturas aún no en vigencia)
+    const now = new Date();
+    const currentPeriod = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    if (period > currentPeriod) {
+      resultDiv.className = 'billing-result error';
+      resultDiv.textContent = 'No se pueden generar cuotas de periodos futuros. El periodo máximo permitido es el mes actual.';
+      resultDiv.style.display = 'block';
+      return;
+    }
+
     const user = auth.currentUser;
     if (!user) return;
 
@@ -97,7 +109,7 @@ export default async function billingGeneratorController(contexto) {
     resultDiv.style.display = 'none';
 
     try {
-      const dateObj = new Date(period + '-T15:00:00');
+      const dateObj = new Date(`${period}-01T15:00:00`);
       const vouchers = await Transaction._generateBatchVouchers(properties.length, 'FEE', dateObj);
 
       // Pre-leer balances actuales de todas las propiedades

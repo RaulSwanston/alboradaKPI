@@ -1,6 +1,86 @@
 # Memoria de Sesiones - Bitácora de Proyecto
 
-## 📌 RETOMA AQUÍ (última sesión: 8 de Agosto de 2026)
+## 📌 RETOMA AQUÍ (última sesión: 14 de Agosto de 2026)
+
+**Estado:** Sesión de módulo transacciones. Comprobantes vinculados (chips FAC/REC) en la lista, filtro de facturas futuras en propertyDetail, bloqueo de periodos futuros en billingGenerator, y modal de recibo con **dos pestañas** ("Comprobante" + "Formato físico"). **Pendiente verificación en navegador.**
+
+### Resumen de cambios
+
+**A) Chips de documentos vinculados en la lista** (`transactions.controller.js`):
+- `linkCache` (Map id → `{voucherNumber, description, type}`), `resolveRefs()` (indexa `allData`, busca faltantes en lote con `getDoc`, cachea `null` si no existe) y `refsFor()` (PAYMENT → facturas FAC de `appliedTo`; FEE/FINE → recibos REC de `paidBy`).
+- Chips en `col-desc` tras `col-status`, navegan a `/dashboard/transactions/:id` (transactions-detail en edit mode). `resolveRefs()` conectado a carga inicial (mes anterior), `setPreset` y rango custom.
+- Fix `TypeError i.indexOf`: `appliedTo`/`paidBy` guardan **objetos**, no strings → normalización `typeof link === 'string' ? link : (link.transactionId || link.paymentId)`.
+- Eliminado `.conciliate-badge` (badge + variable `appliedToCount` + CSS): los chips son el indicador. Colores gurkha (`.ref-chip.rec` es el único acento verde).
+
+**B) propertyDetail — ocultar facturas futuras sin pagar** (`propertyDetail.controller.js`):
+- Helper `isHiddenFutureCharge(t)`: oculta solo cargos (`amount < 0`) con `period > mes actual` y `pendingAmount > 0`; conserva pre-pagados (romperían reconciliación/saldo).
+- Saldo corriente, header, estado, contador y PDF recalculados sobre movimientos visibles.
+
+**C) billingGenerator — sin periodos futuros + fix de fecha** (`billingGenerator.*`):
+- Validación bloquea `period > periodo actual` (mensaje de error) + `periodInput.max = periodo actual`. Descripción en HTML actualizada.
+- Fix bug de fecha: `new Date(period + '-T15:00:00')` (Invalid Date) → `new Date(`${period}-01T15:00:00`)`.
+
+**D) Modal de recibo — dos pestañas** (`transactions.html/css/controller.js` + i18n):
+- **Tab "Comprobante"** (todas las transacciones): recibo actual + sección de desglose:
+  - PAYMENT → "Facturas cubiertas" (`appliedTo`: voucher + concepto + monto). Sin vínculos → sin sección.
+  - FEE/FINE → "Recibos que lo pagaron" (`paidBy`). **Ojo:** antes el recibo de FEE no mostraba los pagos; ahora sí (decisión del usuario: el botón "Ver Comprobante" en FEE sirve para ver qué pagos cubren la factura).
+- **Tab "Formato físico"** (**solo PAYMENT**): modal más ancho (`physical-mode` 760px) simulando proporción de libreta:
+  - Header en **grid 3 columnas**: col1 logo (360px, ~2:1), col2 "RECIBO" + número en la misma fila en **rojo** (`--color-solid-pink-600`), col3 email/teléfono (flex-end, mismo ancho que logo). Frase "PARA RECLAMOS PRESENTAR RECIBO" en mayúsculas/rojo, al inicio de la col 2 debajo de RECIBO (span cols 2-3).
+  - Formulario con líneas a todo el ancho (`.physical-form-line.fill` flex:1): `Fecha: __ de __ de 20__ Casa No. __`, `Recibí de` (dueño vía `Property.getById`), `la suma de` (**numérico + en letras** con helper `numberToWords` español CON 00/100), `en concepto de`.
+  - **Forma de pago:** `[] efectivo  [] cheque  [] otro ___`; cuando falta `paymentMethod` (pagos históricos) se **infiere desde la descripción** (misma lógica que `Analytics.inferPaymentMethod`: Yappy/Cheque/Efectivo/Tarjeta/Depósito/Transferencia).
+  - **Saldos** calculados desde las transacciones de la unidad hasta la fecha del pago (convención: negativo = deuda): saldo anterior → Pago → saldo actual. En blanco si no hay propiedad/fecha.
+  - Firma "Cobrado por" (`metadata.adminReviewedByName`).
+- **Tabs sin borde** (`border-radius: 0`, sin subrayados): solo cambio de color de fuente (hover gurkha, activo verde).
+- **Corrección de impresión:** el modal vive **anidado** en el wrapper que Mosaic crea (HTML plano, `mosaic.js:130-138`), así que `body > *:not(#receipt-modal)` no lo aislaba. Se **teleporta a `body`** al abrir (su `position: fixed` no cambia la vista) y se **restaura** al cerrar y en el cleanup (`return () => restoreReceiptModal()`). Imprime la pestaña activa.
+- i18n es/en: claves `receiptTabCurrent/Physical`, `receiptAppliedTitle/PaidByTitle`, y etiquetas del formato físico (Fecha, Casa No., Recibí de, la suma de, en concepto de, Forma de pago, efectivo/cheque/otro, saldo anterior/Pago/saldo actual, Cobrado por, para reclamos presentar recibo).
+
+### Decisiones del usuario
+- Solo las transacciones **PAYMENT** tienen comprobante tipo "recibo de pago" → el tab "Formato físico" es solo PAYMENT. FEE/FINE remitirán a futuro al concepto del catálogo (serviceDetail), **fuera de esta tarea** para no romper la lista.
+- Desglose como sección dedicada (no texto en "Concepto"). Pagos sin conciliar → sin sección (como hoy).
+- Formato físico emula el comportamiento de la libreta de recibos **proporcionalmente** (no una medida exacta; la ventana es más ancha que alta).
+- El modelo no lee imágenes (deepseek v4 flash): el formato físico se replicó desde la descripción textual del usuario.
+
+### Pendiente
+- **Verificación en navegador** (transacciones + modal recibo): chips, desglose, tab físico, impresión (pestaña activa), saldos.
+- **Discrepancia abierta (sin confirmar):** `property.balance` y `Property.recalculateAllBalances()` siguen sumando facturas futuras 2027 (propertyDetail ahora filtra pero el balance del admin no). ¿Dejarlo así?
+- Limpiar `.activity-card-inner` huérfano en `recentActivity.css` y revisar `config.html` (grid-column), pendientes de sesiones previas.
+
+---
+
+## Entrada previa: 9 de Agosto de 2026
+
+**Estado:** Sesión mixta UI + módulo transacciones. Menú con Eventos/Proveedores ya visible en producción (navigation sincronizado a Firestore), fix de vistas dashboard a full-width, y mejora de carga inicial del módulo de transacciones. **Pendiente verificación en navegador de las transacciones.**
+
+### Resumen de cambios
+- **Vistas y menú (verificado en producción):**
+  - Nuevas vistas `events.html` y `providers.html` + módulo `providers/` (listado por `role == provider`, búsqueda vía evento `app:search`, grid 2 columnas ≥768px).
+  - Router: `.get('/dashboard/events'...)` y `.get('/dashboard/providers'...)` con `sessionGuard`.
+  - `appConfig.js` `navigation`: Eventos (Panel, icon `calendar`) y Proveedores (Servicios, icon `briefcase`, roles admin+resident).
+  - i18n es/en: `navigation.events/providers`, rutas `/eventos` y `/proveedores` (en: `/events`, `/providers`), bloque `modules.providers`. En `en` se completaron los bloques `navigation` y `routes` que faltaban.
+- **Sync de navigation a Firestore:** creado `scripts/sync_navigation.mjs` (lee `navigation` del `appConfig.js` local, sube con `{ merge: true }` a `appConfig/app`). Causa raíz del menú que no aparecía: `auth.js` (`sessionGuard`) da prioridad al `navigation` de Firestore/caché `gph_app_config` sobre el local. Ejecutado con `--commit` y verificado. **Nota:** `scripts/` está en `.gitignore`.
+- **Fix calendario responsive** (`calendar.controller.js:3,78`): se registró `createViewMonthAgenda` en `views`. Causa raíz: `viewDay` tiene ambas flags de compatibilidad en `core.js:2634-2635`, así que al agrandar la ventana `setScreenSizeCompatibleView` (`core.js:2762`) hace `return` temprano y no restaura MonthGrid/Week.
+- **Grid dashboard y vistas full-width:**
+  - `root.css:321-331`: `[data-content="dashboard"]` grid con `repeat(auto-fill, minmax(min(100%,25rem),1fr))`, en ≥992px `minmax(0,1fr) minmax(0,1.3fr)`.
+  - `summary.html` usa `.dashboard-summary` con `grid-template-areas` (5 módulos); funciona bien.
+  - Módulos de UNA sola vista (encajonados en `1fr`): se estiraron a ambas columnas con `grid-column: 1/-1` sobre su raíz/wrapper:
+    - `transactions.css` → `[data-content="dashboard"] > .module-transactions` (Mosaic auto-envuelve por HTML plano).
+    - `properties.css` → `[data-content="dashboard"] > .module-properties`.
+    - `propertyDetail.css` → `[data-content="dashboard"] > .property-detail-wrapper` (raíz única) + `max-width:none; margin:0` (antes 1200px centrado).
+- **Módulo transacciones — carga y filtro inteligente:**
+  - `Transaction.getByPeriods(periods)` (Transaction.js:324-345): combina varios periodos `AAAA-MM` y ordena por `effectiveDate` desc.
+  - Carga inicial (controller:628-631): **solo mes anterior al actual** via `getByPeriods([getPeriodKey(prevMonth)])` (antes `getAll(100)` traía facturas de 2027).
+  - `applySmartFilter` (controller:51-60): oculta cargos (`amount < 0`) con `period > mes actual` y `pendingAmount > 0` (facturas adelantadas sin pagar). Activo por defecto; `state.smartFilter` se desactiva en preset "all" y rango custom (ahí se ve todo, incl. 2027).
+  - Motivo: admins procesan los pagos del mes anterior en días posteriores al cierre; y hay residentes que pagan el año adelantado (facturas futuras sin pagar que ensuciaban el feed).
+- **Commit:** `1da784e` subido a GitHub (`git push github main`). Incluye también el DPA legal y `revision_casos.html` de la sesión anterior.
+
+### Pendiente
+- Verificar en navegador: carga inicial de transacciones (solo mes anterior) y que el filtro inteligente oculte facturas de 2027 sin pagar.
+- Limpiar `.activity-card-inner` huérfano en `recentActivity.css` y verificar `justify-content: flex-end` en `.activity-card-right` (sesión 8 ago).
+- Revisar si `config.html` (header) y otras vistas dashboard necesitan `grid-column: 1 / -1`.
+
+---
+
+## Entrada previa: 8 de Agosto de 2026
 
 **Estado:** Sesión de UI del dashboard. Grid de 2 columnas en dashboard, headers de módulos homologados al estilo calendar, ajustes de tarjetas de actividad reciente. **Pendiente de verificación en navegador.**
 

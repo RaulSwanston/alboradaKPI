@@ -1,4 +1,5 @@
 import Transaction from "../../models/Transaction.js";
+import Property from "../../models/Property.js";
 import { t } from '../../core/i18n.js';
 import { db, doc, getDoc, writeBatch, arrayUnion } from "../../core/firebase.js";
 
@@ -30,14 +31,88 @@ export default async function transactionsController(contexto) {
     let allData = [];
     let expandedRows = new Set();
     let conciliationDataCache = new Map();
+    // Caché de documentos vinculados (id -> {voucherNumber, description, type})
+    // para resolver chips FAC/REC sin lecturas repetidas a Firestore.
+    let linkCache = new Map();
     let state = {
         query: '',
         selectedTypes: [],
         range: { start: null, end: null },
-        pagination: { current: 1, perPage: 20 }
+        pagination: { current: 1, perPage: 20 },
+        smartFilter: true
     };
 
     const currency = (val) => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(val);
+
+    const getPeriodKey = (d) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+
+    const monthNames = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+
+    // Números a palabras en español (hasta millones), para el recibo físico
+    const wordsUnidades = ['', 'UNO', 'DOS', 'TRES', 'CUATRO', 'CINCO', 'SEIS', 'SIETE', 'OCHO', 'NUEVE'];
+    const wordsDecenas10 = ['DIEZ', 'ONCE', 'DOCE', 'TRECE', 'CATORCE', 'QUINCE', 'DIECISÉIS', 'DIECISIETE', 'DIECIOCHO', 'DIECINUEVE'];
+    const wordsDecenas = ['', '', 'VEINTE', 'TREINTA', 'CUARENTA', 'CINCUENTA', 'SESENTA', 'SETENTA', 'OCHENTA', 'NOVENTA'];
+    const wordsCentenas = ['', 'CIENTO', 'DOSCIENTOS', 'TRESCIENTOS', 'CUATROCIENTOS', 'QUINIENTOS', 'SEISCIENTOS', 'SETECIENTOS', 'OCHOCIENTOS', 'NOVECIENTOS'];
+
+    const words2 = (n) => {
+        if (n < 10) return wordsUnidades[n];
+        if (n < 20) return wordsDecenas10[n - 10];
+        if (n < 30) return n === 20 ? 'VEINTE' : `VEINTI${wordsUnidades[n % 10]}`;
+        const d = Math.floor(n / 10);
+        const u = n % 10;
+        return wordsDecenas[d] + (u ? ` Y ${wordsUnidades[u]}` : '');
+    };
+
+    const words3 = (n) => {
+        const c = Math.floor(n / 100);
+        const rest = n % 100;
+        const cw = c === 1 ? (rest ? 'CIENTO' : 'CIEN') : wordsCentenas[c];
+        return (cw ? cw + (rest ? ' ' : '') : '') + (rest ? words2(rest) : '');
+    };
+
+    const numberToWords = (num) => {
+        const n = Math.floor(Math.abs(Number(num) || 0));
+        const m = Math.floor(n / 1000000);
+        const t = Math.floor((n % 1000000) / 1000);
+        const rest = n % 1000;
+        let s = '';
+        if (m) s += (m === 1 ? 'UN MILLÓN' : `${words3(m)} MILLONES`) + ((t || rest) ? ' ' : '');
+        if (t) s += (t === 1 ? 'MIL' : `${words3(t)} MIL`) + (rest ? ' ' : '');
+        if (rest) s += words3(rest);
+        return s || 'CERO';
+    };
+
+    /**
+     * Infiere el método de pago desde la descripción cuando el campo paymentMethod
+     * no existe (pagos históricos). Misma lógica que Analytics.inferPaymentMethod.
+     */
+    const inferPaymentMethodLabel = (tx, labels) => {
+        const desc = ((tx.description || '') + ' ' + (tx.paymentMethod || '')).toUpperCase();
+        if (desc.includes('YAPPY')) return labels.yappy || 'Yappy';
+        if (desc.includes('CHEQUE')) return labels.check || 'Cheque';
+        if (desc.includes('EFECTIVO') || desc.includes(' CASH')) return labels.cash || 'Efectivo';
+        if (desc.includes('TARJETA') || desc.includes('CARD') || desc.includes('POS')) return labels.card || 'Tarjeta';
+        if (desc.includes('DEPOSIT') || desc.includes('DEPÓSITO')) return labels.deposit || 'Depósito';
+        if (desc.includes('TRANSFER') || desc.includes('BANCA') || desc.includes('ACH') || desc.includes(' BG ')) return labels.transfer || 'Transferencia';
+        return '';
+    };
+
+    /**
+     * Filtro inteligente: oculta facturas (cargos) de meses FUTUROS que aún
+     * no han sido pagadas. Los residentes que pagan el año adelantado generan
+     * facturas de 2027; esas no deben ensuciar el feed del mes en curso.
+     * Solo aplica a cargos (amount < 0) con periodo > mes actual y pendingAmount > 0.
+     */
+    const applySmartFilter = (list) => {
+        const now = new Date();
+        const currentPeriod = getPeriodKey(now);
+        return list.filter(t => {
+            if (t.amount >= 0) return true;
+            const pending = t.pendingAmount !== undefined ? t.pendingAmount : Math.abs(t.amount || 0);
+            if (pending > 0 && t.period && t.period > currentPeriod) return false;
+            return true;
+        });
+    };
 
     const toTimestamp = (val) => {
         if (!val) return null;
@@ -103,10 +178,66 @@ export default async function transactionsController(contexto) {
     };
 
     /**
+     * Resuelve las referencias (FAC/REC) de los documentos vinculados via
+     * appliedTo (PAYMENT -> FEE) o paidBy (FEE -> PAYMENT). Las transacciones
+     * ya cargadas cubren la mayoría de vínculos; los faltantes se buscan en
+     * lote y se cachean para no repetir lecturas a Firestore.
+     * Transacciones sin appliedTo/paidBy (revisión manual) simplemente no
+     * muestran chips.
+     */
+    const resolveRefs = async () => {
+        const byId = new Map(allData.map(t => [t.id, t]));
+        const missing = new Set();
+        allData.forEach(t => {
+            const linkIds = t.type === 'PAYMENT'
+                ? (t.appliedTo || [])
+                : (t.type === 'FEE' || t.type === 'FINE' ? (t.paidBy || []) : []);
+            linkIds.forEach(link => {
+                const id = typeof link === 'string' ? link : (link.transactionId || link.paymentId);
+                if (id && !byId.has(id) && !linkCache.has(id)) missing.add(id);
+            });
+        });
+        if (missing.size === 0) return;
+
+        const ids = Array.from(missing);
+        const snaps = await Promise.all(ids.map(id => getDoc(doc(db, "transactions", id)).catch(() => null)));
+        snaps.forEach((snap, i) => {
+            const id = ids[i];
+            if (snap && snap.exists()) {
+                const d = snap.data();
+                linkCache.set(id, { id, voucherNumber: d.voucherNumber, description: d.description, type: d.type });
+            } else {
+                linkCache.set(id, null);
+            }
+        });
+        render();
+    };
+
+    /**
+     * Referencias de una transacción: PAYMENT -> facturas (FAC) en appliedTo,
+     * FEE/FINE -> recibos (REC) en paidBy. El label visible es el voucherNumber
+     * (fallback description / id). Vacío si no hay vínculos.
+     */
+    const refsFor = (tx, byId) => {
+        const refs = [];
+        const links = tx.type === 'PAYMENT'
+            ? (tx.appliedTo || [])
+            : (tx.type === 'FEE' || tx.type === 'FINE' ? (tx.paidBy || []) : []);
+        const chipClass = tx.type === 'PAYMENT' ? 'fac' : 'rec';
+        links.forEach(link => {
+            const id = typeof link === 'string' ? link : (link.transactionId || link.paymentId);
+            if (!id) return;
+            const r = linkCache.get(id) || byId.get(id);
+            if (r) refs.push({ id, label: r.voucherNumber || r.description || id, chipClass });
+        });
+        return refs;
+    };
+
+    /**
      * Render principal
      */
     const render = (skipFilterUpdate = false) => {
-        let dataByDate = [...allData];
+        let dataByDate = state.smartFilter ? applySmartFilter(allData) : [...allData];
         if (state.range.start || state.range.end) {
             dataByDate = allData.filter(t => {
                 const tTime = toTimestamp(t.effectiveDate || t.createdAt);
@@ -167,13 +298,15 @@ export default async function transactionsController(contexto) {
 
         const isExpanded = (id) => expandedRows.has(id);
 
+        const byId = new Map(allData.map(t => [t.id, t]));
+
         els.list.innerHTML = pageItems.map(tx => {
             const isPos = tx.amount > 0;
             const dateObj = new Date(toTimestamp(tx.effectiveDate || tx.createdAt));
             const statusLabel = tx.status === 'unidentified' ? t('modules.transactions.statusPending') : t('modules.transactions.statusVerified');
             const statusClass = tx.status === 'unidentified' ? 'dot-pending' : 'dot-verified';
             const expanded = isExpanded(tx.id);
-            const appliedToCount = (tx.appliedTo || []).length;
+            const refs = refsFor(tx, byId);
 
             return `
                 <div class="transaction-row-wrapper" data-id="${tx.id}">
@@ -184,6 +317,10 @@ export default async function transactionsController(contexto) {
                             <div class="col-status">
                                 <span class="status-dot ${statusClass}">● ${statusLabel}</span>
                             </div>
+                            ${refs.length ? `
+                            <div class="col-refs">
+                                ${refs.map(r => `<a class="ref-chip ${r.chipClass}" href="/dashboard/transactions/${r.id}" data-view="dashboard" title="${r.label}">${r.label}</a>`).join('')}
+                            </div>` : ''}
                         </div>
                         <div class="col-type">
                             <span class="badge badge-${(tx.type || 'fee').toLowerCase()}">${tx.type || t('modules.transactions.typeOther')}</span>
@@ -214,7 +351,6 @@ export default async function transactionsController(contexto) {
                                     <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
                                 </svg>
                             </button>
-                            ${appliedToCount > 0 ? `<span class="conciliate-badge" title="${appliedToCount} cargo(s) conciliado(s)">${appliedToCount}</span>` : ''}
                         </div>
                     </div>
                     <div class="conciliation-panel ${expanded ? '' : 'hidden'}" data-property-id="${tx.propertyId || ''}">
@@ -569,6 +705,8 @@ export default async function transactionsController(contexto) {
         expandedRows.clear();
         conciliationDataCache.clear();
 
+        state.smartFilter = val !== 'all';
+
         if (periodToFetch) {
             els.list.innerHTML = `<div style="text-align: center; padding: 4rem;">${t('modules.transactions.loadingPeriod')} ${periodToFetch}...</div>`;
             allData = await Transaction.getByPeriod(periodToFetch);
@@ -580,6 +718,7 @@ export default async function transactionsController(contexto) {
         state.pagination.current = 1;
         state.selectedTypes = []; 
         render();
+        resolveRefs();
     };
 
     els.search?.addEventListener('input', (e) => { 
@@ -600,16 +739,21 @@ export default async function transactionsController(contexto) {
         els.list.innerHTML = `<div style="text-align: center; padding: 4rem;">${t('modules.transactions.loadingDb')}</div>`;
         expandedRows.clear();
         conciliationDataCache.clear();
+        state.smartFilter = false;
         allData = await Transaction.getByDateRange(state.range.start, state.range.end);
         state.pagination.current = 1;
         state.selectedTypes = [];
         render();
+        resolveRefs();
     });
 
     try {
         els.list.innerHTML = `<div style="text-align: center; padding: 4rem;">${t('modules.transactions.loadingDb')}</div>`;
-        allData = await Transaction.getAll(100); 
+        const now = new Date();
+        const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        allData = await Transaction.getByPeriods([getPeriodKey(prevMonth)]);
         render();
+        resolveRefs();
     } catch (err) {
         console.error(err);
         els.list.innerHTML = `<div>${t('modules.transactions.loadError')}</div>`;
@@ -618,15 +762,224 @@ export default async function transactionsController(contexto) {
     // --- RECEIPT MODAL ---
     const receiptModal = document.getElementById('receipt-modal');
     const receiptBody = document.getElementById('receipt-body');
+    const receiptPhysical = document.getElementById('receipt-physical-body');
+    const receiptModalContent = receiptModal?.querySelector('.receipt-modal-content');
     const receiptClose = document.getElementById('receipt-modal-close');
     const btnPrint = document.getElementById('btn-print-receipt');
 
-    const showReceiptModal = (tx) => {
+    // Cambia de pestaña y aplica el modo "recibo físico" (proporción más ancha que alta)
+    const setReceiptTab = (tabName) => {
+        receiptModal.querySelectorAll('.receipt-tab').forEach(tb => tb.classList.toggle('active', tb.dataset.tab === tabName));
+        receiptModal.querySelectorAll('.receipt-panel').forEach(panel => panel.classList.toggle('active', panel.dataset.panel === tabName));
+        if (receiptModalContent) receiptModalContent.classList.toggle('physical-mode', tabName === 'physical');
+    };
+
+    // El modal vive anidado en el wrapper del módulo; para imprimir correctamente
+    // (la regla @media print usa body > *:not(#receipt-modal)) se teleporta a body
+    // mientras está abierto. position:fixed mantiene su posición visual intacta.
+    let receiptModalParent = null;
+    const teleportReceiptModal = () => {
+        if (!receiptModal || receiptModalParent || receiptModal.parentElement === document.body) return;
+        receiptModalParent = receiptModal.parentElement;
+        document.body.appendChild(receiptModal);
+    };
+    const restoreReceiptModal = () => {
+        if (!receiptModal || !receiptModalParent) return;
+        receiptModalParent.appendChild(receiptModal);
+        receiptModalParent = null;
+    };
+
+    /**
+     * Sección de documentos vinculados en el comprobante:
+     * PAYMENT -> facturas cubiertas (appliedTo); FEE/FINE -> recibos que lo pagaron (paidBy).
+     * Resuelve el voucherNumber en lote vía linkCache/allData o getDoc on-demand.
+     * Sin vínculos (pago sin conciliar) no se renderiza sección.
+     */
+    const buildAppliedSection = async (tx) => {
+        const links = tx.type === 'PAYMENT'
+            ? (tx.appliedTo || [])
+            : (tx.type === 'FEE' || tx.type === 'FINE' ? (tx.paidBy || []) : []);
+        if (!links.length) return '';
+
+        const byId = new Map(allData.map(item => [item.id, item]));
+        const missing = [];
+        links.forEach(link => {
+            const id = typeof link === 'string' ? link : (link.transactionId || link.paymentId);
+            if (id && !byId.has(id) && !linkCache.has(id)) missing.push(id);
+        });
+        if (missing.length) {
+            const snaps = await Promise.all(missing.map(id => getDoc(doc(db, "transactions", id)).catch(() => null)));
+            snaps.forEach((snap, i) => {
+                const id = missing[i];
+                if (snap && snap.exists()) {
+                    const d = snap.data();
+                    linkCache.set(id, { id, voucherNumber: d.voucherNumber, description: d.description, type: d.type });
+                } else {
+                    linkCache.set(id, null);
+                }
+            });
+        }
+
+        const title = tx.type === 'PAYMENT'
+            ? t('modules.transactions.receiptAppliedTitle')
+            : t('modules.transactions.receiptPaidByTitle');
+
+        const rows = links.map(link => {
+            const id = typeof link === 'string' ? link : (link.transactionId || link.paymentId);
+            const r = linkCache.get(id) || byId.get(id);
+            const label = (r && (r.voucherNumber || r.description))
+                || (typeof link === 'object' && (link.voucherNumber || link.description))
+                || id
+                || '';
+            const amount = (typeof link === 'object' && Number(link.amount))
+                || (r ? Math.abs(Number(r.amount) || 0) : 0);
+            const desc = (typeof link === 'object' && link.description) || (r ? r.description : '') || '';
+            return `
+                <div class="receipt-applied-row">
+                    <div class="receipt-applied-info">
+                        <span class="receipt-applied-voucher">${label}</span>
+                        ${desc ? `<span class="receipt-applied-desc">${desc}</span>` : ''}
+                    </div>
+                    <span class="receipt-applied-amount">$${amount.toFixed(2)}</span>
+                </div>
+            `;
+        }).join('');
+
+        return `
+            <div class="receipt-applied">
+                <div class="receipt-applied-title">${title}</div>
+                ${rows}
+            </div>
+        `;
+    };
+
+    /**
+     * Recibo con formato físico (solo pagos). Header con logo y datos de contacto,
+     * cuerpo estilo formulario, forma de pago, saldos y firma.
+     * Las líneas se rellenan con la información disponible.
+     */
+    const buildPhysicalReceipt = async (tx, absAmount) => {
+        const cfg = contexto?.data?.appConfig || {};
+        const logoUrl = cfg.branding?.logoUrl || '/src/img/alborada.svg';
+        const paymentMethods = cfg.moduleRegistry?.transactions?.paymentMethods || [];
+        const methodLabels = Object.fromEntries(paymentMethods.map(m => [m.id, m.label]));
+        const method = tx.paymentMethod || '';
+
+        let ownerName = '';
+        if (tx.propertyId) {
+            try {
+                const prop = await Property.getById(tx.propertyId);
+                ownerName = prop?.ownerInfo?.name || prop?.name || '';
+            } catch (e) { ownerName = ''; }
+        }
+
+        const dateObj = tx.effectiveDate?.toDate?.() || new Date(tx.effectiveDate || tx.createdAt?.toDate?.());
+        const validDate = !isNaN(dateObj.getTime());
+        const day = validDate ? String(dateObj.getDate()) : '';
+        const month = validDate ? monthNames[dateObj.getMonth()] : '';
+        const year = validDate ? String(dateObj.getFullYear()) : '';
+
+        // Saldos: sumamos los movimientos de la unidad hasta la fecha del pago.
+        // Convención de balance en Firestore: negativo = deuda.
+        let saldoAnterior = null;
+        let saldoActual = null;
+        if (tx.propertyId && validDate) {
+            try {
+                const propTx = await Transaction.getByPropertyId(tx.propertyId);
+                const payTime = toTimestamp(tx.effectiveDate);
+                let sum = 0;
+                propTx.forEach(tt => {
+                    const ttTime = toTimestamp(tt.effectiveDate || tt.createdAt);
+                    if (ttTime !== null && ttTime <= payTime) sum += Number(tt.amount) || 0;
+                });
+                const pago = Math.abs(Number(tx.amount) || 0);
+                saldoAnterior = -(sum - pago);
+                saldoActual = -sum;
+            } catch (e) {
+                saldoAnterior = null;
+                saldoActual = null;
+            }
+        }
+
+        const fmtMoney = (v) => v === null || isNaN(v) ? '' : `${v < 0 ? '-' : ''}$${Math.abs(v).toFixed(2)}`;
+        let isCash = method === 'cash';
+        let isCheck = method === 'check';
+        let otherLabel = methodLabels[method] || '';
+        if (!method) {
+            // Pagos históricos sin paymentMethod: inferir desde la descripción
+            const inferred = inferPaymentMethodLabel(tx, methodLabels);
+            if (inferred === methodLabels.cash) isCash = true;
+            else if (inferred === methodLabels.check) isCheck = true;
+            else otherLabel = inferred || '';
+        }
+        const isOther = !isCash && !isCheck;
+        const sumaEnLetras = `${numberToWords(absAmount)} CON ${String(Math.round((absAmount % 1) * 100)).padStart(2, '0')}/100`;
+        const cashedBy = tx.metadata?.adminReviewedByName || '';
+
+        return `
+            <div class="receipt-physical">
+                <div class="physical-header">
+                    <div class="physical-logo"><img src="${logoUrl}" alt="Alborada" /></div>
+                    <div class="physical-center">
+                        <div class="physical-receipt-title">${t('modules.transactions.receiptRecibo')}</div>
+                        <div class="physical-receipt-number">${tx.voucherNumber || ''}</div>
+                    </div>
+                    <div class="physical-contact">
+                        <div class="physical-contact-row"><strong>email:</strong> comunicadosalborada@gmail.com</div>
+                        <div class="physical-contact-row"><strong>Tel:</strong> 474-6310/6311</div>
+                    </div>
+                    <div class="physical-claim-note">${t('modules.transactions.receiptClaimNote')}</div>
+                </div>
+
+                <div class="physical-form">
+                    <div class="physical-form-line">
+                        ${t('modules.transactions.receiptDateLabel')}
+                        <span class="physical-blank">${day}</span> de
+                        <span class="physical-blank">${month}</span> de 20
+                        <span class="physical-blank">${year}</span>
+                        <span class="physical-casa">${t('modules.transactions.receiptCasaNo')}</span>
+                        <span class="physical-blank">${tx.propertyId || ''}</span>
+                    </div>
+                    <div class="physical-form-line fill">
+                        ${t('modules.transactions.receiptReceived')} <span class="physical-blank physical-wide">${ownerName}</span>
+                    </div>
+                    <div class="physical-form-line fill">
+                        ${t('modules.transactions.receiptSumOf')} <span class="physical-blank physical-wide">${sumaEnLetras}</span>
+                    </div>
+                    <div class="physical-form-line fill">
+                        ${t('modules.transactions.receiptConceptOf')} <span class="physical-blank physical-wide">${tx.description || ''}</span>
+                    </div>
+                </div>
+
+                <div class="physical-payform">
+                    <div class="physical-payform-title">${t('modules.transactions.receiptPayForm')}</div>
+                    <div class="physical-payform-row">
+                        <label class="physical-check"><span class="physical-checkbox ${isCash ? 'checked' : ''}"></span> ${t('modules.transactions.receiptPayCash')}</label>
+                        <label class="physical-check"><span class="physical-checkbox ${isCheck ? 'checked' : ''}"></span> ${t('modules.transactions.receiptPayCheck')}</label>
+                        <label class="physical-check"><span class="physical-checkbox ${isOther ? 'checked' : ''}"></span> ${t('modules.transactions.receiptPayOther')}</label>
+                        <span class="physical-blank physical-inline">${otherLabel}</span>
+                    </div>
+                    <div class="physical-saldo-row"><span class="physical-saldo-label">${t('modules.transactions.receiptPrevBalance')}</span><span class="physical-blank physical-saldo-value">${fmtMoney(saldoAnterior)}</span></div>
+                    <div class="physical-saldo-row"><span class="physical-saldo-label">${t('modules.transactions.receiptPaymentAmt')}</span><span class="physical-blank physical-saldo-value">${fmtMoney(absAmount)}</span></div>
+                    <div class="physical-saldo-row"><span class="physical-saldo-label">${t('modules.transactions.receiptCurrentBalance')}</span><span class="physical-blank physical-saldo-value">${fmtMoney(saldoActual)}</span></div>
+                </div>
+
+                <div class="physical-sign">
+                    <div class="physical-sign-line">${cashedBy}</div>
+                    <div class="physical-sign-label">${t('modules.transactions.receiptCollectedBy')}</div>
+                </div>
+            </div>
+        `;
+    };
+
+    const showReceiptModal = async (tx) => {
         if (!receiptModal || !receiptBody) return;
         const isCharge = (tx.amount || 0) < 0;
         const absAmount = Math.abs(tx.amount || 0);
         const dateObj = tx.effectiveDate?.toDate?.() || new Date(tx.effectiveDate || tx.createdAt?.toDate?.());
         const voucherTypeLabel = tx.voucherType === 'FAC' ? t('modules.transactions.receiptFactura') : tx.voucherType === 'REC' ? t('modules.transactions.receiptRecibo') : t('modules.transactions.receiptVoucher');
+
+        const appliedSection = await buildAppliedSection(tx);
 
         receiptBody.innerHTML = `
             <div class="receipt-title-area">
@@ -658,13 +1011,36 @@ export default async function transactionsController(contexto) {
             </div>
             ${tx.period ? `<div class="receipt-row"><span class="receipt-label">${t('modules.transactions.receiptPeriod')}</span><span class="receipt-value">${tx.period}</span></div>` : ''}
             ${tx.pendingAmount ? `<div class="receipt-row"><span class="receipt-label">${t('modules.transactions.receiptPending')}</span><span class="receipt-value">$${Math.abs(tx.pendingAmount).toFixed(2)}</span></div>` : ''}
+            ${appliedSection}
         `;
+
+        // Panel "Formato físico": solo pagos (recibo de pago)
+        const isPayment = tx.type === 'PAYMENT';
+        const physicalTab = receiptModal.querySelector('.receipt-tab[data-tab="physical"]');
+        if (physicalTab) physicalTab.classList.toggle('hidden', !isPayment);
+        if (receiptPhysical) {
+            receiptPhysical.innerHTML = isPayment ? await buildPhysicalReceipt(tx, absAmount) : '';
+        }
+
+        // Restablecer a la pestaña "Comprobante"
+        setReceiptTab('current');
+
         receiptModal.classList.remove('hidden');
+        teleportReceiptModal();
     };
 
-    receiptClose?.addEventListener('click', () => receiptModal.classList.add('hidden'));
-    receiptModal?.addEventListener('click', (e) => { if (e.target === receiptModal) receiptModal.classList.add('hidden'); });
+    receiptModal?.querySelectorAll('.receipt-tab').forEach(tab => {
+        tab.addEventListener('click', () => setReceiptTab(tab.dataset.tab));
+    });
+
+    const closeReceiptModal = () => {
+        receiptModal.classList.add('hidden');
+        restoreReceiptModal();
+    };
+
+    receiptClose?.addEventListener('click', closeReceiptModal);
+    receiptModal?.addEventListener('click', (e) => { if (e.target === receiptModal) closeReceiptModal(); });
     btnPrint?.addEventListener('click', () => window.print());
 
-    return () => {};
+    return () => restoreReceiptModal();
 }

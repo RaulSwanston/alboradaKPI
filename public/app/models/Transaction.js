@@ -323,6 +323,27 @@ export default class Transaction {
   }
 
   /**
+   * Obtiene transacciones de varios periodos (AAAA-MM) a la vez.
+   * Útil para la vista por defecto: mes anterior + mes actual.
+   * @param {Array<string>} periods - Lista de periodos (ej. ["2026-06","2026-07"]).
+   * @returns {Promise<Array>} Transacciones combinadas, ordenadas por fecha efectiva desc.
+   */
+  static async getByPeriods(periods) {
+    try {
+      const lists = await Promise.all(periods.map(p => this.getByPeriod(p)));
+      const merged = lists.flat();
+      return merged.sort((a, b) => {
+        const dateA = a.effectiveDate?.toDate ? a.effectiveDate.toDate() : new Date(a.effectiveDate || 0);
+        const dateB = b.effectiveDate?.toDate ? b.effectiveDate.toDate() : new Date(b.effectiveDate || 0);
+        return dateB - dateA;
+      });
+    } catch (error) {
+      console.error("[Transaction] Error en getByPeriods:", error);
+      throw error;
+    }
+  }
+
+  /**
    * Obtiene transacciones dentro de un rango de fechas.
    * @param {Date|number} start - Fecha inicial.
    * @param {Date|number} end - Fecha final.

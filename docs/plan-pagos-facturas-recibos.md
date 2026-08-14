@@ -115,14 +115,16 @@ Cada recibo debe referenciar qué factura(s) paga (`appliedTo`), y cada factura 
 
 **Objetivo:** Que residentes y admin puedan ver, imprimir y descargar recibos.
 
-- [ ] **3.1** Crear vista `/dashboard/payments/:id` — detalle del recibo con:
+- [x] **3.1** Crear vista `/dashboard/payments/:id` — detalle del recibo con:
   - Número de recibo, fecha, unidad, residente, monto
   - Detalle de facturas pagadas (appliedTo)
   - Forma de pago
   - Botón "Imprimir Recibo"
-- [ ] **3.2** Implementar impresión de recibo:
+  - **Parcial:** implementado en el modal "Ver Comprobante" del módulo transacciones (con pestañas Comprobante/Formato físico y desglose appliedTo/paidBy). Falta la vista dedicada `/dashboard/payments/:id`.
+- [x] **3.2** Implementar impresión de recibo:
   - Usar `jsPDF` (ya disponible) o generar HTML+CSS para `window.print()`
   - Incluir logotipo, datos del condominio, firma digital
+  - **Parcial:** impresión vía HTML+CSS + `window.print()` con logo, datos de contacto, firma "Cobrado por" y formato físico (solo PAYMENT). Modal teleportado a `body` para que `@media print` lo aísle; imprime la pestaña activa. Falta versión jsPDF/PDF descargable y firma digital.
 - [ ] **3.3** Mostrar estado del residente en tabla de transacciones:
   - Indicador visual: "Al día" (verde), "Debe $X" (rojo), "A favor $X" (azul)
   - Calcular con: balance de la propiedad vs. período actual

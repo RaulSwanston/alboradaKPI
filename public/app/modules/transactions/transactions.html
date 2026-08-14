@@ -73,7 +73,13 @@
       <h2><!-- ::i18n.modules.transactions.receiptTitle --></h2>
       <button class="modal-close-btn" id="receipt-modal-close">&times;</button>
     </div>
-    <div id="receipt-body" class="receipt-body">
+    <div class="receipt-tabs" id="receipt-tabs">
+      <button class="receipt-tab active" data-tab="current"><!-- ::i18n.modules.transactions.receiptTabCurrent --></button>
+      <button class="receipt-tab" data-tab="physical"><!-- ::i18n.modules.transactions.receiptTabPhysical --></button>
+    </div>
+    <div id="receipt-body" class="receipt-body receipt-panel active" data-panel="current">
+    </div>
+    <div id="receipt-physical-body" class="receipt-body receipt-panel" data-panel="physical">
     </div>
     <div class="receipt-actions">
       <button class="button button-accent" id="btn-print-receipt"><!-- ::i18n.modules.transactions.receiptPrint --></button>

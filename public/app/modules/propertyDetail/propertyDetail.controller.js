@@ -34,6 +34,21 @@ export default async function propertyDetailController(contexto) {
   };
 
   /**
+   * Filtro de vigencia: oculta facturas (cargos, amount < 0) de periodos FUTUROS
+   * que aún no han sido pagadas (pendingAmount > 0). Las facturas pre-pagadas se
+   * conservan para mantener la reconciliación (paidBy/appliedTo) y el saldo.
+   * @param {Object} t - Transacción
+   * @returns {boolean} true si el movimiento NO debe mostrarse.
+   */
+  const isHiddenFutureCharge = (t) => {
+    if ((t.amount || 0) >= 0) return false;
+    const now = new Date();
+    const currentPeriod = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const pending = t.pendingAmount !== undefined ? t.pendingAmount : Math.abs(t.amount || 0);
+    return pending > 0 && t.period && t.period > currentPeriod;
+  };
+
+  /**
    * Genera el PDF del Estado de Cuenta
    */
   const generatePDF = () => {
@@ -159,7 +174,8 @@ export default async function propertyDetailController(contexto) {
       if (getEl('detail-property-phone')) getEl('detail-property-phone').textContent = prop.ownerInfo?.mobile || 'Sin teléfono';
     }
 
-    const sorted = [...transactions].sort((a, b) => (a.effectiveDate?.seconds || 0) - (b.effectiveDate?.seconds || 0));
+    const visible = transactions.filter(t => !isHiddenFutureCharge(t));
+    const sorted = [...visible].sort((a, b) => (a.effectiveDate?.seconds || 0) - (b.effectiveDate?.seconds || 0));
     let running = 0;
     allMovements = sorted.map(t => { running -= (Number(t.amount) || 0); return { ...t, currentBalance: running }; }).reverse();
     totalBalance = allMovements.length > 0 ? allMovements[0].currentBalance : 0;

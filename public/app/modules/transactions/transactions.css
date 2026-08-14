@@ -202,6 +202,45 @@
 .dot-verified { color: var(--color-kaitoke-green-600); }
 .dot-pending { color: var(--color-solid-pink-600); }
 
+/* Chips de referencia (facturas/recibos vinculados via appliedTo/paidBy) */
+.col-refs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.45rem;
+}
+.ref-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  font-size: 0.625rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  line-height: 1.4;
+  text-decoration: none;
+  background: var(--color-gurkha-100);
+  border: 1px solid var(--color-gurkha-200);
+  color: var(--color-gurkha-800);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.ref-chip:hover {
+  background: var(--color-gurkha-200);
+  border-color: var(--color-gurkha-400);
+  color: var(--color-gurkha-900);
+}
+/* Recibos (pagos): único acento verde permitido, el resto es gurkha */
+.ref-chip.rec {
+  color: var(--color-kaitoke-green-700);
+  border-color: rgba(40, 191, 99, 0.35);
+  background: rgba(40, 191, 99, 0.08);
+}
+.ref-chip.rec:hover {
+  background: rgba(40, 191, 99, 0.15);
+  border-color: var(--color-kaitoke-green-600);
+  color: var(--color-kaitoke-green-700);
+}
+
 .badge {
   padding: 0.25rem 0.55rem;
   background: var(--color-gurkha-100);
@@ -595,22 +634,6 @@
   background: var(--color-gurkha-50);
 }
 
-/* Badge que muestra cuántos cargos están conciliados */
-.conciliate-badge {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 20px;
-  height: 20px;
-  padding: 0 0.35rem;
-  background: var(--color-kaitoke-green-600);
-  color: white;
-  font-size: 0.625rem;
-  font-weight: 800;
-  border-radius: 9999px;
-  line-height: 1;
-}
-
 /* --- 7. Modal de Recibo --- */
 .modal-overlay {
     position: fixed;
@@ -638,8 +661,54 @@
 }
 
 .receipt-modal-content {
-  max-width: 520px;
+  max-width: 620px;
   width: 90%;
+}
+
+/* Modo "Formato físico": proporción más ancha que alta (como una libreta de recibos) */
+.receipt-modal-content.physical-mode {
+  max-width: 760px;
+  width: 94%;
+}
+
+/* Pestañas del comprobante (Comprobante / Formato físico) */
+.receipt-tabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 14px;
+}
+
+.receipt-tab {
+  background: none;
+  border: none;
+  border-radius: 0;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: var(--color-gurkha-400);
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.receipt-tab:hover {
+  color: var(--color-gurkha-600);
+}
+
+.receipt-tab.active {
+  color: var(--color-kaitoke-green-700, #14532d);
+}
+
+.receipt-tab.hidden {
+  display: none;
+}
+
+/* Paneles: solo se muestra el activo */
+.receipt-panel {
+  display: none;
+}
+
+.receipt-panel.active {
+  display: block;
 }
 
 .receipt-header {
@@ -722,12 +791,294 @@
 .receipt-amount-large.positive { color: var(--color-kaitoke-green-600); }
 .receipt-amount-large.negative { color: var(--color-solid-pink-600); }
 
+/* --- Desglose de documentos vinculados en el comprobante --- */
+.receipt-applied {
+  margin-top: 14px;
+  border-top: 2px solid var(--color-gurkha-100);
+  padding-top: 10px;
+}
+
+.receipt-applied-title {
+  font-size: 0.78rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-gurkha-500);
+  margin-bottom: 6px;
+}
+
+.receipt-applied-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 5px 0;
+  border-bottom: 1px dashed #e0e0e0;
+}
+
+.receipt-applied-row:last-child {
+  border-bottom: none;
+}
+
+.receipt-applied-info {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+  min-width: 0;
+}
+
+.receipt-applied-voucher {
+  font-weight: 700;
+  color: var(--color-kaitoke-green-600, #1a7a3a);
+  font-size: 0.82rem;
+}
+
+.receipt-applied-desc {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+}
+
+.receipt-applied-amount {
+  font-weight: 700;
+  font-size: 0.85rem;
+  white-space: nowrap;
+}
+
+/* --- Formato físico del recibo --- */
+.receipt-physical {
+  padding: 4px 2px;
+}
+
+.physical-header {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-areas:
+    "logo center contact"
+    "logo claim  claim";
+  align-items: center;
+  gap: 8px 14px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--color-kaitoke-green-600, #1a7a3a);
+  margin-bottom: 14px;
+}
+
+.physical-logo {
+  grid-area: logo;
+}
+
+.physical-logo img {
+  width: 360px;
+  height: auto;
+  max-width: 100%;
+}
+
+/* Columna central: RECIBO + número, en rojo, al inicio y abajo */
+.physical-center {
+  grid-area: center;
+  align-self: end;
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.physical-receipt-title {
+  font-size: 1.15rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: var(--color-solid-pink-600);
+}
+
+.physical-receipt-number {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--color-solid-pink-600);
+}
+
+.physical-contact {
+  grid-area: contact;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 0.78rem;
+  color: var(--text-primary);
+  line-height: 1.5;
+}
+
+.physical-contact-row {
+  white-space: nowrap;
+}
+
+.physical-contact-row strong {
+  font-weight: 700;
+}
+
+/* Frase que abarca la 2ª y 3ª columna, en mayúsculas, al inicio de la columna 2 */
+.physical-claim-note {
+  grid-area: claim;
+  align-self: start;
+  text-align: left;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-solid-pink-600);
+}
+
+.physical-form {
+  margin-bottom: 14px;
+}
+
+.physical-form-line {
+  margin: 10px 0;
+  font-size: 0.85rem;
+  line-height: 1.9;
+  color: var(--text-primary);
+}
+
+/* Líneas que ocupan todo el ancho disponible (Recibí de / la suma de / en concepto de) */
+.physical-form-line.fill {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.physical-form-line.fill .physical-wide {
+  flex: 1;
+  min-width: 0;
+  white-space: normal;
+}
+
+.physical-casa {
+  margin-left: 10px;
+}
+
+.physical-blank {
+  border-bottom: 1px solid #555;
+  display: inline-block;
+  min-width: 80px;
+  padding: 0 4px;
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.physical-wide {
+  min-width: 240px;
+}
+
+.physical-inline {
+  min-width: 150px;
+}
+
+.physical-payform {
+  margin-bottom: 14px;
+}
+
+.physical-payform-title {
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+}
+
+.physical-payform-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.physical-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.physical-checkbox {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid #555;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  color: #333;
+}
+
+.physical-checkbox.checked::after {
+  content: 'X';
+}
+
+.physical-saldo-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+  gap: 6px;
+  padding: 5px 0;
+}
+
+.physical-saldo-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.physical-saldo-value {
+  min-width: 150px;
+  text-align: right;
+}
+
+.physical-sign {
+  margin-top: 18px;
+  text-align: left;
+}
+
+.physical-sign-line {
+  border-bottom: 1px solid #555;
+  min-height: 26px;
+  max-width: 280px;
+  padding-top: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.physical-sign-label {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+}
+
 @media print {
-  .modal-overlay { position: static; background: none; }
-  .modal-content { box-shadow: none; border: 1px solid #ccc; }
+  body > *:not(#receipt-modal) { display: none; }
+  #receipt-modal {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: auto;
+    background: none;
+    backdrop-filter: none;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 0;
+  }
+  .modal-content {
+    box-shadow: none;
+    border: 1px solid #ccc;
+    max-height: none;
+    width: 100%;
+  }
   .receipt-header { display: none; }
   .receipt-actions { display: none; }
-  body > *:not(#receipt-modal) { display: none; }
+  .receipt-tabs { display: none; }
+  .receipt-panel:not(.active) { display: none; }
 }
 
 /* --- Ocupar ambas columnas del grid padre [data-content="dashboard"] en escritorio --- */
