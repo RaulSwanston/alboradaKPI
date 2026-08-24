@@ -1,6 +1,7 @@
 import Property from "../../models/Property.js";
 import Transaction from "../../models/Transaction.js";
 import { jsPDF } from "https://esm.sh/jspdf@2.5.1";
+import { injectIcons } from "../../utils/icons.js";
 
 /**
  * propertyDetail.controller.js
@@ -224,23 +225,13 @@ export default async function propertyDetailController(contexto) {
       if (lastPaymentDateEl) lastPaymentDateEl.textContent = `Realizado el ${formatDate(lastPayment.effectiveDate)}`;
     }
 
-    // 3. Reinyectar iconos para asegurar visibilidad
+    // 3. Reinyectar iconos para asegurar visibilidad (acotado a este módulo)
     const handleIcons = async (container = document) => {
-      try {
-        const response = await fetch('/src/img/icons.json');
-        const data = await response.json();
-        const iconRepo = data.icons;
-        const inject = (c, iconName) => {
-          const iconData = iconRepo.find(i => i.name === iconName);
-          if (iconData && c) c.innerHTML = iconData.svg;
-        };
-        container.querySelectorAll('[data-icon]').forEach(el => inject(el, el.dataset.icon));
-      } catch (error) {
-        console.error("Error al cargar icons.json:", error);
-      }
+      await injectIcons(container);
     };
 
-    await handleIcons();
+    const moduleContainer = document.querySelector('.property-detail-wrapper') || document;
+    await handleIcons(moduleContainer);
     
     if (btnDownloadPdf) btnDownloadPdf.onclick = generatePDF;
 

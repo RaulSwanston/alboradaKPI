@@ -1,5 +1,6 @@
 import Transaction from "../../models/Transaction.js";
 import Property from "../../models/Property.js";
+import User from "../../models/User.js";
 import { t } from '../../core/i18n.js';
 import { db, doc, getDoc, writeBatch, arrayUnion } from "../../core/firebase.js";
 
@@ -24,6 +25,23 @@ export default async function transactionsController(contexto) {
     };
 
     if (!els.list) return;
+
+    // --- Identidad y alcance (rol / propiedades) ---
+    const userProfile = contexto?.data?.user ? await User.getById(contexto.data.user.uid) : null;
+    const isAdmin = userProfile?.role === 'admin';
+    const myPropertyIds = userProfile?.propertyIds || [];
+
+    // Carga todas las transacciones de las unidades del residente (rule-compliant:
+    // filtra por propertyId). El filtrado por fecha/tipo lo hace render() en memoria.
+    const loadResidentTransactions = async () => {
+        if (myPropertyIds.length === 0) return [];
+        const lists = await Promise.all(myPropertyIds.map(pid => Transaction.getByPropertyId(pid)));
+        return lists.flat().sort((a, b) => {
+            const da = a.effectiveDate?.toDate ? a.effectiveDate.toDate() : new Date(a.effectiveDate || 0);
+            const db = b.effectiveDate?.toDate ? b.effectiveDate.toDate() : new Date(b.effectiveDate || 0);
+            return db - da;
+        });
+    };
 
     els.search.placeholder = t('modules.transactions.searchPlaceholder');
 
@@ -709,10 +727,12 @@ export default async function transactionsController(contexto) {
 
         if (periodToFetch) {
             els.list.innerHTML = `<div style="text-align: center; padding: 4rem;">${t('modules.transactions.loadingPeriod')} ${periodToFetch}...</div>`;
-            allData = await Transaction.getByPeriod(periodToFetch);
+            allData = isAdmin ? await Transaction.getByPeriod(periodToFetch) : await loadResidentTransactions();
         } else if (fetchRange) {
             els.list.innerHTML = `<div style="text-align: center; padding: 4rem;">${t('modules.transactions.loadingDb')}</div>`;
-            allData = val === 'all' ? await Transaction.getAll(5000) : await Transaction.getByDateRange(state.range.start, state.range.end);
+            allData = isAdmin
+                ? (val === 'all' ? await Transaction.getAll(5000) : await Transaction.getByDateRange(state.range.start, state.range.end))
+                : await loadResidentTransactions();
         }
 
         state.pagination.current = 1;
@@ -740,7 +760,7 @@ export default async function transactionsController(contexto) {
         expandedRows.clear();
         conciliationDataCache.clear();
         state.smartFilter = false;
-        allData = await Transaction.getByDateRange(state.range.start, state.range.end);
+        allData = isAdmin ? await Transaction.getByDateRange(state.range.start, state.range.end) : await loadResidentTransactions();
         state.pagination.current = 1;
         state.selectedTypes = [];
         render();
@@ -751,7 +771,11 @@ export default async function transactionsController(contexto) {
         els.list.innerHTML = `<div style="text-align: center; padding: 4rem;">${t('modules.transactions.loadingDb')}</div>`;
         const now = new Date();
         const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-        allData = await Transaction.getByPeriods([getPeriodKey(prevMonth)]);
+        if (isAdmin) {
+            allData = await Transaction.getByPeriods([getPeriodKey(prevMonth)]);
+        } else {
+            allData = await loadResidentTransactions();
+        }
         render();
         resolveRefs();
     } catch (err) {
@@ -1042,5 +1066,18 @@ export default async function transactionsController(contexto) {
     receiptModal?.addEventListener('click', (e) => { if (e.target === receiptModal) closeReceiptModal(); });
     btnPrint?.addEventListener('click', () => window.print());
 
-    return () => restoreReceiptModal();
+    // Cerrar el comprobante al navegar: así el modal no "traba" la vista de
+    // transacciones. Captura para ejecutarse antes del router y cerrar de inmediato.
+    const closeOnNavigate = (e) => {
+        if (e.target.closest && e.target.closest('[data-view]')) closeReceiptModal();
+    };
+    const onKeydown = (e) => { if (e.key === 'Escape') closeReceiptModal(); };
+    document.addEventListener('click', closeOnNavigate, true);
+    document.addEventListener('keydown', onKeydown);
+
+    return () => {
+        document.removeEventListener('click', closeOnNavigate, true);
+        document.removeEventListener('keydown', onKeydown);
+        restoreReceiptModal();
+    };
 }

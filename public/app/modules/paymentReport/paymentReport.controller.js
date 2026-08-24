@@ -85,6 +85,12 @@ export default async function paymentReportController(contexto) {
     }
   }
 
+  // Convierte Timestamp de Firestore o Date/string a texto; evita "Invalid Date"
+  function formatDebtDate(val) {
+    const d = val?.toDate ? val.toDate() : new Date(val || Date.now());
+    return (d instanceof Date && !isNaN(d.getTime())) ? d.toLocaleDateString() : '—';
+  }
+
   function renderDebts() {
     if (pendingDebts.length === 0) {
       debtsList.innerHTML = `<div class="info-message"><p>${t('paymentReport.noDebts')}</p></div>`;
@@ -99,7 +105,7 @@ export default async function paymentReportController(contexto) {
         <div class="debt-info">
           <span class="debt-type type-${debt.type?.toLowerCase() || 'fee'}">${debt.type || t('paymentReport.debtTypeFallback')}</span>
           <h4 class="debt-desc">${debt.description}</h4>
-          <span class="debt-date">${new Date(debt.effectiveDate || debt.createdAt?.toDate?.() || Date.now()).toLocaleDateString()}</span>
+          <span class="debt-date">${formatDebtDate(debt.effectiveDate || debt.createdAt)}</span>
         </div>
         <div class="debt-amount">
           <span class="currency">$</span>

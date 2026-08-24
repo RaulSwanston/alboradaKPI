@@ -46,8 +46,10 @@ service cloud.firestore {
 
     // Transacciones (Historial Financiero)
     match /transactions/{transactionId} {
-      allow read: if isAdmin() || isResidentOfProperty(resource.data.propertyId);
-      allow write: if isAdmin();
+      // Admin: lectura y escritura total del historial.
+      allow read, write: if isAdmin();
+      // Residente: solo lectura de las transacciones de sus propias unidades (propertyIds).
+      allow get, list: if isResidentOfProperty(resource.data.propertyId);
     }
 
     // Conceptos de Cargo (Catálogo de Servicios)

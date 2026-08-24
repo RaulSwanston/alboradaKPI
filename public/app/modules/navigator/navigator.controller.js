@@ -1,6 +1,7 @@
 import { router } from '/router.js';
 import { db, collection, query, where, onSnapshot } from '../../core/firebase.js';
 import { getInternalPath, getFriendlyPath, t } from '../../core/i18n.js';
+import { injectIcons } from '../../utils/icons.js';
 
 export default async function navigator(contexto) {
   console.log("Ejecutando inicialización del 'navigator' dinámico.");
@@ -74,27 +75,10 @@ export default async function navigator(contexto) {
   };
 
   /**
-   * Inyecta los iconos SVG desde el repositorio central.
+   * Inyecta los iconos SVG mediante la utilidad centralizada con caché en memoria.
    */
   const handleIcons = async (container = document) => {
-    try {
-        const response = await fetch('/src/img/icons.json');
-        const data = await response.json();
-        const iconRepo = data.icons;
-
-        const inject = (c, iconName) => {
-            const iconData = iconRepo.find(i => i.name === iconName);
-            if (iconData && c) {
-                c.innerHTML = iconData.svg;
-            }
-        };
-
-        container.querySelectorAll('[data-icon]').forEach(el => {
-            inject(el, el.dataset.icon);
-        });
-    } catch (error) {
-        console.error("Error al cargar icons.json en navigator:", error);
-    }
+    await injectIcons(container);
   };
 
   /**

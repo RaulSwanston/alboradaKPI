@@ -157,21 +157,23 @@
   display: block;
 }
 
-
 .dashboard-menu .menu-item a {
   display: flex;
   align-items: center;
+  position: relative;
   gap: 1rem;
   padding: 0.75rem 1rem;
   color: var(--color-text-secondary);
   text-decoration: none;
-  border-radius: 0.5rem;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 
 .dashboard-menu .menu-item a{
   border-left: 4px solid transparent;
   transition: border-left 0.3s ease;
+  display: flex;
+  justify-content: start;
+  align-items: center;
 }
 .dashboard-menu .menu-item a:hover {
   background-color: var(--color-gurkha-100);
@@ -182,6 +184,20 @@
 .dashboard-menu .menu-icon {
   width: 20px;
   height: 20px;
+}
+
+.dashboard-menu .menu-item .icon-slot-sm {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+}
+
+.dashboard-menu .menu-item .icon-slot-sm svg {
+  width: 1.25rem;
+  height: 1.25rem;
 }
 
 nav:has(+ #button-menu.open) .menu-divider.selected + .dropdown{
@@ -229,6 +245,12 @@ nav:has(+ #button-menu.open) .menu-divider.selected + .dropdown{
       text-transform: uppercase;
       color: var(--color-gurkha-900);
     }
+
+    .dashboard-menu .menu-item .icon-slot-sm svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
   }
 
   /* Evitamos doble scrollbar: solo #app-view scrollea */
@@ -264,7 +286,6 @@ nav:has(+ #button-menu.open) .menu-divider.selected + .dropdown{
   .dashboard-menu nav ul {
     display: flex;
     flex-direction: column;
-    /* gap: 0.5rem; */
   }
 
   /* Los divisores de menú ya no necesitan ser flexibles ni tener un tamaño fijo */
@@ -272,8 +293,6 @@ nav:has(+ #button-menu.open) .menu-divider.selected + .dropdown{
     flex: 0 0 auto;
     padding: 0;
     border-top: 1px solid var(--color-gurkha-200);
-    /* border-bottom: 1px solid var(--color-gurkha-200); */
-    /* box-shadow: -1px 2px 5px var(--color-gurkha-300); */
   }
   .dashboard-menu .menu-divider:last-child {
     border-bottom: 1px solid var(--color-gurkha-200);
@@ -289,6 +308,11 @@ nav:has(+ #button-menu.open) .menu-divider.selected + .dropdown{
     text-decoration: none;
     color: var(--color-text-secondary);
     transition: all 0.3s ease;
+  }
+  .dashboard-menu .menu-divider a .icon-slot{
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 
   .dashboard-menu .menu-divider svg {
@@ -318,6 +342,7 @@ nav:has(+ #button-menu.open) .menu-divider.selected + .dropdown{
     /* border-radius: 0.5rem; */
   }
   .dashboard-menu .menu-divider.selected {
+
   }
   .dashboard-menu .menu-divider.selected a{
     /* box-shadow: -1px 4px 12px rgba(140, 136, 114, 0.15); */
@@ -360,36 +385,36 @@ nav:has(+ #button-menu.open) .menu-divider.selected + .dropdown{
   .dashboard-menu .menu-divider.selected + .dropdown {
     max-height: 500px; /* Un valor lo suficientemente alto para el contenido */
     opacity: 1;
-    margin-top: 0.5rem;
     pointer-events: auto;
-    gap: 5px;
+    padding-left: 0;
+  }
+  .dashboard-menu .menu-divider.selected + .dropdown li a{
+    padding-left: 3em;
   }
 
   /* Los items dentro del dropdown */
   .dashboard-menu .dropdown .menu-item a {
     gap: 0.75rem;
     display: flex;
+    width: 100%;
     color: var(--color-gurkha-700);
     text-decoration: none;
     padding: 0.5rem 1rem;
     background-color: transparent;
-    border-radius: 0.5rem;
-    border-left: 3px solid transparent;
+    /* border-radius: 0.5rem; */
+    /* border-left: 3px solid transparent; */
     transition: background-color 0.3s ease, border-left-color 0.3s ease;
   }
 
   .dashboard-menu .dropdown .menu-item a:hover {
     background-color: white;
-    border-left: 3px solid var(--color-gurkha-200);
   }
 
   /* Clase para el ítem seleccionado en el dropdown */
   .dashboard-menu .dropdown .menu-item a.dropdown-selected {
-    background-color: white;
     color: var(--color-gurkha-900);
     font-weight: 700;
-    border-left: 3px solid var(--color-kaitoke-green-800);
-    box-shadow: -2px 2px 8px rgba(0, 0, 0, 0.05);
+    background-color: var(--color-gurkha-50);
   }
 
 
@@ -397,17 +422,10 @@ nav:has(+ #button-menu.open) .menu-divider.selected + .dropdown{
   /* --- MUY IMPORTANTE: Ajustar el contenido principal de la aplicación --- */
 
   #app-view {
-
     margin-left: 260px; /* Mismo ancho que .dashboard-menu */
-
     width: calc(100% - 260px);
-
     height: 100vh;
-
-    padding: 1.5rem;
-
     overflow-y: auto;
 
   }
-
 }

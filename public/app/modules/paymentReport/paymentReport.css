@@ -4,8 +4,8 @@
 */
 
 .payment-report-wrapper {
+  width: 100%;
   padding: 1rem;
-  max-width: 900px;
   margin: 0 auto;
 }
 
@@ -421,5 +421,12 @@
     padding: 0;
     box-shadow: none;
     border: none;
+  }
+}
+
+/* --- Ocupar ambas columnas del grid padre [data-content="dashboard"] en escritorio --- */
+@media (min-width: 992px) {
+  [data-content="dashboard"] > .payment-report-wrapper {
+    grid-column: 1 / -1;
   }
 }
