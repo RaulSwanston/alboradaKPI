@@ -1,5 +1,4 @@
 import { db, storage, serverTimestamp, ref, uploadBytes, getDownloadURL, query, where, getDocs, orderBy } from "../../core/firebase.js";
-import User from "../../models/User.js";
 import Property from "../../models/Property.js";
 import Transaction from "../../models/Transaction.js";
 import PaymentNotification from "../../models/PaymentNotification.js";
@@ -46,10 +45,11 @@ export default async function paymentReportController(contexto) {
   dateInput.value = new Date().toISOString().split('T')[0];
 
   try {
-    const userProfile = await User.getById(user.uid);
+    // Perfil ya preparado por el middleware (role claim-aware: admin por custom claim).
+    const userProfile = contexto.data.userProfile;
     const propertyIds = userProfile?.propertyIds || [];
 
-    if (propertyIds.length === 0) {
+    if (propertyIds.length === 0 && userProfile.role !== 'admin') {
       debtsList.innerHTML = `<div class="info-message"><p>${t('paymentReport.noProperties')}</p></div>`;
     } else {
       if (propertyIds.length > 1 || userProfile.role === 'admin') {

@@ -61,16 +61,21 @@ export const sessionGuard = async (contexto) => {
 
   // 2. Construir Ficha de Identidad (Permissions)
   contexto.data.user = user;
+  // Rol: fuente única de verdad = custom claim (admin). Fallback al doc de Firestore.
+  const isAdmin = !!idTokenResult.claims.admin;
+  const effectiveRole = isAdmin ? 'admin' : (profile.role || 'pending');
+
   contexto.data.userProfile = {
     ...profile,
+    role: effectiveRole,
     photoUrl: profile.photoUrl || profile.photoURL || user.photoURL // Normalización
   };
   contexto.data.permissions = {
     isEmailVerified: user.emailVerified,
-    isActive: profile.isActive === true, 
-    isAdmin: !!idTokenResult.claims.admin,
+    isActive: profile.isActive === true,
+    isAdmin,
     isResident: (profile.propertyIds && profile.propertyIds.length > 0),
-    role: profile.role || 'pending'
+    role: effectiveRole
   };
 
   // 3. Determinar la Unidad Activa

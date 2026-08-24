@@ -1,6 +1,5 @@
 import Transaction from "../../models/Transaction.js";
 import Property from "../../models/Property.js";
-import User from "../../models/User.js";
 import { t } from '../../core/i18n.js';
 import { db, doc, getDoc, writeBatch, arrayUnion } from "../../core/firebase.js";
 
@@ -27,7 +26,8 @@ export default async function transactionsController(contexto) {
     if (!els.list) return;
 
     // --- Identidad y alcance (rol / propiedades) ---
-    const userProfile = contexto?.data?.user ? await User.getById(contexto.data.user.uid) : null;
+    // Consume el perfil ya preparado por el middleware (role claim-aware).
+    const userProfile = contexto?.data?.userProfile || null;
     const isAdmin = userProfile?.role === 'admin';
     const myPropertyIds = userProfile?.propertyIds || [];
 
