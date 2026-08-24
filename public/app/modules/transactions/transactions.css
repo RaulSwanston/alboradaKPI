@@ -63,6 +63,13 @@
   width: 100%;
   order: -1;
 }
+
+/* La clase .hidden debe poder ocultar el botón pese a su display:flex
+   (mismo caso que .modal-overlay). Especificidad mayor para que el
+   data-role-required="admin" funcione en residentes. */
+.btn-new-transaction.hidden {
+  display: none;
+}
 .btn-new-transaction:hover {
   border-color: var(--color-kaitoke-green-500);
   color: var(--color-kaitoke-green-700);

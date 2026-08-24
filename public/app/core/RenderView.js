@@ -198,6 +198,20 @@ export class RenderView {
         }
       }
     }
+
+    // --- PASO 4: Visibilidad por rol en cada render ---
+    // Garantiza que los elementos [data-role-required] se oculten/muestren
+    // correctamente en carga global y parcial, sin depender del orden en que
+    // se inyecten los módulos. Fuente de verdad: contexto.data.permissions.
+    // Se aplica siempre (aun si falta permissions) para no mostrar controles
+    // de admin a quien no los tiene.
+    const isAdmin = contexto?.data?.permissions?.isAdmin === true;
+    const isResident = contexto?.data?.permissions?.isResident === true;
+    document.querySelectorAll('[data-role-required="admin"]')
+      .forEach(el => el.classList.toggle('hidden', !isAdmin));
+    document.querySelectorAll('[data-role-required="resident"]')
+      .forEach(el => el.classList.toggle('hidden', !isResident));
+
     console.log(`✅ Ciclo de renderizado completado con éxito.`);
   }
 
