@@ -8,7 +8,7 @@ import { injectIcons } from "../../utils/icons.js";
  * Gestiona el "Estado de Cuenta" detallado de una propiedad.
  */
 export default async function propertyDetailController(contexto) {
-  const propertyId = contexto?.params?.id;
+  const propertyId = contexto?.params?.id || contexto?.data?.activePropertyId;
   if (!propertyId) return;
 
   // --- ESTADO LOCAL ---

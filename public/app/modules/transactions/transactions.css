@@ -275,7 +275,7 @@
 }
 
 .btn-action {
-  display: flex !important;
+  display: flex;
   align-items: center;
   justify-content: center;
   width: 36px;

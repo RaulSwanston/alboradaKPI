@@ -1,5 +1,6 @@
 import Property from '../../models/Property.js';
 import Transaction from '../../models/Transaction.js';
+import User from '../../models/User.js';
 import { t } from '../../core/i18n.js';
 import { db, collection, query, where, orderBy, limit, getDocs, doc, getDoc } from '../../core/firebase.js';
 
@@ -119,9 +120,15 @@ export default async function financialSummary(contexto) {
 
       // Lógica de Foto vs Icono
       let photoUrl = null;
-      if (prop?.residentUids?.length > 0) {
-        const firstResident = await User.getById(prop.residentUids[0]);
-        photoUrl = firstResident?.photoUrl;
+      if (permissions.isAdmin) {
+        // Admin: busca foto del primer residente de la propiedad
+        if (prop?.residentUids?.length > 0) {
+          const firstResident = await User.getById(prop.residentUids[0]);
+          photoUrl = firstResident?.photoUrl;
+        }
+      } else {
+        // Residente: usa su propia foto (ya en contexto, sin consulta extra)
+        photoUrl = userProfile?.photoUrl || user?.photoURL;
       }
 
       if (photoUrl) {
@@ -305,6 +312,9 @@ export default async function financialSummary(contexto) {
     if (myProperties.length > 0) {
       await loadPropertySummary(myProperties[0]);
     }
+    if (btnSync) btnSync.classList.add('hidden');
+  } else {
+    if (btnSync) btnSync.classList.add('hidden');
   }
 
   // Helper para inyectar iconos

@@ -1,6 +1,6 @@
 import { Router } from './app/core/router.js'; // Importa la CLASE Router
 import { logMiddleware } from './app/middleware/log.middleware.js'; // Importa nuestro primer middleware
-import { sessionGuard } from './app/middleware/auth.js';
+import { sessionGuard, adminGuard } from './app/middleware/auth.js';
 
 // --- Definición de Rutas ---
 // Se definen las rutas utilizando el nuevo formato para Mosaic, relativo a /app/views.
@@ -20,6 +20,8 @@ router
   .get('/services/:id', 'dashboard/services-detail', [sessionGuard])
   .get('/dashboard/properties', 'dashboard/properties', [sessionGuard])
   .get('/dashboard/properties/:id', 'dashboard/property-detail', [sessionGuard])
+  .get('/dashboard/estado-cuenta', 'dashboard/property-detail', [sessionGuard])
+  .get('/dashboard/gastos-generales', 'dashboard/general-expenses', [sessionGuard])
   .get('/dashboard/profile', 'dashboard/profile', [sessionGuard])
   .get('/dashboard/requests', 'dashboard/requests', [sessionGuard])
   .get('/dashboard/transactions', 'dashboard/transactions', [sessionGuard])
@@ -28,9 +30,9 @@ router
   .get('/dashboard/events', 'dashboard/events', [sessionGuard])
   .get('/dashboard/providers', 'dashboard/providers', [sessionGuard])
   .get('/residents', 'dashboard/residents', [sessionGuard])
-  .get('/import-residents', 'dashboard/importResidents', [sessionGuard])
-  .get('/import-properties', 'dashboard/importProperties', [sessionGuard])
-  .get('/dashboard/config', 'dashboard/config', [sessionGuard])
+  .get('/import-residents', 'dashboard/importResidents', [sessionGuard, adminGuard])
+  .get('/import-properties', 'dashboard/importProperties', [sessionGuard, adminGuard])
+  .get('/dashboard/config', 'dashboard/config', [sessionGuard, adminGuard])
   // --- Rutas de Pagos ---
   .get('/dashboard/payments/report', 'dashboard/payments/report', [sessionGuard])
   .get('/dashboard/payments/history', 'dashboard/payments/history', [sessionGuard])

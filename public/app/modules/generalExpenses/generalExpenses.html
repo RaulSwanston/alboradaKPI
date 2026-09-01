@@ -1,0 +1,86 @@
+<div class="general-expenses-module">
+  <div class="ge-header" data-mobile-hide>
+    <h3 class="ge-title"><!-- ::i18n.modules.generalExpenses.title --></h3>
+    <p class="ge-subtitle"><!-- ::i18n.modules.generalExpenses.subtitle --></p>
+  </div>
+
+  <div class="ge-cards-grid">
+    <div class="ge-summary-card dark brand-watermark" id="ge-period-card">
+      <div class="card-header">
+        <div class="icon-wrapper">
+          <div class="fs-card-icon" data-icon="calendar"></div>
+        </div>
+        <div class="header-titles-dark">
+          <p class="card-main-text" id="ge-period-title"><!-- ::i18n.modules.generalExpenses.period.title --></p>
+          <p class="card-sub-text" id="ge-period-subtitle"><!-- ::i18n.modules.generalExpenses.period.subtitle --></p>
+        </div>
+      </div>
+      <div class="card-info-list">
+        <div class="info-row">
+          <span class="info-label"><!-- ::i18n.modules.generalExpenses.period.month --></span>
+          <select id="ge-period-select" class="ge-form-select-dark"></select>
+        </div>
+        <div class="info-row">
+          <span class="info-label"><!-- ::i18n.modules.generalExpenses.period.total --></span>
+          <span class="info-value" id="ge-period-total">$0.00</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ge-summary-card" id="ge-summary-card">
+      <div class="card-header">
+        <div class="icon-wrapper bg-orange-light">
+          <div class="fs-card-icon text-orange" data-icon="chart-bar"></div>
+        </div>
+        <div class="header-titles-light">
+          <p class="card-main-text-light" id="ge-summary-title"><!-- ::i18n.modules.generalExpenses.summary.title --></p>
+          <p class="card-sub-text-light" id="ge-summary-subtitle"><!-- ::i18n.modules.generalExpenses.summary.subtitle --></p>
+        </div>
+      </div>
+      <div class="card-info-list-light">
+        <div class="info-row">
+          <span class="info-label-light"><!-- ::i18n.modules.generalExpenses.summary.movements --></span>
+          <span class="info-value-light" id="ge-summary-movements">0</span>
+        </div>
+        <div class="info-row border-bottom-light">
+          <span class="info-label-light"><!-- ::i18n.modules.generalExpenses.summary.monthlyAvg --></span>
+          <span class="info-value-light" id="ge-summary-avg">$0.00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ge-tabs-content">
+    <div class="ge-table-wrapper">
+      <table class="ge-table">
+        <thead>
+          <tr>
+            <th><!-- ::i18n.modules.generalExpenses.table.date --></th>
+            <th><!-- ::i18n.modules.generalExpenses.table.concept --></th>
+            <th><!-- ::i18n.modules.generalExpenses.table.amount --></th>
+            <th><!-- ::i18n.modules.generalExpenses.table.type --></th>
+            <th><!-- ::i18n.modules.generalExpenses.table.status --></th>
+            <th><!-- ::i18n.modules.generalExpenses.table.voucher --></th>
+          </tr>
+        </thead>
+        <tbody id="ge-expenses-body">
+          <tr class="ge-loading-row"><td colspan="6"><div class="spinner"></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="ge-table-footer">
+      <span class="ge-footer-timestamp" id="ge-expenses-timestamp"></span>
+      <div class="ge-pagination" id="ge-expenses-pagination" role="navigation" aria-label="Paginación"></div>
+    </div>
+  </div>
+
+  <div id="ge-receipt-modal" class="ge-modal-overlay hidden">
+    <div class="ge-modal-content" role="dialog" aria-modal="true" aria-label="Comprobante de gasto">
+      <div class="ge-receipt-header">
+        <h3><!-- ::i18n.modules.generalExpenses.receipt.title --></h3>
+        <button class="ge-modal-close-btn" id="ge-receipt-modal-close" aria-label="Cerrar">&times;</button>
+      </div>
+      <div id="ge-receipt-body" class="ge-receipt-body"></div>
+    </div>
+  </div>
+</div>

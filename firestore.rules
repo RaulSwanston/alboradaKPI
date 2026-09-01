@@ -50,6 +50,8 @@ service cloud.firestore {
       allow read, write: if isAdmin();
       // Residente: solo lectura de las transacciones de sus propias unidades (propertyIds).
       allow get, list: if isResidentOfProperty(resource.data.propertyId);
+      // Gastos de la administración (tipo EXPENSE): visibles para cualquier usuario autenticado.
+      allow get, list: if request.auth != null && resource.data.type == 'EXPENSE';
     }
 
     // Conceptos de Cargo (Catálogo de Servicios)

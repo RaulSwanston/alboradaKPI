@@ -188,3 +188,9 @@
         color: var(--color-kaitoke-green-700);
     }
 }
+
+@media (max-width: 767px) {
+    .qa-header[data-mobile-hide] {
+        display: none;
+    }
+}

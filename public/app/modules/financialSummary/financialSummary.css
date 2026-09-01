@@ -109,6 +109,10 @@
     transition: all 0.3s ease;
 }
 
+.btn-sync-full.hidden {
+    display: none;
+}
+
 .btn-sync-full:hover {
     background-color: var(--color-kaitoke-green-50);
     border-color: var(--color-kaitoke-green-200);
@@ -394,7 +398,15 @@
 
 @media (max-width: 767px) {
     .fs-grid {
-        grid-template-columns: 1fr;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    #fs-user-card {
+        grid-column: 1 / -1;
+    }
+
+    .fs-header[data-mobile-hide] {
+        display: none;
     }
     
     .amount {

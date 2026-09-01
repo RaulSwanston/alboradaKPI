@@ -9,7 +9,10 @@
       "pab": "Panamanian Balboa (PAB)"
     }
   },
-  "financialSummary": { "title": "Financial Summary", "subtitle": "General overview of balances, charges and the condominium's financial status" },
+  "financialSummary": {
+    "title": "Financial Summary",
+    "subtitle": "General overview of balances, charges and the condominium's financial status"
+  },
   "services": {
     "noProperty": "You do not have an associated unit. Ask the administrator to link you to a property.",
     "loginRequired": "You must log in to request services.",
@@ -17,9 +20,22 @@
     "requestSent": "Request for \"{conceptName}\" sent. The administrator will review it shortly.",
     "requestError": "Error sending the request. Try again."
   },
-  "recentActivity": { "title": "Recent Activity", "subtitle": "Latest movements recorded in the condominium" },
-  "quickActions": { "title": "Quick Actions", "subtitle": "Shortcuts to the most used features" },
-  "configManager": { 
+  "recentActivity": {
+    "title": "Recent Activity",
+    "subtitle": "Latest movements recorded in the condominium"
+  },
+  "quickActions": {
+    "title": "Quick Actions",
+    "subtitle": "Shortcuts to the most used features",
+    "reportPayment": "Report Payment",
+    "approvePayments": "Approve Payments",
+    "newResident": "New Resident",
+    "viewRequests": "View Requests",
+    "appConfig": "Configure App",
+    "estadoCuenta": "Account Statement",
+    "gastosGenerales": "General Expenses"
+  },
+  "configManager": {
     "title": "System Configuration",
     "tabs": {
       "general": "General",
@@ -141,6 +157,47 @@
     "error": "Could not load history."
   },
   "modules": {
+    "generalExpenses": {
+      "title": "General Expenses",
+      "subtitle": "Operating expenses of the condominium administration",
+      "aria": {
+        "tabs": "General expenses"
+      },
+      "tabs": {
+        "expenses": "Operating Expenses"
+      },
+      "table": {
+        "date": "Date",
+        "concept": "Concept",
+        "amount": "Amount",
+        "type": "Type",
+        "status": "Status",
+        "voucher": "Voucher"
+      },
+      "empty": {
+        "expenses": "No operating expenses recorded",
+        "period": "No expenses recorded in this period"
+      },
+      "error": {
+        "load": "Error loading data"
+      },
+      "period": {
+        "title": "Expenses by period",
+        "subtitle": "Filter expenses by month",
+        "month": "Period",
+        "total": "Total expenses",
+        "all": "All periods"
+      },
+      "receipt": {
+        "title": "Expense receipt"
+      },
+      "summary": {
+        "title": "Activity summary",
+        "subtitle": "Summary of the expenses shown",
+        "movements": "Number of movements",
+        "monthlyAvg": "Monthly average"
+      }
+    },
     "transactions": {
       "netBalance": "Net Period Balance",
       "searchPlaceholder": "Search by description or unit...",
@@ -261,6 +318,13 @@
         "admin": "Administration",
         "resident": "Community"
       }
+    },
+    "providers": {
+      "title": "Providers",
+      "subtitle": "Condominium provider directory",
+      "total": "Total Providers",
+      "loading": "Loading providers...",
+      "empty": "No providers found."
     }
   },
   "paymentReport": {
@@ -296,6 +360,7 @@
   "navigation": {
     "dashboard": "Dashboard",
     "financialSummary": "Financial Summary",
+    "gastosGenerales": "General Expenses",
     "transactions": "Transactions",
     "properties": "Properties",
     "events": "Events",
@@ -313,16 +378,8 @@
     "systemSettings": "System Settings",
     "home": "Home",
     "propertyDetail": "Property Detail",
-    "transactionDetail": "Transaction Detail"
-  },
-  "modules": {
-    "providers": {
-      "title": "Providers",
-      "subtitle": "Condominium provider directory",
-      "total": "Total Providers",
-      "loading": "Loading providers...",
-      "empty": "No providers found."
-    }
+    "transactionDetail": "Transaction Detail",
+    "estadoCuenta": "Account Statement"
   },
   "routes": {
     "/dashboard/events": "/events",

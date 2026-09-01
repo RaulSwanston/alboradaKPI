@@ -399,4 +399,84 @@ export default class Transaction {
       throw error;
     }
   }
+
+  /**
+   * Obtiene transacciones filtradas por tipo específico.
+   * @param {string} type - Tipo de transacción (FEE, FINE, PAYMENT, EXPENSE, OTHER_INCOME, etc.)
+   * @param {number} limitCount - Cantidad de registros a traer.
+   */
+  static async getByType(type, limitCount = 100) {
+    try {
+      const q = query(
+        collection(db, "transactions"),
+        where("type", "==", type),
+        orderBy("effectiveDate", "desc"),
+        limit(limitCount)
+      );
+      const querySnapshot = await getDocs(q);
+      const list = [];
+      querySnapshot.forEach((doc) => list.push({ id: doc.id, ...doc.data() }));
+      return list;
+    } catch (error) {
+      console.error(`[Transaction] Error al obtener por tipo ${type}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Obtiene todos los gastos operativos de la administración (solo tipo EXPENSE).
+   * Estos son gastos de la comunidad (compras, servicios, mantenimiento) que no pertenecen
+   * a una propiedad específica y son visibles para todos los usuarios autenticados.
+   * @param {number} limitCount - Cantidad de registros a traer.
+   */
+  static async getExpenses(limitCount = 100) {
+    return this.getByType('EXPENSE', limitCount);
+  }
+
+  /**
+   * Obtiene todos los ingresos (PAYMENT + OTHER_INCOME).
+   * @param {number} limitCount - Cantidad de registros a traer.
+   */
+  static async getIncome(limitCount = 100) {
+    try {
+      const [payments, otherIncome] = await Promise.all([
+        this.getByType('PAYMENT', limitCount),
+        this.getByType('OTHER_INCOME', limitCount)
+      ]);
+      const combined = [...payments, ...otherIncome]
+        .sort((a, b) => {
+          const dateA = a.effectiveDate?.toDate ? a.effectiveDate.toDate() : new Date(a.effectiveDate);
+          const dateB = b.effectiveDate?.toDate ? b.effectiveDate.toDate() : new Date(b.effectiveDate);
+          return dateB - dateA;
+        })
+        .slice(0, limitCount);
+      return combined;
+    } catch (error) {
+      console.error("[Transaction] Error al obtener ingresos:", error);
+      throw error;
+    }
+  }
+
+  /**
+   * Obtiene transacciones filtradas por concepto (chargeConcepts).
+   * @param {string} conceptId - ID del concepto en chargeConcepts.
+   * @param {number} limitCount - Cantidad de registros a traer.
+   */
+  static async getByConcept(conceptId, limitCount = 100) {
+    try {
+      const q = query(
+        collection(db, "transactions"),
+        where("concept", "==", conceptId),
+        orderBy("effectiveDate", "desc"),
+        limit(limitCount)
+      );
+      const querySnapshot = await getDocs(q);
+      const list = [];
+      querySnapshot.forEach((doc) => list.push({ id: doc.id, ...doc.data() }));
+      return list;
+    } catch (error) {
+      console.error(`[Transaction] Error al obtener por concepto ${conceptId}:`, error);
+      throw error;
+    }
+  }
 }

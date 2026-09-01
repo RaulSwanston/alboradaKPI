@@ -498,7 +498,7 @@
 @media (min-width: 1024px) {
     .form-grid { grid-template-columns: repeat(2, 1fr); }
     .config-flex-container { flex-direction: row; }
-    
+
     .config-actions {
         flex-direction: row;
         justify-content: flex-end;
@@ -506,4 +506,10 @@
 
     .btn-reset-ghost { width: auto; }
     .btn-save-master { width: auto; min-width: 300px; }
+}
+
+@media (min-width: 992px) {
+    .config-manager-wrapper {
+        grid-column: 1 / -1;
+    }
 }

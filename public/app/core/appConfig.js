@@ -337,6 +337,7 @@ export const appConfig = {
         roles: ["admin", "resident"],
         items: [
           { labelKey: "navigation.financialSummary", path: "/dashboard/resumen", icon: "layout-grid" },
+          { labelKey: "navigation.gastosGenerales", path: "/dashboard/gastos-generales", icon: "chart-bar", roles: ["admin", "resident"] },
           { labelKey: "navigation.transactions", path: "/dashboard/transactions", icon: "clock" },
           { labelKey: "navigation.events", path: "/dashboard/events", icon: "calendar" },
           { labelKey: "navigation.properties", path: "/dashboard/properties", icon: "home", roles: ["admin"] }
@@ -349,10 +350,11 @@ export const appConfig = {
         icon: "heart",
         roles: ["admin", "resident", "guest"],
         items: [
-          { labelKey: "navigation.catalog", path: "/services", icon: "box", roles: ["resident", "guest"] },
-          { labelKey: "navigation.requests", path: "/dashboard/requests", icon: "file-text" },
+          { labelKey: "navigation.estadoCuenta", path: "/dashboard/estado-cuenta", icon: "wallet", roles: ["resident"] },
+          { labelKey: "navigation.catalog", path: "/services", icon: "box", roles: ["admin"] },
+          { labelKey: "navigation.requests", path: "/dashboard/requests", icon: "file-text", roles: ["admin"] },
           { labelKey: "navigation.residents", path: "/residents", icon: "users", roles: ["admin"] },
-          { labelKey: "navigation.providers", path: "/dashboard/providers", icon: "briefcase", roles: ["admin", "resident"] },
+          { labelKey: "navigation.providers", path: "/dashboard/providers", icon: "briefcase", roles: ["admin"] },
           { labelKey: "navigation.reportPayment", path: "/dashboard/payments/report", icon: "megaphone", roles: ["resident"] },
           { labelKey: "navigation.paymentHistory", path: "/dashboard/payments/history", icon: "clock", roles: ["resident"] },
           { labelKey: "navigation.approvePayments", path: "/dashboard/payments/pending", icon: "wallet", roles: ["admin"] }
@@ -393,6 +395,8 @@ export const appConfig = {
 
   // 9. Acciones Rápidas
   quickActions: [
+    { id: "estado-cuenta", labelKey: "quickActions.estadoCuenta", path: "/dashboard/estado-cuenta", icon: "wallet", roles: ["admin", "resident"] },
+    { id: "gastos-generales", labelKey: "quickActions.gastosGenerales", path: "/dashboard/gastos-generales", icon: "chart-bar", roles: ["admin", "resident"] },
     { id: "report-payment", labelKey: "quickActions.reportPayment", path: "/dashboard/payments/report", icon: "megaphone", roles: ["resident"] },
     { id: "approve-payments", labelKey: "quickActions.approvePayments", path: "/dashboard/payments/pending", icon: "wallet", roles: ["admin"] },
     { id: "new-resident", labelKey: "quickActions.newResident", path: "/residents", icon: "user-plus", roles: ["admin"] },

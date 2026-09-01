@@ -28,7 +28,7 @@ export default async function transactionsController(contexto) {
     // --- Identidad y alcance (rol / propiedades) ---
     // Consume el perfil ya preparado por el middleware (role claim-aware).
     const userProfile = contexto?.data?.userProfile || null;
-    const isAdmin = userProfile?.role === 'admin';
+    const isAdmin = contexto?.data?.permissions?.isAdmin === true || userProfile?.role === 'admin';
     const myPropertyIds = userProfile?.propertyIds || [];
 
     // Carga todas las transacciones de las unidades del residente (rule-compliant:
@@ -353,22 +353,24 @@ export default async function transactionsController(contexto) {
                                     <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/>
                                 </svg>
                             </button>
-                            <button class="btn-action btn-conciliate" title="Conciliar con cargos" data-id="${tx.id}" ${tx.type === 'PAYMENT' && tx.propertyId ? '' : 'style="display:none"'}>
+                            <button class="btn-action btn-conciliate" title="Conciliar con cargos" data-id="${tx.id}" ${isAdmin && tx.type === 'PAYMENT' && tx.propertyId ? '' : 'style="display:none"'}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M21 6H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1zm-1 10H4V8h16v8z"/>
                                     <circle cx="12" cy="12" r="2"/>
                                 </svg>
                             </button>
+                            ${isAdmin ? `
                             <button class="btn-action btn-edit" title="Editar" data-id="${tx.id}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
                                     <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001"/>
                                 </svg>
-                            </button>
+                            </button>` : ''}
+                            ${isAdmin ? `
                             <button class="btn-action btn-delete" title="Eliminar" data-id="${tx.id}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
                                     <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
                                 </svg>
-                            </button>
+                            </button>` : ''}
                         </div>
                     </div>
                     <div class="conciliation-panel ${expanded ? '' : 'hidden'}" data-property-id="${tx.propertyId || ''}">

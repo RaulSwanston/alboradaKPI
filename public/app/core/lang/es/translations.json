@@ -9,7 +9,7 @@
       "pab": "Balboa Panameño (PAB)"
     }
   },
-  "financialSummary": { 
+  "financialSummary": {
     "title": "Resumen Financiero",
     "subtitle": "Resumen general de saldos, cobros y estado financiero del condominio",
     "totalReceivable": "Cuentas por Cobrar",
@@ -37,10 +37,14 @@
     "requestSent": "Solicitud de \"{conceptName}\" enviada. El administrador la revisará pronto.",
     "requestError": "Error al enviar la solicitud. Intenta de nuevo."
   },
-  "recentActivity": { "title": "Actividad Reciente", "subtitle": "Últimos movimientos registrados en el condominio" },
+  "recentActivity": {
+    "title": "Actividad Reciente",
+    "subtitle": "Últimos movimientos registrados en el condominio"
+  },
   "navigation": {
     "dashboard": "Panel",
     "financialSummary": "Resumen Financiero",
+    "gastosGenerales": "Gastos Generales",
     "transactions": "Transacciones",
     "properties": "Propiedades",
     "events": "Eventos",
@@ -58,9 +62,51 @@
     "systemSettings": "Ajustes del Sistema",
     "home": "Inicio",
     "propertyDetail": "Detalle de Propiedad",
-    "transactionDetail": "Detalle de Transacción"
+    "transactionDetail": "Detalle de Transacción",
+    "estadoCuenta": "Estado de cuenta"
   },
   "modules": {
+    "generalExpenses": {
+      "title": "Gastos Generales",
+      "subtitle": "Gastos operativos de la administración del condominio",
+      "aria": {
+        "tabs": "Gastos generales"
+      },
+      "tabs": {
+        "expenses": "Gastos Operativos"
+      },
+      "table": {
+        "date": "Fecha",
+        "concept": "Concepto",
+        "amount": "Monto",
+        "type": "Tipo",
+        "status": "Estado",
+        "voucher": "Comprobante"
+      },
+      "empty": {
+        "expenses": "No hay gastos operativos registrados",
+        "period": "No hay gastos registrados en este periodo"
+      },
+      "error": {
+        "load": "Error al cargar datos"
+      },
+      "period": {
+        "title": "Gastos por periodo",
+        "subtitle": "Filtra los gastos por mes",
+        "month": "Periodo",
+        "total": "Total de gastos",
+        "all": "Todos los periodos"
+      },
+      "receipt": {
+        "title": "Comprobante de gasto"
+      },
+      "summary": {
+        "title": "Resumen de actividad",
+        "subtitle": "Resumen de los gastos mostrados",
+        "movements": "Número de movimientos",
+        "monthlyAvg": "Promedio mensual"
+      }
+    },
     "providers": {
       "title": "Proveedores",
       "subtitle": "Directorio de proveedores del condominio",
@@ -213,7 +259,9 @@
     "approvePayments": "Aprobar Pagos",
     "newResident": "Nuevo Residente",
     "viewRequests": "Ver Solicitudes",
-    "appConfig": "Configurar App"
+    "appConfig": "Configurar App",
+    "estadoCuenta": "Estado de cuenta",
+    "gastosGenerales": "Gastos Generales"
   },
   "topbar": {
     "searchPlaceholder": "Buscar pagos, servicios o avisos...",
@@ -304,7 +352,7 @@
     "statusRejected": "Rechazado",
     "error": "No se pudo cargar el historial."
   },
-  "configManager": { 
+  "configManager": {
     "title": "Configuración del Sistema",
     "tabs": {
       "general": "General",

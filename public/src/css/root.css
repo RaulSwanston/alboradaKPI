@@ -184,6 +184,12 @@ input[type='button'] {
   display: none;
 }
 
+/* Vence a reglas de display de módulos (ej. .dropdown-item, .stat-card,
+   .btn-new-transaction) para que data-role-required="..." oculte de verdad. */
+[data-role-required].hidden {
+  display: none;
+}
+
 
 
 

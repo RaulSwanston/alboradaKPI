@@ -148,3 +148,20 @@ export async function initSessionUI(contexto) {
   document.querySelectorAll('[data-role-required="resident"]')
     .forEach(el => el.classList.toggle('hidden', !permissions.isResident));
 }
+
+/**
+ * adminGuard (Middleware para el Router)
+ * Protege rutas de administración: permite el acceso solo a usuarios con
+ * rol admin (basado en custom claim). Debe correr DESPUÉS de sessionGuard,
+ * que es quien popula contexto.data.permissions.
+ * @returns {boolean} false si el acceso es denegado (detiene la navegación).
+ */
+export const adminGuard = (contexto) => {
+  const isAdmin = contexto?.data?.permissions?.isAdmin === true;
+  if (!isAdmin) {
+    console.warn("Acceso denegado: se requiere rol admin.");
+    window.location.href = '/dashboard/resumen';
+    return false;
+  }
+  return true;
+};
