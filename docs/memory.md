@@ -1,10 +1,49 @@
 # Memoria de Sesiones - Bitácora de Proyecto
 
-## 📌 RETOMA AQUÍ (última sesión: 14 de Agosto de 2026)
+## 📌 RETOMA AQUÍ (última sesión: 2 de Septiembre de 2026)
 
-**Estado:** Sesión de módulo transacciones. Comprobantes vinculados (chips FAC/REC) en la lista, filtro de facturas futuras en propertyDetail, bloqueo de periodos futuros en billingGenerator, y modal de recibo con **dos pestañas** ("Comprobante" + "Formato físico"). **Pendiente verificación en navegador.**
+**Estado:** Fix de cálculo de balance en `Property.js` — filtro inteligente que excluye facturas futuras (adelantadas hasta 2027) del balance por propiedad, incluyendo la porción de pagos aplicados a esos FEEs futuros. Also fixes en notificationsFeed CSS (full-width + mobile). **Pendiente: ejecutar "Sincronizar" desde el admin para repoblar balances en Firestore.**
 
 ### Resumen de cambios
+
+**A) notificationsFeed — full-width y mobile fix** (`notificationsFeed.css`):
+- Eliminado `max-width: 800px` y `margin: 0 auto` del `.notifications-feed-module` que causaba desbordamiento en mobile.
+- Eliminado `padding: 1rem` del módulo (se probó y quedó mejor sin él).
+- Agregado `background: white` + `box-shadow` profesional a `.notification-item` (antes usaba `var(--bg-surface)`).
+- Agregado media query `@media (min-width: 992px)` para ocupar ambas columnas del grid (`grid-column: 1 / -1`), consistente con propertyDetail, transactions, etc.
+
+**B) Property.js — filtro inteligente de facturas futuras** (`models/Property.js`):
+- **Problema raíz:** `recalculateAllBalances()` y `recalculateBalance()` sumaban TODOS los `amount` de transacciones, incluyendo FEEs de periodos futuros (2026-10→2027-03) generados por `generate_future_fees.js`. Esto inflaba la deuda artificialmente. Ej: unidad 240 mostraba balance $0 (cacheado desde jun-2026) pero la suma real era -$165.
+- **Solución:** Filtro inteligente que excluye del balance:
+  1. FEEs con `period > currentPeriod` (facturas de meses futuros)
+  2. La porción de pagos (PAYMENT) que fue aplicada vía `appliedTo` a esos FEEs futuros
+- **Stats de caja** (`saldoCajaDisponible`) siguen usando montos brutos (el dinero real sí se recibió).
+- **`feePeriodMap`**: mapa pre-construido `{docId → period}` de todos los FEEs, para resolver `appliedTo` sin consultas extra.
+- **Impacto medido (dry-run):** 357/358 propiedades afectadas. Cuentas por cobrar: $84,329→$52,984. Unidades al día: 1→18. Top cambio: 6 FEEs futuros × $15 = +$90 por propiedad.
+- **Validación con pagos adelantados:** 37 propiedades con pagos genuinos adelantados (hasta 14 meses). La prop 032 ($165 en ene-2026 para jul-2026→mar-2027) resulta balance=$0 correcto (la porción ajustada cancela los FEEs futuros).
+
+### Decisiones del usuario
+- Enfoque B (filtro inteligente) seleccionado sobre enfoque C (pendingAmount-based). Se prefiere mantener el cálculo amount-based pero con el filtro correcto.
+- Se creó script `dry_run_balance_filter.js` para verificación pre-commit.
+
+### Archivos modificados en esta sesión:
+
+| Archivo | Cambio |
+|---------|--------|
+| `app/modules/notificationsFeed/notificationsFeed.css` | Eliminado `max-width`/`margin`/`padding`; agregado `background`+`shadow` a `.notification-item`; media query `grid-column: 1/-1` |
+| `app/models/Property.js` | `recalculateAllBalances()`: filtro inteligente con `feePeriodMap` + exclusión de FEEs futuros + ajuste de pagos. `recalculateBalance()`: mismo filtro. |
+| `scripts/dry_run_balance_filter.js` | **NUEVO** — Script de verificación dry-run (no escribe en Firestore) |
+
+### Pendiente (para próxima sesión):
+1. **Ejecutar "Sincronizar" desde el admin** para repoblar `balance` de las 358 propiedades con el filtro nuevo. O ejecutar un script de commit contra Firestore.
+2. **Verificar en navegador** la tarjeta "Saldo Actual" del financialSummary con la unidad 240 (debe mostrar -$75, no $0).
+3. Verificar en navegador: transacciones + modal recibo (chips, desglose, tab físico, impresión, saldos) — pendiente desde sesión anterior.
+4. Limpiar `.activity-card-inner` huérfano en `recentActivity.css` y revisar `config.html` (grid-column).
+5. Completar conciliación al editar PAYMENT existente (pendiente desde sesión anterior).
+
+---
+
+## Entrada previa: 14 de Agosto de 2026
 
 **A) Chips de documentos vinculados en la lista** (`transactions.controller.js`):
 - `linkCache` (Map id → `{voucherNumber, description, type}`), `resolveRefs()` (indexa `allData`, busca faltantes en lote con `getDoc`, cachea `null` si no existe) y `refsFor()` (PAYMENT → facturas FAC de `appliedTo`; FEE/FINE → recibos REC de `paidBy`).
@@ -42,7 +81,7 @@
 
 ### Pendiente
 - **Verificación en navegador** (transacciones + modal recibo): chips, desglose, tab físico, impresión (pestaña activa), saldos.
-- **Discrepancia abierta (sin confirmar):** `property.balance` y `Property.recalculateAllBalances()` siguen sumando facturas futuras 2027 (propertyDetail ahora filtra pero el balance del admin no). ¿Dejarlo así?
+- **Discrepancia resuelta (2 Sep):** `Property.recalculateAllBalances()` ahora filtra FEEs futuros y la porción de pagos aplicados a ellos. Ver nueva sesión (2 Sep 2026).
 - Limpiar `.activity-card-inner` huérfano en `recentActivity.css` y revisar `config.html` (grid-column), pendientes de sesiones previas.
 
 ---

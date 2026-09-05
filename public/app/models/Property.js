@@ -82,9 +82,35 @@ export default class Property {
         where("propertyId", "==", propertyId)
       );
       const querySnapshot = await getDocs(q);
-      let newBalance = 0;
+
+      const now = new Date();
+      const currentPeriod = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+      const feePeriodMap = {};
+      const txns = [];
       querySnapshot.forEach(doc => {
-        newBalance += (doc.data().amount || 0);
+        const t = doc.data();
+        txns.push({ id: doc.id, ...t });
+        if (t.type === 'FEE' && t.period) feePeriodMap[doc.id] = t.period;
+      });
+
+      let newBalance = 0;
+      txns.forEach(t => {
+        let amount = t.amount || 0;
+
+        // Excluir FEEs de periodos futuros
+        if (t.type === 'FEE' && t.period && t.period > currentPeriod) return;
+
+        // Restar porción de pagos aplicados a FEEs futuros
+        if (t.type === 'PAYMENT' && t.appliedTo?.length) {
+          for (const ap of t.appliedTo) {
+            if (feePeriodMap[ap.transactionId] && feePeriodMap[ap.transactionId] > currentPeriod) {
+              amount -= (ap.amount || 0);
+            }
+          }
+        }
+
+        newBalance += amount;
       });
 
       await updateDoc(doc(db, "properties", propertyId), {
@@ -114,6 +140,9 @@ export default class Property {
       const transSnapshot = await getDocs(collection(db, "transactions"));
       
       const total = allProps.length;
+      const now = new Date();
+      const currentPeriod = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
       let stats = {
         saldoCajaDisponible: 0,
         totalCuentasPorCobrar: 0,
@@ -121,10 +150,17 @@ export default class Property {
         ultimoPagoMonto: 0,
         unidadesAlDiaCount: 0,
         totalUnidades: total,
-        ultimaSincronizacion: new Date()
+        ultimaSincronizacion: now
       };
 
-      // 2. Mapeo y procesamiento en memoria (Velocidad luz)
+      // 2. Mapa de periodos de FEEs (para detectar pagos aplicados a facturas futuras)
+      const feePeriodMap = {};
+      transSnapshot.forEach(doc => {
+        const t = doc.data();
+        if (t.type === 'FEE' && t.period) feePeriodMap[doc.id] = t.period;
+      });
+
+      // 3. Mapeo y procesamiento en memoria
       const propBalances = {};
       allProps.forEach(p => propBalances[p.id] = 0);
 
@@ -132,13 +168,14 @@ export default class Property {
 
       transSnapshot.forEach(doc => {
         const t = doc.data();
-        if (propBalances[t.propertyId] !== undefined) {
-          propBalances[t.propertyId] += (t.amount || 0);
-        }
-        
-        // Caja Real: Pagos e Ingresos - Gastos
+        const propId = t.propertyId;
+        if (propBalances[propId] === undefined) return;
+
+        let amount = t.amount || 0;
+
+        // Caja Real: SIEMPRE usa montos brutos (el dinero real entró/salió)
         if (["PAYMENT", "OTHER_INCOME", "EXPENSE", "ADMIN_EXPENSE"].includes(t.type)) {
-          stats.saldoCajaDisponible += (t.amount || 0);
+          stats.saldoCajaDisponible += amount;
         }
 
         // Rastrear el último pago global
@@ -146,9 +183,24 @@ export default class Property {
           const fecha = t.effectiveDate?.toDate ? t.effectiveDate.toDate().getTime() : new Date(t.effectiveDate).getTime();
           if (fecha > ultimoPagoFecha) {
             ultimoPagoFecha = fecha;
-            stats.ultimoPagoMonto = Math.abs(t.amount || 0);
+            stats.ultimoPagoMonto = Math.abs(amount);
           }
         }
+
+        // --- Balance por propiedad: filtro inteligente ---
+        // Excluir FEEs de periodos futuros (facturas adelantadas)
+        if (t.type === 'FEE' && t.period && t.period > currentPeriod) return;
+
+        // En pagos, restar la porción aplicada a FEEs futuros
+        if (t.type === 'PAYMENT' && t.appliedTo?.length) {
+          for (const ap of t.appliedTo) {
+            if (feePeriodMap[ap.transactionId] && feePeriodMap[ap.transactionId] > currentPeriod) {
+              amount -= (ap.amount || 0);
+            }
+          }
+        }
+
+        propBalances[propId] += amount;
       });
 
       // 3. Preparar guardado atómico (Batch)

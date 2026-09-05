@@ -367,7 +367,7 @@ Se divide en bloques lógicos:
 Para mantener la integridad de los datos y minimizar el impacto económico en el uso de la base de datos, se establece el siguiente estándar de sincronización:
 
 - **Proceso de Sincronización Masiva:** El método `Property.recalculateAllBalances()` actúa como un "Cierre Financiero". Su ejecución es manual (por el administrador) y realiza dos tareas críticas:
-    1. **Conciliación Individual:** Recalcula el `balance` de cada propiedad analizando sus transacciones.
+    1. **Conciliación Individual:** Recalcula el `balance` de cada propiedad analizando sus transacciones, con **filtro inteligente** que excluye del cálculo los FEEs de periodos futuros (facturas adelantadas) y la porción de pagos aplicados a esos FEEs vía `appliedTo`. Esto evita que residentes con pagos adelantados muestren créditos artificiales.
     2. **Caché Global:** Realiza una sumatoria única de la contabilidad para actualizar el objeto `stats` en `appConfig/app`.
 - **Lógica de Caja Real (Liquidez):** Para el cálculo de `saldoCajaDisponible`, el sistema suma todos los montos de transacciones de tipo `PAYMENT` y `OTHER_INCOME`, y resta las de tipo `EXPENSE` o `ADMIN_EXPENSE`. Se excluyen explícitamente los cargos (`FEE`, `FINE`) ya que representan dinero no percibido aún.
 - **Eficiencia de Lectura:** Los módulos de resumen financiero deben priorizar la lectura del campo `stats` del `appConfig` inyectado en la sesión, evitando realizar consultas masivas a las colecciones de propiedades o transacciones durante el uso cotidiano.
@@ -455,6 +455,7 @@ Para garantizar una gestión contable precisa y una UX fluida en el reporte de i
     *   Se eliminó el bucle de consultas secuenciales al servidor.
     *   Ahora se realiza una **lectura única masiva** de transacciones y se procesa el saldo de todas las unidades en la memoria del navegador.
     *   El método devuelve un objeto `stats` calculado, permitiendo que la UI se actualice al instante sin esperar una nueva lectura del servidor.
+    *   **Filtro inteligente (Sep 2026):** Se excluyen del balance los FEEs de periodos futuros (generados por `generate_future_fees.js`) y la porción de pagos aplicados a esos FEEs vía `appliedTo`. Usa un mapa `feePeriodMap` pre-construido para resolver referencias sin consultas extra.
     *   Resultados: Reducción de latencia en un 90% y ahorro significativo en cuotas de lectura de Firebase.
 *   **Mejoras en Resumen Financiero (Admin UX):**
     *   **Buscador Inteligente:** Sustitución de `<select>` por `<datalist>` para buscar entre cientos de unidades por ID o nombre de propietario.
