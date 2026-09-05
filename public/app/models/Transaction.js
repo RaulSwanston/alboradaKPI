@@ -98,12 +98,24 @@ export default class Transaction {
 
   /**
    * Crea una nueva transacción y registra la actividad correspondiente.
+   * Si `data.idempotencyKey` ya existe en Firestore, reutiliza la transacción
+   * previa (idempotencia) en vez de crear un duplicado.
    * @param {Object} data - Datos de la transacción (propertyId, amount, type, description, etc.)
    * @param {Object} initiator - Datos del usuario que realiza la acción {id, name, type: 'USER'|'SYSTEM'}
-   * @returns {Promise<string>} El ID de la transacción creada.
+   * @returns {Promise<{id: string, duplicate: boolean}>} El ID de la transacción y si fue un duplicado.
    */
   static async create(data, initiator = { type: 'SYSTEM', name: 'Sistema' }) {
     try {
+      // Idempotencia: si llega un idempotencyKey que ya fue procesado antes (doble clic,
+      // re-intento tras timeout), reutilizamos la transacción existente en vez de duplicar.
+      if (data.idempotencyKey) {
+        const existingId = await this._findByIdempotencyKey(data.idempotencyKey);
+        if (existingId) {
+          console.warn(`[Transaction] Operación duplicada (idempotencyKey=${data.idempotencyKey}). Reutilizando transacción ${existingId}.`);
+          return { id: existingId, duplicate: true };
+        }
+      }
+
       const effectiveDate = data.effectiveDate || new Date();
       const dateObj = effectiveDate instanceof Date ? effectiveDate : (effectiveDate.toDate ? effectiveDate.toDate() : new Date(effectiveDate));
 
@@ -143,11 +155,26 @@ export default class Transaction {
         details: { transactionId: docRef.id, amount: data.amount }
       });
 
-      return docRef.id;
+      return { id: docRef.id, duplicate: false };
     } catch (error) {
       console.error("[Transaction] Error al crear transacción:", error);
       throw error;
     }
+  }
+
+  /**
+   * Busca una transacción existente por su clave de idempotencia.
+   * @param {string} key - Clave única generada por el cliente para una operación lógica.
+   * @returns {Promise<string|null>} El ID de la transacción existente o null si no hay.
+   */
+  static async _findByIdempotencyKey(key) {
+    const q = query(
+      collection(db, "transactions"),
+      where("idempotencyKey", "==", key),
+      limit(1)
+    );
+    const snap = await getDocs(q);
+    return snap.empty ? null : snap.docs[0].id;
   }
 
   /**

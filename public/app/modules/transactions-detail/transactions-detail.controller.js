@@ -69,6 +69,9 @@ export default async function transactionsDetailController(contexto) {
   let isManualAmount = false;
   let _settingAmount = false;
   let originalTransaction = null;
+  let isSaving = false;
+  let idempotencyKey = null;
+  let propertySearchTimer = null;
 
   // =============================================
   //  INIT
@@ -110,12 +113,36 @@ export default async function transactionsDetailController(contexto) {
     }
   };
 
-  const findProperty = (val) => {
-    if (!val) return null;
-    return cachedProperties.find(p =>
-      p.id === val || p.name?.toLowerCase().includes(val.toLowerCase()) ||
-      p.ownerInfo?.name?.toLowerCase().includes(val.toLowerCase())
-    );
+  const handlePropertyChange = (val) => {
+    const value = (val || '').trim();
+    if (!value) {
+      updatePropertyMeta(null);
+      clearDebts();
+      return;
+    }
+
+    // 1) Match exacto por ID: lo que se selecciona de la lista de sugerencias.
+    let matches = cachedProperties.filter(p => p.id === value);
+
+    // 2) Sin match exacto, resolver SOLO si hay una única coincidencia parcial.
+    //    Evita auto-seleccionar "016" cuando "16" también matchea 216/316.
+    if (matches.length === 0) {
+      const lower = value.toLowerCase();
+      matches = cachedProperties.filter(p =>
+        p.id?.toLowerCase().includes(lower) ||
+        p.name?.toLowerCase().includes(lower) ||
+        p.ownerInfo?.name?.toLowerCase().includes(lower)
+      );
+    }
+
+    const prop = matches.length === 1 ? matches[0] : null;
+    updatePropertyMeta(prop);
+    const type = getSelectedType();
+    if (type === 'PAYMENT' && currentPropertyId) {
+      loadDebts(currentPropertyId);
+    } else {
+      clearDebts();
+    }
   };
 
   const updatePropertyMeta = (prop) => {
@@ -130,17 +157,6 @@ export default async function transactionsDetailController(contexto) {
       <span class="td-prop-badge">Unidad ${prop.id}</span>
       <span class="td-prop-name">${ownerName || prop.name || ''}</span>
     `;
-  };
-
-  const handlePropertyChange = (val) => {
-    const prop = findProperty(val);
-    updatePropertyMeta(prop);
-    const type = getSelectedType();
-    if (type === 'PAYMENT' && currentPropertyId) {
-      loadDebts(currentPropertyId);
-    } else {
-      clearDebts();
-    }
   };
 
   // =============================================
@@ -388,6 +404,11 @@ export default async function transactionsDetailController(contexto) {
     isSaving = true;
     setSavingState(true);
 
+    // Idempotencia: clave estable por operación lógica (mismo envío/re-intento), única por formulario.
+    if (isNew && !idempotencyKey) {
+      idempotencyKey = globalThis.crypto?.randomUUID?.() || `td-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    }
+
     const type = getSelectedType();
     const absAmount = Math.abs(parseFloat(amountInput.value));
     const amount = type === 'PAYMENT' ? absAmount : -absAmount;
@@ -403,6 +424,8 @@ export default async function transactionsDetailController(contexto) {
         bankReference: bankRefInput.value.trim() || ''
       }
     };
+
+    if (isNew) data.idempotencyKey = idempotencyKey;
 
     if (type === 'PAYMENT') {
       data.paymentMethod = paymentMethod.value;
@@ -420,7 +443,14 @@ export default async function transactionsDetailController(contexto) {
       let savedId;
 
       if (isNew) {
-        savedId = await Transaction.create(data, initiator);
+        const created = await Transaction.create(data, initiator);
+        savedId = created.id;
+        // Duplicado (re-intento del mismo envío): la conciliación ya se hizo la primera vez.
+        if (created.duplicate) {
+          console.warn('[TD] Transacción duplicada detectada. Omitiendo conciliación.');
+          window.history.back();
+          return;
+        }
       } else {
         await Transaction.update(transId, data, initiator);
         savedId = transId;
@@ -624,9 +654,10 @@ export default async function transactionsDetailController(contexto) {
   //  EVENTS
   // =============================================
   const attachEvents = () => {
-    // Property search
+    // Property search (debounced: resuelve al dejar de escribir)
     propertySearch.addEventListener('input', (e) => {
-      handlePropertyChange(e.target.value);
+      clearTimeout(propertySearchTimer);
+      propertySearchTimer = setTimeout(() => handlePropertyChange(e.target.value), 250);
     });
 
     // Type change
@@ -684,5 +715,6 @@ export default async function transactionsDetailController(contexto) {
 
   return () => {
     // Cleanup
+    clearTimeout(propertySearchTimer);
   };
 }

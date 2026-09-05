@@ -734,3 +734,10 @@
     flex-wrap: wrap;
   }
 }
+
+/* --- Ocupar ambas columnas del grid padre [data-content="dashboard"] en escritorio --- */
+@media (min-width: 992px) {
+  [data-content="dashboard"] > .td-wrapper {
+    grid-column: 1 / -1;
+  }
+}
