@@ -1,8 +1,19 @@
 # Memoria de Sesiones - Bitácora de Proyecto
 
-## 📌 RETOMA AQUÍ (última sesión: 2 de Septiembre de 2026)
+## 📌 RETOMA AQUÍ (última sesión: 9 de Septiembre de 2026)
 
-**Estado:** Fix de cálculo de balance en `Property.js` — filtro inteligente que excluye facturas futuras (adelantadas hasta 2027) del balance por propiedad, incluyendo la porción de pagos aplicados a esos FEEs futuros. Also fixes en notificationsFeed CSS (full-width + mobile). **Pendiente: ejecutar "Sincronizar" desde el admin para repoblar balances en Firestore.**
+**Estado:** Migración completada de Firebase Storage a **Cloudflare R2 vía Worker gestionph** (`gestionph.synch.workers.dev`). Imágenes/comprobantes/logo: subida con API key (`uploadFileToR2`), lectura display **fetch→blob** (`getAuthObjectURL`, nunca `<img src>` directo porque GET exige auth), compresión cliente, key `gest_...` incrustada en `public/app/core/r2.js` (repo **público**; vulnerabilidad aceptada por el cliente — planea migrar el proyecto a otra plataforma más rápida/segura). Añadida regla `system/counters` a `firestore.rules`. Commits `ccdc5aa` + `87b1476` pusheados a `github/main`. **Pendientes:** `firebase deploy --only hosting` (llevar a producción), "Sincronizar" del admin para repoblar balances, hidratación de imágenes en `descriptionLong`/TinyMCE, toast de éxito, hardening de `auth.js` (`getIdTokenResult(true)`).
+
+### Resumen de cambios (9 Sep 2026) — Migración de imágenes a Cloudflare R2
+
+- **Nuevo `public/app/core/r2.js`:** `buildR2Key`, `uploadFileToR2`, `getAuthObjectURL` (cache de blob URLs), `revokeAuthObjectURLs`; endpoint `R2_BASE_URL = https://gestionph.synch.workers.dev/api/v1/r2`, slug `alboradakpi`.
+- **Nuevo `public/app/core/imageCompress.js`:** `compressImageFile()` (máx 1600 px, JPEG q0.78, techo ~500 KB; PDF tal cual; logo 512 px/200 KB).
+- **`firebase.js`:** SDK de Firebase Storage retirado (sin usos restantes en el código).
+- **Integrado en:** transactions-detail (upload + preview edición), paymentReport, generalExpenses, paymentApproval, configManager (logo), servicesDetail (TinyMCE upload), navigator (logo), transactions (recibo físico PDF, logo fetch→blob).
+- **Claves:** `recibo_{propiedad}_{yyyyMMdd}_{HHmmss}.{ext}`, `reporte_{propiedad}_...`, `logo_branding_...`, `servicio_{slug}_...`.
+- **Corrección previa:** la key `gest_mX_...` era inválida/revocada; la válida es `gest_9Fvi...`.
+- **Decisiones del cliente:** primero se excluyó la key del repo (gitignore), luego (9 Sep) revirtió: **subir todo con la key incrustada, aceptando la vulnerabilidad** (repo público) por estar migrando a otra plataforma. Se eliminó `r2.config.js` y la regla de `.gitignore`.
+- **Docs actualizados:** AGENTS.md, docs/schema.md, docs/plan-tareas-pendientes.md, gemini.md, contrato legal (revisar con abogado por subencargado Cloudflare).
 
 ### Resumen de cambios
 

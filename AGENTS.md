@@ -8,12 +8,12 @@
 - **BaaS:** Google Firebase.
 - **Base de Datos:** Cloud Firestore.
 - **Autenticación:** Firebase Authentication.
-- **Almacenamiento:** Firebase Storage.
+- **Almacenamiento:** Cloudflare R2 (Worker gestionph `gestionph.synch.workers.dev`); Firebase Storage **retirado** del código (imágenes: subida/lectura con API key `gest_...`, display vía fetch→blob).
 - **Hosting:** Firebase Hosting.
 - **Infraestructura:** Cloudflare (potencialmente).
 
 ## Principios de Seguridad
-- **Seguridad en Backend:** Claves de cliente visibles, protección total en reglas de Firestore/Storage.
+- **Seguridad en Backend:** Claves de cliente visibles, protección total en reglas de Firestore y en el Worker de Cloudflare (validación de API key por condominio).
 - **Autenticación Obligatoria:** Roles gestionados vía **Custom Claims**.
 - **App Check:** Activado para asegurar peticiones autorizadas.
 

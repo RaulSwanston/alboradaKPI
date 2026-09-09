@@ -70,6 +70,3 @@ alboradakpi-firebase-adminsdk-fbsvc-69c9c8ac57.json
 # Scripts and ES Modules scripts
 scripts/
 *.mjs
-
-# Secretos por entorno (Worker Cloudflare)
-public/app/core/r2.config.js

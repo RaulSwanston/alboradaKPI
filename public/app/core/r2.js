@@ -12,21 +12,7 @@
 
 const R2_BASE_URL = 'https://gestionph.synch.workers.dev/api/v1/r2';
 const R2_SLUG = 'alboradakpi';
-
-// La API key del Worker se lee de r2.config.js (gitignoreado). Si el archivo
-// no existe (ej. clon sin configuración), se carga vacía y la subida falla
-// con un mensaje claro en vez de romper el módulo.
-let cachedApiKey = null;
-async function getApiKey() {
-  if (cachedApiKey !== null) return cachedApiKey;
-  try {
-    const mod = await import('./r2.config.js');
-    cachedApiKey = (mod.R2_API_KEY || '').trim();
-  } catch (e) {
-    cachedApiKey = '';
-  }
-  return cachedApiKey;
-}
+const R2_API_KEY = 'gest_9Fvi1DLQEKIkLY206k2oO1byRvnncxgE9Gw0ws4p1tE';
 
 const objectUrlCache = new Map();
 
@@ -49,13 +35,11 @@ export function buildR2Key(tipo, propiedad, ext, extra = '') {
  * Sube un archivo (Blob o File) al condominio y devuelve la URL pública del Worker.
  */
 export async function uploadFileToR2(file, key) {
-  const apiKey = await getApiKey();
-  if (!apiKey) throw new Error('R2_API_KEY no configurada (falta r2.config.js)');
   const form = new FormData();
   form.append('file', file, file.name || key);
   const res = await fetch(`${R2_BASE_URL}/${R2_SLUG}/${key}`, {
     method: 'POST',
-    headers: { Authorization: `Bearer ${apiKey}` },
+    headers: { Authorization: `Bearer ${R2_API_KEY}` },
     body: form
   });
   if (!res.ok) {
@@ -87,9 +71,7 @@ export function getAuthObjectURL(refUrl) {
 
   const url = /^https?:\/\//i.test(refUrl) ? refUrl : `${R2_BASE_URL}/${R2_SLUG}/${refUrl}`;
   const promise = (async () => {
-    const apiKey = await getApiKey();
-    if (!apiKey) throw new Error('R2_API_KEY no configurada (falta r2.config.js)');
-    const res = await fetch(url, { headers: { Authorization: `Bearer ${apiKey}` } });
+    const res = await fetch(url, { headers: { Authorization: `Bearer ${R2_API_KEY}` } });
     if (!res.ok) throw new Error(`R2 ${res.status}`);
     const blob = await res.blob();
     return URL.createObjectURL(blob);

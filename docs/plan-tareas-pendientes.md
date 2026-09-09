@@ -12,7 +12,7 @@
 2. **T1 — Actividades recientes: cargar solo 5** (trivial)
 3. **T5 — Mostrar/ocultar contraseña en signup** (fácil)
 4. **T2 — Actividades recientes por rol (residents solo lo suyo)** (media)
-5. **T8 — Persistencia del logo de la app (Storage → navigator)** (media)
+5. **T8 — Persistencia del logo de la app (R2 → navigator)** (media)
 6. **T6 — Mejorar emailVerification con imágenes** (media, requiere assets del usuario)
 7. **T3 — Editar propiedades de módulos desde configManager** (compleja)
 8. **T7 — "Cambiar Unidad" en el topbar** (la más compleja)
@@ -110,7 +110,7 @@ const PAGE_SIZE = 15;
 **Estado:** ✅ **Completada (3 Ago 2026).** Ver "Implementación T8" más abajo.
 
 **Estado actual:**
-- `configManager.controller.js` ya sube el logo a Storage (`uploadLogoToFirebase`, línea 85-95) y guarda `localConfig.branding.logoUrl` con la URL remota (línea 433), luego `AppConfig.save(localConfig)` (línea 445).
+- `configManager.controller.js` ya sube el logo a Cloudflare R2 (`uploadLogoToFirebase`, línea 87, usa `uploadFileToR2` en su interior) y guarda `localConfig.branding.logoUrl` con la URL remota del Worker (línea 438-439), luego `AppConfig.save(localConfig)`.
 - `navigator.controller.js:56-61` ya lee `config.branding.logoUrl` y lo aplica al `#nav-logo`.
 - En teoría el flujo ya existe. **Pero hay un bug crítico de rutas de Firestore:**
 
@@ -133,7 +133,7 @@ const PAGE_SIZE = 15;
 1. `AppConfig.js:13,31` → ruta unificada a `appConfig/app` (antes `_config/app`). Eliminadas las referencias a `_config`.
 2. Verificado en Firestore: `appConfig/app` EXISTE (solo stats), `_config/app` NO EXISTE → no hay datos que migrar; el fix es seguro.
 3. Reglas `firestore.rules:87` ya protegen `appConfig/**` (read auth, write admin) — correcto.
-4. Flujo del logo confirmado: `configManager` sube a Storage (`config/branding/logo_*`), guarda `branding.logoUrl` remoto vía `AppConfig.save`, `navigator.controller.js:56-61,270` aplica al `#nav-logo`, y el preview al recargar carga `branding.logoUrl` (configManager.controller.js:124-135).
+4. Flujo del logo confirmado: `configManager` sube a Cloudflare R2 (`logo_branding_*`), guarda `branding.logoUrl` remoto vía `AppConfig.save`, `navigator.controller.js:56-61,270` aplica al `#nav-logo`, y el preview al recargar carga `branding.logoUrl` con `getAuthObjectURL` (configManager.controller.js:131-136).
 5. Pendiente de verificación en navegador: subir logo → guardar → recargar (requiere sesión real).
 
 ---
@@ -278,5 +278,5 @@ const PAGE_SIZE = 15;
 Todas las tareas del plan están **completadas y commiteadas** (último commit `cdd62d3`, pusheado a `github main`).
 
 **Pendientes para futuras sesiones (ver docs/memory.md "Pendiente"):**
-- Verificaciones en navegador con sesión real: modal "Cambiar Unidad", logo (T8), configuración Firebase (CORS Storage + AppCheck).
+- Verificaciones en navegador con sesión real: modal "Cambiar Unidad", logo (T8) ahora vía Cloudflare R2 (preview con `getAuthObjectURL`), AppCheck pendiente de decisión del cliente.
 - Trabajo futuro: panel de edición de métodos de pago en configManager, vista `/dashboard/payments/:id`, dashboard de resumen financiero del residente, migración de traducciones a `modules.*` (i18n.1–i18n.5), pruebas en emulador, reconciliación de datos históricos, integración Cloudflare.

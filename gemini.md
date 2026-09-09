@@ -15,7 +15,7 @@ Este documento resume el entendimiento actual sobre los objetivos y la estrategi
 - **Backend as a Service (BaaS):** Google Firebase.
 - **Base de Datos:** Cloud Firestore (para almacenar información de usuarios, pagos, etc.).
 - **Autenticación:** Firebase Authentication (para gestionar el inicio de sesión de los residentes).
-- **Almacenamiento:** Firebase Storage (para alojar archivos como comprobantes de pago en imagen, si es necesario).
+- **Almacenamiento:** Cloudflare R2 (migrado 9 Sep 2026 vía Worker gestionph; antes Firebase Storage, retirado del código).
 - **Hosting:** Firebase Hosting (para desplegar la aplicación web).
 - **Infraestructura Adicional:** Cloudflare (potencialmente para funciones serverless como BFF o seguridad avanzada).
 
@@ -25,7 +25,7 @@ Este documento resume el entendimiento actual sobre los objetivos y la estrategi
 - **Seguridad Basada en Backend:** La protección de los datos se implementará en los servidores de Firebase mediante:
     - **Autenticación Obligatoria:** Solo los usuarios autenticados podrán interactuar con los datos.
     - **Gestión de Roles Segura (Custom Claims):** Los roles de usuario (ej: "admin") no se gestionan en la base de datos, sino a través de **Custom Claims** de Firebase Authentication. Estos claims se asignan desde un entorno seguro (como una Cloud Function o usando el Admin SDK) y se integran en el token de autenticación del usuario. Esto previene que un usuario pueda auto-asignarse privilegios elevados.
-    - **Reglas de Seguridad (Security Rules):** Se definirán reglas estrictas en Firestore y Storage para asegurar que un usuario solo pueda acceder y modificar su propia información, basándose en sus Custom Claims (ej: `request.auth.token.admin == true`).
+    - **Reglas de Seguridad (Security Rules):** Se definirán reglas estrictas en Firestore, y validación de la **API key en el Worker de Cloudflare (R2)** para el almacenamiento de comprobantes, asegurando que un usuario solo pueda acceder y modificar su propia información, basándose en sus Custom Claims (ej: `request.auth.token.admin == true`).
     - **App Check:** Se habilitará para garantizar que las solicitudes provengan exclusivamente de la aplicación web autorizada.
 
 ---
@@ -251,7 +251,7 @@ Para cumplir con la visión de una plataforma de servicios flexible y automatiza
     - `paymentDate` (Fecha): Fecha en que el residente realizó el pago.
     - `reportDate` (Fecha y Hora).
     - `status` (Texto): `pending_verification`, `verified`, `rejected`.
-    - `receiptUrl` (Texto): URL del comprobante en Storage.
+    - `receiptUrl` (Texto): URL del comprobante en Cloudflare R2 (Worker gestionph).
     - `appliedTo` (Array de Objetos): **(NUEVO)** Lista de deudas a las que se aplica este pago `[{ transactionId: string, amount: number }]`.
     - `excessAmount` (Número): **(NUEVO)** Monto sobrante que pasará a ser "Saldo a Favor" si el pago supera las deudas seleccionadas.
     - `notes` (Texto).

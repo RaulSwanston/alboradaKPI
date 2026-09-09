@@ -122,7 +122,7 @@ El ENCARGADO se obliga a:
 
 7.1. El RESPONSABLE **autoriza expresamente** al ENCARGADO a subcontratar los servicios de los subencargados que figuran en el **Anexo III**, con carácter general, para la prestación de la PLATAFORMA.
 
-7.2. La infraestructura de la PLATAFORMA se sustenta en servicios de **Google (Firebase)** — Cloud Firestore, Firebase Authentication, Firebase Storage y Firebase Hosting — que actúan como subencargados. El tratamiento de datos en estos servicios se realiza en la nube de Google, por cuenta del ENCARGADO y con arreglo a las instrucciones del RESPONSABLE.
+7.2. La infraestructura de la PLATAFORMA se sustenta en servicios de **Google (Firebase)** — Cloud Firestore, Firebase Authentication y Firebase Hosting — complementados por **Cloudflare** (Cloudflare R2 vía el Worker `gestionph`) para el almacenamiento de imágenes y comprobantes; todos actúan como subencargados. El tratamiento de datos en estos servicios se realiza en la nube del respectivo proveedor, por cuenta del ENCARGADO y con arreglo a las instrucciones del RESPONSABLE.
 
 7.3. El ENCARGADO podrá incorporar o sustituir subencargados, siempre que: (i) informe previamente al RESPONSABLE con antelación suficiente para que este pueda ejercer su derecho de oposición; y (ii) imponga al nuevo subencargado, mediante contrato, las mismas obligaciones de protección de datos y confidencialidad que las asumidas por el ENCARGADO en este CONTRATO.
 
@@ -205,14 +205,14 @@ Gestión de pagos de mantenimiento, cuotas mensuales, facturación y cobros, sol
 | **Unidad / Propiedad** (`properties`) | Datos del propietario (`ownerInfo`), residentes asociados (`residentUids`), dirección de la unidad, saldo y moneda. |
 | **Movimientos financieros** (`transactions`) | Pagos y cargos por unidad: montos, saldos pendientes, referencias de quién pagó (`paidBy`), a qué cargos se aplicó (`appliedTo`), tipo de movimiento (FEE, PAYMENT, EXPENSE, FINE, OTHER), descripción, método de pago, número de factura (FAC) o recibo (REC), periodo y fecha efectiva. |
 | **Reportes de pago** (`paymentNotifications`) | Unidad, residente que reporta (`residentUid`), monto, fecha de pago, estado, URL del comprobante (`receiptUrl`), notas y excedentes. |
-| **Comprobantes de pago** (Firebase Storage) | Imágenes o archivos de comprobantes de transferencia/depósito subidos por los residentes. |
+| **Comprobantes de pago** (Cloudflare R2, Worker `gestionph`) | Imágenes o archivos de comprobantes de transferencia/depósito subidos por los residentes. |
 | **Solicitudes** | Solicitudes de vinculación (`membershipRequests`): usuario, correo, unidad solicitada, estado. Solicitudes de servicio (`serviceRequests`): unidad, concepto, notas, estado. |
 | **Actividades / Auditoría** (`activities`) | Registro inmutable de operaciones: quién inició cada acción (usuario con nombre/correo), sobre qué unidad, y detalles. |
 | **Eventos comunitarios** (`communityEvents`) | Eventos del calendario y su autor (`createdBy`). |
 
 ### 4. Medios y operaciones de tratamiento
 
-Recolección a través de formularios web y autenticación (correo/contraseña o Google), almacenamiento y organización en Firestore, procesamiento en el navegador del usuario (SPA), carga de archivos a Firebase Storage, consulta y difusión restringida según rol, y registro automático de actividades para auditoría.
+Recolección a través de formularios web y autenticación (correo/contraseña o Google), almacenamiento y organización en Firestore, procesamiento en el navegador del usuario (SPA), carga de archivos a Cloudflare R2 (Worker `gestionph`), consulta y difusión restringida según rol, y registro automático de actividades para auditoría.
 
 ### 5. Plazo de conservación
 
@@ -237,7 +237,7 @@ Los datos se conservarán mientras el TITULAR mantenga su cuenta activa o mientr
 ### 2. Protección de datos en tránsito y en reposo
 
 - Cifrado **TLS/HTTPS** en la comunicación entre el navegador y los servidores de Firebase.
-- Cifrado **en reposo** de los datos en Cloud Firestore y Firebase Storage, gestionado por el proveedor de infraestructura (Google) con estándares de la industria.
+- Cifrado **en reposo** de los datos en Cloud Firestore y Cloudflare R2, gestionado por el respectivo proveedor de infraestructura (Google/Cloudflare) con estándares de la industria.
 
 ### 3. Registro y trazabilidad
 
@@ -249,7 +249,7 @@ Los datos se conservarán mientras el TITULAR mantenga su cuenta activa o mientr
 - Deber de confidencialidad y formación básica en protección de datos para el personal del ENCARGADO.
 - Política de **menor privilegio**: el personal del ENCARGADO solo accede a datos cuando es estrictamente necesario (soporte, mantenimiento).
 - **Procedimiento de respuesta a incidentes** y notificación al RESPONSABLE en el plazo de la Cláusula Quinta.
-- **Copias de seguridad** y redundancia gestionadas por el proveedor de infraestructura (Firestore/Storage).
+- **Copias de seguridad** y redundancia gestionadas por el proveedor de infraestructura (Firestore/Cloudflare R2).
 
 ### 5. Riesgos residuales
 
@@ -264,9 +264,9 @@ Los datos se conservarán mientras el TITULAR mantenga su cuenta activa o mientr
 |-----------|----------|---------------------------|---------------------------|--------------|
 | **Google LLC** | Firebase Authentication | Autenticación de usuarios (correo/contraseña, Google) | Servidores de Google (EE. UU. y/u otros centros de datos) | Cláusulas contractuales de Google / estándares de seguridad de Firebase; cifrado en tránsito y en reposo |
 | **Google LLC** | Cloud Firestore | Base de datos (usuarios, propiedades, transacciones, actividades, etc.) | Servidores de Google | Idem |
-| **Google LLC** | Firebase Storage | Almacenamiento de comprobantes de pago (`receiptUrl`) | Servidores de Google | Idem |
+| **Cloudflare, Inc.** | Cloudflare R2 (Worker `gestionph`) | Almacenamiento de comprobantes de pago e imágenes (`receiptUrl`) | Infraestructura de Cloudflare | Cláusulas y estándares de seguridad de Cloudflare; cifrado en tránsito y en reposo |
 | **Google LLC** | Firebase Hosting | Alojamiento y entrega de la PLATAFORMA (SPA) | CDN de Google (borde global) | Idem |
-| **[Pendiente de decisión]** | Cloudflare (potencial) | CDN / servicios de red y correo | Infraestructura de Cloudflare | A definir al momento de la contratación |
+| **[Pendiente de decisión]** | Cloudflare (CDN, Workers adicionales, correo) | Servicios de red y correo | Infraestructura de Cloudflare | A definir al momento de la contratación |
 
 > **Nota:** La lista se actualizará conforme se contraten o sustituyan proveedores, conforme a la Cláusula Séptima.
 
