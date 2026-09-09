@@ -1,5 +1,6 @@
 import PaymentNotification from "../../models/PaymentNotification.js";
 import { t } from '../../core/i18n.js';
+import { getAuthObjectURL } from '../../core/r2.js';
 
 export default async function paymentApprovalController(contexto) {
   const user = contexto?.data?.user;
@@ -130,7 +131,15 @@ export default async function paymentApprovalController(contexto) {
     listEl.querySelectorAll('.btn-receipt').forEach(btn => {
       btn.addEventListener('click', () => {
         const url = btn.dataset.url;
-        if (url) window.open(url, '_blank');
+        if (!url) return;
+        const win = window.open('', '_blank');
+        if (!win) return;
+        getAuthObjectURL(url).then((blobUrl) => {
+          win.location = blobUrl;
+        }).catch(() => {
+          win.close();
+          console.error('No se pudo cargar el comprobante');
+        });
       });
     });
 

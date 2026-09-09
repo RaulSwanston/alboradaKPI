@@ -1,6 +1,7 @@
 import { router } from '/router.js';
 import { db, collection, query, where, onSnapshot } from '../../core/firebase.js';
 import { getInternalPath, getFriendlyPath, t } from '../../core/i18n.js';
+import { getAuthObjectURL } from '../../core/r2.js';
 import { injectIcons } from '../../utils/icons.js';
 
 export default async function navigator(contexto) {
@@ -57,8 +58,12 @@ export default async function navigator(contexto) {
   const renderBranding = () => {
     if (config.branding) {
       if (navLogo && config.branding.logoUrl) {
-        navLogo.src = config.branding.logoUrl;
         navLogo.alt = config.branding.appName || "App Logo";
+        getAuthObjectURL(config.branding.logoUrl).then((blobUrl) => {
+          if (blobUrl && navLogo) navLogo.src = blobUrl;
+        }).catch(() => {
+          // Mantiene el logo por defecto ya cargado en el HTML
+        });
       }
       if (navAppName && config.branding.appName) {
         // Si el nombre tiene espacios, podemos intentar poner un <br> en el primer espacio

@@ -430,6 +430,22 @@
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.td-upload-thumb {
+  width: 3.5rem;
+  height: 3.5rem;
+  object-fit: cover;
+  border-radius: 0.5rem;
+  border: 1px solid var(--card-border);
+  background: var(--color-white, #ffffff);
+  cursor: zoom-in;
+  transition: transform 0.15s ease;
+}
+
+.td-upload-thumb:hover {
+  transform: scale(1.06);
 }
 
 .td-upload-filename {
@@ -740,4 +756,72 @@
   [data-content="dashboard"] > .td-wrapper {
     grid-column: 1 / -1;
   }
+}
+
+/* === Receipt Preview Modal === */
+.td-preview-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+}
+
+.td-preview-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  animation: tdFadeIn 0.2s ease;
+}
+
+.td-preview-body {
+  position: relative;
+  max-width: min(720px, 100%);
+  max-height: 90vh;
+  margin: 0;
+  border-radius: 0.875rem;
+  overflow: hidden;
+  background: var(--color-white, #ffffff);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+  animation: tdZoomIn 0.2s ease;
+}
+
+.td-preview-body img {
+  display: block;
+  max-width: 100%;
+  max-height: 90vh;
+  object-fit: contain;
+}
+
+.td-preview-close {
+  position: absolute;
+  top: 0.5rem;
+  right: 0.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  border: none;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.td-preview-close:hover {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+@keyframes tdFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes tdZoomIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
 }

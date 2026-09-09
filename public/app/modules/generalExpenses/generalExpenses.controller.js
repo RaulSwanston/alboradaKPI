@@ -1,6 +1,7 @@
 import Transaction from "../../models/Transaction.js";
 import ChargeConcept from "../../models/ChargeConcept.js";
 import { t } from "../../core/i18n.js";
+import { getAuthObjectURL, revokeAuthObjectURLs } from "../../core/r2.js";
 import { injectIcons } from "../../utils/icons.js";
 
 /**
@@ -327,12 +328,21 @@ export default async function generalExpensesController(contexto) {
       ${tx.metadata?.receiptURL ? `
         <div class="ge-receipt-image-area">
           <div class="ge-receipt-image-title">Comprobante adjunto</div>
-          <img src="${tx.metadata.receiptURL}" alt="Comprobante del gasto" />
+          <img data-ge-receipt-src="${tx.metadata.receiptURL}" alt="Comprobante del gasto" />
         </div>
       ` : `
         <div class="ge-receipt-no-attachment">Sin comprobante adjunto</div>
       `}
     `;
+
+    const receiptImg = receiptBody.querySelector('img[data-ge-receipt-src]');
+    if (receiptImg) {
+      getAuthObjectURL(receiptImg.dataset.geReceiptSrc).then((blobUrl) => {
+        receiptImg.src = blobUrl;
+      }).catch(() => {
+        receiptImg.outerHTML = '<div class="ge-receipt-no-attachment">Comprobante no disponible</div>';
+      });
+    }
 
     receiptModal.classList.remove('hidden');
   };
@@ -390,6 +400,7 @@ export default async function generalExpensesController(contexto) {
 
   try {
     await init();
+    return () => revokeAuthObjectURLs();
   } catch (error) {
     console.error("[GeneralExpenses] Error fatal en inicialización:", error);
     const container = document.querySelector('.general-expenses-module');

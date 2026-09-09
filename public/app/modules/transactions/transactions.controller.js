@@ -2,6 +2,7 @@ import Transaction from "../../models/Transaction.js";
 import Property from "../../models/Property.js";
 import { t } from '../../core/i18n.js';
 import { db, doc, getDoc, writeBatch, arrayUnion } from "../../core/firebase.js";
+import { getAuthObjectURL } from '../../core/r2.js';
 
 /**
  * transactions.controller.js
@@ -886,7 +887,14 @@ export default async function transactionsController(contexto) {
      */
     const buildPhysicalReceipt = async (tx, absAmount) => {
         const cfg = contexto?.data?.appConfig || {};
-        const logoUrl = cfg.branding?.logoUrl || '/src/img/alborada.svg';
+        let logoUrl = cfg.branding?.logoUrl || '/src/img/alborada.svg';
+        if (logoUrl && !logoUrl.startsWith('/') && !logoUrl.startsWith('data:')) {
+            try {
+                logoUrl = await getAuthObjectURL(logoUrl);
+            } catch (e) {
+                logoUrl = '/src/img/alborada.svg';
+            }
+        }
         const paymentMethods = cfg.moduleRegistry?.transactions?.paymentMethods || [];
         const methodLabels = Object.fromEntries(paymentMethods.map(m => [m.id, m.label]));
         const method = tx.paymentMethod || '';

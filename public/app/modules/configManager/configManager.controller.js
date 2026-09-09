@@ -7,7 +7,9 @@
 
 import { appConfig } from '../../core/appConfig.js';
 import { t } from '../../core/i18n.js';
-import { storage, ref, uploadBytes, getDownloadURL, db, doc, getDoc } from '../../core/firebase.js';
+import { db, doc, getDoc } from '../../core/firebase.js';
+import { uploadFileToR2, buildR2Key, getAuthObjectURL, revokeAuthObjectURLs } from '../../core/r2.js';
+import { compressImageFile } from '../../core/imageCompress.js';
 import User from '../../models/User.js';
 import AppConfig from '../../models/AppConfig.js';
 
@@ -85,9 +87,9 @@ export default async function configManagerController(contexto) {
     const uploadLogoToFirebase = async () => {
         if (!selectedFile) return null;
         try {
-            const storageRef = ref(storage, `config/branding/logo_${Date.now()}`);
-            const snapshot = await uploadBytes(storageRef, selectedFile);
-            return await getDownloadURL(snapshot.ref);
+            const { blob, ext } = await compressImageFile(selectedFile, { maxDimension: 512, maxBytes: 200 * 1024 });
+            const key = buildR2Key('logo', 'branding', ext);
+            return await uploadFileToR2(blob, key);
         } catch (error) {
             console.error("❌ Error al subir logo:", error);
             return null;
@@ -127,7 +129,11 @@ export default async function configManagerController(contexto) {
         if (appNameInput) appNameInput.value = branding.appName;
         if (logoUrlInput) logoUrlInput.value = branding.logoUrl;
         if (logoPreview) {
-            logoPreview.src = branding.logoUrl || '/src/img/alborada.svg';
+            getAuthObjectURL(branding.logoUrl || '/src/img/alborada.svg').then((blobUrl) => {
+                if (logoPreview) logoPreview.src = blobUrl;
+            }).catch(() => {
+                if (logoPreview) logoPreview.src = '/src/img/alborada.svg';
+            });
             updateLogoState(!!branding.logoUrl);
         }
         if (appNameInput) appNameInput.oninput = (e) => localConfig.branding.appName = e.target.value;
@@ -457,5 +463,8 @@ export default async function configManagerController(contexto) {
         };
     }
 
-    return () => console.log("Limpiando configManagerController");
+    return () => {
+        revokeAuthObjectURLs();
+        console.log("Limpiando configManagerController");
+    };
 }

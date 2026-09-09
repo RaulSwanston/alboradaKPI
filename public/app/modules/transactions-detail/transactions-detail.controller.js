@@ -1,7 +1,9 @@
 import Transaction from "../../models/Transaction.js";
 import Property from "../../models/Property.js";
 import { t } from "../../core/i18n.js";
-import { db, storage, ref, uploadBytes, getDownloadURL, doc, updateDoc, getDoc, writeBatch, arrayUnion } from "../../core/firebase.js";
+import { db, doc, updateDoc, getDoc, writeBatch, arrayUnion } from "../../core/firebase.js";
+import { uploadFileToR2, buildR2Key, getAuthObjectURL, revokeAuthObjectURLs } from "../../core/r2.js";
+import { compressImageFile } from "../../core/imageCompress.js";
 
 /**
  * Controlador para creación/edición de transacciones.
@@ -50,6 +52,9 @@ export default async function transactionsDetailController(contexto) {
   const uploadPreview = document.getElementById('td-upload-preview');
   const uploadFilename = document.getElementById('td-upload-filename');
   const uploadRemove = document.getElementById('td-upload-remove');
+  const uploadThumb = document.getElementById('td-upload-thumb');
+  const previewModal = document.getElementById('td-preview-modal');
+  const previewImg = document.getElementById('td-preview-img');
 
   const descriptionInput = document.getElementById('td-description');
   const amountInput = document.getElementById('td-amount');
@@ -72,6 +77,7 @@ export default async function transactionsDetailController(contexto) {
   let isSaving = false;
   let idempotencyKey = null;
   let propertySearchTimer = null;
+  let receiptPreviewUrl = null;
 
   // =============================================
   //  INIT
@@ -301,6 +307,22 @@ export default async function transactionsDetailController(contexto) {
   const handleFileSelect = (file) => {
     if (!file) return;
     receiptFile = file;
+
+    if (receiptPreviewUrl) {
+      URL.revokeObjectURL(receiptPreviewUrl);
+      receiptPreviewUrl = null;
+    }
+
+    const isImage = file.type?.startsWith('image/');
+    if (isImage) {
+      receiptPreviewUrl = URL.createObjectURL(file);
+      uploadThumb.src = receiptPreviewUrl;
+      uploadThumb.style.display = '';
+    } else {
+      uploadThumb.removeAttribute('src');
+      uploadThumb.style.display = 'none';
+    }
+
     uploadFilename.textContent = file.name;
     uploadPlaceholder.classList.add('hidden');
     uploadPreview.classList.remove('hidden');
@@ -310,19 +332,39 @@ export default async function transactionsDetailController(contexto) {
   const handleFileRemove = () => {
     receiptFile = null;
     receiptFileInput.value = '';
+    uploadThumb.removeAttribute('src');
+    uploadThumb.style.display = 'none';
+    if (receiptPreviewUrl) {
+      URL.revokeObjectURL(receiptPreviewUrl);
+      receiptPreviewUrl = null;
+    }
     uploadPreview.classList.add('hidden');
     uploadPlaceholder.classList.remove('hidden');
     uploadZone.classList.remove('has-file');
   };
 
+  const openPreview = () => {
+    if (!uploadThumb.src) return;
+    previewImg.src = uploadThumb.src;
+    previewModal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closePreview = () => {
+    previewModal.classList.add('hidden');
+    previewImg.removeAttribute('src');
+    document.body.style.overflow = '';
+  };
+
+  const onPreviewKeydown = (e) => {
+    if (e.key === 'Escape') closePreview();
+  };
+
   const uploadReceipt = async (propertyId) => {
     if (!receiptFile) return null;
-    const timestamp = Date.now();
-    const safeName = receiptFile.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-    const storagePath = `receipts/${propertyId}/${timestamp}_${safeName}`;
-    const storageRef = ref(storage, storagePath);
-    await uploadBytes(storageRef, receiptFile);
-    return await getDownloadURL(storageRef);
+    const { blob, ext } = await compressImageFile(receiptFile);
+    const key = buildR2Key('recibo', propertyId, ext);
+    return await uploadFileToR2(blob, key);
   };
 
   // =============================================
@@ -619,6 +661,31 @@ export default async function transactionsDetailController(contexto) {
         }
       }
 
+      // Existing receipt preview (from stored metadata.receiptURL)
+      const existingReceiptUrl = trans.metadata?.receiptURL;
+      if (existingReceiptUrl) {
+        const lastSeg = decodeURIComponent(existingReceiptUrl).split('/').pop()?.split('?')[0] || '';
+        const isPdf = /\.pdf$/i.test(lastSeg);
+        if (isPdf) {
+          uploadThumb.removeAttribute('src');
+          uploadThumb.style.display = 'none';
+        } else {
+          getAuthObjectURL(existingReceiptUrl).then((blobUrl) => {
+            if (blobUrl && uploadThumb && !receiptFile) {
+              uploadThumb.src = blobUrl;
+              uploadThumb.style.display = '';
+            }
+          }).catch(() => {
+            uploadThumb.removeAttribute('src');
+            uploadThumb.style.display = 'none';
+          });
+        }
+        uploadFilename.textContent = lastSeg || 'Comprobante adjunto';
+        uploadPlaceholder.classList.add('hidden');
+        uploadPreview.classList.remove('hidden');
+        uploadZone.classList.add('has-file');
+      }
+
       // Store original for diff calculation on edit
       originalTransaction = trans;
 
@@ -702,6 +769,18 @@ export default async function transactionsDetailController(contexto) {
       handleFileRemove();
     });
 
+    // Thumbnail → modal a tamaño completo
+    uploadThumb.addEventListener('click', (e) => {
+      e.stopPropagation();
+      openPreview();
+    });
+
+    previewModal.querySelectorAll('[data-td-close-preview]').forEach(el => {
+      el.addEventListener('click', closePreview);
+    });
+
+    document.addEventListener('keydown', onPreviewKeydown);
+
     // Back button
     document.getElementById('btn-back-list').addEventListener('click', () => {
       window.history.back();
@@ -716,5 +795,9 @@ export default async function transactionsDetailController(contexto) {
   return () => {
     // Cleanup
     clearTimeout(propertySearchTimer);
+    document.removeEventListener('keydown', onPreviewKeydown);
+    closePreview();
+    if (receiptPreviewUrl) URL.revokeObjectURL(receiptPreviewUrl);
+    revokeAuthObjectURLs();
   };
 }

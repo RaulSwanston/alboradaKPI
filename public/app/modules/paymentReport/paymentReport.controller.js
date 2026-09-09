@@ -1,4 +1,6 @@
-import { db, storage, serverTimestamp, ref, uploadBytes, getDownloadURL, query, where, getDocs, orderBy } from "../../core/firebase.js";
+import { db, serverTimestamp, query, where, getDocs, orderBy } from "../../core/firebase.js";
+import { uploadFileToR2, buildR2Key } from '../../core/r2.js';
+import { compressImageFile } from '../../core/imageCompress.js';
 import Property from "../../models/Property.js";
 import Transaction from "../../models/Transaction.js";
 import PaymentNotification from "../../models/PaymentNotification.js";
@@ -179,11 +181,9 @@ export default async function paymentReportController(contexto) {
 
     try {
       // 1. Subir Imagen
-      const fileExt = selectedFile.name.split('.').pop();
-      const fileName = `comprobantes_pagos/${user.uid}_${Date.now()}.${fileExt}`;
-      const storageRef = ref(storage, fileName);
-      const uploadResult = await uploadBytes(storageRef, selectedFile);
-      const downloadUrl = await getDownloadURL(uploadResult.ref);
+      const { blob, ext } = await compressImageFile(selectedFile);
+      const key = buildR2Key('reporte', currentPropertyId, ext, user.uid);
+      const downloadUrl = await uploadFileToR2(blob, key);
 
       // 2. Preparar Desglose (appliedTo)
       const reportedAmount = parseFloat(amountInput.value);
