@@ -87,6 +87,13 @@ service cloud.firestore {
       allow update, delete: if false; // Nadie puede modificar o borrar lo ya registrado.
     }
 
+    // Contadores de Voucher (system/counters)
+    // Usados por _generateVoucher/_generateBatchVouchers (runTransaction get/set/update).
+    // Sin esta regla, cualquier creación de transacción con voucher fallaba (default deny).
+    match /system/{docId} {
+      allow read, write: if isAdmin();
+    }
+
     // Configuración de la Aplicación y Estadísticas Globales
     match /appConfig/{document=**} {
       // Todos los usuarios autenticados pueden leer la configuración.
