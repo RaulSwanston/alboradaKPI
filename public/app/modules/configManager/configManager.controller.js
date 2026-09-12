@@ -45,6 +45,8 @@ export default async function configManagerController(contexto) {
 
     // --- ESTADO LOCAL DE CONFIGURACIÓN ---
     let localConfig = JSON.parse(JSON.stringify(contexto.data.appConfig || appConfig));
+    if (!localConfig.branding) localConfig.branding = JSON.parse(JSON.stringify(appConfig.branding));
+    if (!localConfig.systemDefaults) localConfig.systemDefaults = JSON.parse(JSON.stringify(appConfig.systemDefaults));
 
     // --- LÓGICA DE PESTAÑAS (TABS) ---
     const initTabs = () => {
@@ -79,7 +81,6 @@ export default async function configManagerController(contexto) {
                 updateLogoState(true);
             }
             if (logoUrlInput) logoUrlInput.value = `LOCAL: ${file.name}`;
-            localConfig.branding.logoUrl = base64Image;
         };
         reader.readAsDataURL(file);
     };
@@ -171,17 +172,19 @@ export default async function configManagerController(contexto) {
             html += `<tr class="module-row" data-module="${moduleKey}">
                 <td><span class="expand-icon">▶</span> <strong>${moduleKey}</strong></td>
                 ${roleList.map(role => {
-                    const hasFullAccess = roles[role.id]?.allowedModules.includes(moduleKey) || roles[role.id]?.allowedModules.includes('*');
+                    const roleAllowed = roles[role.id]?.allowedModules || [];
+                    const hasFullAccess = roleAllowed.includes(moduleKey) || roleAllowed.includes('*');
                     return `<td><input type="checkbox" class="mod-access" data-role="${role.id}" data-module="${moduleKey}" ${hasFullAccess ? 'checked' : ''}></td>`;
                 }).join('')}
             </tr>`;
 
-            moduleData.capabilities.forEach(cap => {
+            (moduleData.capabilities || []).forEach(cap => {
                 html += `<tr class="capability-row" data-parent="${moduleKey}">
                     <td class="capability-name">${t(cap.labelKey)}</td>
                     ${roleList.map(role => {
                         const fullCapKey = `${moduleKey}.${cap.id}`;
-                        const hasCap = roles[role.id]?.capabilities.includes(fullCapKey) || roles[role.id]?.capabilities.includes('*');
+                        const roleCaps = roles[role.id]?.capabilities || [];
+                        const hasCap = roleCaps.includes(fullCapKey) || roleCaps.includes('*');
                         return `<td><input type="checkbox" class="cap-access" data-role="${role.id}" data-cap="${fullCapKey}" ${hasCap ? 'checked' : ''}></td>`;
                     }).join('')}
                 </tr>`;
@@ -202,6 +205,7 @@ export default async function configManagerController(contexto) {
             cb.onchange = (e) => {
                 const { role, module } = e.target.dataset;
                 const roleData = localConfig.accessControl.roles[role];
+                roleData.allowedModules = roleData.allowedModules || [];
                 if (e.target.checked) { if (!roleData.allowedModules.includes(module)) roleData.allowedModules.push(module); }
                 else { roleData.allowedModules = roleData.allowedModules.filter(m => m !== module); }
             };
@@ -211,6 +215,7 @@ export default async function configManagerController(contexto) {
             cb.onchange = (e) => {
                 const { role, cap } = e.target.dataset;
                 const roleData = localConfig.accessControl.roles[role];
+                roleData.capabilities = roleData.capabilities || [];
                 if (e.target.checked) { if (!roleData.capabilities.includes(cap)) roleData.capabilities.push(cap); }
                 else { roleData.capabilities = roleData.capabilities.filter(c => c !== cap); }
             };
@@ -437,6 +442,8 @@ export default async function configManagerController(contexto) {
                 // 1. Logo a Storage (Independiente)
                 const remoteUrl = await uploadLogoToFirebase();
                 if (remoteUrl) localConfig.branding.logoUrl = remoteUrl;
+                else if (selectedFile) alert('No se pudo subir el logo; se mantendrá el actual.');
+                selectedFile = null;
 
                 // 2. Roles de Usuario (Uso del modelo User)
                 const userUpdatePromises = Object.entries(pendingUserUpdates).map(([uid, newRole]) => {

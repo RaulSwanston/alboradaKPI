@@ -59,7 +59,8 @@
 
 /* Variante Oscura */
 .summary-card.dark {
-    background-color: var(--color-gurkha-900);
+    /* background-color: var(--color-gurkha-900); */
+    background-color: var(--color-kaitoke-green-700);
     color: white;
     border: none;
 }

@@ -56,26 +56,30 @@ export default async function navigator(contexto) {
    * Renderiza el branding (Logo y Nombre)
    */
   const renderBranding = () => {
-    if (config.branding) {
-      if (navLogo && config.branding.logoUrl) {
-        navLogo.alt = config.branding.appName || "App Logo";
-        getAuthObjectURL(config.branding.logoUrl).then((blobUrl) => {
-          if (blobUrl && navLogo) navLogo.src = blobUrl;
-        }).catch(() => {
-          // Mantiene el logo por defecto ya cargado en el HTML
-        });
-      }
-      if (navAppName && config.branding.appName) {
-        // Si el nombre tiene espacios, podemos intentar poner un <br> en el primer espacio
-        // para mantener el estilo visual original, o simplemente usar el nombre.
-        // Por ahora, lo usaremos tal cual pero con soporte para el estilo de dos líneas si el usuario lo desea.
-        const nameParts = config.branding.appName.split(' ');
-        if (nameParts.length > 1) {
-          navAppName.innerHTML = `${nameParts[0]}<br>${nameParts.slice(1).join(' ')}`;
-        } else {
-          navAppName.textContent = config.branding.appName;
-        }
-      }
+    if (!config.branding) return;
+    const hasLogo = !!config.branding.logoUrl;
+    const hasText = !!config.branding.appName;
+
+    // Exclusión: imagen > texto > nada
+    if (navLogo) navLogo.classList.toggle('hidden', !hasLogo);
+    if (navAppName) navAppName.classList.toggle('hidden', hasLogo || !hasText);
+
+    // Texto (solo si no hay imagen)
+    if (hasText && !hasLogo && navAppName) {
+      const nameParts = config.branding.appName.split(' ');
+      navAppName.innerHTML = nameParts.length > 1
+        ? `${nameParts[0]}<br>${nameParts.slice(1).join(' ')}`
+        : config.branding.appName;
+    }
+
+    // Imagen
+    if (hasLogo && navLogo) {
+      navLogo.alt = config.branding.appName || "App Logo";
+      getAuthObjectURL(config.branding.logoUrl).then((blobUrl) => {
+        if (blobUrl && navLogo) navLogo.src = blobUrl;
+      }).catch(() => {
+        // Mantiene el logo por defecto ya cargado en el HTML
+      });
     }
   };
 

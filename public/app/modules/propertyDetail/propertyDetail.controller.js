@@ -1,5 +1,7 @@
 import Property from "../../models/Property.js";
 import Transaction from "../../models/Transaction.js";
+import { appConfig } from "../../core/appConfig.js";
+import { getAuthObjectURL } from "../../core/r2.js";
 import { jsPDF } from "https://esm.sh/jspdf@2.5.1";
 import { injectIcons } from "../../utils/icons.js";
 
@@ -23,9 +25,12 @@ export default async function propertyDetailController(contexto) {
   const paginationContainer = document.querySelector('.pagination');
   const btnDownloadPdf = getEl('btn-download-pdf');
 
+  // --- Nombre del condominio (configurable desde configManager → appConfig) ---
+  const brandName = contexto?.data?.appConfig?.branding?.appName || appConfig.branding.appName;
+
   // --- Helpers de Formateo ---
   const formatCurrency = (amount) => {
-    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Math.abs(amount || 0));
+    return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount || 0);
   };
 
   const formatDate = (dateValue) => {
@@ -50,20 +55,55 @@ export default async function propertyDetailController(contexto) {
   };
 
   /**
+   * Carga el logo del condominio (branding.logoUrl) y lo convierte a PNG
+   * vía canvas (soporta SVG por defecto y PNG/JPG subidos a R2).
+   * @returns {Promise<{dataUrl:string, w:number, h:number}|null>}
+   */
+  const buildLogoDataURL = async () => {
+    const refUrl = contexto?.data?.appConfig?.branding?.logoUrl || appConfig.branding.logoUrl;
+    if (!refUrl) return null;
+    try {
+      const url = await getAuthObjectURL(refUrl);
+      if (!url) return null;
+      const img = new Image();
+      img.src = url;
+      await new Promise((resolve, reject) => { img.onload = resolve; img.onerror = reject; });
+      const w = img.naturalWidth || 300;
+      const h = img.naturalHeight || 150;
+      const canvas = document.createElement('canvas');
+      canvas.width = w;
+      canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      return { dataUrl: canvas.toDataURL('image/png'), w, h };
+    } catch (err) {
+      console.warn('[PDF] Logo no disponible:', err);
+      return null;
+    }
+  };
+
+  /**
    * Genera el PDF del Estado de Cuenta
    */
-  const generatePDF = () => {
+  const generatePDF = async () => {
     if (!allMovements.length || !currentPropData) return;
     try {
       const doc = new jsPDF();
       const margin = 20;
-      let y = 20;
+      const logo = await buildLogoDataURL();
+      let y = 16;
+      if (logo) {
+        const logoW = 56, logoH = 25;
+        doc.addImage(logo.dataUrl, 'PNG', margin, y, logoW, logoH);
+        y += logoH + 5;
+      } else {
+        y = 20;
+      }
 
       doc.setFontSize(18);
       doc.setFont("helvetica", "bold");
       doc.text("ESTADO DE CUENTA", margin, y);
       doc.setFontSize(10);
-      doc.text("Condominio Residencial Alborada", 190, y, { align: "right" });
+      doc.text(brandName, 190, y, { align: "right" });
       
       y += 15;
       doc.setFontSize(12);
@@ -77,28 +117,53 @@ export default async function propertyDetailController(contexto) {
       doc.text(`Saldo: ${formatCurrency(totalBalance)} USD`, 190, y, { align: "right" });
 
       y += 15;
-      doc.setFont("helvetica", "bold");
-      doc.setFillColor(246, 245, 239);
-      doc.rect(margin, y, 170, 8, 'F');
-      doc.text("Fecha", margin + 2, y + 6);
-      doc.text("Descripción", margin + 30, y + 6);
-      doc.text("Cargo", margin + 100, y + 6, { align: "right" });
-      doc.text("Abono", margin + 130, y + 6, { align: "right" });
-      doc.text("Saldo", margin + 165, y + 6, { align: "right" });
+      const cargoWidth = 20;
+      const cargoCenter = margin + 118;
+      const abonoWidth = 20;
+      const abonoCenter = margin + 138;
+      const drawHeader = (hy) => {
+        doc.setFont("helvetica", "bold");
+        doc.setFontSize(10);
+        doc.setFillColor(246, 245, 239);
+        doc.rect(margin, hy, 170, 8, 'F');
+        doc.text("Fecha", margin + 11, hy + 6, { align: "center" });
+        doc.text("Descripción", margin + 24, hy + 6);
+        doc.text("Cargo", cargoCenter, hy + 6, { align: "center" });
+        doc.text("Abono", abonoCenter, hy + 6, { align: "center" });
+        doc.text("Saldo", margin + 168, hy + 6, { align: "right" });
+      };
+      drawHeader(y);
       
       y += 12;
       doc.setFont("helvetica", "normal");
       doc.setFontSize(9);
 
+      const lineH = 4;
+      const descX = margin + 24;
+      const descWidth = 84;
+      const saldoRight = margin + 168;
+
       allMovements.forEach((t) => {
-        if (y > 275) { doc.addPage(); y = 20; }
         const isPayment = (t.amount || 0) > 0;
-        doc.text(formatDate(t.effectiveDate), margin + 2, y);
-        doc.text((t.description || "").substring(0, 40), margin + 30, y);
-        doc.text(!isPayment ? `-${Math.abs(t.amount).toFixed(2)}` : "", margin + 100, y, { align: "right" });
-        doc.text(isPayment ? `+${Math.abs(t.amount).toFixed(2)}` : "", margin + 130, y, { align: "right" });
-        doc.text(`${Math.abs(t.currentBalance).toFixed(2)}`, margin + 165, y, { align: "right" });
-        y += 7;
+        const descLines = doc.splitTextToSize(t.description || 'Movimiento', descWidth);
+        const rowH = descLines.length * lineH + 3;
+        if (y + rowH > 280) {
+          doc.addPage();
+          y = 20;
+          drawHeader(y);
+          y += 12;
+          doc.setFont("helvetica", "normal");
+          doc.setFontSize(9);
+        }
+
+doc.text(formatDate(t.effectiveDate), margin + 2, y);
+        descLines.forEach((line, i) => doc.text(line, descX, y + i * lineH));
+        doc.text(!isPayment ? `-${Math.abs(t.amount).toFixed(2)}` : "", cargoCenter, y, { align: "center" });
+        doc.setTextColor(25, 124, 64);
+        doc.text(isPayment ? `+${Math.abs(t.amount).toFixed(2)}` : "", abonoCenter, y, { align: "center" });
+        doc.setTextColor(0, 0, 0);
+        doc.text(`${t.currentBalance.toFixed(2)}`, margin + 168, y, { align: "right" });
+        y += rowH;
       });
 
       // Abrir en nueva pestaña para vista previa
@@ -123,7 +188,7 @@ export default async function propertyDetailController(contexto) {
           <td>
             <div class="concept-cell">
               <span class="concept-main">${t.description || 'Movimiento'}</span>
-              <span class="concept-sub">${t.type === 'FEE' ? 'Cuota Ordinaria' : 'Condominio Alborada'}</span>
+              <span class="concept-sub">${t.type === 'FEE' ? 'Cuota Ordinaria' : brandName}</span>
               ${(t.paidBy?.length || t.appliedTo?.length) ? `
                 <div class="recon-indicator">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
@@ -171,7 +236,7 @@ export default async function propertyDetailController(contexto) {
       currentPropData = prop;
       if (getEl('detail-property-id')) getEl('detail-property-id').textContent = `Unidad ${prop.id}`;
       if (getEl('detail-property-owner')) getEl('detail-property-owner').textContent = prop.ownerInfo?.name || 'No registrado';
-      if (getEl('detail-property-address')) getEl('detail-property-address').textContent = prop.address?.street || prop.address?.Street || 'Condominio Alborada';
+      if (getEl('detail-property-address')) getEl('detail-property-address').textContent = prop.address?.street || prop.address?.Street || brandName;
       if (getEl('detail-property-phone')) getEl('detail-property-phone').textContent = prop.ownerInfo?.mobile || 'Sin teléfono';
     }
 

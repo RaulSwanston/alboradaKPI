@@ -271,7 +271,12 @@
       "receiptPrevBalance": "previous balance",
       "receiptPaymentAmt": "Payment",
       "receiptCurrentBalance": "current balance",
-      "receiptCollectedBy": "Collected by"
+      "receiptCollectedBy": "Collected by",
+      "receiptViewLabel": "View",
+      "receiptAttachment": "Attached receipt",
+      "receiptNoAttachment": "No attached receipt",
+      "receiptAttachmentError": "Receipt unavailable",
+      "receiptOpenPdf": "Open receipt"
     },
     "conciliation": {
       "title": "Cross-Reference Payment",

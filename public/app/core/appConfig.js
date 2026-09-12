@@ -296,7 +296,7 @@ export const appConfig = {
 
   // 6. Identidad Visual y Branding
   branding: {
-    appName: "Alborada Residencial",
+    appName: "Condominio Residencial Alborada",
     logoUrl: "/src/img/alborada.svg",
     colors: {
       primary: "#28bf63",

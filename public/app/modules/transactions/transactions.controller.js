@@ -30,6 +30,7 @@ export default async function transactionsController(contexto) {
     // Consume el perfil ya preparado por el middleware (role claim-aware).
     const userProfile = contexto?.data?.userProfile || null;
     const isAdmin = contexto?.data?.permissions?.isAdmin === true || userProfile?.role === 'admin';
+    const isResident = userProfile?.role === 'resident';
     const myPropertyIds = userProfile?.propertyIds || [];
 
     // Carga todas las transacciones de las unidades del residente (rule-compliant:
@@ -349,11 +350,19 @@ export default async function transactionsController(contexto) {
                             ${isPos ? '+' : ''}${currency(tx.amount)}
                         </div>
                         <div class="col-actions">
+                            ${!isResident ? `
                             <button class="btn-action btn-receipt" title="Ver Comprobante" data-id="${tx.id}" ${tx.voucherNumber ? '' : 'style="display:none"'}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/>
                                 </svg>
-                            </button>
+                            </button>` : `
+                            <button class="btn-receipt btn-receipt-pill" title="Ver Comprobante" data-id="${tx.id}" ${tx.voucherNumber ? '' : 'style="display:none"'}>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                    <circle cx="12" cy="12" r="3"/>
+                                </svg>
+                                ${t('modules.transactions.receiptViewLabel')}
+                            </button>`}
                             <button class="btn-action btn-conciliate" title="Conciliar con cargos" data-id="${tx.id}" ${isAdmin && tx.type === 'PAYMENT' && tx.propertyId ? '' : 'style="display:none"'}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M21 6H3a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h18a1 1 0 0 0 1-1V7a1 1 0 0 0-1-1zm-1 10H4V8h16v8z"/>
@@ -1014,6 +1023,7 @@ export default async function transactionsController(contexto) {
         const voucherTypeLabel = tx.voucherType === 'FAC' ? t('modules.transactions.receiptFactura') : tx.voucherType === 'REC' ? t('modules.transactions.receiptRecibo') : t('modules.transactions.receiptVoucher');
 
         const appliedSection = await buildAppliedSection(tx);
+        const receiptURL = tx.metadata?.receiptURL || tx.metadata?.receiptUrl;
 
         receiptBody.innerHTML = `
             <div class="receipt-title-area">
@@ -1046,7 +1056,52 @@ export default async function transactionsController(contexto) {
             ${tx.period ? `<div class="receipt-row"><span class="receipt-label">${t('modules.transactions.receiptPeriod')}</span><span class="receipt-value">${tx.period}</span></div>` : ''}
             ${tx.pendingAmount ? `<div class="receipt-row"><span class="receipt-label">${t('modules.transactions.receiptPending')}</span><span class="receipt-value">$${Math.abs(tx.pendingAmount).toFixed(2)}</span></div>` : ''}
             ${appliedSection}
+            ${receiptURL ? `
+            <div class="receipt-attachment">
+                <div class="receipt-attachment-title">${t('modules.transactions.receiptAttachment')}</div>
+                <div class="receipt-attachment-content">
+                    <div class="receipt-no-attachment">${t('modules.transactions.receiptNoAttachment')}</div>
+                </div>
+            </div>` : `
+            <div class="receipt-no-attachment">${t('modules.transactions.receiptNoAttachment')}</div>`}
         `;
+
+        // Comprobante adjunto (imagen/PDF del pago)
+        const receiptAttachment = receiptBody.querySelector('.receipt-attachment-content');
+        if (receiptAttachment && receiptURL) {
+            const isPdf = /\.pdf$/i.test(decodeURIComponent(receiptURL).split('?')[0]);
+            if (isPdf) {
+                receiptAttachment.innerHTML = `
+                    <button type="button" class="receipt-pdf-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                        </svg>
+                        ${t('modules.transactions.receiptOpenPdf')}
+                    </button>`;
+                receiptAttachment.querySelector('.receipt-pdf-link').addEventListener('click', () => {
+                    const win = window.open('', '_blank');
+                    if (!win) return;
+                    getAuthObjectURL(receiptURL).then((blobUrl) => {
+                        win.location = blobUrl;
+                    }).catch((err) => {
+                        win.close();
+                        console.error('Error al cargar comprobante', err);
+                        receiptAttachment.innerHTML = `<div class="receipt-no-attachment">${t('modules.transactions.receiptAttachmentError')}</div>`;
+                    });
+                });
+            } else {
+                const img = document.createElement('img');
+                getAuthObjectURL(receiptURL).then((blobUrl) => {
+                    receiptAttachment.innerHTML = '';
+                    img.src = blobUrl;
+                    receiptAttachment.appendChild(img);
+                }).catch((err) => {
+                    console.error('Error al cargar comprobante', err);
+                    receiptAttachment.innerHTML = `<div class="receipt-no-attachment">${t('modules.transactions.receiptAttachmentError')}</div>`;
+                });
+            }
+        }
 
         // Panel "Formato físico": solo pagos (recibo de pago)
         const isPayment = tx.type === 'PAYMENT';

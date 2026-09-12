@@ -187,7 +187,12 @@
       "receiptPrevBalance": "saldo anterior",
       "receiptPaymentAmt": "Pago",
       "receiptCurrentBalance": "saldo actual",
-      "receiptCollectedBy": "Cobrado por"
+      "receiptCollectedBy": "Cobrado por",
+      "receiptViewLabel": "Ver",
+      "receiptAttachment": "Comprobante adjunto",
+      "receiptNoAttachment": "Sin comprobante adjunto",
+      "receiptAttachmentError": "Comprobante no disponible",
+      "receiptOpenPdf": "Abrir comprobante"
     },
     "conciliation": {
       "title": "Conciliar Pago",

@@ -141,7 +141,7 @@ export default async function financialSummary(contexto) {
       }
 
     } else {
-      if (propertyNameEl) propertyNameEl.textContent = permissions.isAdmin ? 'Vista Global' : 'Alborada Residencial';
+      if (propertyNameEl) propertyNameEl.textContent = permissions.isAdmin ? 'Vista Global' : (contexto.data.appConfig?.branding?.appName || 'Alborada Residencial');
       if (userDisplayNameEl) userDisplayNameEl.textContent = user?.displayName || user?.email.split('@')[0];
       if (propertyAddressEl) propertyAddressEl.textContent = 'Consolidado General';
       if (userPhoneEl) userPhoneEl.textContent = userProfile?.mobile || '---';
