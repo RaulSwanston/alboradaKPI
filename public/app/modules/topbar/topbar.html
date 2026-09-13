@@ -79,4 +79,60 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal Seguridad (Cambio de Contraseña) -->
+  <div class="security-modal-overlay" id="security-modal-overlay" hidden>
+    <div class="security-modal" role="dialog" aria-modal="true" aria-labelledby="security-modal-title">
+      <div class="security-modal-header">
+        <h3 id="security-modal-title"><!-- ::i18n.topbar.securityTitle --></h3>
+        <button type="button" class="security-modal-close" id="security-modal-close" aria-label="<!-- ::i18n.topbar.cancel -->">
+          <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2 2l12 12M14 2L2 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+
+      <div class="security-modal-google" id="security-modal-google" hidden>
+        <svg viewBox='0 0 16 16' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M4.35009 13.3929L8 16L11.6499 13.3929C13.7523 11.8912 15 9.46667 15 6.88306V3L8 0L1 3V6.88306C1 9.46667 2.24773 11.8912 4.35009 13.3929Z' fill='currentColor'/></svg>
+        <p><!-- ::i18n.topbar.securityGoogleOnly --></p>
+      </div>
+
+      <form id="security-form" class="security-form" novalidate>
+        <div class="security-field">
+          <label for="security-current" class="security-label"><!-- ::i18n.topbar.securityCurrent --></label>
+          <div class="security-input-wrap">
+            <input type="password" id="security-current" class="security-input" autocomplete="current-password">
+            <button type="button" class="security-toggle" data-target="security-current" aria-label="<!-- ::i18n.topbar.securityToggle -->">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3C4 3 1.5 6 1.5 8S4 13 8 13s6.5-3 6.5-5S12 3 8 3zm0 8.5A3.5 3.5 0 1 1 8 4.5a3.5 3.5 0 0 1 0 7zM8 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="security-field">
+          <label for="security-new" class="security-label"><!-- ::i18n.topbar.securityNew --></label>
+          <div class="security-input-wrap">
+            <input type="password" id="security-new" class="security-input" autocomplete="new-password">
+            <button type="button" class="security-toggle" data-target="security-new" aria-label="<!-- ::i18n.topbar.securityToggle -->">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3C4 3 1.5 6 1.5 8S4 13 8 13s6.5-3 6.5-5S12 3 8 3zm0 8.5A3.5 3.5 0 1 1 8 4.5a3.5 3.5 0 0 1 0 7zM8 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="security-field">
+          <label for="security-confirm" class="security-label"><!-- ::i18n.topbar.securityConfirm --></label>
+          <div class="security-input-wrap">
+            <input type="password" id="security-confirm" class="security-input" autocomplete="new-password">
+            <button type="button" class="security-toggle" data-target="security-confirm" aria-label="<!-- ::i18n.topbar.securityToggle -->">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" fill="currentColor"><path d="M8 3C4 3 1.5 6 1.5 8S4 13 8 13s6.5-3 6.5-5S12 3 8 3zm0 8.5A3.5 3.5 0 1 1 8 4.5a3.5 3.5 0 0 1 0 7zM8 6a2 2 0 1 0 0 4 2 2 0 0 0 0-4z"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <p class="security-error" id="security-error" role="alert" hidden></p>
+
+        <div class="security-modal-footer">
+          <button type="button" class="security-btn-cancel" id="security-modal-cancel"><!-- ::i18n.topbar.cancel --></button>
+          <button type="submit" class="security-btn-submit" id="security-btn-submit"><!-- ::i18n.topbar.securitySubmit --></button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>

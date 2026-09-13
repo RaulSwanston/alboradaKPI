@@ -1,5 +1,6 @@
 import { auth, db, doc, getDoc, signOut, waitForAuth } from '../core/firebase.js';
 import { createUserProfile } from "../models/Profile.js";
+import { getAuthMethod } from "../models/Authentication.js";
 import Property from '../models/Property.js';
 import { appConfig } from '../core/appConfig.js';
 import { loadTranslations } from '../core/i18n.js';
@@ -70,12 +71,18 @@ export const sessionGuard = async (contexto) => {
     role: effectiveRole,
     photoUrl: profile.photoUrl || profile.photoURL || user.photoURL // Normalización
   };
+  // 2b. Método de autenticación (ficha de identidad): password / google.com
+  const authMethod = getAuthMethod(user);
   contexto.data.permissions = {
     isEmailVerified: user.emailVerified,
     isActive: profile.isActive === true,
     isAdmin,
     isResident: (profile.propertyIds && profile.propertyIds.length > 0),
-    role: effectiveRole
+    role: effectiveRole,
+    signInProviderIds: authMethod.providerIds,
+    hasPasswordProvider: authMethod.hasPasswordProvider,
+    hasGoogleProvider: authMethod.hasGoogleProvider,
+    isGoogleOnlySignIn: authMethod.isGoogleOnlySignIn
   };
 
   // 3. Determinar la Unidad Activa
@@ -108,12 +115,12 @@ export const sessionGuard = async (contexto) => {
     contexto.data.forcedView = 'auth/verify-email';
   } 
   // --- Caso B: Redirección Inteligente por Rol / Estado ---
-  // Si está verificado pero NO es admin y NO tiene propiedad asignada, su lugar es 'Servicios'
+  // Si está verificado pero NO es admin y NO tiene propiedad asignada, su lugar es 'Perfil'
   else if (!contexto.data.permissions.isAdmin && !contexto.data.permissions.isResident) {
-    // Si intenta entrar a cualquier ruta del dashboard financiero, lo mandamos a servicios
+    // Si intenta entrar a cualquier ruta del dashboard financiero, lo mandamos al Perfil
     if (path.startsWith('/dashboard/resumen') || path.startsWith('/dashboard/transactions')) {
-      console.log("Usuario sin propiedad asignada. Redirigiendo a Servicios.");
-      window.location.href = '/services';
+      console.log("Usuario sin propiedad asignada. Redirigiendo a Perfil.");
+      window.location.href = '/dashboard/profile';
       return false;
     }
   }

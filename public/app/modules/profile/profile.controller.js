@@ -252,8 +252,10 @@ export default async function profileController(contexto) {
   form?.addEventListener('submit', handleProfileUpdate);
 
   // --- Manejo de Otros Eventos ---
-  document.getElementById('opt-notifications')?.addEventListener('click', () => console.log('Notificaciones'));
-  document.getElementById('opt-security')?.addEventListener('click', () => console.log('Seguridad'));
+document.getElementById('opt-notifications')?.addEventListener('click', () => console.log('Notificaciones'));
+document.getElementById('opt-security')?.addEventListener('click', () => {
+  document.dispatchEvent(new CustomEvent('app:open-security', { bubbles: true }));
+});
 
   const logoutBtn = document.getElementById('btn-logout-profile');
   const handleLogout = async () => {
