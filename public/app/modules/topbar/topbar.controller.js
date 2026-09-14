@@ -305,6 +305,12 @@ export default async function topbarController(contexto) {
 
   appearanceBtn?.addEventListener('click', onAppearanceClick);
 
+  const onHelpClick = () => {
+    closeAllMenus();
+    window.location.href = '/docs';
+  };
+  helpBtn?.addEventListener('click', onHelpClick);
+
   // --- Lógica de Búsqueda ---
   const searchInput = document.getElementById('topbar-search');
 

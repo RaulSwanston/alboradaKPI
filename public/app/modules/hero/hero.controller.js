@@ -13,6 +13,11 @@ export default async function home(contexto) {
       startButton.addEventListener('click', function () { window.location.href = '/login'; });
     }
   }
+  // El botón de Documentación dirige a todos los usuarios a la guía de uso
+  const documButton = document.getElementById("docum-button");
+  if (documButton) {
+    documButton.addEventListener('click', function () { window.location.href = '/docs'; });
+  }
   initAnimateHome();
 }
 

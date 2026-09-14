@@ -14,6 +14,7 @@ router
   .get('/login', 'auth/login')
   .get('/signup', 'auth/signup')
   .get('/recovery', 'auth/recovery')
+  .get('/docs', 'docs')
   .get('/dashboard/resumen', 'dashboard/summary', [sessionGuard])
   .get('/services', 'dashboard/services', [sessionGuard])
   .get('/services-new', 'dashboard/services-new', [sessionGuard])
