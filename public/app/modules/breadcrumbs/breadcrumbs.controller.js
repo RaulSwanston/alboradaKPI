@@ -51,6 +51,8 @@ export default async function breadcrumbsController(contexto) {
         segments.forEach((segment, index) => {
             currentPath += `/${segment}`;
             const isLast = index === segments.length - 1;
+            // Solo enlazamos si el segmento tiene una ruta registrada (evita /panel roto)
+            const hasRoute = router.routes.some(r => r.path === currentPath);
             
             // 1. Buscar en el mapa dinámico del sidebar
             // 2. Buscar en el mapa de extras
@@ -67,7 +69,7 @@ export default async function breadcrumbsController(contexto) {
 
             html += `
                 <li class="breadcrumb-item ${isLast ? 'active' : ''}">
-                    ${isLast ? `<span>${label}</span>` : `<a href="${getFriendlyPath(currentPath)}" data-view="dashboard">${label}</a>`}
+                    ${isLast || !hasRoute ? `<span>${label}</span>` : `<a href="${getFriendlyPath(currentPath)}" data-view="dashboard">${label}</a>`}
                 </li>
             `;
         });
