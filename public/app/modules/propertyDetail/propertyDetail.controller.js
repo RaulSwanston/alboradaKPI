@@ -2,6 +2,7 @@ import Property from "../../models/Property.js";
 import Transaction from "../../models/Transaction.js";
 import { appConfig } from "../../core/appConfig.js";
 import { getAuthObjectURL } from "../../core/r2.js";
+import { buildPhysicalReceiptHtml } from "../../core/receipt.js";
 import { jsPDF } from "https://esm.sh/jspdf@2.5.1";
 import { injectIcons } from "../../utils/icons.js";
 
@@ -24,6 +25,8 @@ export default async function propertyDetailController(contexto) {
   const listContainer = getEl('movements-list-container');
   const paginationContainer = document.querySelector('.pagination');
   const btnDownloadPdf = getEl('btn-download-pdf');
+  const receiptModal = getEl('resident-receipt-modal');
+  const receiptBody = getEl('resident-receipt-body');
 
   // --- Nombre del condominio (configurable desde configManager → appConfig) ---
   const brandName = contexto?.data?.appConfig?.branding?.appName || appConfig.branding.appName;
@@ -37,6 +40,46 @@ export default async function propertyDetailController(contexto) {
     if (!dateValue) return '---';
     const date = dateValue.toDate ? dateValue.toDate() : new Date(dateValue);
     return isNaN(date.getTime()) ? '---' : date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
+  };
+
+  // --- Recibo físico (idéntico al que ve el administrador) ---
+  const openResidentReceipt = async (tx) => {
+    if (!receiptModal || !receiptBody || !tx) return;
+    receiptBody.innerHTML = '<div class="text-center">Cargando recibo...</div>';
+    receiptModal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+    try {
+      receiptBody.innerHTML = await buildPhysicalReceiptHtml({ tx, appConfig: contexto?.data?.appConfig || {} });
+    } catch (err) {
+      console.error('Error al generar recibo:', err);
+      receiptBody.innerHTML = '<div class="text-center">No se pudo generar el recibo.</div>';
+    }
+  };
+
+  const closeResidentReceipt = () => {
+    if (!receiptModal) return;
+    receiptModal.classList.add('hidden');
+    if (receiptBody) receiptBody.innerHTML = '';
+    document.body.style.overflow = '';
+  };
+
+  const initResidentReceiptListeners = () => {
+    const closeBtn = getEl('resident-receipt-close');
+    if (closeBtn) closeBtn.onclick = closeResidentReceipt;
+    if (receiptModal) {
+      receiptModal.addEventListener('click', (e) => { if (e.target === receiptModal) closeResidentReceipt(); });
+    }
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && receiptModal && !receiptModal.classList.contains('hidden')) closeResidentReceipt();
+    });
+    if (listContainer) {
+      listContainer.addEventListener('click', (e) => {
+        const btn = e.target.closest('.btn-receipt-link');
+        if (!btn) return;
+        const tx = allMovements.find(m => m.id === btn.dataset.receiptId);
+        openResidentReceipt(tx);
+      });
+    }
   };
 
   /**
@@ -199,6 +242,7 @@ doc.text(formatDate(t.effectiveDate), margin + 2, y);
           </td>
           <td>
             ${reference ? `<span class="ref-badge ${isPayment ? 'payment' : ''}">${reference}</span>` : ''}
+            ${isPayment ? `<button class="btn-receipt-link" data-receipt-id="${t.id}">Ver recibo</button>` : ''}
           </td>
           <td class="text-right font-bold ${!isPayment ? 'text-error' : ''}">${!isPayment ? `-$${Math.abs(t.amount).toFixed(2)}` : ''}</td>
           <td class="text-right font-bold ${isPayment ? 'text-success' : ''}">${isPayment ? `+$${Math.abs(t.amount).toFixed(2)}` : ''}</td>
@@ -300,6 +344,7 @@ doc.text(formatDate(t.effectiveDate), margin + 2, y);
     
     if (btnDownloadPdf) btnDownloadPdf.onclick = generatePDF;
 
+    initResidentReceiptListeners();
     renderTable();
   } catch (error) {
     console.error("Error Fatal:", error);

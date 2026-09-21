@@ -41,7 +41,7 @@ export default async function quickActionsController(contexto) {
             html += `
                 <div class="qa-item" data-path="${action.path}">
                     <div class="qa-icon-wrapper" data-icon="${action.icon}"></div>
-                    <span class="qa-label">${t(action.labelKey)}</span>
+                    <span class="qa-label" title="${t(action.labelKey)}">${t(action.labelKey)}</span>
                 </div>
             `;
         });

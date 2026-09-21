@@ -28,7 +28,9 @@
     "location": "Ubicación",
     "phone": "Teléfono",
     "residentTitular": "Residente Titular",
-    "syncBalances": "Sincronizar saldos"
+    "syncBalances": "Sincronizar saldos",
+    "periodAll": "Acumulado a hoy",
+    "periodSyncHint": "Sincroniza para ver meses"
   },
   "services": {
     "noProperty": "No tienes una unidad asociada. Solicita al administrador que te vincule a una propiedad.",

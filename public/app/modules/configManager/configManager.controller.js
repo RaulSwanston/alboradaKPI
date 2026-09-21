@@ -8,7 +8,7 @@
 import { appConfig } from '../../core/appConfig.js';
 import { t } from '../../core/i18n.js';
 import { db, doc, getDoc } from '../../core/firebase.js';
-import { uploadFileToR2, buildR2Key, getAuthObjectURL, revokeAuthObjectURLs } from '../../core/r2.js';
+import { uploadFileToR2, buildSystemImageKey, getAuthObjectURL, revokeAuthObjectURLs } from '../../core/r2.js';
 import { compressImageFile } from '../../core/imageCompress.js';
 import User from '../../models/User.js';
 import AppConfig from '../../models/AppConfig.js';
@@ -89,7 +89,7 @@ export default async function configManagerController(contexto) {
         if (!selectedFile) return null;
         try {
             const { blob, ext } = await compressImageFile(selectedFile, { maxDimension: 512, maxBytes: 200 * 1024 });
-            const key = buildR2Key('logo', 'branding', ext);
+            const key = buildSystemImageKey('logo', ext);
             return await uploadFileToR2(blob, key);
         } catch (error) {
             console.error("❌ Error al subir logo:", error);

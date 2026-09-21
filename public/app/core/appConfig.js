@@ -281,6 +281,7 @@ export const appConfig = {
   // 4. Estadísticas y Caché Financiera (NUEVO)
   stats: {
     saldoCajaDisponible: 0,
+    saldoPorPeriodo: {},
     totalCuentasPorCobrar: 0,
     totalSaldosAFavor: 0,
     ultimaSincronizacion: null

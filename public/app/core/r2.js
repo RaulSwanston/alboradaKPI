@@ -18,17 +18,36 @@ const objectUrlCache = new Map();
 
 const pad = (n) => String(n).padStart(2, '0');
 
-/**
- * Construye una clave segura para R2: {tipo}_{propiedad}_{yyyyMMdd}_{HHmmss}.{ext}
- * Solo minúsculas, números, guiones y guion bajo (regla del Worker).
- */
-export function buildR2Key(tipo, propiedad, ext, extra = '') {
+const r2Stamp = () => {
   const now = new Date();
-  const stamp = `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
-  const prop = String(propiedad == null ? '' : propiedad).replace(/[^a-z0-9-]/gi, '').toLowerCase();
-  const safeExtra = String(extra).replace(/[^a-z0-9_-]/gi, '-').slice(0, 24);
-  const base = [tipo, prop || '0', stamp, safeExtra].filter(Boolean).join('_');
-  return `${base}.${ext}`;
+  return `${now.getFullYear()}${pad(now.getMonth() + 1)}${pad(now.getDate())}_${pad(now.getHours())}${pad(now.getMinutes())}${pad(now.getSeconds())}`;
+};
+
+const sanitize = (v) => String(v == null ? '' : v).replace(/[^a-z0-9_-]/gi, '-');
+
+/**
+ * Clave para un archivo vinculado a una PROPIEDAD (comprobantes de pago y
+ * evidencia de transacciones): {propiedad}/{uid_usuario}_{concepto}_{stamp}.{ext}
+ * La propiedad va SIEMPRE primero (es estable; los propietarios varían).
+ */
+export function buildPropertyUploadKey(propiedad, uid, concepto, ext) {
+  return `${sanitize(propiedad)}/${sanitize(uid)}_${sanitize(concepto)}_${r2Stamp()}.${ext}`;
+}
+
+/**
+ * Clave para una imagen de un SERVICIO (subidas vía TinyMCE):
+ * services/{slug}/{uid_usuario}_{stamp}.{ext}
+ */
+export function buildServiceImageKey(slug, uid, ext) {
+  return `services/${sanitize(slug)}/${sanitize(uid)}_${r2Stamp()}.${ext}`;
+}
+
+/**
+ * Clave para una imagen del SISTEMA/APP (logo, branding):
+ * app/{concepto}_{stamp}.{ext}
+ */
+export function buildSystemImageKey(concepto, ext) {
+  return `app/${sanitize(concepto)}_${r2Stamp()}.${ext}`;
 }
 
 /**

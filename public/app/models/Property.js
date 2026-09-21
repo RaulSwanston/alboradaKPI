@@ -145,6 +145,7 @@ export default class Property {
 
       let stats = {
         saldoCajaDisponible: 0,
+        saldoPorPeriodo: {},
         totalCuentasPorCobrar: 0,
         totalSaldosAFavor: 0,
         ultimoPagoMonto: 0,
@@ -169,13 +170,23 @@ export default class Property {
       transSnapshot.forEach(doc => {
         const t = doc.data();
         const propId = t.propertyId;
-        if (propBalances[propId] === undefined) return;
 
         let amount = t.amount || 0;
 
-        // Caja Real: SIEMPRE usa montos brutos (el dinero real entró/salió)
+        // Caja Real: SIEMPRE usa montos brutos (el dinero real entró/salió).
+        // Aplica a TODAS las transacciones aunque no tengan propiedad válida
+        // (gastos comunitarios, OTHER_INCOME, pagos no conciliados).
         if (["PAYMENT", "OTHER_INCOME", "EXPENSE", "ADMIN_EXPENSE"].includes(t.type)) {
           stats.saldoCajaDisponible += amount;
+
+          // Desglose por periodo para el filtro mensual acumulado (solo admin).
+          const period = t.period || (() => {
+            const fd = t.effectiveDate?.toDate ? t.effectiveDate.toDate() : new Date(t.effectiveDate);
+            return isNaN(fd.getTime()) ? null : `${fd.getFullYear()}-${String(fd.getMonth() + 1).padStart(2, '0')}`;
+          })();
+          if (period) {
+            stats.saldoPorPeriodo[period] = (stats.saldoPorPeriodo[period] || 0) + amount;
+          }
         }
 
         // Rastrear el último pago global
@@ -188,6 +199,10 @@ export default class Property {
         }
 
         // --- Balance por propiedad: filtro inteligente ---
+        // Solo transacciones de unidades válidas: los gastos comunitarios y
+        // movimientos sin propiedad no alteran el saldo individual.
+        if (propBalances[propId] === undefined) return;
+
         // Excluir FEEs de periodos futuros (facturas adelantadas)
         if (t.type === 'FEE' && t.period && t.period > currentPeriod) return;
 

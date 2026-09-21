@@ -1,5 +1,5 @@
 import { db, serverTimestamp, query, where, getDocs, orderBy } from "../../core/firebase.js";
-import { uploadFileToR2, buildR2Key } from '../../core/r2.js';
+import { uploadFileToR2, buildPropertyUploadKey } from '../../core/r2.js';
 import { compressImageFile } from '../../core/imageCompress.js';
 import Property from "../../models/Property.js";
 import Transaction from "../../models/Transaction.js";
@@ -182,7 +182,7 @@ export default async function paymentReportController(contexto) {
     try {
       // 1. Subir Imagen
       const { blob, ext } = await compressImageFile(selectedFile);
-      const key = buildR2Key('reporte', currentPropertyId, ext, user.uid);
+      const key = buildPropertyUploadKey(currentPropertyId, user.uid, 'comprobante', ext);
       const downloadUrl = await uploadFileToR2(blob, key);
 
       // 2. Preparar Desglose (appliedTo)

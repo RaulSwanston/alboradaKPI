@@ -22,6 +22,8 @@ export default async function financialSummary(contexto) {
   const propertySearchInput = document.getElementById('fs-property-search');
   const propertiesDataList = document.getElementById('fs-properties-list');
   const btnSync = document.getElementById('fs-btn-sync');
+  const periodWrapEl = document.getElementById('fs-period-wrap');
+  const periodSelectEl = document.getElementById('fs-period-select');
   
   // Referencias adicionales para UI reactiva
   const propertyNameEl = document.getElementById('fs-property-name');
@@ -34,6 +36,72 @@ export default async function financialSummary(contexto) {
   
   // Cache de propiedades para búsqueda rápida
   let cachedProperties = [];
+  let lastPropertyId = null;
+
+  // --- Filtro de periodo acumulado (Solo Admin) ---
+  const monthNames = ['enero', 'febrero', 'marzo', 'abril', 'mayo', 'junio', 'julio', 'agosto', 'septiembre', 'octubre', 'noviembre', 'diciembre'];
+  const periodAccum = new Map();
+  let periodSelectInitialized = false;
+
+  const formatPeriodLabel = (period) => {
+    if (!period) return '';
+    const [year, month] = period.split('-');
+    const mIdx = parseInt(month, 10) - 1;
+    if (isNaN(mIdx) || mIdx < 0 || mIdx > 11) return period;
+    return `${monthNames[mIdx]} ${year}`;
+  };
+
+  const buildPeriodOptions = () => {
+    periodAccum.clear();
+    if (!periodWrapEl || !periodSelectEl) return false;
+
+    const stats = contexto.data.appConfig.stats;
+    const map = stats?.saldoPorPeriodo;
+    const hasMap = map && typeof map === 'object';
+
+    const now = new Date();
+    const currentKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+    const periodsAsc = hasMap
+      ? Object.keys(map).filter(p => /^\d{4}-\d{2}$/.test(p) && p <= currentKey).sort()
+      : [];
+
+    let acc = 0;
+    for (const p of periodsAsc) {
+      acc += Number(map[p]) || 0;
+      periodAccum.set(p, acc);
+    }
+    periodAccum.set('today', acc || Number(stats?.saldoCajaDisponible) || 0);
+
+    const allLabel = t('financialSummary.periodAll') || 'Acumulado a hoy';
+    const hasPeriods = periodsAsc.length > 0;
+    const syncHint = t('financialSummary.periodSyncHint') || 'Sincroniza para ver meses';
+    periodSelectEl.innerHTML =
+      `<option value="today">${allLabel}</option>` +
+      (hasPeriods
+        ? periodsAsc.slice().reverse().map(p => `<option value="${p}">${formatPeriodLabel(p)}</option>`).join('')
+        : `<option value="" disabled>${syncHint}</option>`);
+
+    if (!periodSelectInitialized) {
+      periodSelectInitialized = true;
+      periodSelectEl.addEventListener('change', () => applyPeriodValue());
+    }
+    return true;
+  };
+
+  const applyPeriodValue = () => {
+    if (!periodWrapEl || !periodSelectEl) return;
+    const val = periodSelectEl.value || 'today';
+    if (totalReceivableEl) {
+      totalReceivableEl.textContent = formatCurrency(periodAccum.get(val) ?? periodAccum.get('today') ?? 0);
+    }
+  };
+
+  const initPeriodSelector = () => {
+    if (!permissions.isAdmin) return;
+    buildPeriodOptions();
+    if (periodWrapEl) periodWrapEl.classList.remove('hidden');
+    applyPeriodValue();
+  };
 
   const formatCurrency = (value) => {
     return new Intl.NumberFormat('en-US', {
@@ -183,6 +251,7 @@ export default async function financialSummary(contexto) {
         if (lastPaymentDateEl) lastPaymentDateEl.textContent = 'Pendiente de sincronización';
       }
 
+      initPeriodSelector();
       await loadUserInfo();
     } catch (error) {
       console.error("Error al cargar resumen global:", error);
@@ -196,6 +265,9 @@ export default async function financialSummary(contexto) {
     try {
       const prop = await Property.getById(propertyId);
       
+      // El filtro de periodo aplica solo a la vista global del admin
+      if (periodWrapEl) periodWrapEl.classList.add('hidden');
+
       if (prop) {
         const balance = prop.balance || 0;
         updateBalanceUI(balance);
@@ -247,9 +319,8 @@ export default async function financialSummary(contexto) {
                     btnSync.innerHTML = `<div class="icon-sync" data-icon="check-circle"></div>`;
                     await handleIcons();
                     
-                    const currentVal = propertySearchInput.value;
-                    if (currentVal === 'global' || !currentVal) await loadGlobalSummary();
-                    else await loadPropertySummary(currentVal);
+                    if (lastPropertyId) await loadPropertySummary(lastPropertyId);
+                    else await loadGlobalSummary();
                     
                     setTimeout(() => {
                         btnSync.classList.remove('success');
@@ -287,12 +358,14 @@ export default async function financialSummary(contexto) {
       propertySearchInput.oninput = async (e) => {
         const val = e.target.value;
         
-        if (val === globalLabel) {
+        if (val === globalLabel || !val) {
+          lastPropertyId = null;
           await loadGlobalSummary();
           await handleIcons();
         } else {
           const match = cachedProperties.find(p => p.id === val);
           if (match) {
+            lastPropertyId = val;
             await loadPropertySummary(val);
             await handleIcons();
           }

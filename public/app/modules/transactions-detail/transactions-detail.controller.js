@@ -2,7 +2,7 @@ import Transaction from "../../models/Transaction.js";
 import Property from "../../models/Property.js";
 import { t } from "../../core/i18n.js";
 import { db, doc, updateDoc, getDoc, writeBatch, arrayUnion } from "../../core/firebase.js";
-import { uploadFileToR2, buildR2Key, getAuthObjectURL, revokeAuthObjectURLs } from "../../core/r2.js";
+import { uploadFileToR2, buildPropertyUploadKey, getAuthObjectURL, revokeAuthObjectURLs } from "../../core/r2.js";
 import { compressImageFile } from "../../core/imageCompress.js";
 
 /**
@@ -363,7 +363,7 @@ export default async function transactionsDetailController(contexto) {
   const uploadReceipt = async (propertyId) => {
     if (!receiptFile) return null;
     const { blob, ext } = await compressImageFile(receiptFile);
-    const key = buildR2Key('recibo', propertyId, ext);
+    const key = buildPropertyUploadKey(propertyId, contexto?.data?.user?.uid || 'admin', 'comprobante', ext);
     return await uploadFileToR2(blob, key);
   };
 

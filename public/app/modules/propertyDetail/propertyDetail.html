@@ -1,3 +1,4 @@
+<!-- ::css.receipt -->
 <div class="property-detail-wrapper">
   <!-- Page Header & Actions -->
   <header class="detail-header">
@@ -144,6 +145,17 @@
         </div>
       </div>
       <button class="btn-link">Contactar</button>
+    </div>
+  </div>
+
+  <!-- Modal: Recibo físico (misma información que el administrador) -->
+  <div id="resident-receipt-modal" class="resident-receipt-overlay hidden">
+    <div class="resident-receipt-modal">
+      <div class="resident-receipt-header">
+        <h3>Recibo</h3>
+        <button class="resident-receipt-close" id="resident-receipt-close" aria-label="Cerrar">&times;</button>
+      </div>
+      <div id="resident-receipt-body" class="resident-receipt-body"></div>
     </div>
   </div>
 </div>

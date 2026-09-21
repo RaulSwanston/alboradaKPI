@@ -1,6 +1,6 @@
 import ChargeConcept from "../../models/ChargeConcept.js";
 import { auth } from "../../core/firebase.js";
-import { uploadFileToR2, buildR2Key } from "../../core/r2.js";
+import { uploadFileToR2, buildServiceImageKey } from "../../core/r2.js";
 import { compressImageFile } from "../../core/imageCompress.js";
 import { createActivity } from "../../models/Activities.js";
 
@@ -270,7 +270,7 @@ export default async function servicesDetailController(contexto) {
       images_upload_handler: (blobInfo) => new Promise((resolve, reject) => {
         const file = blobInfo.blob();
         compressImageFile(file).then(({ blob, ext }) => {
-          const key = buildR2Key('servicio', slug, ext);
+          const key = buildServiceImageKey(slug, auth.currentUser?.uid || 'app', ext);
           return uploadFileToR2(blob, key);
         }).then((url) => resolve(url)).catch((err) => reject(err));
       }),

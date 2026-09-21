@@ -39,7 +39,7 @@
     margin: 0 auto;
 }
 
-.summary-card {
+.financial-summary-module .summary-card {
     background: white;
     padding: 1.5rem;
     border-radius: 1.25rem;
@@ -52,21 +52,20 @@
     min-height: 180px; /* Altura mínima consistente */
 }
 
-.summary-card:hover {
+.financial-summary-module .summary-card:hover {
     transform: translateY(-4px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
 }
 
 /* Variante Oscura */
-.summary-card.dark {
-    /* background-color: var(--color-gurkha-900); */
+.financial-summary-module .summary-card.dark {
     background-color: var(--color-kaitoke-green-700);
     color: white;
     border: none;
 }
 
 /* Marca de Agua */
-.brand-watermark::before {
+.financial-summary-module .brand-watermark::before {
     content: '';
     position: absolute;
     top: 0;
@@ -77,12 +76,12 @@
     pointer-events: none;
 }
 
-.summary-card.dark.brand-watermark::before {
+.financial-summary-module .summary-card.dark.brand-watermark::before {
     background-image: radial-gradient(circle at top right, rgba(255, 255, 255, 0.08) 0%, transparent 60%);
 }
 
 /* --- Elementos de Tarjeta --- */
-.card-header {
+.financial-summary-module .card-header {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
@@ -190,7 +189,7 @@
     height: 100%;
 }
 
-.summary-card.dark .fs-card-icon {
+.financial-summary-module .summary-card.dark .fs-card-icon {
     color: white;
 }
 
@@ -207,7 +206,7 @@
     to { transform: rotate(360deg); }
 }
 
-.icon-wrapper {
+.financial-summary-module .icon-wrapper {
     padding: 0.5rem;
     border-radius: 0.75rem;
     display: flex;
@@ -217,18 +216,18 @@
     height: 2.5rem;
 }
 
-.summary-card.dark .icon-wrapper {
+.financial-summary-module .summary-card.dark .icon-wrapper {
     background-color: rgba(255, 255, 255, 0.1);
     color: white;
 }
 
-.bg-primary-light { background-color: rgba(40, 191, 99, 0.1); }
-.bg-orange-light { background-color: rgba(234, 88, 12, 0.1); }
+.financial-summary-module .bg-primary-light { background-color: rgba(40, 191, 99, 0.1); }
+.financial-summary-module .bg-orange-light { background-color: rgba(234, 88, 12, 0.1); }
 
-.text-primary { color: var(--color-kaitoke-green-600); }
-.text-orange { color: #ea580c; }
+.financial-summary-module .text-primary { color: var(--color-kaitoke-green-600); }
+.financial-summary-module .text-orange { color: #ea580c; }
 
-.card-label {
+.financial-summary-module .card-label {
     font-size: 0.625rem;
     font-weight: 800;
     color: var(--color-gurkha-400);
@@ -236,29 +235,34 @@
     letter-spacing: 0.1em;
 }
 
-.summary-card.dark .card-label {
+.financial-summary-module .summary-card.dark .card-label {
     color: rgba(255, 255, 255, 0.5);
 }
 
-.card-content {
+.financial-summary-module .card-content {
     display: flex;
     flex-direction: column;
+    min-width: 0;
 }
 
-.amount {
+.financial-summary-module .amount {
     font-size: 2.25rem;
     font-weight: 800;
     color: var(--color-text-primary);
     letter-spacing: -0.025em;
     margin: 0;
+    max-width: 100%;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    line-height: 1.05;
 }
 
-.summary-card.dark .amount {
+.financial-summary-module .summary-card.dark .amount {
     font-size: 1.75rem;
     color: white;
 }
 
-.status-indicator {
+.financial-summary-module .status-indicator {
     margin-top: 0.5rem;
     display: flex;
     align-items: center;
@@ -267,21 +271,21 @@
     font-weight: 600;
 }
 
-.card-footer-text {
+.financial-summary-module .card-footer-text {
     font-size: 0.75rem;
     color: var(--color-text-secondary);
     margin: 0.5rem 0 0 0;
 }
 
 /* --- Lista de Información (Estilo Dark) --- */
-.header-titles-dark {
+.financial-summary-module .header-titles-dark {
     display: flex;
     flex-direction: column;
     align-items: flex-end;
     text-align: right;
 }
 
-.card-main-text {
+.financial-summary-module .card-main-text {
     font-size: 1.125rem;
     font-weight: 700;
     line-height: 1.2;
@@ -289,7 +293,7 @@
     color: white;
 }
 
-.card-sub-text {
+.financial-summary-module .card-sub-text {
     font-size: 0.625rem;
     font-weight: 500;
     text-transform: uppercase;
@@ -298,14 +302,14 @@
     margin: 0;
 }
 
-.card-info-list {
+.financial-summary-module .card-info-list {
     display: flex;
     flex-direction: column;
     gap: 0.75rem;
     margin-top: 1rem;
 }
 
-.info-row {
+.financial-summary-module .info-row {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -314,25 +318,25 @@
     font-weight: 600;
 }
 
-.info-row.border-bottom {
+.financial-summary-module .info-row.border-bottom {
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.info-label {
+.financial-summary-module .info-label {
     color: rgba(255, 255, 255, 0.4);
     text-transform: uppercase;
     letter-spacing: 0.025em;
 }
 
-.info-value {
+.financial-summary-module .info-value {
     color: white;
     text-align: right;
 }
 
 /* --- Estados de Saldo --- */
-.status-ok { color: var(--color-kaitoke-green-600); }
-.status-debt { color: var(--color-solid-pink-600); }
-.status-credit { color: #2563eb; }
+.financial-summary-module .status-ok { color: var(--color-kaitoke-green-600); }
+.financial-summary-module .status-debt { color: var(--color-solid-pink-600); }
+.financial-summary-module .status-credit { color: #2563eb; }
 
 /* --- Select Admin --- */
 .form-select-sm {
@@ -410,8 +414,8 @@
         display: none;
     }
     
-    .amount {
-        font-size: 1.75rem;
+    .financial-summary-module .amount {
+        font-size: clamp(1.25rem, 6.5vw, 1.5rem);
     }
     
     .fs-header {
@@ -424,7 +428,44 @@
         width: 100%;
     }
 
-    .summary-card.dark {
+    .financial-summary-module .summary-card.dark {
         order: -1; /* En móvil la info de usuario arriba */
     }
+}
+
+/* --- Selector de periodo acumulado (Solo Admin, tarjeta Saldo Actual) --- */
+.financial-summary-module .fs-period-wrap {
+    margin-top: 1rem;
+}
+
+.financial-summary-module .fs-period-select {
+    background-color: rgba(10, 25, 47, 0.06);
+    color: var(--color-text-primary);
+    border: 1px solid rgba(10, 25, 47, 0.12);
+    border-radius: 0.75rem;
+    padding: 0.5rem 2.25rem 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    max-width: 100%;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%230a192f' stroke-opacity='0.6'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+}
+
+.financial-summary-module .fs-period-select:focus {
+    outline: none;
+    background-color: rgba(10, 25, 47, 0.08);
+    border-color: #28bf63;
+    box-shadow: 0 0 0 3px rgba(40, 191, 99, 0.18);
+}
+
+.financial-summary-module .fs-period-select option {
+    color: var(--color-text-primary);
+    background: #fff;
 }

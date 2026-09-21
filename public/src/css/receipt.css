@@ -1,0 +1,206 @@
+/* --- Formato físico del recibo (compartido: admin Transacciones y residente Estado de Cuenta) --- */
+.receipt-physical {
+  padding: 4px 2px;
+}
+
+.physical-header {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-areas:
+    "logo center contact"
+    "logo claim  claim";
+  align-items: center;
+  gap: 8px 14px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--color-kaitoke-green-600, #1a7a3a);
+  margin-bottom: 14px;
+}
+
+.physical-logo {
+  grid-area: logo;
+}
+
+.physical-logo img {
+  width: 360px;
+  height: auto;
+  max-width: 100%;
+}
+
+/* Columna central: RECIBO + número, en rojo, al inicio y abajo */
+.physical-center {
+  grid-area: center;
+  align-self: end;
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.physical-receipt-title {
+  font-size: 1.15rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+  color: var(--color-solid-pink-600);
+}
+
+.physical-receipt-number {
+  font-size: 1.15rem;
+  font-weight: 900;
+  color: var(--color-solid-pink-600);
+}
+
+.physical-contact {
+  grid-area: contact;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.physical-contact-row {
+  white-space: nowrap;
+}
+
+.physical-contact-row strong {
+  font-weight: 700;
+}
+
+/* Frase que abarca la 2ª y 3ª columna, en mayúsculas, al inicio de la columna 2 */
+.physical-claim-note {
+  grid-area: claim;
+  align-self: start;
+  text-align: left;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: var(--color-solid-pink-600);
+}
+
+.physical-form {
+  margin-bottom: 14px;
+}
+
+.physical-form-line {
+  margin: 10px 0;
+  font-size: 0.85rem;
+  line-height: 1.9;
+}
+
+/* Líneas que ocupan todo el ancho disponible (Recibí de / la suma de / en concepto de) */
+.physical-form-line.fill {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+}
+
+.physical-form-line.fill .physical-wide {
+  flex: 1;
+  min-width: 0;
+  white-space: normal;
+}
+
+.physical-casa {
+  margin-left: 10px;
+}
+
+.physical-blank {
+  border-bottom: 1px solid #555;
+  display: inline-block;
+  min-width: 80px;
+  padding: 0 4px;
+  font-weight: 600;
+}
+
+.physical-wide {
+  min-width: 240px;
+}
+
+.physical-inline {
+  min-width: 150px;
+}
+
+.physical-payform {
+  margin-bottom: 14px;
+}
+
+.physical-payform-title {
+  font-size: 0.8rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-bottom: 8px;
+}
+
+.physical-payform-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 10px;
+}
+
+.physical-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.physical-checkbox {
+  width: 14px;
+  height: 14px;
+  border: 1.5px solid #555;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  color: #333;
+}
+
+.physical-checkbox.checked::after {
+  content: 'X';
+}
+
+.physical-saldo-row {
+  display: flex;
+  justify-content: flex-end;
+  align-items: baseline;
+  gap: 6px;
+  padding: 5px 0;
+}
+
+.physical-saldo-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.physical-saldo-value {
+  min-width: 150px;
+  text-align: right;
+}
+
+.physical-sign {
+  margin-top: 18px;
+  text-align: left;
+}
+
+.physical-sign-line {
+  border-bottom: 1px solid #555;
+  min-height: 26px;
+  max-width: 280px;
+  padding-top: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.physical-sign-label {
+  font-size: 0.75rem;
+  margin-top: 2px;
+}
