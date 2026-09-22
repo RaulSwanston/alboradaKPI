@@ -148,14 +148,14 @@
           <span class="td-section-label">Detalle del Pago</span>
         </div>
         <div class="td-payment-grid">
-          <div class="td-payment-field">
+          <div class="td-payment-field" id="td-payment-method-field">
             <label class="td-field-label" for="td-payment-method">Método de Pago</label>
             <select class="td-select" id="td-payment-method">
               <option value="">Seleccione...</option>
             </select>
           </div>
           <div class="td-payment-field td-upload-field">
-            <label class="td-field-label">Comprobante de Pago (opcional)</label>
+            <label class="td-field-label" id="td-receipt-label">Comprobante de Pago (opcional)</label>
             <div class="td-upload-zone" id="td-upload-zone">
               <input type="file" id="td-receipt-file" accept="image/*,.pdf" hidden>
               <div class="td-upload-placeholder" id="td-upload-placeholder">
@@ -197,6 +197,12 @@
           <div class="td-field full-width">
             <label class="td-field-label" for="td-description">Descripción</label>
             <input type="text" class="td-input" id="td-description" name="description" placeholder="Ej: Cuota de Mantenimiento Enero 2026" required>
+          </div>
+          <div class="td-field full-width hidden" id="td-account-field">
+            <label class="td-field-label" for="td-expense-account">Cuenta de Gasto</label>
+            <select class="td-select" id="td-expense-account">
+              <option value="">Sin clasificar</option>
+            </select>
           </div>
           <div class="td-field">
             <label class="td-field-label" for="td-amount">Monto (USD)</label>

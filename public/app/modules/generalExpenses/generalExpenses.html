@@ -50,6 +50,29 @@
     </div>
   </div>
 
+  <div class="ge-accounts-section">
+    <div class="ge-accounts-header">
+      <h3 class="ge-accounts-title"><!-- ::i18n.modules.generalExpenses.summaryAccounts.title --></h3>
+      <button class="ge-accounts-clear hidden" id="ge-accounts-clear" type="button">
+        <!-- ::i18n.modules.generalExpenses.summaryAccounts.clear -->
+      </button>
+    </div>
+    <div class="ge-table-wrapper ge-accounts-table-wrap">
+      <table class="ge-table ge-accounts-table">
+        <thead>
+          <tr>
+            <th><!-- ::i18n.modules.generalExpenses.summaryAccounts.account --></th>
+            <th class="ge-amount-col"><!-- ::i18n.modules.generalExpenses.summaryAccounts.total --></th>
+            <th class="ge-amount-col"><!-- ::i18n.modules.generalExpenses.summaryAccounts.movements --></th>
+          </tr>
+        </thead>
+        <tbody id="ge-accounts-body">
+          <tr class="ge-loading-row"><td colspan="3"><div class="spinner"></div></td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
   <div class="ge-tabs-content">
     <div class="ge-table-wrapper">
       <table class="ge-table">

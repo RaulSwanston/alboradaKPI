@@ -51,6 +51,15 @@ export function buildSystemImageKey(concepto, ext) {
 }
 
 /**
+ * Clave para un comprobante de GASTO/COMPRA (subidos por el admin):
+ * compras/{uid_usuario}_{stamp}.{ext}
+ * El Worker antepone el condominio ({R2_SLUG}); el bucket R2 es gestion-ph.
+ */
+export function buildExpenseReceiptKey(uid, ext) {
+  return `compras/${sanitize(uid)}_${r2Stamp()}.${ext}`;
+}
+
+/**
  * Sube un archivo (Blob o File) al condominio y devuelve la URL pública del Worker.
  */
 export async function uploadFileToR2(file, key) {

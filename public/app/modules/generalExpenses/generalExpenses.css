@@ -775,3 +775,143 @@
   margin-top: 1.25rem;
   text-align: center;
 }
+
+/* --- Resumen agrupado por cuenta de gasto --- */
+.ge-accounts-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.ge-accounts-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.ge-accounts-title {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.ge-accounts-clear {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.4rem 0.875rem;
+  border-radius: 9999px;
+  border: 1px solid var(--color-gurkha-200);
+  background: white;
+  color: var(--color-text-secondary);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.ge-accounts-clear:hover {
+  background: var(--color-gurkha-50);
+  border-color: var(--color-gurkha-300);
+  color: var(--color-text-primary);
+}
+
+.ge-accounts-table-wrap {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06);
+}
+
+.ge-accounts-table .ge-amount-col {
+  text-align: right;
+  white-space: nowrap;
+}
+
+.ge-accounts-body-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.ge-accounts-body-row:hover {
+  background: var(--color-gurkha-50);
+}
+
+.ge-accounts-body-row.selected {
+  background: rgba(27, 158, 78, 0.08);
+  border-left: 3px solid var(--color-kaitoke-green-600);
+}
+
+.ge-accounts-body-row.selected:hover {
+  background: rgba(27, 158, 78, 0.12);
+}
+
+.ge-accounts-cat {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-gurkha-400);
+  margin-bottom: 0.25rem;
+  line-height: 1.2;
+}
+
+.ge-accounts-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.ge-accounts-name.unclassified {
+  color: var(--color-gurkha-500);
+  font-style: italic;
+}
+
+.ge-accounts-total {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--color-coral-red-700);
+  white-space: nowrap;
+}
+
+.ge-accounts-total.no-movements {
+  color: var(--color-gurkha-300);
+  font-weight: 500;
+}
+
+.ge-accounts-count {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8125rem;
+  color: var(--color-gurkha-500);
+  text-align: right;
+  white-space: nowrap;
+}
+
+.ge-accounts-count.no-movements {
+  color: var(--color-gurkha-300);
+}
+
+/* El resumen agrupado mantiene formato de tabla (no se transforma en cards en móvil) */
+@media (max-width: 767px) {
+  .ge-accounts-table,
+  .ge-accounts-table tbody,
+  .ge-accounts-table tr {
+    display: table !important;
+    width: 100%;
+  }
+
+  .ge-accounts-table thead {
+    display: table-header-group !important;
+  }
+
+  .ge-accounts-table td {
+    display: table-cell !important;
+    padding: 0.75rem 1rem !important;
+    border: none !important;
+  }
+
+  .ge-accounts-table td::before {
+    content: none !important;
+  }
+}

@@ -107,6 +107,22 @@
         "subtitle": "Resumen de los gastos mostrados",
         "movements": "Número de movimientos",
         "monthlyAvg": "Promedio mensual"
+      },
+      "summaryAccounts": {
+        "title": "Resumen por cuenta de gasto",
+        "account": "Cuenta",
+        "total": "Total",
+        "movements": "Movs",
+        "clear": "Mostrar todas",
+        "unclassified": "Sin clasificar",
+        "empty": "Sin cuentas configuradas",
+        "misc": "Otros"
+      }
+    },
+    "transactionsDetail": {
+      "expenseAccount": {
+        "label": "Cuenta de Gasto",
+        "unclassified": "Sin clasificar"
       }
     },
     "providers": {
@@ -383,7 +399,31 @@
     "tabs": {
       "general": "General",
       "roles": "Roles",
-      "views": "Vistas"
+      "views": "Vistas",
+      "expenses": "Gastos"
+    },
+    "expenseAccounts": {
+      "title": "Catálogo de Cuentas de Gasto",
+      "newAccount": "Nueva cuenta",
+      "category": "Categoría",
+      "categoryPlaceholder": "Ej: SEGURIDAD",
+      "name": "Nombre",
+      "namePlaceholder": "Ej: TIGER",
+      "order": "Orden",
+      "active": "Estado",
+      "activeYes": "Activa",
+      "activeNo": "Inactiva",
+      "state": "Estado",
+      "actions": "Acciones",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "cancel": "Cancelar",
+      "save": "Guardar cuenta",
+      "loading": "Cargando cuentas de gasto...",
+      "nameRequired": "El nombre de la cuenta es obligatorio",
+      "saveError": "Error al guardar la cuenta",
+      "deleteConfirm": "¿Eliminar la cuenta de gasto",
+      "deleteError": "Error al eliminar la cuenta"
     },
     "general": {
       "title": "Ajustes Generales",

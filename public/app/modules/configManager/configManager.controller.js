@@ -12,6 +12,7 @@ import { uploadFileToR2, buildSystemImageKey, getAuthObjectURL, revokeAuthObject
 import { compressImageFile } from '../../core/imageCompress.js';
 import User from '../../models/User.js';
 import AppConfig from '../../models/AppConfig.js';
+import ExpenseAccount from '../../models/ExpenseAccount.js';
 
 export default async function configManagerController(contexto) {
     console.log("Iniciando configManager con contexto:", contexto);
@@ -42,6 +43,23 @@ export default async function configManagerController(contexto) {
     const logoUrlInput = document.getElementById('config-logo-url');
     const logoPreview = document.getElementById('config-logo-preview');
     const btnUploadLogo = document.getElementById('btn-upload-logo');
+
+    // Referencias para el Catálogo de Cuentas de Gasto
+    const eaForm = document.getElementById('expense-account-form');
+    const eaCategory = document.getElementById('ea-category');
+    const eaName = document.getElementById('ea-name');
+    const eaOrder = document.getElementById('ea-order');
+    const eaActive = document.getElementById('ea-active');
+    const eaNewBtn = document.getElementById('expense-account-new');
+    const eaSaveBtn = document.getElementById('ea-save');
+    const eaCancelBtn = document.getElementById('ea-cancel');
+    const eaTable = document.getElementById('expense-accounts-table');
+    const eaTbody = document.getElementById('expense-accounts-tbody');
+    const eaEmpty = document.getElementById('expense-accounts-empty');
+
+    let expenseAccountList = [];
+    let eaEditingId = null;
+    let dragState = null;
 
     // --- ESTADO LOCAL DE CONFIGURACIÓN ---
     let localConfig = JSON.parse(JSON.stringify(contexto.data.appConfig || appConfig));
@@ -253,6 +271,8 @@ export default async function configManagerController(contexto) {
         const btnLoadMore = document.getElementById('btn-load-more-users');
         const resultsContainer = document.getElementById('user-list-results');
 
+        if (searchInput) searchInput.placeholder = t('configManager.roles.searchPlaceholder');
+
         if (!searchInput || !roleFilter || !btnLoadMore || !resultsContainer) return;
 
         const { roleList } = localConfig.accessControl;
@@ -416,6 +436,227 @@ export default async function configManagerController(contexto) {
         if (views.length > 0) renderModuleCascade(views[0]);
     };
 
+    // --- CATÁLOGO DE CUENTAS DE GASTO ---
+    const resetAccountForm = () => {
+        eaEditingId = null;
+        if (eaCategory) eaCategory.value = '';
+        if (eaName) eaName.value = '';
+        if (eaOrder) eaOrder.value = '0';
+        if (eaActive) eaActive.value = 'true';
+    };
+
+    const toggleAccountForm = (visible, editing = false) => {
+        if (!eaForm) return;
+        eaForm.classList.toggle('hidden', !visible);
+        if (eaNewBtn) eaNewBtn.classList.toggle('hidden', visible);
+        if (visible && !editing) {
+            resetAccountForm();
+            eaForm.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    };
+
+    const renderExpenseAccounts = () => {
+        if (!eaTable || !eaEmpty) return;
+        if (expenseAccountList.length === 0) {
+            eaTable.classList.add('hidden');
+            eaEmpty.classList.remove('hidden');
+            return;
+        }
+        eaTable.classList.remove('hidden');
+        eaEmpty.classList.add('hidden');
+
+        eaTbody.innerHTML = expenseAccountList.map(acc => {
+            const isActive = acc.active !== false;
+            return `
+                <tr data-id="${acc.id}">
+                    <td class="expense-account-drag-handle"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="5" r="1"></circle><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="19" r="1"></circle><circle cx="15" cy="5" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="19" r="1"></circle></svg></td>
+                    <td>${acc.category || '-'}</td>
+                    <td>${acc.name || ''}</td>
+                    <td class="ea-order-cell" style="text-align:center">${acc.order || 0}</td>
+                    <td style="text-align:center">${isActive
+                        ? `<span class="expense-account-badge active">${t('configManager.expenseAccounts.activeYes')}</span>`
+                        : `<span class="expense-account-badge inactive">${t('configManager.expenseAccounts.activeNo')}</span>`}</td>
+                    <td class="expense-account-row-actions">
+                        <button class="expense-account-action ea-edit" type="button" data-id="${acc.id}">${t('configManager.expenseAccounts.edit')}</button>
+                        <button class="expense-account-action expense-account-del ea-delete" type="button" data-id="${acc.id}">${t('configManager.expenseAccounts.delete')}</button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+        initExpenseAccountsDrag();
+    };
+
+    // --- REORDENAR CUENTAS DE GASTO POR ARRASTRE (Pointer Events: ratón + táctil) ---
+    const initExpenseAccountsDrag = () => {
+        if (!eaTbody) return;
+        eaTbody.querySelectorAll('.expense-account-drag-handle').forEach(handle => {
+            handle.style.touchAction = 'none';
+            handle.addEventListener('pointerdown', handleExpenseAccountPointerDown);
+            handle.addEventListener('pointermove', handleExpenseAccountPointerMove);
+            handle.addEventListener('pointerup', handleExpenseAccountPointerEnd);
+            handle.addEventListener('pointercancel', handleExpenseAccountPointerEnd);
+        });
+    };
+
+    const handleExpenseAccountPointerDown = (e) => {
+        const row = e.currentTarget.closest('tr');
+        if (!row || !row.dataset.id) return;
+        e.preventDefault();
+        const rect = row.getBoundingClientRect();
+        dragState = {
+            id: row.dataset.id,
+            offsetY: e.clientY - rect.top,
+            pointerId: e.pointerId
+        };
+        row.classList.add('dragging');
+        try { e.currentTarget.setPointerCapture(e.pointerId); } catch (_) { /* noop */ }
+    };
+
+    const handleExpenseAccountPointerMove = (e) => {
+        if (!dragState) return;
+        e.preventDefault();
+        const draggingRow = eaTbody.querySelector('tr.dragging');
+        if (!draggingRow) return;
+        const rows = [...eaTbody.querySelectorAll('tr:not(.dragging)')];
+        const afterElement = rows.reduce((closest, child) => {
+            const box = child.getBoundingClientRect();
+            const offset = e.clientY - box.top - box.height / 2;
+            return (offset < 0 && offset > closest.offset) ? { offset, element: child } : closest;
+        }, { offset: Number.NEGATIVE_INFINITY }).element;
+        if (afterElement == null) eaTbody.appendChild(draggingRow);
+        else eaTbody.insertBefore(draggingRow, afterElement);
+        updateOrderColumn();
+        autoScrollExpenseAccountsDrag(e);
+    };
+
+    const updateOrderColumn = () => {
+        eaTbody.querySelectorAll('tr[data-id]').forEach((row, index) => {
+            const cell = row.querySelector('.ea-order-cell');
+            if (cell) cell.textContent = String(index + 1);
+        });
+    };
+
+    const handleExpenseAccountPointerEnd = () => {
+        if (!dragState) return;
+        const draggingRow = eaTbody.querySelector('tr.dragging');
+        if (draggingRow) draggingRow.classList.remove('dragging');
+        dragState = null;
+        persistExpenseAccountOrder();
+    };
+
+    const autoScrollExpenseAccountsDrag = (e) => {
+        const MARGIN = 80;
+        if (e.clientY < MARGIN) window.scrollBy(0, -8);
+        else if (e.clientY > window.innerHeight - MARGIN) window.scrollBy(0, 8);
+    };
+
+    const persistExpenseAccountOrder = async () => {
+        const rows = [...eaTbody.querySelectorAll('tr[data-id]')];
+        const updates = [];
+        const newList = rows.reduce((list, row, index) => {
+            const acc = expenseAccountList.find(a => a.id === row.dataset.id);
+            if (!acc) return list;
+            list.push(acc);
+            const newOrder = index + 1;
+            if (acc.order !== newOrder) {
+                acc.order = newOrder;
+                updates.push(ExpenseAccount.update(acc.id, { order: newOrder }));
+            }
+            return list;
+        }, []);
+        if (newList.length > 0) expenseAccountList = newList;
+        if (updates.length === 0) return;
+        const results = await Promise.allSettled(updates);
+        if (results.some(r => r.status === 'rejected')) {
+            console.error('[ConfigManager] Error al persistir el orden de cuentas:', results.filter(r => r.status === 'rejected'));
+            alert(t('configManager.expenseAccounts.saveError') || 'Error al guardar la cuenta');
+        }
+        renderExpenseAccounts();
+    };
+
+    const loadExpenseAccounts = async () => {
+        try {
+            expenseAccountList = await ExpenseAccount.getAll();
+        } catch (e) {
+            console.warn('[ConfigManager] Error loading expense accounts:', e);
+            expenseAccountList = [];
+        }
+        renderExpenseAccounts();
+    };
+
+    const initExpenseAccounts = () => {
+        if (!eaForm || !eaTable) return;
+
+        if (eaCategory) eaCategory.placeholder = t('configManager.expenseAccounts.categoryPlaceholder');
+        if (eaName) eaName.placeholder = t('configManager.expenseAccounts.namePlaceholder');
+        if (logoUrlInput) logoUrlInput.placeholder = t('configManager.general.logoUrlPlaceholder');
+
+        loadExpenseAccounts();
+
+        if (eaNewBtn) {
+            eaNewBtn.onclick = () => toggleAccountForm(true);
+        }
+        if (eaCancelBtn) {
+            eaCancelBtn.onclick = () => toggleAccountForm(false);
+        }
+        if (eaSaveBtn) {
+            eaSaveBtn.onclick = async () => {
+                const name = (eaName.value || '').trim();
+                if (!name) {
+                    alert(t('configManager.expenseAccounts.nameRequired') || 'El nombre es obligatorio');
+                    return;
+                }
+
+                const data = {
+                    name,
+                    category: (eaCategory.value || '').trim(),
+                    order: parseInt(eaOrder.value, 10) || 0,
+                    active: eaActive.value === 'true'
+                };
+
+                try {
+                    if (eaEditingId) {
+                        await ExpenseAccount.update(eaEditingId, data);
+                    } else {
+                        await ExpenseAccount.create(data);
+                    }
+                    toggleAccountForm(false);
+                    await loadExpenseAccounts();
+                } catch (err) {
+                    console.error('[ConfigManager] Error guardando cuenta de gasto:', err);
+                    alert(t('configManager.expenseAccounts.saveError') || 'Error al guardar la cuenta');
+                }
+            };
+        }
+        if (eaTbody) {
+            eaTbody.addEventListener('click', async (e) => {
+                const editBtn = e.target.closest('.ea-edit');
+                const delBtn = e.target.closest('.ea-delete');
+                if (editBtn) {
+                    const acc = expenseAccountList.find(a => a.id === editBtn.dataset.id);
+                    if (!acc) return;
+                    eaEditingId = acc.id;
+                    eaCategory.value = acc.category || '';
+                    eaName.value = acc.name || '';
+                    eaOrder.value = acc.order || 0;
+                    eaActive.value = acc.active === false ? 'false' : 'true';
+                    toggleAccountForm(true, true);
+                } else if (delBtn) {
+                    const acc = expenseAccountList.find(a => a.id === delBtn.dataset.id);
+                    if (!acc) return;
+                    if (!confirm(`${t('configManager.expenseAccounts.deleteConfirm')} "${acc.name}"?`)) return;
+                    try {
+                        await ExpenseAccount.delete(delBtn.dataset.id);
+                        await loadExpenseAccounts();
+                    } catch (err) {
+                        console.error('[ConfigManager] Error eliminando cuenta de gasto:', err);
+                        alert(t('configManager.expenseAccounts.deleteError') || 'Error al eliminar la cuenta');
+                    }
+                }
+            });
+        }
+    };
+
     // --- INICIALIZACIÓN ---
     initGeneralSettings();
     renderPermissionsMatrix();
@@ -423,6 +664,7 @@ export default async function configManagerController(contexto) {
     initUserManagement();
     initViewSelector();
     initLogoEvents();
+    initExpenseAccounts();
     initTabs();
 
     if (resetBtn) {

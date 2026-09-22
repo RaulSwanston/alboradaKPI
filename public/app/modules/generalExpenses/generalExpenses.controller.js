@@ -1,5 +1,6 @@
 import Transaction from "../../models/Transaction.js";
 import ChargeConcept from "../../models/ChargeConcept.js";
+import ExpenseAccount from "../../models/ExpenseAccount.js";
 import { t } from "../../core/i18n.js";
 import { getAuthObjectURL, revokeAuthObjectURLs } from "../../core/r2.js";
 import { injectIcons } from "../../utils/icons.js";
@@ -40,6 +41,8 @@ export default async function generalExpensesController(contexto) {
   const periodTotalEl = document.getElementById("ge-period-total");
   const summaryMovementsEl = document.getElementById("ge-summary-movements");
   const summaryAvgEl = document.getElementById("ge-summary-avg");
+  const accountsBody = document.getElementById("ge-accounts-body");
+  const accountsClear = document.getElementById("ge-accounts-clear");
 
   if (!body || !paginationContainer) {
     console.error("[GeneralExpenses] Elementos DOM no encontrados");
@@ -47,7 +50,10 @@ export default async function generalExpensesController(contexto) {
   }
 
   // --- Estado ---
-  const state = { current: 1, data: [], loaded: false, loading: false, period: '' };
+  const state = { current: 1, data: [], loaded: false, loading: false, period: '', accountFilter: '' };
+
+  // --- Catálogo de cuentas de gasto ---
+  let accounts = [];
 
   // --- Cache de conceptos ---
   let conceptsCache = new Map();
@@ -59,6 +65,15 @@ export default async function generalExpensesController(contexto) {
     } catch (error) {
       console.warn("[GeneralExpenses] No se pudieron cargar conceptos:", error);
       conceptsCache = new Map();
+    }
+  };
+
+  const loadAccounts = async () => {
+    try {
+      accounts = await ExpenseAccount.getAll();
+    } catch (e) {
+      console.warn("[GeneralExpenses] No se pudieron cargar cuentas de gasto:", e);
+      accounts = [];
     }
   };
 
@@ -189,11 +204,15 @@ export default async function generalExpensesController(contexto) {
 
   // --- Renderizado de tabla ---
   const getFilteredData = () => {
-    if (!state.period) return state.data;
-    return state.data.filter(tx => tx.period === state.period);
+    let items = state.data;
+    if (state.period) items = items.filter(tx => tx.period === state.period);
+    if (state.accountFilter) items = items.filter(tx => (tx.expenseAccountId || '') === state.accountFilter);
+    else if (state.accountFilter === 'UNCLASSIFIED') items = items.filter(tx => !tx.expenseAccountId);
+    return items;
   };
 
   const renderTable = () => {
+    renderAccounts();
     updatePeriodTotal();
     updateSummaryCard();
 
@@ -220,6 +239,99 @@ export default async function generalExpensesController(contexto) {
     if (timestampEl) {
       timestampEl.textContent = `Mostrando ${start + 1}–${Math.min(start + PER_PAGE, items.length)} de ${items.length} · ${formatTimestamp()}`;
     }
+  };
+
+  // --- Resumen agrupado por cuenta de gasto ---
+  const accountLabel = (account) => {
+    if (!account) return t('modules.generalExpenses.summaryAccounts.unclassified') || 'Sin clasificar';
+    return `${account.category || ''}${account.category ? ' - ' : ''}${account.name}`;
+  };
+
+  const renderAccounts = () => {
+    if (!accountsBody) return;
+
+    const periodItems = state.data.filter(tx => !state.period || tx.period === state.period);
+
+    const totals = new Map();
+    periodItems.forEach(tx => {
+      const key = tx.expenseAccountId || 'UNCLASSIFIED';
+      const entry = totals.get(key) || { count: 0, amount: 0 };
+      entry.count += 1;
+      entry.amount += Math.abs(tx.amount || 0);
+      totals.set(key, entry);
+    });
+
+    const activeAccounts = accounts.filter(a => a.active !== false);
+    const movementIds = new Set([...totals.keys()].filter(k => k !== 'UNCLASSIFIED'));
+    const rows = [];
+
+    activeAccounts.forEach(acc => {
+      const entry = totals.get(acc.id);
+      rows.push({
+        id: acc.id,
+        label: accountLabel(acc),
+        total: entry?.amount,
+        count: entry?.count || 0
+      });
+    });
+
+    const extraIds = [...movementIds].filter(id => id !== 'UNCLASSIFIED' && !activeAccounts.some(a => a.id === id));
+    extraIds.forEach(id => {
+      const acc = accounts.find(a => a.id === id);
+      const entry = totals.get(id);
+      rows.push({
+        id,
+        label: accountLabel(acc),
+        total: entry?.amount,
+        count: entry?.count || 0
+      });
+    });
+
+    if (totals.has('UNCLASSIFIED')) {
+      const entry = totals.get('UNCLASSIFIED');
+      rows.push({
+        id: 'UNCLASSIFIED',
+        label: accountLabel(null),
+        total: entry.amount,
+        count: entry.count,
+        unclassified: true
+      });
+    }
+
+    if (rows.length === 0) {
+      accountsBody.innerHTML = `<tr class="ge-empty"><td colspan="3">${t('modules.generalExpenses.summaryAccounts.empty') || 'Sin cuentas configuradas'}</td></tr>`;
+      return;
+    }
+
+    accountsBody.innerHTML = rows.map(row => {
+      const hasMovement = typeof row.total === 'number' && row.total > 0;
+      const totalHtml = hasMovement
+        ? `<span class="ge-accounts-total">${formatCurrency(row.total)}</span>`
+        : `<span class="ge-accounts-total no-movements">-</span>`;
+      const countHtml = hasMovement
+        ? `<span class="ge-accounts-count">${row.count}</span>`
+        : `<span class="ge-accounts-count no-movements">—</span>`;
+      const selected = state.accountFilter === row.id ? ' selected' : '';
+      const unclassifiedClass = row.unclassified ? ' unclassified' : '';
+      return `
+        <tr class="ge-accounts-body-row${selected}" data-account="${row.id}">
+          <td><span class="ge-accounts-name${unclassifiedClass}">${row.label}</span></td>
+          <td class="ge-amount-col">${totalHtml}</td>
+          <td class="ge-amount-col">${countHtml}</td>
+        </tr>
+      `;
+    }).join('');
+
+    if (accountsClear) {
+      accountsClear.classList.toggle('hidden', !state.accountFilter);
+    }
+  };
+
+  const setAccountFilter = (filter) => {
+    state.accountFilter = filter;
+    state.current = 1;
+    renderAccounts();
+    renderTable();
   };
 
   // --- Selector y total de periodo ---
@@ -269,7 +381,7 @@ export default async function generalExpensesController(contexto) {
     state.current = 1;
 
     try {
-      state.data = await Transaction.getExpenses(200);
+      state.data = await Transaction.getAllExpenses();
       state.loaded = true;
     } catch (error) {
       console.error("[GeneralExpenses] Error cargando gastos:", error);
@@ -380,6 +492,19 @@ export default async function generalExpensesController(contexto) {
         renderTable();
       });
     }
+    if (accountsBody) {
+      accountsBody.addEventListener('click', (e) => {
+        const row = e.target.closest('.ge-accounts-body-row');
+        if (!row) return;
+        const id = row.dataset.account;
+        setAccountFilter(state.accountFilter === id ? '' : id);
+      });
+    }
+    if (accountsClear) {
+      accountsClear.addEventListener('click', () => {
+        setAccountFilter('');
+      });
+    }
   };
 
   // --- Inicialización ---
@@ -387,6 +512,7 @@ export default async function generalExpensesController(contexto) {
     try {
       await injectIcons(document);
       await loadConcepts();
+      await loadAccounts();
       attachModalEvents();
       await loadData();
     } catch (error) {

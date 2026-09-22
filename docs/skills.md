@@ -47,7 +47,9 @@ El patrón de nombres debe coincidir con el del directorio (ej: `login/login.con
 
 ### Internacionalización (i18n)
 - `<!-- ::i18n.clave -->` en **contenido textual** (`<span>`, `<p>`, etc.) → funciona directamente, el DOMParser preserva los comment nodes para que Mosaic los reemplace.
-- `<!-- ::i18n.clave -->` en **atributos HTML** (`placeholder`, `title`, `alt`, etc.) → el DOMParser puede escapar `<` a `&lt;` al serializar con `innerHTML`, rompiendo la regex de Mosaic. Setear desde el controlador con `t('clave')`.
+- `<!-- ::i18n.clave -->` en **atributos HTML** (`placeholder`, `title`, `alt`, `aria-label`, etc.) → **PROHIBIDO**: el DOMParser escapa `<` a `&lt;` al serializar con `innerHTML`, rompiendo la regex de Mosaic (la clave queda cruda en pantalla). Asignar SIEMPRE desde el controlador: `elemento.placeholder = t('clave');`
+  - Patrón confirmado en `calendar.controller.js`, `topbar.controller.js` y `transactions.controller.js` (ej.: `titleField.placeholder = t('modules.calendar.eventTitlePlaceholder')`).
+  - Al crear un input con placeholder i18n: dejar `placeholder=""` en el HTML y setear el valor en el `init` del controlador del módulo.
 
 ## Navegación y Ruteo
 - **Contenedor:** Renderizar exclusivamente en `<div id="app-view"></div>`.

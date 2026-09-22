@@ -1,8 +1,9 @@
 import Transaction from "../../models/Transaction.js";
 import Property from "../../models/Property.js";
+import ExpenseAccount from "../../models/ExpenseAccount.js";
 import { t } from "../../core/i18n.js";
 import { db, doc, updateDoc, getDoc, writeBatch, arrayUnion } from "../../core/firebase.js";
-import { uploadFileToR2, buildPropertyUploadKey, getAuthObjectURL, revokeAuthObjectURLs } from "../../core/r2.js";
+import { uploadFileToR2, buildPropertyUploadKey, buildExpenseReceiptKey, getAuthObjectURL, revokeAuthObjectURLs } from "../../core/r2.js";
 import { compressImageFile } from "../../core/imageCompress.js";
 
 /**
@@ -33,7 +34,10 @@ export default async function transactionsDetailController(contexto) {
   const debtsCount = document.getElementById('td-debts-count');
 
   const paymentSection = document.getElementById('td-payment-section');
+  const paymentSectionLabel = paymentSection.querySelector('.td-section-label');
   const paymentMethod = document.getElementById('td-payment-method');
+  const paymentMethodField = document.getElementById('td-payment-method-field');
+  const receiptLabel = document.getElementById('td-receipt-label');
 
   // --- Métodos de pago desde appConfig (fuente única) ---
   const paymentMethods = contexto?.data?.appConfig?.moduleRegistry?.transactions?.paymentMethods || [];
@@ -57,6 +61,8 @@ export default async function transactionsDetailController(contexto) {
   const previewImg = document.getElementById('td-preview-img');
 
   const descriptionInput = document.getElementById('td-description');
+  const accountField = document.getElementById('td-account-field');
+  const accountSelect = document.getElementById('td-expense-account');
   const amountInput = document.getElementById('td-amount');
   const dateInput = document.getElementById('td-effective-date');
   const bankRefInput = document.getElementById('td-bank-ref');
@@ -78,6 +84,7 @@ export default async function transactionsDetailController(contexto) {
   let idempotencyKey = null;
   let propertySearchTimer = null;
   let receiptPreviewUrl = null;
+  let expenseAccounts = [];
 
   // =============================================
   //  INIT
@@ -91,6 +98,8 @@ export default async function transactionsDetailController(contexto) {
       headerSubtitle.textContent = 'Complete los campos para registrar un movimiento';
       btnDelete.classList.add('hidden');
       await loadProperties();
+      await loadExpenseAccounts();
+      populateAccountSelect('');
       attachEvents();
       return;
     }
@@ -99,8 +108,49 @@ export default async function transactionsDetailController(contexto) {
     headerSubtitle.textContent = '';
     btnDelete.classList.remove('hidden');
     await loadProperties();
+    await loadExpenseAccounts();
     await loadExistingTransaction(transId);
     attachEvents();
+  };
+
+  // =============================================
+  //  EXPENSE ACCOUNTS
+  // =============================================
+  const loadExpenseAccounts = async () => {
+    try {
+      expenseAccounts = await ExpenseAccount.getAll();
+    } catch (e) {
+      console.warn('[TD] Error loading expense accounts:', e);
+      expenseAccounts = [];
+    }
+  };
+
+  const populateAccountSelect = (selectedId = '') => {
+    if (!accountSelect) return;
+    const activeAccounts = expenseAccounts.filter(a => a.active !== false);
+    const byCategory = new Map();
+    activeAccounts.forEach(a => {
+      const key = a.category || t('modules.generalExpenses.summaryAccounts.misc') || 'Otros';
+      if (!byCategory.has(key)) byCategory.set(key, []);
+      byCategory.get(key).push(a);
+    });
+
+    if (selectedId) {
+      const selectedAcc = expenseAccounts.find(a => a.id === selectedId);
+      if (selectedAcc && selectedAcc.active === false) {
+        const key = selectedAcc.category || t('modules.generalExpenses.summaryAccounts.misc') || 'Otros';
+        if (!byCategory.has(key)) byCategory.set(key, []);
+        byCategory.get(key).unshift(selectedAcc);
+      }
+    }
+
+    let html = `<option value="">${t('modules.transactionsDetail.expenseAccount.unclassified') || 'Sin clasificar'}</option>`;
+    byCategory.forEach((accounts, category) => {
+      html += `<optgroup label="${category}">` +
+        accounts.map(a => `<option value="${a.id}" ${a.id === selectedId ? 'selected' : ''}>${a.name}</option>`).join('') +
+        `</optgroup>`;
+    });
+    accountSelect.innerHTML = html;
   };
 
   // =============================================
@@ -177,8 +227,21 @@ export default async function transactionsDetailController(contexto) {
 
   const handleTypeChange = (type) => {
     const isPayment = type === 'PAYMENT';
+    const isExpense = type === 'EXPENSE';
+    const showReceiptSection = isPayment || isExpense;
     debtsSection.classList.toggle('hidden', !isPayment);
-    paymentSection.classList.toggle('hidden', !isPayment);
+    paymentSection.classList.toggle('hidden', !showReceiptSection);
+    if (paymentMethodField) paymentMethodField.classList.toggle('hidden', !isPayment);
+    if (paymentSectionLabel) {
+      paymentSectionLabel.textContent = isExpense ? 'Comprobante del Gasto' : 'Detalle del Pago';
+    }
+    if (receiptLabel) {
+      receiptLabel.textContent = isExpense ? 'Comprobante del Gasto (opcional)' : 'Comprobante de Pago (opcional)';
+    }
+
+    if (accountField) {
+      accountField.classList.toggle('hidden', type !== 'EXPENSE');
+    }
 
     if (!isNew) {
       statusField.classList.remove('hidden');
@@ -363,7 +426,10 @@ export default async function transactionsDetailController(contexto) {
   const uploadReceipt = async (propertyId) => {
     if (!receiptFile) return null;
     const { blob, ext } = await compressImageFile(receiptFile);
-    const key = buildPropertyUploadKey(propertyId, contexto?.data?.user?.uid || 'admin', 'comprobante', ext);
+    const uid = contexto?.data?.user?.uid || 'admin';
+    const key = getSelectedType() === 'EXPENSE'
+      ? buildExpenseReceiptKey(uid, ext)
+      : buildPropertyUploadKey(propertyId, uid, 'comprobante', ext);
     return await uploadFileToR2(blob, key);
   };
 
@@ -466,6 +532,10 @@ export default async function transactionsDetailController(contexto) {
         bankReference: bankRefInput.value.trim() || ''
       }
     };
+
+    if (type === 'EXPENSE') {
+      data.expenseAccountId = accountSelect?.value || null;
+    }
 
     if (isNew) data.idempotencyKey = idempotencyKey;
 
@@ -645,6 +715,11 @@ export default async function transactionsDetailController(contexto) {
 
       // Bank reference
       bankRefInput.value = trans.metadata?.bankReference || '';
+
+      // Expense account (EXPENSE only)
+      if (type === 'EXPENSE') {
+        populateAccountSelect(trans.expenseAccountId || '');
+      }
 
       // Status
       statusField.classList.remove('hidden');

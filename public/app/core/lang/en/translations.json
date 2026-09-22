@@ -42,7 +42,31 @@
     "tabs": {
       "general": "General",
       "roles": "Roles",
-      "views": "Views"
+      "views": "Views",
+      "expenses": "Expenses"
+    },
+    "expenseAccounts": {
+      "title": "Expense Accounts Catalog",
+      "newAccount": "New account",
+      "category": "Category",
+      "categoryPlaceholder": "e.g. SECURITY",
+      "name": "Name",
+      "namePlaceholder": "e.g. TIGER",
+      "order": "Order",
+      "active": "Status",
+      "activeYes": "Active",
+      "activeNo": "Inactive",
+      "state": "Status",
+      "actions": "Actions",
+      "edit": "Edit",
+      "delete": "Delete",
+      "cancel": "Cancel",
+      "save": "Save account",
+      "loading": "Loading expense accounts...",
+      "nameRequired": "Account name is required",
+      "saveError": "Error saving the account",
+      "deleteConfirm": "Delete expense account",
+      "deleteError": "Error deleting the account"
     },
     "general": {
       "title": "General Settings",
@@ -217,6 +241,22 @@
         "subtitle": "Summary of the expenses shown",
         "movements": "Number of movements",
         "monthlyAvg": "Monthly average"
+      },
+      "summaryAccounts": {
+        "title": "Summary by expense account",
+        "account": "Account",
+        "total": "Total",
+        "movements": "Movs",
+        "clear": "Show all",
+        "unclassified": "Unclassified",
+        "empty": "No accounts configured",
+        "misc": "Other"
+      }
+    },
+    "transactionsDetail": {
+      "expenseAccount": {
+        "label": "Expense Account",
+        "unclassified": "Unclassified"
       }
     },
     "transactions": {

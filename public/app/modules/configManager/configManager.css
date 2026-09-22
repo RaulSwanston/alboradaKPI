@@ -513,3 +513,159 @@
         grid-column: 1 / -1;
     }
 }
+
+/* --- Catálogo de Cuentas de Gasto --- */
+.expense-account-form {
+    margin-top: 1rem;
+    padding: 1.25rem;
+    border: 1px dashed var(--color-gurkha-200);
+    border-radius: 0.875rem;
+    background: var(--color-gurkha-50);
+}
+
+.expense-account-form-grid {
+    margin-bottom: 1rem;
+}
+
+.expense-account-form-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+}
+
+.expense-account-form-actions .btn-reset-ghost,
+.expense-account-form-actions .btn-save-master {
+    width: auto;
+    min-width: 120px;
+}
+
+.expense-accounts-table td {
+    padding: 0.875rem 0.5rem;
+    font-size: 0.8125rem;
+}
+
+.expense-account-drag-handle {
+    cursor: grab;
+    touch-action: none;
+    color: var(--color-gurkha-400);
+    text-align: center;
+    font-weight: 400;
+    position: static;
+    min-width: 44px;
+    min-height: 40px;
+}
+
+.expense-account-drag-handle:active {
+    cursor: grabbing;
+}
+
+#expense-accounts-tbody tr.dragging {
+    opacity: 0.45;
+}
+
+.expense-account-row-actions {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: flex-end;
+}
+
+.expense-account-action {
+    padding: 0.35rem 0.875rem;
+    border-radius: 0.625rem;
+    border: 1px solid var(--color-gurkha-200);
+    background: white;
+    color: var(--color-text-primary);
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.expense-account-action:hover {
+    background: var(--color-gurkha-50);
+    border-color: var(--color-gurkha-300);
+}
+
+.expense-account-action.expense-account-del {
+    color: var(--color-coral-red);
+    border-color: var(--color-coral-red-100);
+}
+
+.expense-account-action.expense-account-del:hover {
+    background: var(--color-coral-red-100);
+    border-color: var(--color-coral-red);
+}
+
+.expense-account-badge {
+    display: inline-block;
+    padding: 0.2rem 0.625rem;
+    border-radius: 9999px;
+    font-size: 0.6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.expense-account-badge.active {
+    background: var(--color-kaitoke-green-100);
+    color: var(--color-kaitoke-green-700);
+}
+
+.expense-account-badge.inactive {
+    background: var(--color-gurkha-100);
+    color: var(--color-gurkha-500);
+}
+
+@media (max-width: 767px) {
+    .matrix-table.expense-accounts-table,
+    .matrix-table.expense-accounts-table thead,
+    .matrix-table.expense-accounts-table tbody,
+    .matrix-table.expense-accounts-table tr {
+        display: block;
+    }
+
+    .matrix-table.expense-accounts-table thead {
+        display: none;
+    }
+
+    .matrix-table.expense-accounts-table tr {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 0.5rem 1rem;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid var(--color-gurkha-50);
+    }
+
+    .matrix-table.expense-accounts-table tr:last-child {
+        border-bottom: none;
+    }
+
+    .matrix-table.expense-accounts-table td {
+        padding: 0.25rem 0;
+        border: none;
+        text-align: left !important;
+    }
+
+    .matrix-table.expense-accounts-table .expense-account-drag-handle {
+        grid-column: 1;
+        grid-row: 1 / span 3;
+        align-self: center;
+        justify-self: center;
+    }
+
+    .matrix-table.expense-accounts-table td:nth-child(2),
+    .matrix-table.expense-accounts-table td:nth-child(3),
+    .matrix-table.expense-accounts-table td:nth-child(5) {
+        grid-column: 2;
+    }
+
+    .matrix-table.expense-accounts-table td:nth-child(4) {
+        grid-column: 1 / -1;
+    }
+
+    .expense-account-row-actions {
+        grid-column: 1 / -1;
+        justify-content: flex-start;
+    }
+}

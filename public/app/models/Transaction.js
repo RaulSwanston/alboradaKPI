@@ -1,4 +1,4 @@
-import { db, collection, addDoc, updateDoc, deleteDoc, doc, getDoc, getDocs, query, where, orderBy, limit, serverTimestamp, runTransaction } from "../core/firebase.js";
+import { db, collection, addDoc, updateDoc, deleteDoc, doc, getDoc, getDocs, query, where, orderBy, limit, startAfter, serverTimestamp, runTransaction } from "../core/firebase.js";
 import { createActivity } from "./Activities.js";
 
 /**
@@ -458,6 +458,45 @@ export default class Transaction {
    */
   static async getExpenses(limitCount = 100) {
     return this.getByType('EXPENSE', limitCount);
+  }
+
+  /**
+   * Obtiene TODOS los gastos operativos (solo tipo EXPENSE) paginando en lotes.
+   * Garantiza el histórico completo para el agrupamiento por cuenta de gasto,
+   * sin depender del límite visible de una sola consulta.
+   * @param {number} batchSize - Tamaño de lote por consulta (límite de Firestore).
+   * @returns {Promise<Array>} Lista completa de gastos.
+   */
+  static async getAllExpenses(batchSize = 1000) {
+    try {
+      const base = [
+        where("type", "==", "EXPENSE"),
+        orderBy("effectiveDate", "desc")
+      ];
+
+      const all = [];
+      let lastDoc = null;
+
+      while (true) {
+        const q = lastDoc
+          ? query(collection(db, "transactions"), ...base, startAfter(lastDoc), limit(batchSize))
+          : query(collection(db, "transactions"), ...base, limit(batchSize));
+        const querySnapshot = await getDocs(q);
+
+        if (querySnapshot.empty) break;
+
+        querySnapshot.forEach((docSnap) => all.push({ id: docSnap.id, ...docSnap.data() }));
+        lastDoc = querySnapshot.docs[querySnapshot.docs.length - 1];
+
+        if (all.length % 1000 !== 0 || querySnapshot.docs.length < batchSize) break;
+      }
+
+      console.log(`[Transaction] Carga completa de gastos: ${all.length} registros.`);
+      return all;
+    } catch (error) {
+      console.error("[Transaction] Error al obtener todos los gastos:", error);
+      throw error;
+    }
   }
 
   /**
