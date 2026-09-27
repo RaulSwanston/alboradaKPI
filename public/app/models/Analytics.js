@@ -55,22 +55,6 @@ function inferPaymentMethod(transaction) {
 }
 
 /**
- * Categoriza una descripción de gasto (EXPENSE) en categorías legibles.
- * Las descripciones actuales son texto libre, por lo que se usa matching por palabras clave.
- */
-function categorizeExpense(description) {
-  const d = (description || '').toUpperCase();
-  const has = (...words) => words.some(w => d.includes(w));
-  if (has('INST', 'MEDIDOR', 'TUBO', 'GARITA', 'BAÑO', 'PINTUR', 'REPARA', 'ARREGLO', 'MATERIAL',
-            'LAMPARA', 'FOCO', 'BOMBA', 'PLOMER', 'GRIFFE', 'CERRA', 'HERRAMIENTA', 'FILTRO', 'CLORO')) return 'Mantenimiento';
-  if (has('AGUA', 'LUZ', 'ELECTRIC', 'ENE.', 'CABLE', 'INTERNET', 'TELEFON', 'FACTURA')) return 'Servicios';
-  if (has('SEGURIDAD', 'VIGIL', 'ALARMA', 'CAMARA')) return 'Seguridad';
-  if (has('ABOGADO', 'NOTARIA', 'IMPUESTO', 'TASA', 'MULTA', 'REGISTRO')) return 'Administrativos';
-  if (has('SUPERMERCADO', 'COMPRA', 'FERRETERIA', 'SUMINISTRO')) return 'Suministros';
-  return 'Otros';
-}
-
-/**
  * Normaliza una descripción de cargo (FEE) para agrupar por concepto,
  * eliminando la referencia temporal (mes/año) de la descripción.
  */
@@ -130,6 +114,7 @@ export default class Analytics {
   _serviceRequests() { return this._data('serviceRequests', () => this._collectionDocs('serviceRequests')); }
   _communityEvents() { return this._data('communityEvents', () => this._collectionDocs('communityEvents')); }
   _chargeConcepts() { return this._data('chargeConcepts', () => this._collectionDocs('chargeConcepts')); }
+  _expenseAccounts() { return this._data('expenseAccounts', () => this._collectionDocs('expenseAccounts')); }
 
   /**
    * Filtra transacciones a los últimos `months` meses.
@@ -271,14 +256,20 @@ export default class Analytics {
   }
 
   /**
-   * Gastos por categoría (categorización por palabras clave de la descripción).
+   * Gastos por categoría, resolviendo `expenseAccountId` contra el catálogo
+   * `expenseAccounts` (misma fuente de verdad que el módulo de gastos generales, de
+   * modo que el gráfico y la tabla nunca se contradicen).
+   * Se agrupa por la `category` de la cuenta; los gastos sin cuenta asignada caen
+   * en "Sin clasificar" en lugar de inventar una categoría por palabras clave.
    */
   async getExpensesByCategory({ months = 12 } = {}) {
     const tx = this._window(await this._transactions(), months).filter(t => t.type === 'EXPENSE' || t.type === 'ADMIN_EXPENSE');
+    const accounts = await this._expenseAccounts();
+    const labelByAccount = new Map(accounts.map(a => [a.id, a.category || a.name || 'Sin clasificar']));
     const totals = {};
     for (const t of tx) {
-      const cat = categorizeExpense(t.description);
-      totals[cat] = (totals[cat] || 0) + Math.abs(t.amount || 0);
+      const label = labelByAccount.get(t.expenseAccountId) || 'Sin clasificar';
+      totals[label] = (totals[label] || 0) + Math.abs(t.amount || 0);
     }
     const entries = Object.entries(totals).sort((a, b) => b[1] - a[1]);
     return { categories: entries.map(([k]) => k), series: entries.map(([, v]) => this._round(v)) };

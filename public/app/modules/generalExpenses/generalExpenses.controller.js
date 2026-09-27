@@ -19,6 +19,15 @@ const formatCurrency = (value) => {
   return new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Math.abs(value || 0));
 };
 
+/**
+ * Escapa texto antes de inyectarlo en innerHTML. Las descripciones y las referencias
+ * bancarias vienen de extractos CSV: sin esto, un <b> en un concepto se renderiza
+ * como HTML y una comilla en un atributo rompe el marcado.
+ */
+const escapeHtml = (s) => String(s ?? '')
+  .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+  .replace(/"/g, '&quot;').replace(/'/g, '&#39;');
+
 const formatDate = (date) => {
   if (!date) return '';
   const d = date.toDate ? date.toDate() : new Date(date);
@@ -42,7 +51,6 @@ export default async function generalExpensesController(contexto) {
   const summaryMovementsEl = document.getElementById("ge-summary-movements");
   const summaryAvgEl = document.getElementById("ge-summary-avg");
   const accountsBody = document.getElementById("ge-accounts-body");
-  const accountsClear = document.getElementById("ge-accounts-clear");
 
   if (!body || !paginationContainer) {
     console.error("[GeneralExpenses] Elementos DOM no encontrados");
@@ -50,7 +58,7 @@ export default async function generalExpensesController(contexto) {
   }
 
   // --- Estado ---
-  const state = { current: 1, data: [], loaded: false, loading: false, period: '', accountFilter: '' };
+  const state = { current: 1, data: [], loaded: false, loading: false, period: '', expandedAccount: '' };
 
   // --- Catálogo de cuentas de gasto ---
   let accounts = [];
@@ -87,7 +95,7 @@ export default async function generalExpensesController(contexto) {
       'OTHER_INCOME': { label: 'Otro Ingreso', class: 'other_income' }
     };
     const config = typeMap[type] || { label: type, class: 'other' };
-    return `<span class="ge-type-badge ${config.class}">${config.label}</span>`;
+    return `<span class="ge-type-badge ${config.class}">${escapeHtml(config.label)}</span>`;
   };
 
   const getStatusBadge = (status) => {
@@ -98,7 +106,7 @@ export default async function generalExpensesController(contexto) {
       'cancelled': { label: 'Cancelado', class: 'cancelled' }
     };
     const config = statusMap[status] || { label: status, class: 'other' };
-    return `<span class="ge-status-badge ${config.class}">${config.label}</span>`;
+    return `<span class="ge-status-badge ${config.class}">${escapeHtml(config.label)}</span>`;
   };
 
   const formatAmount = (amount, type) => {
@@ -109,14 +117,14 @@ export default async function generalExpensesController(contexto) {
   };
 
   const getConceptName = (tx) => {
-    if (tx.description) return tx.description;
-    if (tx.concept) return conceptsCache.get(tx.concept) || tx.concept;
+    if (tx.description) return escapeHtml(tx.description);
+    if (tx.concept) return escapeHtml(conceptsCache.get(tx.concept) || tx.concept);
     return '-';
   };
 
   const getReceiptLink = (tx) => {
     return `
-      <button class="ge-receipt-link" data-id="${tx.id}" title="Ver comprobante">
+      <button class="ge-receipt-link" data-id="${escapeHtml(tx.id)}" title="Ver comprobante">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
           <circle cx="12" cy="12" r="3"/>
@@ -203,16 +211,16 @@ export default async function generalExpensesController(contexto) {
   };
 
   // --- Renderizado de tabla ---
+  // La tabla inferior es el listado cronologico completo del periodo: no se filtra
+  // por cuenta. El desglose por cuenta vive en el arbol, que se despliega en linea.
   const getFilteredData = () => {
     let items = state.data;
     if (state.period) items = items.filter(tx => tx.period === state.period);
-    if (state.accountFilter) items = items.filter(tx => (tx.expenseAccountId || '') === state.accountFilter);
-    else if (state.accountFilter === 'UNCLASSIFIED') items = items.filter(tx => !tx.expenseAccountId);
     return items;
   };
 
   const renderTable = () => {
-    renderAccounts();
+    renderTree();
     updatePeriodTotal();
     updateSummaryCard();
 
@@ -241,97 +249,136 @@ export default async function generalExpensesController(contexto) {
     }
   };
 
-  // --- Resumen agrupado por cuenta de gasto ---
-  const accountLabel = (account) => {
-    if (!account) return t('modules.generalExpenses.summaryAccounts.unclassified') || 'Sin clasificar';
-    return `${account.category || ''}${account.category ? ' - ' : ''}${account.name}`;
-  };
+  // --- Arbol de categorias (resumen agrupado por cuenta de gasto) ---
+  const CHEVRON_SVG = '<svg class="ge-chevron" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 4 4 4-4 4"/></svg>';
 
-  const renderAccounts = () => {
+  // Mismas 6 columnas que la tabla principal. Al reutilizar .ge-table, en movil
+  // estas filas se convierten en cards con las reglas que ya existen.
+  const detailHead = () => `
+    <thead>
+      <tr>
+        <th>${t('modules.generalExpenses.table.date')}</th>
+        <th>${t('modules.generalExpenses.table.concept')}</th>
+        <th class="ge-amount-col">${t('modules.generalExpenses.table.amount')}</th>
+        <th>${t('modules.generalExpenses.table.type')}</th>
+        <th>${t('modules.generalExpenses.table.status')}</th>
+        <th>${t('modules.generalExpenses.table.voucher')}</th>
+      </tr>
+    </thead>`;
+
+  const renderDetail = (entry) => `
+    <div class="ge-account-detail">
+      <table class="ge-table ge-detail-table">
+        ${detailHead()}
+        <tbody>${entry.items.map(renderRow).join('')}</tbody>
+      </table>
+    </div>`;
+
+  const renderTree = () => {
     if (!accountsBody) return;
 
-    const periodItems = state.data.filter(tx => !state.period || tx.period === state.period);
-
+    // Agregado por cuenta: importe en valor absoluto, conteo y movimientos.
     const totals = new Map();
-    periodItems.forEach(tx => {
+    getFilteredData().forEach(tx => {
       const key = tx.expenseAccountId || 'UNCLASSIFIED';
-      const entry = totals.get(key) || { count: 0, amount: 0 };
+      const entry = totals.get(key) || { count: 0, amount: 0, items: [] };
       entry.count += 1;
       entry.amount += Math.abs(tx.amount || 0);
+      entry.items.push(tx);
       totals.set(key, entry);
     });
 
-    const activeAccounts = accounts.filter(a => a.active !== false);
-    const movementIds = new Set([...totals.keys()].filter(k => k !== 'UNCLASSIFIED'));
-    const rows = [];
+    const miscLabel = t('modules.generalExpenses.summaryAccounts.misc');
+    const unclassifiedLabel = t('modules.generalExpenses.summaryAccounts.unclassified');
 
-    activeAccounts.forEach(acc => {
-      const entry = totals.get(acc.id);
-      rows.push({
-        id: acc.id,
-        label: accountLabel(acc),
-        total: entry?.amount,
-        count: entry?.count || 0
-      });
-    });
+    const groups = new Map();
+    const getGroup = (name) => {
+      if (!groups.has(name)) groups.set(name, { name, total: 0, count: 0, rows: [] });
+      return groups.get(name);
+    };
 
-    const extraIds = [...movementIds].filter(id => id !== 'UNCLASSIFIED' && !activeAccounts.some(a => a.id === id));
-    extraIds.forEach(id => {
-      const acc = accounts.find(a => a.id === id);
-      const entry = totals.get(id);
-      rows.push({
-        id,
-        label: accountLabel(acc),
-        total: entry?.amount,
-        count: entry?.count || 0
-      });
-    });
+    // Las cuentas sin movimiento no se listan: el arbol responde "donde se fue la plata".
+    const addAccount = (account) => {
+      const entry = totals.get(account.id);
+      if (!entry) return;
+      const group = getGroup(account.category || miscLabel);
+      group.total += entry.amount;
+      group.count += entry.count;
+      group.rows.push({ id: account.id, name: account.name, total: entry.amount, count: entry.count, items: entry.items });
+    };
 
+    accounts.filter(a => a.active !== false).forEach(addAccount);
+
+    // Movimientos que apuntan a un id que ya no existe en el catalogo.
+    const knownIds = new Set(accounts.map(a => a.id));
+    [...totals.keys()]
+      .filter(id => id !== 'UNCLASSIFIED' && !knownIds.has(id))
+      .forEach(id => addAccount({ id, name: id, category: miscLabel }));
+
+    // "Sin clasificar" no es una cuenta mas: es un grupo entero, y su cabecera se desplieca.
+    let unclassifiedEntry = null;
     if (totals.has('UNCLASSIFIED')) {
-      const entry = totals.get('UNCLASSIFIED');
-      rows.push({
-        id: 'UNCLASSIFIED',
-        label: accountLabel(null),
-        total: entry.amount,
-        count: entry.count,
-        unclassified: true
-      });
+      unclassifiedEntry = totals.get('UNCLASSIFIED');
+      const group = getGroup(unclassifiedLabel);
+      group.total = unclassifiedEntry.amount;
+      group.count = unclassifiedEntry.count;
+      group.standalone = true;
     }
 
-    if (rows.length === 0) {
-      accountsBody.innerHTML = `<tr class="ge-empty"><td colspan="3">${t('modules.generalExpenses.summaryAccounts.empty') || 'Sin cuentas configuradas'}</td></tr>`;
+    const visible = [...groups.values()].filter(g => g.count > 0).sort((a, b) => b.total - a.total);
+
+    if (visible.length === 0) {
+      accountsBody.innerHTML = `<div class="ge-empty">${t('modules.generalExpenses.summaryAccounts.empty')}</div>`;
       return;
     }
 
-    accountsBody.innerHTML = rows.map(row => {
-      const hasMovement = typeof row.total === 'number' && row.total > 0;
-      const totalHtml = hasMovement
-        ? `<span class="ge-accounts-total">${formatCurrency(row.total)}</span>`
-        : `<span class="ge-accounts-total no-movements">-</span>`;
-      const countHtml = hasMovement
-        ? `<span class="ge-accounts-count">${row.count}</span>`
-        : `<span class="ge-accounts-count no-movements">—</span>`;
-      const selected = state.accountFilter === row.id ? ' selected' : '';
-      const unclassifiedClass = row.unclassified ? ' unclassified' : '';
-      return `
-        <tr class="ge-accounts-body-row${selected}" data-account="${row.id}">
-          <td><span class="ge-accounts-name${unclassifiedClass}">${row.label}</span></td>
-          <td class="ge-amount-col">${totalHtml}</td>
-          <td class="ge-amount-col">${countHtml}</td>
-        </tr>
-      `;
-    }).join('');
+    accountsBody.innerHTML = visible.map((group) => {
+      if (group.standalone) {
+        const open = state.expandedAccount === 'UNCLASSIFIED';
+        return `
+          <section class="ge-group unclassified">
+            <button class="ge-group-header clickable" type="button" data-account="UNCLASSIFIED" aria-expanded="${open}">
+              <span class="ge-group-name ge-accounts-cat">${escapeHtml(group.name)}</span>
+              <span class="ge-group-total">${formatCurrency(group.total)}</span>
+              <span class="ge-group-count">${group.count}</span>
+              ${CHEVRON_SVG}
+            </button>
+            ${open ? renderDetail(unclassifiedEntry) : ''}
+          </section>`;
+      }
 
-    if (accountsClear) {
-      accountsClear.classList.toggle('hidden', !state.accountFilter);
-    }
+      const rows = group.rows
+        .sort((a, b) => b.total - a.total)
+        .map((row) => {
+          const open = state.expandedAccount === row.id;
+          return `
+            <div class="ge-account">
+              <div class="ge-account-row${open ? ' expanded' : ''}" data-account="${escapeHtml(row.id)}" role="button" tabindex="0" aria-expanded="${open}">
+                <span class="ge-accounts-name">${escapeHtml(row.name)}</span>
+                <span class="ge-accounts-total">${formatCurrency(row.total)}</span>
+                <span class="ge-accounts-count">${row.count}</span>
+                ${CHEVRON_SVG}
+              </div>
+              ${open ? renderDetail(row) : ''}
+            </div>`;
+        }).join('');
+
+      return `
+        <section class="ge-group">
+          <div class="ge-group-header">
+            <span class="ge-group-name ge-accounts-cat">${escapeHtml(group.name)}</span>
+            <span class="ge-group-total">${formatCurrency(group.total)}</span>
+            <span class="ge-group-count">${group.count}</span>
+          </div>
+          <div class="ge-group-accounts">${rows}</div>
+        </section>`;
+    }).join('');
   };
 
-  const setAccountFilter = (filter) => {
-    state.accountFilter = filter;
-    state.current = 1;
-    renderAccounts();
-    renderTable();
+  // Una cuenta desplegada a la vez. La tabla inferior no se toca: ya no filtra por cuenta.
+  const toggleExpanded = (id) => {
+    state.expandedAccount = state.expandedAccount === id ? '' : id;
+    renderTree();
   };
 
   // --- Selector y total de periodo ---
@@ -347,7 +394,7 @@ export default async function generalExpensesController(contexto) {
     if (!periodSelect) return;
     const periods = [...new Set(state.data.map(tx => tx.period).filter(Boolean))].sort().reverse();
     periodSelect.innerHTML = `<option value="">${t('modules.generalExpenses.period.all') || 'Todos los periodos'}</option>` +
-      periods.map(p => `<option value="${p}">${formatPeriodLabel(p)}</option>`).join('');
+      periods.map(p => `<option value="${escapeHtml(p)}">${escapeHtml(formatPeriodLabel(p))}</option>`).join('');
   };
 
   const updatePeriodTotal = () => {
@@ -433,14 +480,14 @@ export default async function generalExpensesController(contexto) {
       </div>
       ${rows.map(([label, value]) => `
         <div class="ge-receipt-row">
-          <span class="ge-receipt-label">${label}</span>
-          <span class="ge-receipt-value">${value}</span>
+          <span class="ge-receipt-label">${escapeHtml(label)}</span>
+          <span class="ge-receipt-value">${escapeHtml(value)}</span>
         </div>
       `).join('')}
       ${tx.metadata?.receiptURL ? `
         <div class="ge-receipt-image-area">
           <div class="ge-receipt-image-title">Comprobante adjunto</div>
-          <img data-ge-receipt-src="${tx.metadata.receiptURL}" alt="Comprobante del gasto" />
+          <img data-ge-receipt-src="${escapeHtml(tx.metadata.receiptURL)}" alt="Comprobante del gasto" />
         </div>
       ` : `
         <div class="ge-receipt-no-attachment">Sin comprobante adjunto</div>
@@ -493,16 +540,25 @@ export default async function generalExpensesController(contexto) {
       });
     }
     if (accountsBody) {
+      // El arbol y la tabla inferior contienen el mismo boton de comprobante.
       accountsBody.addEventListener('click', (e) => {
-        const row = e.target.closest('.ge-accounts-body-row');
-        if (!row) return;
-        const id = row.dataset.account;
-        setAccountFilter(state.accountFilter === id ? '' : id);
+        if (e.target.closest('.ge-receipt-link')) return;
+        const target = e.target.closest('.ge-group-header.clickable, .ge-account-row');
+        if (!target) return;
+        toggleExpanded(target.dataset.account);
       });
-    }
-    if (accountsClear) {
-      accountsClear.addEventListener('click', () => {
-        setAccountFilter('');
+      accountsBody.addEventListener('keydown', (e) => {
+        if (e.key !== 'Enter' && e.key !== ' ') return;
+        const target = e.target.closest('.ge-account-row');
+        if (!target) return;
+        e.preventDefault();
+        toggleExpanded(target.dataset.account);
+      });
+      accountsBody.addEventListener('click', (e) => {
+        const btn = e.target.closest('.ge-receipt-link');
+        if (!btn) return;
+        const tx = state.data.find(item => item.id === btn.dataset.id);
+        if (tx) openReceipt(tx);
       });
     }
   };

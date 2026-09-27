@@ -1,6 +1,86 @@
 # Memoria de Sesiones - Bitácora de Proyecto
 
-## 📌 RETOMA AQUÍ (última sesión: 9 de Septiembre de 2026)
+## 📌 RETOMA AQUÍ (última sesión: 26 de Septiembre de 2026)
+
+**Estado:** ✅ **Backfill ESCRITO en Firestore.** Se clasificaron **153 de 321** gastos históricos (`type: 'EXPENSE'`, 2025-02 → 2026-08, $67,287.70) por `expenseAccountId` (colección `expenseAccounts`). Coste real de toda la operación: **22 lecturas + 153 escrituras, 0 lecturas de transacciones**. Las **168 restantes ($23,981.01)** siguen sin clasificar a la espera de crear cuentas de proveedor. Además se rediseñó la tarjeta de cuentas de Gastos Generales como **árbol de categorías** con detalle desplegable. **Pendiente:** los 168 sin clasificar; una colección independiente para ingresos globales; y `firebase deploy --only hosting` si se sirve por Firebase.
+
+### Lección de esta sesión: se violó el patrón del repo y se quemó la cuota
+
+Al principio hice **exactamente lo que no hay que hacer**: leí Firestore de forma exploratoria (`getDocs` por cada pregunta que me hice) y dejé un proceso en segundo plano reintentando. Eso agotó la cuota de lectura y, como el proyecto está en la capa gratuita, **la app dejó de funcionar para el usuario**. El repo ya tenía documentado el patrón correcto (`docs/memory.md:229`, `apply_reconciliation_month.js`: *"Usa el snapshot local, sin lecturas a Firestore"*) y no lo respeté.
+
+Corregido con tres scripts y una sección nueva en `AGENTS.md` ("Presupuesto de Firestore") que lo deja por escrito: **extraer una vez → clasificar en local → un único script que escribe.**
+
+| | Lecturas | Escrituras |
+|---|---|---|
+| Enfoque exploratorio (mal) | 321 por extracción, repetidas + decenas de consultas sueltas | 0 |
+| Cadena actual (bien) | **22** (2 dry-run de 11, uno abortó por un nombre mal escrito) | 153 |
+
+- **`scripts/extract_expenses.js`** (nuevo): única puerta de lectura de gastos. Paginado a 100 con pausa de 8 s, retry exponencial, vuelca `scripts/data/expense_snapshot_<fecha>.json`. Sin escrituras.
+- **`scripts/build_expense_batch.js`** (nuevo): **0 lecturas**. Aplica las 9 reglas sobre el snapshot y emite `scripts/data/reconcile/write_batch_expenses.json`. Lleva **aserciones**: si los montos no cuadran con el total del snapshot aborta, y `EXPECT_CLASSIFIED=153` verifica el conteo. Reconstruye la clasificación desde cero (no copia resultados previos), así que es reproducible.
+- **`scripts/apply_expense_batch.js`** (nuevo): **1 lectura** (`expenseAccounts`) para resolver nombre→`docId`, **abortando** si alguna cuenta no existe; luego `update()` de **solo** `expenseAccountId` en lotes de 400. **Cero lecturas de transacciones y sin backup redundante** (el snapshot local ya es el backup). **Sin reintentos automáticos**: una lectura a ciegas es justo lo que agota la cuota; el backoff exponencial quedó detrás del flag opt-in `--retry`.
+- **`scripts/expense_classify.js`:** eliminado, sustituido por la cadena de tres pasos.
+- `scripts/data/expense_snapshot_2026-09-26.json`: snapshot de referencia (321 docs verificados contra Firestore).
+
+### Resumen de cambios (26 Sep 2026) — Clasificación de gastos por cuenta + árbol de categorías
+
+- **`models/Analytics.js` — unificación de fuente de verdad:** `getExpensesByCategory()` ya no categoriza por palabras clave. Ahora resuelve `expenseAccountId` contra `expenseAccounts` y **agrupa por la `category` de la cuenta**, con fallback `"Sin clasificar"`. Se **eliminó** `categorizeExpense()` (heurística que producía etiquetas como "Mantenimiento"/"Otros" incompatibles con el catálogo y por tanto contradictorias con la tabla del módulo). Nuevo loader memoizado `_expenseAccounts()` (**+11 lecturas, una vez por sesión** gracias a la caché de `_data()`). Esto arregla a la vez los **dos** gráficos que comparten el método: el de administración (`appConfig.js:135`) y el de "¿En qué se invierte la comunidad?" (`appConfig.js:193`).
+- **`modules/generalExpenses/generalExpenses.html|.controller.js|.css` — la tarjeta de cuentas pasa a ser un ÁRBOL por categoría.** Antes era una tabla plana con una fila por cuenta (~11 filas indistintas). Ahora son grupos ordenados por total descendente, con las cuentas indentadas y un **detalle desplegable en línea** (tabla de 6 columnas en desktop, cards en móvil). Decisiones tomadas: el detalle se despliega dentro de su propia fila, las cuentas **sin movimiento se ocultan**, y la tabla inferior deja de filtrar por cuenta (queda como listado cronológico del periodo, lo que además evita que la tarjeta resumen cambie de números al navegar). Se eliminó el botón "Mostrar todas", las reglas CSS `!important` que forzaban la tabla en móvil, y 4 claves i18n huérfanas (`summaryAccounts.account/total/movements/clear`).
+- **`modules/generalExpenses/generalExpenses.controller.js` — XSS corregido:** `renderRow()` y el modal de comprobante interpolaban `tx.description`, `tx.metadata.bankReference` y `tx.period` **sin escapar** en `innerHTML`. Esos campos vienen de extractos CSV de banco. Ahora pasan por `escapeHtml()`.
+- **`docs/schema.md`:** documentada `transactions.expenseAccountId` y añadida la colección `expenseAccounts` (jerarquía `category` agrupa / `name` identifica, categorías vigentes, consumidores, reglas de escritura).
+
+### Reglas de clasificación (100% seguras, verificadas una a una)
+
+| Regla | Cuenta destino | Gastos |
+|---|---|---|
+| `TIGER\s*SECURITY` | TIGER SECURITY COMPANY AND TRAINING CENTER, S.A. | 20 |
+| `CORTE\s+(DE\s+)?(HIERBA\|YERBA)\|CORTEHIERBA` | CORTE HIERBA | 49 |
+| `\bTIGO\b` | TIGO | 30 |
+| `\bIDAAN\b` | IDAAN | 18 |
+| `\bENSA\b\|ELEKTRA\s*NORESTE` | ENSA | 18 |
+| tag `propertyId` `NAVIDAD` | `Navidad` | 12 |
+| tags `RIFA` / `RIFA 2` | `Rifas y premios` | 3 |
+| tag `propertyId` `TEATRO` | `Eventos culturales` | 2 |
+| tag `propertyId` `D-03` | `Eventos generales` | 1 |
+
+Verificado: el build reproduce exactamente **153 clasificados ($43,306.69)** y **168 sin clasificar ($23,981.01)**, con el mismo desglose por cuenta que la auditoría manual.
+
+- El tag de evento en `propertyId` **gana** sobre el regex de proveedor: es más específico (ej. un pago a ENSA guardado bajo `propertyId: NAVIDAD` es un gasto de Navidad, no de ENSA).
+
+### Decisiones del usuario
+
+- Catálogo a **nivel proveedor/servicio**, no genérico ("Mantenimiento", "Servicios").
+- Solo clasificar lo **100% seguro**; lo dudoso queda sin clasificar para revisión manual.
+- Se creó la categoría global **`eventos y actividades`** con 4 cuentas dentro: `Navidad`, `Rifas y premios`, `Eventos culturales`, `Eventos generales`. Como el gráfico agrupa por `category`, **las 4 se muestran como un único segmento**; la tabla de Gastos Generales sí las separa.
+- `RIFA` y `RIFA 2` son la misma actividad (pagos de premios) y comparten cuenta.
+- **No** gestionar comprobantes históricos (0 de 321 tienen `receiptURL`).
+- No se hizo subdivisión finer de Navidad (luces, pintura, canastitas, decoración, sillas, brinca brinca, discoteca móvil, música): 12 micro-gastos de un solo mes, sin ganancia analítica.
+
+### Hallazgos de calidad de datos (NO corregidos, solo reportados)
+
+- `propertyId: 'D-03'` parece un tag erróneo: la descripción dice `Casa D2 -SANTA...`. Se clasificó como `Eventos generales` **sin modificar el `propertyId`**.
+- El beneficiario `MARITZA OTILIA LAWSON de MORA ("EVENTOS")` aparece **3 veces por exactamente $50.00** (2 con tag NAVIDAD, 1 con D-03): mismo pago triplicado o dos eventos distintos con igual monto. **Revisar con el usuario.**
+- Los 2 gastos con tag `TEATRO` son **devoluciones de boletos**, no compras: `DEVOLUCION 2 BOLETOS PAGADOS`, `Devolucion de boletos`. El costo real del teatro fue menor a lo registrado.
+- `chargeConcepts` (3 docs) es el catálogo de **cobros a residentes**, no de gastos. No confundir con `expenseAccounts`.
+
+### Notas técnicas importantes (esta sesión)
+
+- **Cuota de Firestore del proyecto muy ajustada:** se agota con unos cientos de documentos y tardamos >10 min en recuperarla; ni una lectura de 7 docs entra. Los scripts de extracción deben paginar con pausas largas, usar retry con backoff, y cachear incrementalmente. Los exports locales de `scripts/data/` **no son sustituto**: `allTransactions_2025-01_2026-07.json` tiene 3 docs duplicados y cubre solo 300 de 321 expenses (faltan 4 docs, $190); su suma coincidía con Firestore solo por casualidad.
+- **`projectId` del Service Account es `alboradakpi` en minúsculas.** Pasarlo con mayúsculas (`'alboradaKPI'`, como quedó en scripts viejos) hace fallar TODO con `code 7 PERMISSION_DENIED / CONSUMER_INVALID` en `projects/alboradaKPI`. Correcto: `admin.initializeApp({ credential })` sin `projectId`, y que el SDK lo deduzca de la credencial.
+- **Los procesos en background mueren con la herramienta de shell** (mata el grupo de procesos al terminar la llamada). Para tareas largas: `setsid nohup <cmd> > log 2>&1 < /dev/null &`. Además, `cmd | tail` bufferiza: para monitorear un job largo, redirigir a archivo y leerlo con otro comando. Aun así, **no dejes jobs en background reintentando lecturas**: queman cuota y ocultan el estado real.
+- `node --check` trata los `.js` de `public/` como CommonJS y falla con `Cannot use import statement outside a module`. Para validar sintaxis ESM: copiar a `/tmp/x.mjs` y hacer `node --check` sobre el `.mjs`.
+
+### Pendientes (para próxima sesión):
+
+1. **Ejecutar el commit del lote** (necesita que se libere la cuota de lectura): `node scripts/apply_expense_batch.js` en dry-run para revisar, y `--commit` con aprobación del usuario. Escribe `expenseAccountId` en 153 documentos (11 lecturas + 153 escrituras). El lote ya está en `scripts/data/reconcile/write_batch_expenses.json`.
+2. **Probar en la app:** el filtro "Sin clasificar" de Gastos Generales (bug corregido) y ambos gráficos de gastos.
+3. **Revisar con el usuario** los 3 hallazgos de calidad de datos de abajo, en especial el posible pago triplicado de $50.
+4. **Segunda ronda de clasificación** sobre los 168 no clasificados: `build_expense_batch.js` imprime los bloques en `unclassifiedGroups` (142 bloques, 132 de un solo movimiento) para decidir si crear cuentas de proveedor nuevas. Los bloques de un solo movimiento son micro-gastos y no justifican cuenta.
+5. **Medir el coste de lecturas de la app.** Si la cuota se agota con el uso normal, el culpable es la app, no los scripts: conviene auditar cuántas lecturas cuesta una carga completa (properties ~268 docs + transactions + notifications).
+6. Commit y push de los cambios de `Analytics.js`, `generalExpenses.controller.js` y `docs/`.
+
+---
+
+## Sesión 9 de Septiembre de 2026
 
 **Estado:** Migración completada de Firebase Storage a **Cloudflare R2 vía Worker gestionph** (`gestionph.synch.workers.dev`). Imágenes/comprobantes/logo: subida con API key (`uploadFileToR2`), lectura display **fetch→blob** (`getAuthObjectURL`, nunca `<img src>` directo porque GET exige auth), compresión cliente, key `gest_...` incrustada en `public/app/core/r2.js` (repo **público**; vulnerabilidad aceptada por el cliente — planea migrar el proyecto a otra plataforma más rápida/segura). Añadida regla `system/counters` a `firestore.rules`. Commits `ccdc5aa` + `87b1476` pusheados a `github/main`. **Pendientes:** `firebase deploy --only hosting` (llevar a producción), "Sincronizar" del admin para repoblar balances, hidratación de imágenes en `descriptionLong`/TinyMCE, toast de éxito, hardening de `auth.js` (`getIdTokenResult(true)`).
 

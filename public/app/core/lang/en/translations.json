@@ -244,10 +244,6 @@
       },
       "summaryAccounts": {
         "title": "Summary by expense account",
-        "account": "Account",
-        "total": "Total",
-        "movements": "Movs",
-        "clear": "Show all",
         "unclassified": "Unclassified",
         "empty": "No accounts configured",
         "misc": "Other"

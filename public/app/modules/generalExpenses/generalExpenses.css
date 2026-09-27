@@ -322,6 +322,13 @@
   cursor: pointer;
 }
 
+/* Cabecera de columna numerica: la usan la tabla principal y la del desplegable.
+   Misma especificidad que `.ge-table th:nth-child(3)`, pero gana por ir despues. */
+.ge-table th.ge-amount-col {
+  text-align: right;
+  white-space: nowrap;
+}
+
 .ge-table tbody tr:active {
   outline: 2px solid var(--color-kaitoke-green);
   outline-offset: -2px;
@@ -501,6 +508,13 @@
 /* Loading row */
 .ge-loading-row td {
   text-align: center;
+  padding: 2rem;
+}
+
+/* El spinner del arbol de categorias va en un div, no en un td. */
+.ge-loading-row {
+  display: flex;
+  justify-content: center;
   padding: 2rem;
 }
 
@@ -799,52 +813,141 @@
   letter-spacing: -0.01em;
 }
 
-.ge-accounts-clear {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.4rem 0.875rem;
-  border-radius: 9999px;
-  border: 1px solid var(--color-gurkha-200);
-  background: white;
-  color: var(--color-text-secondary);
-  font-size: 0.75rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-
-.ge-accounts-clear:hover {
-  background: var(--color-gurkha-50);
-  border-color: var(--color-gurkha-300);
-  color: var(--color-text-primary);
-}
-
 .ge-accounts-table-wrap {
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.06);
 }
 
-.ge-accounts-table .ge-amount-col {
-  text-align: right;
-  white-space: nowrap;
+/* --- Arbol de categorias ---
+   Un <div>, no un <table>: la jerarquia categoria -> cuenta -> movimientos tiene
+   tres niveles, y una tabla obliga a disfrazar los grupos como filas, ademas de
+   pelear con las reglas que en movil convierten .ge-table en cards. */
+
+.ge-tree {
+  display: flex;
+  flex-direction: column;
 }
 
-.ge-accounts-body-row {
+.ge-group {
+  border-bottom: 1px solid var(--color-gurkha-100);
+}
+
+.ge-group:last-child {
+  border-bottom: none;
+}
+
+.ge-group-header {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.9rem 1.25rem;
+  background: rgba(246, 245, 239, 0.45);
+  border: none;
+  font-family: inherit;
+  text-align: left;
+}
+
+.ge-group-header.clickable {
   cursor: pointer;
   transition: background-color 0.15s ease;
 }
 
-.ge-accounts-body-row:hover {
+.ge-group-header.clickable:hover {
+  background: rgba(246, 245, 239, 0.8);
+}
+
+.ge-group-name {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ge-group-total {
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  color: var(--color-coral-red-700);
+  white-space: nowrap;
+}
+
+.ge-group-count {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8125rem;
+  color: var(--color-gurkha-500);
+  min-width: 2.5rem;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.ge-group.unclassified .ge-group-name {
+  color: var(--color-gurkha-500);
+}
+
+.ge-group-accounts {
+  display: flex;
+  flex-direction: column;
+}
+
+.ge-account {
+  border-top: 1px solid rgba(246, 245, 239, 0.7);
+}
+
+.ge-account-row {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.7rem 1.25rem 0.7rem 2.5rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.ge-account-row:hover {
   background: var(--color-gurkha-50);
 }
 
-.ge-accounts-body-row.selected {
+.ge-account-row.expanded {
   background: rgba(27, 158, 78, 0.08);
-  border-left: 3px solid var(--color-kaitoke-green-600);
 }
 
-.ge-accounts-body-row.selected:hover {
-  background: rgba(27, 158, 78, 0.12);
+.ge-account-row .ge-accounts-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ge-chevron {
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+  color: var(--color-gurkha-400);
+  transition: transform 0.2s ease;
+}
+
+.ge-account-row.expanded .ge-chevron,
+.ge-group-header[aria-expanded='true'] .ge-chevron {
+  transform: rotate(90deg);
+}
+
+/* Detalle desplegado: reutiliza .ge-table, que en movil ya se convierte en cards. */
+.ge-account-detail {
+  padding: 0 0.75rem 0.75rem 2.5rem;
+  background: var(--color-gurkha-50);
+}
+
+.ge-account-detail .ge-table {
+  background: white;
+  border: 1px solid var(--color-gurkha-100);
+  border-radius: 0.75rem;
+  overflow: hidden;
+}
+
+.ge-detail-table th,
+.ge-detail-table td {
+  padding: 0.6rem 1rem;
 }
 
 .ge-accounts-cat {
@@ -853,7 +956,6 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--color-gurkha-400);
-  margin-bottom: 0.25rem;
   line-height: 1.2;
 }
 
@@ -863,11 +965,6 @@
   color: var(--color-text-primary);
 }
 
-.ge-accounts-name.unclassified {
-  color: var(--color-gurkha-500);
-  font-style: italic;
-}
-
 .ge-accounts-total {
   font-variant-numeric: tabular-nums;
   font-weight: 700;
@@ -875,43 +972,30 @@
   white-space: nowrap;
 }
 
-.ge-accounts-total.no-movements {
-  color: var(--color-gurkha-300);
-  font-weight: 500;
-}
-
 .ge-accounts-count {
   font-variant-numeric: tabular-nums;
   font-size: 0.8125rem;
   color: var(--color-gurkha-500);
+  min-width: 2.5rem;
   text-align: right;
   white-space: nowrap;
 }
 
-.ge-accounts-count.no-movements {
-  color: var(--color-gurkha-300);
-}
-
-/* El resumen agrupado mantiene formato de tabla (no se transforma en cards en móvil) */
 @media (max-width: 767px) {
-  .ge-accounts-table,
-  .ge-accounts-table tbody,
-  .ge-accounts-table tr {
-    display: table !important;
-    width: 100%;
+  .ge-group-header {
+    padding: 0.8rem 1rem;
   }
 
-  .ge-accounts-table thead {
-    display: table-header-group !important;
+  .ge-account-row {
+    padding: 0.65rem 1rem 0.65rem 1.75rem;
   }
 
-  .ge-accounts-table td {
-    display: table-cell !important;
-    padding: 0.75rem 1rem !important;
-    border: none !important;
+  .ge-account-detail {
+    padding: 0 0.5rem 0.6rem 0.5rem;
   }
 
-  .ge-accounts-table td::before {
-    content: none !important;
+  .ge-accounts-count,
+  .ge-group-count {
+    min-width: 2rem;
   }
 }

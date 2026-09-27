@@ -21,6 +21,19 @@
 - **Fase 1 (MVP):** "Mi Estado de Cuenta" (Autenticación + Dashboard del residente).
 - **Fases Futuras:** Administración, Operaciones, Comunidad, Seguridad avanzada.
 
+## Presupuesto de Firestore (CRÍTICO)
+El proyecto agota la cuota gratuita de lectura de Firestore con facilidad. **Cuando se agota, la APP DEJA DE FUNCIONAR para el usuario final**, no solo los scripts. Cada lectura exploratoria es presupuesto que la app necesita.
+
+- **NUNCA explorar Firestore interactivamente** (un `get()` por cada pregunta que uno se hace). Está prohibido deducir el estado de los datos "echando un get".
+- **Patrón obligatorio de tres pasos:** extraer una vez → snapshot local → clasificar en local → un único script que escribe.
+  1. `scripts/extract_expenses.js` — **única** puerta de lectura de gastos. Vuelca `scripts/data/expense_snapshot_<fecha>.json`.
+  2. `scripts/build_expense_batch.js` — **0 lecturas**. Clasifica sobre el snapshot y emite `scripts/data/reconcile/write_batch_expenses.json`.
+  3. `scripts/apply_expense_batch.js` — **1 lectura** (el catálogo `expenseAccounts`) + las escrituras. Dry-run por defecto, `--commit` para escribir.
+- **Dry-run por defecto** en todo script que escriba; el commit requiere `--commit` explícito.
+- **Aserciones numéricas** en la fase de build (cantidad y monto esperados) para que un cambio de reglas se detecte antes de escribir.
+- El snapshot local **es** el backup. No releer los documentos afectados "por seguridad": son lecturas desperdiciadas.
+- Si un script recibe `code 8 RESOURCE_EXHAUSTED`, **no** abrir la consola para "ir mirando": esperar y reintentar.
+
 ## Estructura de Documentación
 Para detalles específicos, consulta:
 - [Arquitectura y Flujos](./docs/architecture.md)

@@ -25,7 +25,16 @@
 ## Colección `transactions`
 - **ID:** Auto-generado.
 - **Campos:** `propertyId`, `status`, `amount`, `pendingAmount`, `paidBy` (Array), `appliedTo` (Array), `type`, `description`, `voucherType`, `voucherNumber`, `period`, `createdAt`, `effectiveDate`.
+- **Clasificación de gastos:** `expenseAccountId` referencia `expenseAccounts/{docId}`. Solo aplica a `type: 'EXPENSE'`; si está ausente, el gasto se muestra y agrupa como **"Sin clasificar"**. Es la fuente de verdad compartida por el módulo de Gastos Generales y por los gráficos de Analytics.
 - **Comprobante de pago:** `metadata.receiptURL` guarda una **URL del Worker de Cloudflare** (Cloudflare R2 `alboradakpi/...`) tras subirla vía POST con API key. Para MOSTRARLA usar `getAuthObjectURL()` (fetch→blob), nunca `<img src>` directo.
+
+## Colección `expenseAccounts`
+- **ID:** Auto-generado.
+- **Campos:** `name` (nombre de la cuenta/proveedor, ej. "TIGO"), `category` (grupo al que pertenece, ej. "servicios básicos y comunicaciones"), `order` (orden dentro de la categoría), `active`, `createdAt`, `updatedAt`.
+- **Jerarquía:** `category` agrupa y `name` identifica. Son campos independientes, de modo que varias cuentas pueden compartir categoría.
+- **Categorías actuales:** `áreas comunes`, `seguridad`, `servicios básicos y comunicaciones`, `eventos y actividades`.
+- **Consumidores:** `ExpenseAccount` (CRUD), módulo de configuración (alta/edición), Gastos Generales (agrupación y filtro) y `Analytics.getExpensesByCategory()` (gráfico por `category`).
+- **Reglas de escritura:** lectura para cualquier usuario autenticado; escritura solo `admin` (ver `firestore.rules`).
 
 ## Colección `paymentNotifications`
 - **ID:** Auto-generado.

@@ -110,10 +110,6 @@
       },
       "summaryAccounts": {
         "title": "Resumen por cuenta de gasto",
-        "account": "Cuenta",
-        "total": "Total",
-        "movements": "Movs",
-        "clear": "Mostrar todas",
         "unclassified": "Sin clasificar",
         "empty": "Sin cuentas configuradas",
         "misc": "Otros"
