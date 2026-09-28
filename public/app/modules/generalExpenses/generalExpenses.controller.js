@@ -325,21 +325,38 @@ export default async function generalExpensesController(contexto) {
       group.standalone = true;
     }
 
-    const visible = [...groups.values()].filter(g => g.count > 0).sort((a, b) => b.total - a.total);
+    // "Sin clasificar" es trabajo pendiente, no una categoría real: siempre al final,
+    // aunque su monto supere al de otras. El resto, de mayor a menor.
+    const visible = [...groups.values()]
+      .filter(g => g.count > 0)
+      .sort((a, b) => (a.standalone === b.standalone)
+        ? b.total - a.total
+        : (a.standalone ? 1 : -1));
 
     if (visible.length === 0) {
       accountsBody.innerHTML = `<div class="ge-empty">${t('modules.generalExpenses.summaryAccounts.empty')}</div>`;
       return;
     }
 
-    accountsBody.innerHTML = visible.map((group) => {
+    // Cabecera maestra: vive DENTRO de la tarjeta y comparte la retícula de columnas
+    // con las filas de cuenta, de modo que el total general caiga en la misma columna
+    // que los importes de abajo. Solo escritorio; en movil lo pone el <h3> del HTML.
+    const periodItems = getFilteredData();
+    const grandTotal = periodItems.reduce((sum, tx) => sum + Math.abs(tx.amount || 0), 0);
+    const master = `
+      <div class="ge-master">
+        <span class="ge-master-title">${escapeHtml(t('modules.generalExpenses.summaryAccounts.title'))}</span>
+        <span class="ge-master-total">${formatCurrency(grandTotal)}</span>
+        <span class="ge-master-count">${periodItems.length}</span>
+      </div>`;
+
+    accountsBody.innerHTML = master + visible.map((group) => {
       if (group.standalone) {
         const open = state.expandedAccount === 'UNCLASSIFIED';
         return `
           <section class="ge-group unclassified">
             <button class="ge-group-header clickable" type="button" data-account="UNCLASSIFIED" aria-expanded="${open}">
               <span class="ge-group-name ge-accounts-cat">${escapeHtml(group.name)}</span>
-              <span class="ge-group-total">${formatCurrency(group.total)}</span>
               <span class="ge-group-count">${group.count}</span>
               ${CHEVRON_SVG}
             </button>
@@ -367,7 +384,6 @@ export default async function generalExpensesController(contexto) {
         <section class="ge-group">
           <div class="ge-group-header">
             <span class="ge-group-name ge-accounts-cat">${escapeHtml(group.name)}</span>
-            <span class="ge-group-total">${formatCurrency(group.total)}</span>
             <span class="ge-group-count">${group.count}</span>
           </div>
           <div class="ge-group-accounts">${rows}</div>
@@ -376,9 +392,38 @@ export default async function generalExpensesController(contexto) {
   };
 
   // Una cuenta desplegada a la vez. La tabla inferior no se toca: ya no filtra por cuenta.
+  // El arbol se reconstruye entero en cada toggle, asi que al cerrar el nodo del
+  // detalle se destruye y no hay transicion que ejecutar. Patron de calendar.js:
+  // se marca .closing (0.18s de salida) y el nodo se quita al terminar el tiempo.
+  const DETAIL_OUT_MS = 180;
+  const prefersReducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let detailCloseTimer = null;
+
   const toggleExpanded = (id) => {
-    state.expandedAccount = state.expandedAccount === id ? '' : id;
-    renderTree();
+    if (detailCloseTimer) {
+      clearTimeout(detailCloseTimer);
+      detailCloseTimer = null;
+    }
+
+    if (state.expandedAccount !== id) {
+      state.expandedAccount = id;
+      renderTree();
+      return;
+    }
+
+    const node = accountsBody.querySelector('.ge-account-detail');
+    if (!node || prefersReducedMotion()) {
+      state.expandedAccount = '';
+      renderTree();
+      return;
+    }
+
+    node.classList.add('closing');
+    detailCloseTimer = setTimeout(() => {
+      detailCloseTimer = null;
+      state.expandedAccount = '';
+      renderTree();
+    }, DETAIL_OUT_MS);
   };
 
   // --- Selector y total de periodo ---

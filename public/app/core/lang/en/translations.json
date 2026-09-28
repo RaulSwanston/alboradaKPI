@@ -243,7 +243,7 @@
         "monthlyAvg": "Monthly average"
       },
       "summaryAccounts": {
-        "title": "Summary by expense account",
+        "title": "Expenses by category",
         "unclassified": "Unclassified",
         "empty": "No accounts configured",
         "misc": "Other"

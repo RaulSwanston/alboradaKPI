@@ -109,7 +109,7 @@
         "monthlyAvg": "Promedio mensual"
       },
       "summaryAccounts": {
-        "title": "Resumen por cuenta de gasto",
+        "title": "Gastos por categoría",
         "unclassified": "Sin clasificar",
         "empty": "Sin cuentas configuradas",
         "misc": "Otros"

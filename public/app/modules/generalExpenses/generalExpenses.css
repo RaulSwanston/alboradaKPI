@@ -827,6 +827,63 @@
   flex-direction: column;
 }
 
+/* Cabecera maestra: primera fila de la tarjeta. Comparte retícula con las filas
+   de cuenta (mismos min-width) para que el total general caiga en la columna de
+   los importes. Es el unico sitio donde se lee la cifra del periodo. */
+.ge-master {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  padding: 1.05rem 1.25rem;
+  background: white;
+  border-bottom: 1px solid var(--color-gurkha-200);
+}
+
+.ge-master-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.9375rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  letter-spacing: -0.01em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.ge-master-total {
+  font-variant-numeric: tabular-nums;
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  white-space: nowrap;
+  min-width: 6.5rem;
+  text-align: right;
+}
+
+.ge-master-count {
+  font-variant-numeric: tabular-nums;
+  font-size: 0.8125rem;
+  color: var(--color-gurkha-500);
+  min-width: 2.5rem;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* El <h3> del HTML y la cabecera maestra son el mismo rótulo en pantallas
+   distintas: en escritorio manda el de dentro de la tarjeta. */
+@media (min-width: 768px) {
+  .ge-accounts-header {
+    display: none;
+  }
+}
+
+@media (max-width: 767px) {
+  .ge-master {
+    display: none;
+  }
+}
+
 .ge-group {
   border-bottom: 1px solid var(--color-gurkha-100);
 }
@@ -865,13 +922,6 @@
   white-space: nowrap;
 }
 
-.ge-group-total {
-  font-variant-numeric: tabular-nums;
-  font-weight: 700;
-  color: var(--color-coral-red-700);
-  white-space: nowrap;
-}
-
 .ge-group-count {
   font-variant-numeric: tabular-nums;
   font-size: 0.8125rem;
@@ -881,7 +931,10 @@
   white-space: nowrap;
 }
 
-.ge-group.unclassified .ge-group-name {
+/* "Sin clasificar" es un pendiente de trabajo, no una categoría del condominio:
+   se atenúa entero (nombre y conteo) para que no se lea como gasto real. */
+.ge-group.unclassified .ge-group-name,
+.ge-group.unclassified .ge-group-count {
   color: var(--color-gurkha-500);
 }
 
@@ -894,11 +947,13 @@
   border-top: 1px solid rgba(246, 245, 239, 0.7);
 }
 
+/* La cuenta comparte el eje izquierdo con la categoria (1.25rem): el subnivel lo
+   marca la tipografia, no una sangria. */
 .ge-account-row {
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  padding: 0.7rem 1.25rem 0.7rem 2.5rem;
+  padding: 0.7rem 1.25rem;
   cursor: pointer;
   transition: background-color 0.15s ease;
 }
@@ -932,22 +987,76 @@
   transform: rotate(90deg);
 }
 
-/* Detalle desplegado: reutiliza .ge-table, que en movil ya se convierte en cards. */
+/* Detalle desplegado: reutiliza .ge-table, que en movil ya se convierte en cards.
+   En escritorio va a sangre, sin sangria ni margenes, para que la tabla se lea como
+   parte de la tarjeta y no como una caja metida dentro. La jerarquia la marcan la
+   tipografia (categoria en versalitas) y el fondo del panel.
+   En movil se le deja 0.5rem debajo (ver el bloque de 767px): las filas se vuelven
+   cards apiladas y ese espacio las separa entre si. */
 .ge-account-detail {
-  padding: 0 0.75rem 0.75rem 2.5rem;
+  padding: 0;
   background: var(--color-gurkha-50);
 }
 
+/* La tabla del detalle va a sangre dentro de la tarjeta, asi que se le quitan el
+   borde y el radio propios: el unico marco es el de la tarjeta (.ge-table-wrapper,
+   1.25rem). Si se dejaran, en los laterales se veria la linea doble del mismo
+   color (1px de cada uno) y el radio de 0.75rem chocaria con la curvatura de la
+   tarjeta. En movil se le devuelven borde y radio: las filas se convierten en
+   cards apiladas y ahi el marco si aporta (ver el bloque de 767px). */
 .ge-account-detail .ge-table {
   background: white;
-  border: 1px solid var(--color-gurkha-100);
-  border-radius: 0.75rem;
+  border: none;
+  border-radius: 0;
   overflow: hidden;
 }
 
 .ge-detail-table th,
 .ge-detail-table td {
   padding: 0.6rem 1rem;
+}
+
+/* --- Apertura y cierre del detalle ---
+   El arbol se reconstruye entero en cada toggle, asi que el nodo del detalle se
+   destruye al cerrar y no hay transicion que ejecutar: el JS marca .closing, espera
+   DETAIL_OUT_MS (0.18s, el mismo valor de aqui) y recien ahi lo quita. El patron
+   es el de calendar.css. Fade + deslizamiento corto: aguanta igual una tabla de
+   3 filas que una de 168, cosa que una animacion de altura con max-height no haria. */
+.ge-account-detail {
+  animation: ge-detail-in 0.25s ease-out;
+}
+
+.ge-account-detail.closing {
+  animation: ge-detail-out 0.18s ease-in forwards;
+}
+
+@keyframes ge-detail-in {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes ge-detail-out {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ge-account-detail,
+  .ge-account-detail.closing {
+    animation: none;
+  }
 }
 
 .ge-accounts-cat {
@@ -970,6 +1079,11 @@
   font-weight: 700;
   color: var(--color-coral-red-700);
   white-space: nowrap;
+  /* Columna real de tabla: ancho fijo y a la derecha, para que los importes
+     de todas las filas caigan en el mismo eje y se lean de un vistazo. */
+  margin-left: auto;
+  min-width: 6.5rem;
+  text-align: right;
 }
 
 .ge-accounts-count {
@@ -987,15 +1101,31 @@
   }
 
   .ge-account-row {
-    padding: 0.65rem 1rem 0.65rem 1.75rem;
+    padding: 0.65rem 1rem;
   }
 
+  /* Las filas del detalle se vuelven cards apiladas: el hueco de abajo las separa. */
   .ge-account-detail {
-    padding: 0 0.5rem 0.6rem 0.5rem;
+    padding: 0 0 0.5rem 0;
+  }
+
+  /* Aqui si vuelve el marco: sin el, las cards se pegarian a los bordes de la
+     tarjeta y unas a otras. Misma especificidad que la regla base, gana esta por
+     ir despues en el archivo. */
+  .ge-account-detail .ge-table {
+    border: 1px solid var(--color-gurkha-100);
+    border-radius: 0.75rem;
   }
 
   .ge-accounts-count,
   .ge-group-count {
     min-width: 2rem;
+  }
+
+  /* La columna de importes se estrecha para no comerse el nombre en pantallas
+     cortas; sigue alineada a la derecha, solo pierde ancho de reserva. */
+  .ge-accounts-total {
+    min-width: 5.25rem;
+    font-size: 0.875rem;
   }
 }
