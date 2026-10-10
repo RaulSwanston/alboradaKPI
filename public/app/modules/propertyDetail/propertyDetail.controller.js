@@ -160,17 +160,25 @@ export default async function propertyDetailController(contexto) {
       doc.text(`Saldo: ${formatCurrency(totalBalance)} USD`, 190, y, { align: "right" });
 
       y += 15;
-      const cargoWidth = 20;
-      const cargoCenter = margin + 118;
-      const abonoWidth = 20;
-      const abonoCenter = margin + 138;
+      const reciboCenter = margin + 100;
+      const cargoCenter = margin + 120;
+      const abonoCenter = margin + 140;
       const drawHeader = (hy) => {
         doc.setFont("helvetica", "bold");
         doc.setFontSize(10);
         doc.setFillColor(246, 245, 239);
         doc.rect(margin, hy, 170, 8, 'F');
+        doc.setDrawColor(200, 200, 200);
+        doc.setLineWidth(0.15);
+        [margin + 24 - 2, margin + 90, margin + 110, margin + 130, margin + 150].forEach((x) => {
+          if (x > margin && x < margin + 170) {
+            doc.line(x, hy, x, hy + 8);
+          }
+        });
+        doc.line(margin, hy + 8, margin + 170, hy + 8);
         doc.text("Fecha", margin + 11, hy + 6, { align: "center" });
         doc.text("Descripción", margin + 24, hy + 6);
+        doc.text("Recibo", reciboCenter, hy + 6, { align: "center" });
         doc.text("Cargo", cargoCenter, hy + 6, { align: "center" });
         doc.text("Abono", abonoCenter, hy + 6, { align: "center" });
         doc.text("Saldo", margin + 168, hy + 6, { align: "right" });
@@ -183,7 +191,7 @@ export default async function propertyDetailController(contexto) {
 
       const lineH = 4;
       const descX = margin + 24;
-      const descWidth = 84;
+      const descWidth = 46;
       const saldoRight = margin + 168;
 
       allMovements.forEach((t) => {
@@ -201,6 +209,11 @@ export default async function propertyDetailController(contexto) {
 
 doc.text(formatDate(t.effectiveDate), margin + 2, y);
         descLines.forEach((line, i) => doc.text(line, descX, y + i * lineH));
+        let receiptLabel = "";
+        if (isPayment) {
+          receiptLabel = t.metadata?.bankReference || t.voucherNumber || "";
+        }
+        doc.text(receiptLabel, reciboCenter, y, { align: "center" });
         doc.text(!isPayment ? `-${Math.abs(t.amount).toFixed(2)}` : "", cargoCenter, y, { align: "center" });
         doc.setTextColor(25, 124, 64);
         doc.text(isPayment ? `+${Math.abs(t.amount).toFixed(2)}` : "", abonoCenter, y, { align: "center" });
