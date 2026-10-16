@@ -463,45 +463,94 @@ export default async function transactionsDetailController(contexto) {
   };
 
   /**
-   * Decrementa pendingAmount de los cargos vinculados y actualiza el balance
-   * de la propiedad. Es el mismo patrón que PaymentNotification.approve().
+   * Concilia un pago con los cargos a los que se aplica: descuenta `pendingAmount`
+   * del cargo y registra el enlace en su `paidBy`. Es el mismo patrón que
+   * `PaymentNotification.approve()`, pero con dos diferencias que importan.
+   *
+   * 1. IDEMPOTENTE POR PAGO. Si el cargo ya tiene una entrada en `paidBy` con este
+   *    `paymentId`, no se vuelve a descontar. Antes esta función no lo comprobaba y
+   *    un reintento la hacia descontar dos veces.
+   *
+   * 2. EL SALDO VA EN UN BATCH APARTE. Antes compartía batch con los cargos, de modo
+   *    que una escritura en `properties/{id}` rechazada (reglas, permisos) tiraba
+   *    abajo también la conciliación. El saldo es un valor derivado de las
+   *    transacciones y se puede recomputar; un cargo sin conciliar hace que la factura
+   *    siga apareciendo como pendiente, y eso no tiene arreglo automático.
+   *
+   * @throws Si la conciliación de cargos falla, para que el formulario lo reporte en
+   *         lugar de mostrar un éxito falso.
+   * @returns {{conciliados: number, omitidos: number}}
    */
   const applyPaymentToCharges = async (paymentId, appliedTo, propertyId, paymentAmount) => {
-    try {
-      const readPromises = appliedTo.map(a => getDoc(doc(db, "transactions", a.transactionId)));
-      const snapshots = await Promise.all(readPromises);
+    const aplicables = (appliedTo || []).filter(a => a && a.transactionId && (a.amount || 0) > 0);
+    if (!aplicables.length) return { conciliados: 0, omitidos: 0 };
 
-      const [propSnap] = await Promise.all([
-        getDoc(doc(db, "properties", propertyId))
-      ]);
-      const currentBalance = propSnap.exists() ? (propSnap.data().balance || 0) : 0;
+    const snapshots = await Promise.all(
+      aplicables.map(a => getDoc(doc(db, "transactions", a.transactionId)))
+    );
 
-      const batch = writeBatch(db);
+    const batch = writeBatch(db);
+    let conciliados = 0;
+    let omitidos = 0;
 
-      for (const applied of appliedTo) {
-        const snap = snapshots.find(s => s.id === applied.transactionId);
-        if (!snap?.exists()) continue;
-        const currentPend = snap.data().pendingAmount || 0;
-        batch.update(doc(db, "transactions", applied.transactionId), {
-          pendingAmount: Math.max(0, currentPend - (applied.amount || 0)),
-          paidBy: arrayUnion({
-            paymentId: paymentId,
-            amount: applied.amount || 0,
-            description: applied.description || ''
-          })
-        });
+    for (const applied of aplicables) {
+      const snap = snapshots.find(s => s.id === applied.transactionId);
+      if (!snap?.exists()) {
+        console.warn(`[TD] Cargo ${applied.transactionId} no existe. No se puede conciliar.`);
+        omitidos++;
+        continue;
+      }
+      const cargo = snap.data();
+
+      // El cargo debe ser de esta unidad: un enlace cruzado movería el saldo de una
+      // casa con el pago de otra.
+      if (cargo.propertyId && cargo.propertyId !== propertyId) {
+        console.warn(`[TD] Cargo ${applied.transactionId} es de ${cargo.propertyId} y el pago de ${propertyId}. Se omite.`);
+        omitidos++;
+        continue;
       }
 
-      batch.update(doc(db, "properties", propertyId), {
-        balance: currentBalance + paymentAmount,
-        lastBalanceUpdate: new Date()
-      });
+      // Idempotencia: este pago ya está registrado en este cargo.
+      if ((cargo.paidBy || []).some(pb => pb.paymentId === paymentId)) {
+        omitidos++;
+        continue;
+      }
 
-      await batch.commit();
-      console.log(`[TD] Applied payment ${paymentId} to ${appliedTo.length} charges`);
-    } catch (e) {
-      console.warn('[TD] Error updating charge pending amounts (non-fatal):', e);
+      const currentPend = cargo.pendingAmount !== undefined
+        ? cargo.pendingAmount
+        : Math.abs(cargo.amount || 0);
+
+      batch.update(doc(db, "transactions", applied.transactionId), {
+        pendingAmount: Math.max(0, currentPend - applied.amount),
+        paidBy: arrayUnion({
+          paymentId: paymentId,
+          amount: applied.amount,
+          description: applied.description || ''
+        })
+      });
+      conciliados++;
     }
+
+    if (conciliados > 0) {
+      await batch.commit();
+    }
+    console.log(`[TD] Pago ${paymentId}: ${conciliados} cargo(s) conciliados, ${omitidos} omitido(s).`);
+
+    // Aparte y a propósito: que falle no debe invalidar la conciliación de arriba.
+    try {
+      const propRef = doc(db, "properties", propertyId);
+      const propSnap = await getDoc(propRef);
+      if (propSnap.exists()) {
+        await updateDoc(propRef, {
+          balance: (propSnap.data().balance || 0) + paymentAmount,
+          lastBalanceUpdate: new Date()
+        });
+      }
+    } catch (e) {
+      console.warn(`[TD] No se actualizó el saldo de ${propertyId}. Los cargos sí quedaron conciliados.`, e);
+    }
+
+    return { conciliados, omitidos };
   };
 
   const handleSubmit = async (e) => {
@@ -527,11 +576,20 @@ export default async function transactionsDetailController(contexto) {
       amount,
       type,
       effectiveDate: new Date(dateInput.value + 'T12:00:00'),
-      status: isNew ? 'verified' : statusSelect.value,
-      metadata: {
-        bankReference: bankRefInput.value.trim() || ''
-      }
+      status: isNew ? 'verified' : statusSelect.value
     };
+
+    // `bankReference` va con notación de punto al ACTUALIZAR: `updateDoc` reemplaza
+    // el mapa `metadata` completo (no hace merge profundo), así que mandarlo como
+    // objeto en una edición borraría `receiptURL`, `paymentNotificationId`,
+    // `incomeTypeSource`, `adminReviewedBy/Name`… En el alta sí es un mapa, porque
+    // el documento todavía no tiene metadata que preservar.
+    const bankReference = bankRefInput.value.trim() || '';
+    if (isNew) {
+      data.metadata = { bankReference };
+    } else {
+      data['metadata.bankReference'] = bankReference;
+    }
 
     if (type === 'EXPENSE') {
       data.expenseAccountId = accountSelect?.value || null;
@@ -550,18 +608,24 @@ export default async function transactionsDetailController(contexto) {
       }
     }
 
+    // Fuera del `try` a propósito: el `catch` necesita saber si el pago llegó a
+    // escribirse, para no informar una conciliación fallida como si nada se hubiera guardado.
+    let savedId = null;
+
     try {
       const initiator = { type: 'USER', name: 'Administrador' };
-      let savedId;
 
       if (isNew) {
         const created = await Transaction.create(data, initiator);
         savedId = created.id;
-        // Duplicado (re-intento del mismo envío): la conciliación ya se hizo la primera vez.
+        // Duplicado (re-intento del mismo envío): el pago no se vuelve a crear, pero
+        // la conciliación de cargos SÍ se reintenta más abajo. Antes se hacía
+        // `window.history.back()` aquí, lo que convertía un fallo transitorio de la
+        // conciliación en un descuadre permanente: el reintento siempre caía en esta
+        // rama y nunca llegaba a conciliar. `applyPaymentToCharges` ya es idempotente,
+        // así que repetirla no descuenta dos veces.
         if (created.duplicate) {
-          console.warn('[TD] Transacción duplicada detectada. Omitiendo conciliación.');
-          window.history.back();
-          return;
+          console.warn(`[TD] Reintento del pago ${savedId}: se reintenta la conciliación de cargos.`);
         }
       } else {
         await Transaction.update(transId, data, initiator);
@@ -636,7 +700,20 @@ export default async function transactionsDetailController(contexto) {
       window.history.back();
     } catch (error) {
       console.error('[TD] Save error:', error);
-      alert('No se pudieron guardar los cambios. Intente de nuevo.');
+      // Si el pago se guardó pero la conciliación no, decirlo explícitamente: el
+      // reintento es seguro (la conciliación es idempotente) y es lo que deja las
+      // facturas en estado correcto. Informar solo "no se pudo guardar" haría que
+      // el administrador asumiera que no se guardó nada, y el descuadre quedaría
+      // invisible.
+      if (savedId && type === 'PAYMENT' && data.appliedTo?.length) {
+        alert(
+          'El pago se guardó, pero no se pudo conciliar con las cuotas seleccionadas.\n\n' +
+          'Vuelva a guardar el mismo registro para reintentar la conciliación. ' +
+          'No se descontará dos veces.'
+        );
+      } else {
+        alert('No se pudieron guardar los cambios. Intente de nuevo.');
+      }
       setSavingState(false);
       isSaving = false;
     }

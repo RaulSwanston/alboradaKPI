@@ -1,5 +1,7 @@
 import { db, collection, doc, writeBatch, serverTimestamp, query, where, orderBy, getDocs, updateDoc, getDoc, arrayUnion } from "../core/firebase.js";
+import { resolveApprovalIncomeType } from "../core/incomeTypes.js";
 import Transaction from "./Transaction.js";
+import AppConfig from "./AppConfig.js";
 
 /**
  * Modelo para gestionar las notificaciones de pago enviadas por los residentes.
@@ -107,18 +109,29 @@ export default class PaymentNotification {
 
   /**
    * Aprueba un reporte de pago: crea la transacción PAYMENT con recibo,
-   * concilia las facturas vinculadas y actualiza el balance de la propiedad.
-   * Todo en un writeBatch atómico.
-   * @param {string} id - ID de la notificación.
-   * @param {Object} adminData - Datos del admin que aprueba {uid, name}.
-   * @returns {Promise<{transactionId: string, voucherNumber: string}>}
-   */
-  static async approve(id, adminData) {
+* concilia las facturas vinculadas y actualiza el balance de la propiedad.
+    * Todo en un writeBatch atómico.
+    * @param {string} id - ID de la notificación.
+    * @param {Object} adminData - Datos del admin que aprueba {uid, name}.
+    * @param {Object} [overrides] - Ajustes del admin antes de aprobar.
+    * @param {string} [overrides.incomeTypeId] - Tipo de ingreso corregido. Si se
+    *   omite, se conserva el que declaró el residente.
+    * @returns {Promise<{transactionId: string, voucherNumber: string}>}
+    */
+  static async approve(id, adminData, overrides = {}) {
     try {
       const notifRef = doc(db, "paymentNotifications", id);
       const notifSnap = await getDoc(notifRef);
       if (!notifSnap.exists()) throw new Error("Notificación no encontrada");
       const notif = { id: notifSnap.id, ...notifSnap.data() };
+
+      // Tipo de ingreso: lo declarado por el residente, corregible por el admin.
+      // Si no viene nada, queda en null y la lectura lo infiere con
+      // `resolveIncomeTypeId()` (public/app/core/incomeTypes.js).
+      const { incomeTypeId, incomeTypeSource } = resolveApprovalIncomeType(
+        notif.incomeTypeId,
+        overrides.incomeTypeId
+      );
 
       const paymentDate = notif.paymentDate ? new Date(notif.paymentDate + 'T12:00:00') : new Date();
       const dateObj = paymentDate instanceof Date ? paymentDate : new Date(paymentDate);
@@ -140,7 +153,11 @@ export default class PaymentNotification {
       const paymentRef = doc(collection(db, "transactions"));
       const period = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}`;
 
-      batch.set(paymentRef, {
+      // El payload vive en una variable, no en línea dentro de `batch.set`, porque
+      // el mismo objeto tiene que llegar al desglose de ingresos de
+      // Gastos Generales. Si se duplicara el literal, un cambio futuro en uno de
+      // los dos sitios dejaría la tarjeta mostrando una cifra que ya no cuadra.
+      const paymentData = {
         propertyId: notif.propertyId,
         amount: notif.amount,
         type: 'PAYMENT',
@@ -152,6 +169,7 @@ export default class PaymentNotification {
         voucherNumber: voucher.voucherNumber,
         voucherType: voucher.voucherType,
         paymentMethod: notif.paymentMethod || null,
+        incomeTypeId: incomeTypeId,
         appliedTo: (notif.appliedTo || []).map(a => ({
           transactionId: a.transactionId,
           amount: a.amount,
@@ -161,11 +179,14 @@ export default class PaymentNotification {
         createdAt: serverTimestamp(),
         metadata: {
           paymentNotificationId: id,
-          receiptUrl: notif.receiptUrl || null,
+          receiptURL: notif.receiptUrl || null,
+          incomeTypeSource: incomeTypeSource,
           adminReviewedBy: adminData.uid,
           adminReviewedByName: adminData.name
         }
-      });
+      };
+
+      batch.set(paymentRef, paymentData);
 
       for (const applied of (notif.appliedTo || [])) {
         if (!applied.transactionId) continue;
@@ -210,6 +231,13 @@ export default class PaymentNotification {
       });
 
       await batch.commit();
+
+      // Este es el segundo embudo de escritura de pagos: `approve()` NO pasa por
+      // `Transaction.create()`, escribe con `batch.set` directo. Sin este gancho,
+      // un pago aprobado por administración se contaría en el saldo de caja pero
+      // no aparecería en "Ingresos por categoría" hasta la próxima sincronización.
+      await AppConfig.applyIncomeDelta(paymentData, 1);
+
       return { transactionId: paymentRef.id, voucherNumber: voucher.voucherNumber };
     } catch (error) {
       console.error("[PaymentNotification] Error al aprobar reporte:", error);

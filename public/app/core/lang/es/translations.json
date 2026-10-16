@@ -113,6 +113,14 @@
         "unclassified": "Sin clasificar",
         "empty": "Sin cuentas configuradas",
         "misc": "Otros"
+      },
+      "income": {
+        "title": "Ingresos por categoría",
+        "empty": "No hay ingresos registrados",
+        "emptyPeriod": "No hay ingresos en el periodo seleccionado",
+        "pending": "El desglose se actualiza solo con cada pago. Si sigue vacío, un administrador debe recalcular los saldos.",
+        "undatedNote": "{monto} de ingresos sin fecha no se asignan a ningún mes",
+        "unclassifiedNote": "{monto} en {conteo} ingresos sin clasificar"
       }
     },
     "transactionsDetail": {
@@ -341,6 +349,9 @@
     "amountLabel": "Monto Total Pagado",
     "amountHelp": "Ingresa el monto exacto que aparece en tu comprobante.",
     "dateLabel": "Fecha del Pago",
+    "methodLabel": "Método de Pago",
+    "incomeTypeLabel": "Tipo de Ingreso",
+    "incomeTypeHelp": "Indica para qué es este pago. Si cancelas cuotas, déjalo en cuota de mantenimiento.",
     "notesLabel": "Notas Opcionales",
     "submit": "Enviar Reporte de Pago",
     "sending": "Enviando Reporte...",
@@ -362,6 +373,10 @@
     "unit": "Unidad",
     "paymentDate": "Fecha del Pago",
     "reportedDate": "Reportado el",
+    "paymentMethod": "Método de Pago",
+    "incomeType": "Tipo de Ingreso",
+    "incomeTypeHint": "Confirma o corrige lo que declaró el residente antes de aprobar.",
+    "incomeTypeUnspecified": "Sin especificar",
     "notes": "Notas",
     "appliedTo": "Distribución del pago",
     "excess": "Excedente sin aplicar",
@@ -429,7 +444,12 @@
       "browseImage": "Buscar Imagen",
       "logoUrlPlaceholder": "Pega la dirección URL de la imagen aquí",
       "mainLanguage": "Idioma Principal",
-      "systemCurrency": "Moneda del Sistema"
+      "systemCurrency": "Moneda del Sistema",
+      "adminSignature": "Firma del administrador (recibos físicos)",
+      "signatureInstructions": "Arrastra o haz clic para subir la firma. Se recomienda PNG con fondo transparente.",
+      "signatureLinkedTo": "Firma asignada a",
+      "browseSignature": "Seleccionar firma",
+      "signatureHelp": "Esta firma aparecerá en los recibos con formato físico (pagos)."
     },
     "roles": {
       "title": "Roles y Permisos",

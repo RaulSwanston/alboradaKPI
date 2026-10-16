@@ -76,7 +76,12 @@
       "browseImage": "Browse Image",
       "logoUrlPlaceholder": "Paste the image URL here",
       "mainLanguage": "Main Language",
-      "systemCurrency": "System Currency"
+      "systemCurrency": "System Currency",
+      "adminSignature": "Administrator signature (physical receipts)",
+      "signatureInstructions": "Drag or click to upload the signature. PNG with transparent background is recommended.",
+      "signatureLinkedTo": "Signature assigned to",
+      "browseSignature": "Select signature",
+      "signatureHelp": "This signature will appear on physical-format receipts (payments)."
     },
     "roles": {
       "title": "Roles and Permissions",
@@ -173,6 +178,10 @@
     "unit": "Unit",
     "paymentDate": "Payment Date",
     "reportedDate": "Reported on",
+    "paymentMethod": "Payment Method",
+    "incomeType": "Income Type",
+    "incomeTypeHint": "Confirm or correct what the resident reported before approving.",
+    "incomeTypeUnspecified": "Not specified",
     "notes": "Notes",
     "appliedTo": "Payment Distribution",
     "excess": "Unapplied surplus",
@@ -247,6 +256,14 @@
         "unclassified": "Unclassified",
         "empty": "No accounts configured",
         "misc": "Other"
+      },
+      "income": {
+        "title": "Income by category",
+        "empty": "No income recorded",
+        "emptyPeriod": "No income in the selected period",
+        "pending": "The breakdown updates itself with every new payment. If it stays empty, an administrator needs to recalculate the balances.",
+        "undatedNote": "{monto} of income has no usable date and is not assigned to any month",
+        "unclassifiedNote": "{monto} in {conteo} unclassified payments"
       }
     },
     "transactionsDetail": {
@@ -407,6 +424,9 @@
     "amountLabel": "Total Amount Paid",
     "amountHelp": "Enter the exact amount shown on your receipt.",
     "dateLabel": "Payment Date",
+    "methodLabel": "Payment Method",
+    "incomeTypeLabel": "Income Type",
+    "incomeTypeHelp": "Tell us what this payment is for. If you are paying monthly dues, leave it on the maintenance fee.",
     "notesLabel": "Optional Notes",
     "submit": "Submit Payment Report",
     "sending": "Sending Report...",

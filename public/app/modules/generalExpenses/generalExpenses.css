@@ -1077,7 +1077,7 @@
 .ge-accounts-total {
   font-variant-numeric: tabular-nums;
   font-weight: 700;
-  color: var(--color-coral-red-700);
+  color: var(--color-text-primary);
   white-space: nowrap;
   /* Columna real de tabla: ancho fijo y a la derecha, para que los importes
      de todas las filas caigan en el mismo eje y se lean de un vistazo. */
@@ -1128,4 +1128,37 @@
     min-width: 5.25rem;
     font-size: 0.875rem;
   }
+}
+
+/* --- Desglose de ingresos por tipo ---
+   Comparte estructura, retícula, jerarquía y tinta con "Gastos por categoría" de
+   arriba: cabecera maestra con el total dentro de la tarjeta y una banda por tipo.
+   Aquí no hay segundo nivel desplegable (los movimientos viven en `transactions`, y
+   las reglas no le permiten leerlos a un residente), así que la banda lleva su
+   propio importe en vez de encerrar filas.
+
+   No hay ninguna regla de color propia en este bloque, y es a propósito: el importe
+   lo pinta `.ge-accounts-total` y el atenuado de "Sin clasificar" la regla compartida
+   `.ge-group.unclassified`, que es la misma que usa el árbol de gastos. Cualquier
+   override aquí haría divergir las dos tarjetas. */
+
+/* Pie: una sola línea de texto small debajo de la tarjeta, fuera del árbol, para
+   no romper la comparación visual con la de gastos. Se oculta cuando no hay nada
+   que aclarar, en vez de reservar la altura. */
+.ge-income-foot {
+  margin: 0.5rem 0 0;
+  padding: 0 0.25rem;
+  font-size: 0.75rem;
+  line-height: 1.45;
+  color: var(--color-gurkha-500);
+}
+
+.ge-income-foot:empty {
+  display: none;
+}
+
+.ge-income-tree .ge-empty {
+  padding: 1.5rem 1.25rem;
+  text-align: center;
+  color: var(--color-gurkha-500);
 }

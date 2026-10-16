@@ -83,11 +83,20 @@ export async function buildPhysicalReceiptHtml({ tx, appConfig = {} }) {
   const absAmount = Math.abs(Number(tx.amount) || 0);
 
   let logoUrl = appConfig?.branding?.logoUrl || '/src/img/alborada.svg';
-  if (logoUrl && !logoUrl.startsWith('/') && !logoUrl.startsWith('data:')) {
+  if (logoUrl && !logoUrl.startsWith('/') && !logoUrl.startsWith('data:') && !logoUrl.startsWith('blob:')) {
     try {
       logoUrl = await getAuthObjectURL(logoUrl);
     } catch (e) {
       logoUrl = '/src/img/alborada.svg';
+    }
+  }
+
+  let signatureUrl = appConfig?.receipts?.adminSignatureUrl || '';
+  if (signatureUrl && !signatureUrl.startsWith('/') && !signatureUrl.startsWith('data:') && !signatureUrl.startsWith('blob:')) {
+    try {
+      signatureUrl = await getAuthObjectURL(signatureUrl);
+    } catch (e) {
+      signatureUrl = '';
     }
   }
   const paymentMethods = appConfig?.moduleRegistry?.transactions?.paymentMethods || [];
@@ -174,7 +183,7 @@ export async function buildPhysicalReceiptHtml({ tx, appConfig = {} }) {
           ${t('modules.transactions.receiptReceived')} <span class="physical-blank physical-wide">${ownerName}</span>
         </div>
         <div class="physical-form-line fill">
-          ${t('modules.transactions.receiptSumOf')} <span class="physical-blank physical-wide">${sumaEnLetras}</span>
+          ${t('modules.transactions.receiptSumOf')} <span class="physical-blank physical-wide">${sumaEnLetras} - ${fmtMoney(absAmount)}</span>
         </div>
         <div class="physical-form-line fill">
           ${t('modules.transactions.receiptConceptOf')} <span class="physical-blank physical-wide">${tx.description || ''}</span>
@@ -194,6 +203,11 @@ export async function buildPhysicalReceiptHtml({ tx, appConfig = {} }) {
         <div class="physical-saldo-row"><span class="physical-saldo-label">${t('modules.transactions.receiptCurrentBalance')}</span><span class="physical-blank physical-saldo-value">${fmtMoney(saldoActual)}</span></div>
       </div>
 
+      ${signatureUrl ? `
+      <div class="physical-signature">
+        <img src="${signatureUrl}" alt="Firma administrador" class="physical-signature-img" />
+      </div>
+      ` : ''}
       <div class="physical-sign">
         <div class="physical-sign-line">${cashedBy}</div>
         <div class="physical-sign-label">${t('modules.transactions.receiptCollectedBy')}</div>

@@ -269,6 +269,13 @@ export const appConfig = {
     }
   },
 
+  // 2.5. Configuración de recibos
+  receipts: {
+    adminSignatureUrl: "",
+    adminSignatureUid: "",
+    adminSignatureEmail: ""
+  },
+
   // 3. Definiciones de Sistema
   systemDefaults: {
     language: "es",

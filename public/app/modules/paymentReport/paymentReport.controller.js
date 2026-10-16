@@ -4,6 +4,7 @@ import { compressImageFile } from '../../core/imageCompress.js';
 import Property from "../../models/Property.js";
 import Transaction from "../../models/Transaction.js";
 import PaymentNotification from "../../models/PaymentNotification.js";
+import { activeIncomeTypes, INCOME_TYPE_IDS } from '../../core/incomeTypes.js';
 import { t } from '../../core/i18n.js';
 
 /**
@@ -22,6 +23,7 @@ export default async function paymentReportController(contexto) {
   const amountInput = document.getElementById('amount');
   const dateInput = document.getElementById('paymentDate');
   const paymentMethodSelect = document.getElementById('paymentMethod');
+  const incomeTypeSelect = document.getElementById('incomeTypeId');
   const uploadZone = document.getElementById('upload-zone');
   const fileInput = document.getElementById('receipt-file');
   const filePreview = document.getElementById('file-preview');
@@ -40,6 +42,18 @@ export default async function paymentReportController(contexto) {
   if (paymentMethodSelect) {
     paymentMethodSelect.innerHTML = paymentMethods.map(m =>
       `<option value="${m.id}">${m.label}</option>`
+    ).join('');
+  }
+
+  // --- Tipos de ingreso (qué entró, no cómo pagó) ---
+  // El reporte de pago siempre se hace contra cuotas, así que se precarga la cuota
+  // de mantenimiento: es el 92% de los ingresos reales. Queda editable porque
+  // alguien también puede pagar la rifa, un boleto o una tarjeta desde el mismo
+  // formulario, y en ese caso lo declarado por el residente es el dato bueno.
+  const incomeTypes = activeIncomeTypes();
+  if (incomeTypeSelect) {
+    incomeTypeSelect.innerHTML = incomeTypes.map(x =>
+      `<option value="${x.id}"${x.id === INCOME_TYPE_IDS.CUOTA_AREA_SOCIAL ? ' selected' : ''}>${x.name}</option>`
     ).join('');
   }
 
@@ -212,6 +226,7 @@ export default async function paymentReportController(contexto) {
         appliedTo: appliedTo,
         excessAmount: Math.max(0, remainingToApply),
         paymentMethod: document.getElementById('paymentMethod').value || 'transfer',
+        incomeTypeId: incomeTypeSelect?.value || null,
         notes: document.getElementById('notes').value || '',
         residentName: user.displayName || user.email
       };

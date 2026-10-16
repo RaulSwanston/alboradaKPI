@@ -1,4 +1,5 @@
 import { db, collection, getDocs, query, doc, getDoc, updateDoc, where, setDoc, orderBy } from "../core/firebase.js";
+import { aggregateIncomeByType } from "../core/incomeTypes.js";
 
 /**
  * La clase Property encapsula la lógica para interactuar con la colección 'properties' en Firestore.
@@ -165,11 +166,20 @@ export default class Property {
       const propBalances = {};
       allProps.forEach(p => propBalances[p.id] = 0);
 
+      // El desglose de ingresos por tipo se calcula con ESTE MISMO recorrido, ya
+      // que `transSnapshot` esta en memoria: no cuesta ni una lectura mas. Es lo
+      // que permite que la tarjeta de `generalExpenses` muestre el desglose sin
+      // volver a consultar los 2.791 pagos (que ademas las reglas niegan al
+      // residente: ver `firestore.rules`).
+      const incomePassTx = [];
+
       let ultimoPagoFecha = 0;
 
       transSnapshot.forEach(doc => {
         const t = doc.data();
         const propId = t.propertyId;
+
+        incomePassTx.push(t);
 
         let amount = t.amount || 0;
 
@@ -217,6 +227,11 @@ export default class Property {
 
         propBalances[propId] += amount;
       });
+
+      // Desglose de ingresos por tipo de ingreso (cuota, rifa, tarjeta, ...).
+      // Solo sumas y conteos: ni nombres ni direcciones, asi que puede publicarse
+      // en `appConfig` y leerse sin filtrar datos de ningun residente.
+      stats.ingresosPorTipo = aggregateIncomeByType(incomePassTx, { generatedAt: now });
 
       // 3. Preparar guardado atómico (Batch)
       const batch = writeBatch(db);

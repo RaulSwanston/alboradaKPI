@@ -1,4 +1,5 @@
 import { db, collection, getDocs, query, where } from "../core/firebase.js";
+import { resolveIncomeTypeId, incomeTypeName } from "../core/incomeTypes.js";
 
 const MONTH_LABELS_ES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
 
@@ -239,6 +240,37 @@ export default class Analytics {
     }
     const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
     return { categories: entries.map(([k]) => k), series: entries.map(([, v]) => v) };
+  }
+
+  /**
+   * Ingresos agrupados por tipo (cuota, rifa, tarjeta, eventos...).
+   *
+   * Complementa a `getPaymentMethodDistribution`: el método dice *cómo* pagó el
+   * residente, el tipo dice *para qué* entró el dinero. Son dimensiones distintas y
+   * no se deben sumar entre sí.
+   *
+   * `resolveIncomeTypeId` usa el `incomeTypeId` que declaró el residente (o que
+   * corrigió el admin al aprobar) y, solo si no existe, lo infiere de la descripción.
+   * Por eso este gráfico cubre también el histórico sin necesidad de backfill.
+   *
+   * El catálogo se resuelve contra el módulo local `core/incomeTypes.js` y no contra
+   * la colección `incomeTypes`: son 8 entradas fijas y leerlas costaría una lectura de
+   * Firestore en cada carga del gráfico. Si algún día el catálogo pasa a ser editable
+   * desde la app, aquí se cambia por `await this._incomeTypes()`.
+   */
+  async getIncomeByType({ months = 12 } = {}) {
+    const tx = this._window(await this._transactions(), months)
+      .filter(t => t.type === 'PAYMENT' || t.type === 'OTHER_INCOME');
+    const totals = {};
+    for (const t of tx) {
+      const label = incomeTypeName(resolveIncomeTypeId(t));
+      totals[label] = (totals[label] || 0) + Math.abs(t.amount || 0);
+    }
+    const entries = Object.entries(totals).sort((a, b) => b[1] - a[1]);
+    return {
+      categories: entries.map(([k]) => k),
+      series: entries.map(([, v]) => this._round(v))
+    };
   }
 
   /**

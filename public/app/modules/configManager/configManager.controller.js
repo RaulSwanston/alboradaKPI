@@ -44,6 +44,14 @@ export default async function configManagerController(contexto) {
     const logoPreview = document.getElementById('config-logo-preview');
     const btnUploadLogo = document.getElementById('btn-upload-logo');
 
+    // Referencias para la Firma del Administrador
+    const signatureDropZone = document.getElementById('signature-drop-zone');
+    const signatureFileInput = document.getElementById('config-signature-file');
+    const signatureUrlInput = document.getElementById('config-signature-url');
+    const signaturePreview = document.getElementById('config-signature-preview');
+    const btnUploadSignature = document.getElementById('btn-upload-signature');
+    const signatureLinkedAdmin = document.getElementById('signature-linked-admin');
+
     // Referencias para el Catálogo de Cuentas de Gasto
     const eaForm = document.getElementById('expense-account-form');
     const eaCategory = document.getElementById('ea-category');
@@ -60,11 +68,13 @@ export default async function configManagerController(contexto) {
     let expenseAccountList = [];
     let eaEditingId = null;
     let dragState = null;
+    let selectedSignatureFile = null;
 
     // --- ESTADO LOCAL DE CONFIGURACIÓN ---
     let localConfig = JSON.parse(JSON.stringify(contexto.data.appConfig || appConfig));
     if (!localConfig.branding) localConfig.branding = JSON.parse(JSON.stringify(appConfig.branding));
     if (!localConfig.systemDefaults) localConfig.systemDefaults = JSON.parse(JSON.stringify(appConfig.systemDefaults));
+    if (!localConfig.receipts) localConfig.receipts = { adminSignatureUrl: "", adminSignatureUid: "", adminSignatureEmail: "" };
 
     // --- LÓGICA DE PESTAÑAS (TABS) ---
     const initTabs = () => {
@@ -115,6 +125,67 @@ export default async function configManagerController(contexto) {
         }
     };
 
+    // --- LÓGICA DE LA FIRMA DEL ADMINISTRADOR ---
+    const updateSignatureState = (hasSignature) => {
+        if (signatureDropZone) signatureDropZone.classList.toggle('has-logo', !!hasSignature);
+    };
+
+    const handleSignatureFile = (file) => {
+        if (!file.type.startsWith('image/')) {
+            alert('Por favor, selecciona un archivo de imagen válido.');
+            return;
+        }
+        selectedSignatureFile = file;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const base64Image = e.target.result;
+            if (signaturePreview) {
+                signaturePreview.src = base64Image;
+                updateSignatureState(true);
+            }
+            if (signatureUrlInput) signatureUrlInput.value = `LOCAL: ${file.name}`;
+        };
+        reader.readAsDataURL(file);
+    };
+
+    const uploadSignatureToR2 = async () => {
+        if (!selectedSignatureFile) return null;
+        try {
+            const { blob, ext } = await compressImageFile(selectedSignatureFile, { maxDimension: 800, maxBytes: 300 * 1024 });
+            const key = buildSystemImageKey('admin_signature', ext);
+            return await uploadFileToR2(blob, key);
+        } catch (error) {
+            console.error("❌ Error al subir firma:", error);
+            return null;
+        }
+    };
+
+    const initSignatureEvents = () => {
+        if (!signatureDropZone || !signatureFileInput || !btnUploadSignature) return;
+        btnUploadSignature.onclick = () => signatureFileInput.click();
+        if (signaturePreview) signaturePreview.parentElement.onclick = () => signatureFileInput.click();
+        signatureFileInput.onchange = (e) => { if (e.target.files.length > 0) handleSignatureFile(e.target.files[0]); };
+        signatureDropZone.addEventListener('dragover', (e) => { e.preventDefault(); signatureDropZone.classList.add('drag-over'); });
+        signatureDropZone.addEventListener('dragleave', () => signatureDropZone.classList.remove('drag-over'));
+        signatureDropZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            signatureDropZone.classList.remove('drag-over');
+            if (e.dataTransfer.files.length > 0) handleSignatureFile(e.dataTransfer.files[0]);
+        });
+        if (signatureUrlInput) {
+            signatureUrlInput.onchange = (e) => {
+                if (e.target.value && !e.target.value.startsWith('LOCAL:')) {
+                    signaturePreview.src = e.target.value;
+                    localConfig.receipts.adminSignatureUrl = e.target.value;
+                    updateSignatureState(true);
+                } else if (!e.target.value) {
+                    localConfig.receipts.adminSignatureUrl = '';
+                    updateSignatureState(false);
+                }
+            };
+        }
+    };
+
     const initLogoEvents = () => {
         if (!dropZone || !logoFileInput || !btnUploadLogo) return;
         btnUploadLogo.onclick = () => logoFileInput.click();
@@ -154,6 +225,29 @@ export default async function configManagerController(contexto) {
                 if (logoPreview) logoPreview.src = '/src/img/alborada.svg';
             });
             updateLogoState(!!branding.logoUrl);
+        }
+        // Inicializar firma
+        if (signatureUrlInput) signatureUrlInput.value = localConfig.receipts?.adminSignatureUrl || '';
+        if (signaturePreview) {
+            getAuthObjectURL(localConfig.receipts?.adminSignatureUrl || '').then((blobUrl) => {
+                if (signaturePreview && blobUrl) {
+                    signaturePreview.src = blobUrl;
+                    updateSignatureState(true);
+                } else if (signaturePreview) {
+                    updateSignatureState(false);
+                }
+            }).catch(() => {
+                if (signaturePreview) updateSignatureState(false);
+            });
+        } else {
+            updateSignatureState(!!(localConfig.receipts?.adminSignatureUrl));
+        }
+        // Mostrar info del admin vinculado
+        if (signatureLinkedAdmin) {
+            const email = localConfig.receipts?.adminSignatureEmail || '';
+            const uid = localConfig.receipts?.adminSignatureUid || '';
+            const text = email || uid || '—';
+            signatureLinkedAdmin.innerHTML = `<!-- ::i18n.configManager.general.signatureLinkedTo -->: ${text}`;
         }
         if (appNameInput) appNameInput.oninput = (e) => localConfig.branding.appName = e.target.value;
         if (languageSelect) languageSelect.onchange = (e) => localConfig.systemDefaults.language = e.target.value;
@@ -664,6 +758,7 @@ export default async function configManagerController(contexto) {
     initUserManagement();
     initViewSelector();
     initLogoEvents();
+    initSignatureEvents();
     initExpenseAccounts();
     initTabs();
 
@@ -686,6 +781,20 @@ export default async function configManagerController(contexto) {
                 if (remoteUrl) localConfig.branding.logoUrl = remoteUrl;
                 else if (selectedFile) alert('No se pudo subir el logo; se mantendrá el actual.');
                 selectedFile = null;
+
+                // 1.1. Firma a Storage
+                const remoteSignatureUrl = await uploadSignatureToR2();
+                if (remoteSignatureUrl) {
+                    localConfig.receipts.adminSignatureUrl = remoteSignatureUrl;
+                    // Si no hay admin vinculado aún, guardamos info del usuario actual (admin)
+                    if (!localConfig.receipts.adminSignatureUid && contexto?.data?.user) {
+                        localConfig.receipts.adminSignatureUid = contexto.data.user.uid || '';
+                        localConfig.receipts.adminSignatureEmail = contexto.data.user.email || '';
+                    }
+                } else if (selectedSignatureFile) {
+                    alert('No se pudo subir la firma; se mantendrá la actual.');
+                }
+                selectedSignatureFile = null;
 
                 // 2. Roles de Usuario (Uso del modelo User)
                 const userUpdatePromises = Object.entries(pendingUserUpdates).map(([uid, newRole]) => {

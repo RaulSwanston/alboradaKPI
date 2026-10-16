@@ -1,4 +1,5 @@
 import PaymentNotification from "../../models/PaymentNotification.js";
+import { activeIncomeTypes } from '../../core/incomeTypes.js';
 import { t } from '../../core/i18n.js';
 import { getAuthObjectURL } from '../../core/r2.js';
 
@@ -30,6 +31,18 @@ export default async function paymentApprovalController(contexto) {
   const legacyPaymentMap = {
     'TRANSFER': 'transfer', 'ACH': 'deposit', 'YAPPY': 'yappy', 'CASH': 'cash',
     'CHECK': 'check', 'CARD': 'card', 'DEPOSIT': 'deposit', 'OTHER': 'other'
+  };
+
+  // Catálogo de tipos de ingreso, para que el admin confirme o corrija en un solo
+  // clic lo que declaró el residente. Si el reporte no trae tipo (los anteriores a
+  // este campo), se ofrece "Sin especificar" y aprobar no inventa nada: la lectura
+  // lo deduce sola con `resolveIncomeTypeId()`.
+  const incomeTypeOptions = (selectedId) => {
+    const options = activeIncomeTypes().map(x =>
+      `<option value="${x.id}"${x.id === selectedId ? ' selected' : ''}>${x.name}</option>`
+    ).join('');
+    const blank = `<option value=""${selectedId ? '' : ' selected'}>${t('paymentApproval.incomeTypeUnspecified')}</option>`;
+    return blank + options;
   };
 
   const loadPending = async () => {
@@ -73,8 +86,13 @@ export default async function paymentApprovalController(contexto) {
                 <span class="approval-value">${formatDate(report.reportDate)}</span>
               </div>
               <div class="approval-detail-item">
-                <span class="approval-label"><!-- ::i18n.paymentApproval.paymentMethod --></span>
+                <span class="approval-label">${t('paymentApproval.paymentMethod')}</span>
                 <span class="approval-value">${paymentMethodLabels[report.paymentMethod] || paymentMethodLabels[legacyPaymentMap[report.paymentMethod]] || report.paymentMethod || 'No especificado'}</span>
+              </div>
+              <div class="approval-detail-item">
+                <span class="approval-label">${t('paymentApproval.incomeType')}</span>
+                <select class="income-type-override" data-id="${report.id}">${incomeTypeOptions(report.incomeTypeId)}</select>
+                <p class="approval-hint">${t('paymentApproval.incomeTypeHint')}</p>
               </div>
             </div>
             ${report.notes ? `
@@ -147,10 +165,16 @@ export default async function paymentApprovalController(contexto) {
     listEl.querySelectorAll('.btn-approve').forEach(btn => {
       btn.addEventListener('click', async () => {
         const id = btn.dataset.id;
-        btn.disabled = true;
-        btn.innerHTML = `<div class="icon-slot-sm" data-icon="loader"></div>`;
-        try {
-          const result = await PaymentNotification.approve(id, { uid: user.uid, name: user.displayName || user.email });
+btn.disabled = true;
+      btn.innerHTML = `<div class="icon-slot-sm" data-icon="loader"></div>`;
+      try {
+        // Si el admin dejó el tipo en "Sin especificar", no mandamos override:
+        // se conserva lo que declaró el residente, o null si no declaró nada.
+        const incomeTypeSelect = listEl.querySelector(`.income-type-override[data-id="${id}"]`);
+        const overrides = incomeTypeSelect && incomeTypeSelect.value
+          ? { incomeTypeId: incomeTypeSelect.value }
+          : {};
+        const result = await PaymentNotification.approve(id, { uid: user.uid, name: user.displayName || user.email }, overrides);
           alert(`✅ Pago aprobado. Recibo generado: ${result.voucherNumber}`);
           await loadPending();
         } catch (error) {

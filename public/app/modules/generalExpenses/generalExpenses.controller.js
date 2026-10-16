@@ -1,6 +1,7 @@
 import Transaction from "../../models/Transaction.js";
 import ChargeConcept from "../../models/ChargeConcept.js";
 import ExpenseAccount from "../../models/ExpenseAccount.js";
+import { activeIncomeTypes, incomeTypeName, SIN_CLASIFICAR_KEY } from "../../core/incomeTypes.js";
 import { t } from "../../core/i18n.js";
 import { getAuthObjectURL, revokeAuthObjectURLs } from "../../core/r2.js";
 import { injectIcons } from "../../utils/icons.js";
@@ -51,6 +52,8 @@ export default async function generalExpensesController(contexto) {
   const summaryMovementsEl = document.getElementById("ge-summary-movements");
   const summaryAvgEl = document.getElementById("ge-summary-avg");
   const accountsBody = document.getElementById("ge-accounts-body");
+  const incomeBody = document.getElementById("ge-income-body");
+  const incomeFootEl = document.getElementById("ge-income-foot");
 
   if (!body || !paginationContainer) {
     console.error("[GeneralExpenses] Elementos DOM no encontrados");
@@ -221,6 +224,7 @@ export default async function generalExpensesController(contexto) {
 
   const renderTable = () => {
     renderTree();
+    renderIncome();
     updatePeriodTotal();
     updateSummaryCard();
 
@@ -424,6 +428,134 @@ export default async function generalExpensesController(contexto) {
       state.expandedAccount = '';
       renderTree();
     }, DETAIL_OUT_MS);
+  };
+
+  // --- Desglose de ingresos por tipo ---
+  // Se lee de `contexto.data.appConfig.stats.ingresosPorTipo`, que escribe el boton
+  // "Sincronizar saldos" de Resumen Financiero. No se consulta Firestore aqui: el
+  // modulo ya pago su lectura al cargar `appConfig`, y las reglas negatively el
+  // acceso del residente a los pagos sueltos (`firestore.rules`).
+  const renderIncome = () => {
+    if (!incomeBody) return;
+
+    const agg = contexto.data?.appConfig?.stats?.ingresosPorTipo;
+
+    // Se distingue "el campo no existe todavia" de "el campo existe y esta en
+    // cero": `!agg.total` trataria igual ambos casos y un condominio sin ingresos
+    // mostraria "calculando..." indefinidamente, aunque ya no hay nada que
+    // calcular. Un agregado vacio de verdad es un estado legitimo.
+    if (!agg || typeof agg.total !== 'number') {
+      incomeBody.innerHTML = `<div class="ge-empty">${escapeHtml(t('modules.generalExpenses.income.pending'))}</div>`;
+      if (incomeFootEl) incomeFootEl.textContent = '';
+      return;
+    }
+
+    // El selector de periodo filtra por `tx.period` en la tabla de gastos, pero
+    // aqui las claves son periodos ya normalizados (`YYYY-MM`). Se comparan ambos
+    // conjuntos para no mostrar un total que contradiga al de arriba.
+    const porPeriodo = agg.porPeriodo || {};
+    const periodosConPagos = Object.keys(porPeriodo);
+    let totals = agg.totals;
+    let counts = agg.counts;
+    let periodoAjustado = false;
+
+    if (state.period && porPeriodo[state.period]) {
+      totals = porPeriodo[state.period];
+      counts = agg.countsByPeriodo?.[state.period] || null;
+      periodoAjustado = true;
+    }
+
+    // Si el periodo elegido no tiene ingresos pero el conjunto si tiene periodos,
+    // casi siempre es que el filtro cae en un mes sin datos: se avisa en vez de
+    // mostrar un 0 que parece un error de calculo.
+    const sinIngresosEnPeriodo = state.period && !porPeriodo[state.period] && periodosConPagos.length > 0;
+
+    const UNCLASS = SIN_CLASIFICAR_KEY;
+    const rows = Object.entries(totals)
+      .filter(([, v]) => v > 0)
+      .sort((a, b) => b[1] - a[1]);
+
+    const total = rows.reduce((sum, [, v]) => sum + v, 0);
+
+    // "Sin clasificar" es trabajo pendiente, no un tipo de ingreso: siempre al
+    // final aunque su monto supere al de una categoria real (mismo criterio que el
+    // arbol de gastos).
+    const ordered = [
+      ...rows.filter(([k]) => k !== UNCLASS),
+      ...rows.filter(([k]) => k === UNCLASS),
+    ];
+
+    // Un conjunto vacio no dibuja cabecera maestra, igual que en gastos: una
+    // tarjeta con un total en 0 y ninguna fila debajo se lee como un fallo.
+    if (ordered.length === 0 || sinIngresosEnPeriodo) {
+      incomeBody.innerHTML = `<div class="ge-empty">${escapeHtml(t(
+        sinIngresosEnPeriodo
+          ? 'modules.generalExpenses.income.emptyPeriod'
+          : 'modules.generalExpenses.income.empty'
+      ))}</div>`;
+
+      // Este es justo el caso en que el aviso de ingresos sin fecha evita el
+      // "¿donde esta mi dinero?": si el mes elegido sale en 0, pero hay $3.140
+      // sin fecha real, el usuario tiene que saber que existen y por que no salen.
+      if (incomeFootEl) {
+        incomeFootEl.textContent = agg.sinFecha && agg.sinFecha.monto > 0
+          ? t('modules.generalExpenses.income.undatedNote').replace('{monto}', formatCurrency(agg.sinFecha.monto))
+          : '';
+      }
+      return;
+    }
+
+    const movPeriodo = counts
+      ? Object.values(counts).reduce((sum, n) => sum + (n || 0), 0)
+      : 0;
+
+    // Cabecera maestra: misma fila y misma retícula que "Gastos por categoria",
+    // para que los dos totales caigan en el mismo sitio y se puedan comparar.
+    const master = `
+      <div class="ge-master">
+        <span class="ge-master-title">${escapeHtml(t('modules.generalExpenses.income.title'))}</span>
+        <span class="ge-master-total">${formatCurrency(total)}</span>
+        <span class="ge-master-count">${periodoAjustado ? movPeriodo : (agg.movimientos || movPeriodo)}</span>
+      </div>`;
+
+    // Una banda por tipo de ingreso. A diferencia de gastos, aqui la banda ES la
+    // fila: no hay un segundo nivel que desplegar porque los movimientos viven en
+    // `transactions` y `appConfig` solo guarda sumas y conteos. El nombre va en
+    // versalitas como el nombre de categoria en gastos, para que las dos tarjetas
+    // compartan la misma jerarquia visual.
+    const bands = ordered.map(([id, amount]) => {
+      const isUnclassified = id === UNCLASS;
+      const count = counts?.[id];
+      return `
+        <section class="ge-group${isUnclassified ? ' unclassified' : ''}">
+          <div class="ge-group-header">
+            <span class="ge-group-name ge-accounts-cat">${escapeHtml(incomeTypeName(isUnclassified ? null : id))}</span>
+            <span class="ge-group-count ge-accounts-count">${count === null || count === undefined ? '—' : count}</span>
+            <span class="ge-accounts-total">${formatCurrency(amount)}</span>
+          </div>
+        </section>`;
+    }).join('');
+
+    incomeBody.innerHTML = master + bands;
+
+    // Pie: solo cuando hay algo que aclarar. Los pagos sin fecha fuera de la
+    // ventana seleccionada se explican en vez de desaparecer sin aviso.
+    //
+    // Con periodo activo las notas se recalculan sobre ESE periodo: citar el
+    // "sin clasificar" global mientras la tabla de al lado muestra el del mes
+    // haria que las dos cifras se contradijeran.
+    const notas = [];
+    if (!periodoAjustado && agg.sinFecha && agg.sinFecha.monto > 0) {
+      notas.push(t('modules.generalExpenses.income.undatedNote').replace('{monto}', formatCurrency(agg.sinFecha.monto)));
+    }
+    const unclassMonto = totals[UNCLASS] || 0;
+    const unclassConteo = (counts && counts[UNCLASS]) || 0;
+    if (unclassMonto > 0) {
+      notas.push(t('modules.generalExpenses.income.unclassifiedNote')
+        .replace('{monto}', formatCurrency(unclassMonto))
+        .replace('{conteo}', String(unclassConteo)));
+    }
+    if (incomeFootEl) incomeFootEl.textContent = notas.join(' · ');
   };
 
   // --- Selector y total de periodo ---

@@ -61,6 +61,26 @@
     </div>
   </div>
 
+  <!-- Ingresos por categoria. Comparte estructura y retícula con "Gastos por
+       categoria" de arriba (cabecera maestra con el total dentro de la tarjeta y
+       una banda por tipo) para que ambos desgloses se lean como el mismo par.
+       La diferencia es que aqui no hay segundo nivel desplegable: los movimientos
+       viven en `transactions` y appConfig solo guarda sumas y conteos, asi que la
+       banda lleva su propio importe en vez de encerrar grupos con filas debajo.
+       Se alimenta de appConfig.stats.ingresosPorTipo: sin lecturas nuevas y sin
+       datos personales. -->
+  <div class="ge-accounts-section">
+    <div class="ge-accounts-header">
+      <h3 class="ge-accounts-title"><!-- ::i18n.modules.generalExpenses.income.title --></h3>
+    </div>
+    <div class="ge-table-wrapper ge-accounts-table-wrap">
+      <div class="ge-tree ge-income-tree" id="ge-income-body">
+        <div class="ge-loading-row"><div class="spinner"></div></div>
+      </div>
+    </div>
+  </div>
+  <p class="ge-income-foot" id="ge-income-foot"></p>
+
   <div class="ge-tabs-content">
     <div class="ge-table-wrapper">
       <table class="ge-table">

@@ -1,5 +1,6 @@
 import { db, collection, addDoc, updateDoc, deleteDoc, doc, getDoc, getDocs, query, where, orderBy, limit, startAfter, serverTimestamp, runTransaction } from "../core/firebase.js";
 import { createActivity } from "./Activities.js";
+import AppConfig from "./AppConfig.js";
 
 /**
  * La clase Transaction gestiona el historial contable del condominio.
@@ -155,6 +156,11 @@ export default class Transaction {
         details: { transactionId: docRef.id, amount: data.amount }
       });
 
+      // Mantener al día el desglose de ingresos de Gastos Generales. Va DESPUÉS
+      // del addDoc: si el agregado falla, el pago sigue escrito (es la fuente de
+      // la verdad) y `AppConfig` solo avisa por consola en vez de romper la UI.
+      await AppConfig.applyIncomeDelta(transData, 1);
+
       return { id: docRef.id, duplicate: false };
     } catch (error) {
       console.error("[Transaction] Error al crear transacción:", error);
@@ -187,6 +193,15 @@ export default class Transaction {
     try {
       const updateData = { ...data, updatedAt: serverTimestamp() };
       
+      const docRef = doc(db, "transactions", id);
+
+      // Para el desglose de ingresos hay que restar la contribución VIEJA antes de
+      // sumar la nueva: si un pago pasa de $100 en marzo a $150 en abril, sin esto
+      // el agregado sumaría los dos. Son 1 lectura, solo en escrituras de admins.
+      const prevSnap = await getDoc(docRef);
+      const prev = prevSnap.exists() ? prevSnap.data() : null;
+      const prevWasIncome = prev && (prev.type === 'PAYMENT' || prev.type === 'OTHER_INCOME');
+
       // Si se está actualizando la fecha, recalculamos el periodo y aseguramos objeto Date
       if (data.effectiveDate) {
         const dateObj = data.effectiveDate instanceof Date ? data.effectiveDate : (data.effectiveDate.toDate ? data.effectiveDate.toDate() : new Date(data.effectiveDate));
@@ -194,8 +209,24 @@ export default class Transaction {
         updateData.period = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}`;
       }
 
-      const docRef = doc(db, "transactions", id);
+      // Red de seguridad para cualquier llamador: si llega `metadata` como mapa,
+      // `updateDoc` lo reemplazaría entero y borraría campos hermanos (comprobante,
+      // notificación de pago, autor de la revisión…). Se fusiona con el previo.
+      if (prev && data.metadata && typeof data.metadata === 'object') {
+        updateData.metadata = { ...(prev.metadata || {}), ...data.metadata };
+      }
+
       await updateDoc(docRef, updateData);
+
+      // Restar lo viejo y sumar lo nuevo. `updateData` ya trae el `period`
+      // recalculado arriba, así que mover un pago de mes no deja el cubo viejo.
+      if (prevWasIncome) {
+        await AppConfig.applyIncomeDelta(prev, -1);
+        await AppConfig.applyIncomeDelta(
+          { ...prev, ...updateData, period: updateData.period || prev.period },
+          1
+        );
+      }
 
       // Registrar actividad de actualización
       await createActivity({
@@ -220,7 +251,17 @@ export default class Transaction {
   static async delete(id, initiator) {
     try {
       const docRef = doc(db, "transactions", id);
+
+      // Hay que leer el pago ANTES de borrarlo: es el único momento en que se
+      // conoce cuánto estaba sumando al desglose de ingresos.
+      const prevSnap = await getDoc(docRef);
+      const prev = prevSnap.exists() ? prevSnap.data() : null;
+
       await deleteDoc(docRef);
+
+      if (prev && (prev.type === 'PAYMENT' || prev.type === 'OTHER_INCOME')) {
+        await AppConfig.applyIncomeDelta(prev, -1);
+      }
 
       // Registrar actividad de eliminación
       await createActivity({
