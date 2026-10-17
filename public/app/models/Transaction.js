@@ -129,10 +129,22 @@ export default class Transaction {
       };
 
       if (!data.voucherNumber) {
-        const voucher = await this._generateVoucher(data.type, dateObj);
-        if (voucher) {
-          transData.voucherNumber = voucher.voucherNumber;
-          transData.voucherType = voucher.voucherType;
+        let bankRef = null;
+        if (data.metadata && typeof data.metadata === 'object') {
+          bankRef = data.metadata.bankReference || data.metadata.bankRef || null;
+        }
+        if (!bankRef && data['metadata.bankReference']) {
+          bankRef = data['metadata.bankReference'];
+        }
+        if (data.type === 'PAYMENT' && bankRef && String(bankRef).trim()) {
+          transData.voucherNumber = String(bankRef).trim();
+          transData.voucherType = 'Recibo';
+        } else {
+          const voucher = await this._generateVoucher(data.type, dateObj);
+          if (voucher) {
+            transData.voucherNumber = voucher.voucherNumber;
+            transData.voucherType = voucher.voucherType;
+          }
         }
       }
 
