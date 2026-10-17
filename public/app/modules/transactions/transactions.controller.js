@@ -871,7 +871,7 @@ export default async function transactionsController(contexto) {
         receiptBody.innerHTML = `
             <div class="receipt-title-area">
                 <h3>${voucherTypeLabel}</h3>
-                <div class="receipt-subtitle">${tx.voucherNumber || ''}</div>
+                <div class="receipt-subtitle">${tx.metadata?.bankReference || tx.voucherNumber || ''}</div>
             </div>
             <div class="receipt-row">
                 <span class="receipt-label">${t('modules.transactions.receiptDate')}</span>

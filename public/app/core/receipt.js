@@ -161,7 +161,7 @@ export async function buildPhysicalReceiptHtml({ tx, appConfig = {} }) {
         <div class="physical-logo"><img src="${logoUrl}" alt="Alborada" /></div>
         <div class="physical-center">
           <div class="physical-receipt-title">${t('modules.transactions.receiptRecibo')}</div>
-          <div class="physical-receipt-number">${tx.voucherNumber || ''}</div>
+          <div class="physical-receipt-number">${tx.metadata?.bankReference || tx.voucherNumber || ''}</div>
         </div>
         <div class="physical-contact">
           <div class="physical-contact-row"><strong>email:</strong> comunicadosalborada@gmail.com</div>
