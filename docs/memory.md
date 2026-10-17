@@ -1,6 +1,26 @@
 # Memoria de Sesiones - Bitácora de Proyecto
 
-## 📌 RETOMA AQUÍ (última sesión: 26 de Septiembre de 2026)
+## 📌 RETOMA AQUÍ (última sesión: 17 de Octubre de 2026)
+
+**Estado:** ✅ **Conciliación de pagos AUTO-REPARABLE (Opción A) implementada y subida.** El foco fue un descuadre real: un pago con `appliedTo` presente pero sin `paidBy`/`pendingAmount` en sus cargos, que **no se podía reparar re-guardando**. Se centralizó la escritura de la conciliación en `Transaction.reconcileCharges()` y se corrigió el bug de raíz que lo provocaba. **Sin lecturas a Firestore** (solo cambios de código).
+
+### Resumen de cambios (17 Oct 2026) — Conciliación auto-reparable
+
+- **Bug de raíz (por qué se descuadraba):** al editar un pago ya conciliado, el formulario **solo renderiza cargos pendientes**; los cargos que el pago ya saldó (`pendingAmount` 0) no aparecían. Entonces `data.appliedTo` se recalculaba **sin ellos** y el camino de edición los "liberaba" (restauraba `pendingAmount` y quitaba `paidBy`), mientras `Transaction.update` dejaba intacto el `appliedTo` del pago. Resultado: **`appliedTo` con los meses, pero facturas reabiertas**. Además, re-guardar no reparaba porque el diff `added/removedIds` quedaba vacío y la idempotencia (`paidBy.some(...)`) lo saltaba.
+- **Fix (Opción A) — nuevo `Transaction.reconcileCharges({ paymentId, propertyId, links, releaseIds, appliedTo, balanceDelta })`** en `models/Transaction.js`:
+  - **`upsert` por `paymentId`** (ya no `arrayUnion`): colapsa entradas duplicadas del mismo pago.
+  - **`pendingAmount` DERIVADO**: `max(0, |amount| − Σ paidBy.amount)`, en vez de restar incremental → **idempotente y auto-reparable** ("vuelva a guardar para reintentar" pasa a ser cierto de verdad).
+  - **Batch atómico** para cargos + `appliedTo` del pago; el **saldo va aparte y no fatal** (un fallo de reglas en `properties/{id}` no debe tumbar la conciliación, que es lo que deja las facturas correctas).
+  - Escribe un cargo **solo si su resultado cambia** (no quema escrituras inútiles).
+- **Llamadores actualizados:**
+  - `modules/transactions-detail/transactions-detail.controller.js` (crear **y** editar): `applyPaymentToCharges()` ahora es un wrapper del modelo; la edición reconcilia el conjunto completo, no solo el diff.
+  - `modules/transactions/transactions.controller.js` (panel **"Conciliar con cargos"**): usa el mismo método.
+  - Ambos **preservan los vínculos no renderizados** (`appliedTo` menos los cargos visibles) para no desvincular facturas ya saldadas al guardar.
+- **Caso real reparado:** pago **21/6/2026 $45, unidad 080**, aplicado a jul/ago/sep → ahora se repara re-guardando desde el panel o editando el pago.
+- **Archivos:** `public/app/models/Transaction.js`, `public/app/modules/transactions-detail/transactions-detail.controller.js`, `public/app/modules/transactions/transactions.controller.js`.
+- **Pendiente / observaciones:** `PaymentNotification.approve()` sigue con su propio shape de `paidBy` (unificar en una eventual **Opción C**); el camino de creación es no atómico entre `Transaction.create` y la conciliación (mitigado: re-guardar repara); `mayo → junio 2026` de la reconciliación histórica sigue pendiente (ver entradas de agosto).
+
+## Entrada previa: 26 de Septiembre de 2026 (RETOMA anterior)
 
 **Estado:** ✅ **Backfill ESCRITO en Firestore.** Se clasificaron **153 de 321** gastos históricos (`type: 'EXPENSE'`, 2025-02 → 2026-08, $67,287.70) por `expenseAccountId` (colección `expenseAccounts`). Coste real de toda la operación: **44 lecturas del catálogo + 153 escrituras, 0 lecturas de transacciones** en la fase de apply; **365 lecturas** contando la extracción inicial del snapshot (321). Las **168 restantes ($23,981.01)** siguen sin clasificar a la espera de crear cuentas de proveedor. Además se rediseñó la tarjeta de cuentas de Gastos Generales como **árbol de categorías** con detalle desplegable, y el 28 de Sep se refinó: total general en un **cabezal maestro dentro de la tarjeta**, columna de importes alineada, importes fuera de los cabezales de grupo, detalle **a sangre y con apertura animada**, y los tres niveles en un único eje izquierdo. **Pendiente:** los 168 sin clasificar; una colección independiente para ingresos globales; y `firebase deploy --only hosting` si se sirve por Firebase.
 

@@ -1,6 +1,6 @@
 import Transaction from "../../models/Transaction.js";
 import { t } from '../../core/i18n.js';
-import { db, doc, getDoc, writeBatch, arrayUnion } from "../../core/firebase.js";
+import { db, doc, getDoc } from "../../core/firebase.js";
 import { getAuthObjectURL } from '../../core/r2.js';
 import { buildPhysicalReceiptHtml } from '../../core/receipt.js';
 
@@ -581,70 +581,36 @@ export default async function transactionsController(contexto) {
         const debtsContainer = panel?.querySelector('.conciliation-debts');
         if (!debtsContainer) return;
 
-        const selectedCards = debtsContainer.querySelectorAll('.conciliation-debt-card.selected');
-        const newAppliedTo = Array.from(selectedCards).map(card => ({
+        const selected = Array.from(debtsContainer.querySelectorAll('.conciliation-debt-card.selected')).map(card => ({
             transactionId: card.dataset.transactionId,
             amount: parseFloat(card.dataset.amount || '0'),
             description: card.querySelector('.conciliation-debt-title')?.textContent || ''
         }));
 
+        // El panel solo muestra cargos PENDIENTES: los que este pago ya saldó
+        // (`pendingAmount` 0) no se renderizan y no se pueden re-seleccionar. Se
+        // preservan sus vínculos por id para no desvincularlos al guardar.
+        const renderedIds = new Set(
+            Array.from(debtsContainer.querySelectorAll('.conciliation-debt-card')).map(c => c.dataset.transactionId)
+        );
         const oldAppliedTo = tx.appliedTo || [];
-        const oldIds = new Set(oldAppliedTo.map(a => a.transactionId));
-        const newIds = new Set(newAppliedTo.map(a => a.transactionId));
+        const preserved = oldAppliedTo.filter(a => a && a.transactionId && !renderedIds.has(a.transactionId));
+        const newAppliedTo = [...preserved, ...selected];
 
-        const added = newAppliedTo.filter(a => !oldIds.has(a.transactionId));
-        const removedIds = [...oldIds].filter(id => !newIds.has(id));
+        const newIds = new Set(newAppliedTo.map(a => a.transactionId).filter(Boolean));
+        const releaseIds = oldAppliedTo.map(a => a.transactionId).filter(id => id && !newIds.has(id));
 
-        // Si no hay cambios, solo cerrar
-        if (added.length === 0 && removedIds.length === 0) {
-            closeConciliation(paymentId);
-            return;
-        }
-
-        // Leer docs actuales de cargos afectados
-        const allChargeIds = [...new Set([...newAppliedTo.map(a => a.transactionId), ...oldAppliedTo.map(a => a.transactionId)])];
         try {
-            const chargeSnaps = await Promise.all(allChargeIds.map(id => getDoc(doc(db, "transactions", id))));
-            const chargeData = {};
-            chargeSnaps.forEach(s => { if (s.exists()) chargeData[s.id] = s.data(); });
-
-            const batch = writeBatch(db);
-
-            // Cargos añadidos: decrementar pendingAmount, añadir paidBy
-            for (const item of added) {
-                const charge = chargeData[item.transactionId];
-                if (!charge) continue;
-                const currentPending = charge.pendingAmount !== undefined ? charge.pendingAmount : Math.abs(charge.amount || 0);
-                batch.update(doc(db, "transactions", item.transactionId), {
-                    pendingAmount: Math.max(0, currentPending - item.amount),
-                    paidBy: arrayUnion({
-                        paymentId: paymentId,
-                        voucherNumber: tx.voucherNumber || '',
-                        amount: item.amount,
-                        description: item.description || ''
-                    })
-                });
-            }
-
-            // Cargos removidos: restaurar pendingAmount, quitar de paidBy
-            for (const removedId of removedIds) {
-                const charge = chargeData[removedId];
-                if (!charge) continue;
-                const currentPending = charge.pendingAmount || 0;
-                const removedItem = oldAppliedTo.find(a => a.transactionId === removedId);
-                const updatedPaidBy = (charge.paidBy || []).filter(pb => pb.paymentId !== paymentId);
-                batch.update(doc(db, "transactions", removedId), {
-                    pendingAmount: currentPending + (removedItem?.amount || 0),
-                    paidBy: updatedPaidBy
-                });
-            }
-
-            // Actualizar appliedTo del PAYMENT
-            batch.update(doc(db, "transactions", paymentId), {
+            // Reconciliación AUTO-REPARABLE (modelo): hace `upsert` por `paymentId` y
+            // deriva `pendingAmount` de `paidBy`. Re-guardar repara cargos que
+            // quedaron sin `paidBy`, aunque el `appliedTo` ya los listara.
+            await Transaction.reconcileCharges({
+                paymentId,
+                propertyId: tx.propertyId,
+                links: newAppliedTo,
+                releaseIds,
                 appliedTo: newAppliedTo
             });
-
-            await batch.commit();
 
             // Actualizar caché local
             tx.appliedTo = newAppliedTo;

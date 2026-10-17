@@ -1,4 +1,4 @@
-import { db, collection, addDoc, updateDoc, deleteDoc, doc, getDoc, getDocs, query, where, orderBy, limit, startAfter, serverTimestamp, runTransaction } from "../core/firebase.js";
+import { db, collection, addDoc, updateDoc, deleteDoc, doc, getDoc, getDocs, query, where, orderBy, limit, startAfter, serverTimestamp, runTransaction, writeBatch } from "../core/firebase.js";
 import { createActivity } from "./Activities.js";
 import AppConfig from "./AppConfig.js";
 
@@ -319,6 +319,134 @@ export default class Transaction {
       console.error(`[Transaction] Error al obtener deudas de ${propertyId}:`, error);
       throw error;
     }
+  }
+
+  /**
+   * Reconcilia de forma AUTO-REPARABLE los cargos (FEE/FINE) vinculados a un pago.
+   *
+   * A diferencia del patrón basado en el diff de `appliedTo`, este método hace
+   * `upsert` por `paymentId` en cada cargo de `links` y DERIVA `pendingAmount` de la
+   * suma de `paidBy` (en vez de restar incrementalmente). Consecuencias:
+   *   - Volver a guardar SIEMPRE repara un cargo que quedó sin `paidBy`: aunque el
+   *     `appliedTo` del pago ya lo liste, se vuelve a enlazar y se recalcula el
+   *     pendiente. El aviso "vuelva a guardar para reintentar" pasa a ser cierto.
+   *   - No hay doble descuento: `pendingAmount` se recalcula, no se acumula.
+   *   - Varias entradas del mismo pago en `paidBy` se colapsan en una sola.
+   *
+   * Todo se escribe en un único `writeBatch` atómico. Un cargo solo se actualiza si
+   * su resultado difiere del estado actual (evita escrituras inútiles y, por tanto,
+   * que la UI muestre "guardado" cuando en realidad no había nada que reparar).
+   *
+   * @param {Object} payload
+   * @param {string} payload.paymentId - ID del pago que se concilia.
+   * @param {string} payload.propertyId - Unidad a la que deben pertenecer los cargos.
+   * @param {Array<{transactionId: string, amount: number, description?: string}>} payload.links
+   *        Cargos que este pago debe cubrir (el `appliedTo` deseado).
+   * @param {string[]} [payload.releaseIds] - Cargos de los que hay que desvincular el pago.
+   * @param {Array} [payload.appliedTo] - Si se indica, se guarda como `appliedTo` del
+   *        pago dentro del mismo batch (fuente de verdad de los vínculos).
+   * @param {number} [payload.balanceDelta] - Ajuste a `properties/{propertyId}.balance`.
+   * @returns {Promise<{conciliados:number, liberados:number, omitidos:number}>}
+   */
+  static async reconcileCharges({ paymentId, propertyId, links = [], releaseIds = [], appliedTo = null, balanceDelta = 0 }) {
+    // Normaliza `links` (acepta objetos o ids sueltos por compatibilidad) e ignora
+    // los que no tengan monto válido: un enlace sin monto no se puede derivar.
+    const linkById = new Map();
+    const omitidosDeLink = [];
+    for (const l of (links || [])) {
+      const transactionId = typeof l === 'string' ? l : (l && l.transactionId);
+      const amount = typeof l === 'string' ? 0 : Number(l && l.amount) || 0;
+      if (!transactionId) continue;
+      if (amount <= 0) { linkById.set(transactionId, { transactionId, amount: 0, description: '' }); omitidosDeLink.push(transactionId); continue; }
+      linkById.set(transactionId, { transactionId, amount, description: (l && l.description) || '' });
+    }
+
+    const omitidosSet = new Set(omitidosDeLink);
+    const releaseSet = new Set((releaseIds || []).filter(id => id && !linkById.has(id)));
+    const ids = [...new Set([...linkById.keys(), ...releaseSet])];
+    if (!ids.length && !balanceDelta && appliedTo === null) return { conciliados: 0, liberados: 0, omitidos: 0 };
+
+    const snapshots = await Promise.all(ids.map(id => getDoc(doc(db, "transactions", id))));
+
+    const batch = writeBatch(db);
+    let conciliados = 0;
+    let liberados = 0;
+    let omitidos = omitidosSet.size;
+    let wrote = false;
+
+    const sumAmounts = (arr) => (arr || []).reduce((s, pb) => s + (Number(pb.amount) || 0), 0);
+    const samePaidBy = (a, b) =>
+      a.length === b.length &&
+      b.every(nb => a.some(cb => cb.paymentId === nb.paymentId && (Number(cb.amount) || 0) === (Number(nb.amount) || 0)));
+
+    for (const snap of snapshots) {
+      if (!snap.exists()) {
+        console.warn(`[Transaction] Cargo ${snap.id} no existe. Se omite.`);
+        omitidos++;
+        continue;
+      }
+      const cargo = snap.data();
+
+      // El cargo debe ser de esta unidad: un enlace cruzado movería el saldo de una
+      // casa con el pago de otra.
+      if (cargo.propertyId && propertyId && cargo.propertyId !== propertyId) {
+        console.warn(`[Transaction] Cargo ${snap.id} es de ${cargo.propertyId} y el pago de ${propertyId}. Se omite.`);
+        omitidos++;
+        continue;
+      }
+
+      if (omitidosSet.has(snap.id)) continue; // link sin monto: no se toca
+
+      const curPaidBy = Array.isArray(cargo.paidBy) ? cargo.paidBy : [];
+      const others = curPaidBy.filter(pb => pb.paymentId !== paymentId);
+      const desired = linkById.get(snap.id);
+
+      // Upsert (link) o remove (release). El resto de entradas de otros pagos se conserva.
+      const newPaidBy = desired
+        ? [...others, { paymentId, amount: desired.amount, description: desired.description || '' }]
+        : others;
+
+      const newPending = Math.max(0, Math.abs(cargo.amount || 0) - sumAmounts(newPaidBy));
+      const curPending = cargo.pendingAmount !== undefined ? cargo.pendingAmount : Math.abs(cargo.amount || 0);
+
+      if (samePaidBy(curPaidBy, newPaidBy) && curPending === newPending) continue; // ya consistente
+
+      batch.update(doc(db, "transactions", snap.id), {
+        paidBy: newPaidBy,
+        pendingAmount: newPending
+      });
+      wrote = true;
+      if (desired) conciliados++; else liberados++;
+    }
+
+    // Si el llamador pide fijar el `appliedTo` del pago, va en el MISMO batch que los
+    // cargos: el pago y sus facturas no pueden quedar desincronizados.
+    if (appliedTo !== null) {
+      batch.update(doc(db, "transactions", paymentId), { appliedTo });
+      wrote = true;
+    }
+
+    if (wrote) await batch.commit();
+
+    // El saldo va aparte y a propósito: una escritura rechazada en `properties/{id}`
+    // (reglas, permisos) no debe tirar abajo la conciliación de los cargos, que es la
+    // que deja las facturas en estado correcto. El saldo es recalculable.
+    if (balanceDelta) {
+      try {
+        const propSnap = await getDoc(doc(db, "properties", propertyId));
+        if (propSnap.exists()) {
+          await updateDoc(doc(db, "properties", propertyId), {
+            balance: (propSnap.data().balance || 0) + balanceDelta,
+            lastBalanceUpdate: new Date()
+          });
+        }
+      } catch (e) {
+        console.warn(`[Transaction] No se actualizó el saldo de ${propertyId}. Los cargos sí quedaron conciliados.`, e);
+      }
+    }
+
+    console.log(`[Transaction] Conciliación pago ${paymentId}: ${conciliados} enlazado(s), ${liberados} liberado(s), ${omitidos} omitido(s).`);
+    return { conciliados, liberados, omitidos };
   }
 
   /**

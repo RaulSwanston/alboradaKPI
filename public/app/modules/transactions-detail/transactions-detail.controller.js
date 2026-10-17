@@ -2,7 +2,7 @@ import Transaction from "../../models/Transaction.js";
 import Property from "../../models/Property.js";
 import ExpenseAccount from "../../models/ExpenseAccount.js";
 import { t } from "../../core/i18n.js";
-import { db, doc, updateDoc, getDoc, writeBatch, arrayUnion } from "../../core/firebase.js";
+import { db, doc, updateDoc } from "../../core/firebase.js";
 import { uploadFileToR2, buildPropertyUploadKey, buildExpenseReceiptKey, getAuthObjectURL, revokeAuthObjectURLs } from "../../core/r2.js";
 import { compressImageFile } from "../../core/imageCompress.js";
 
@@ -463,94 +463,27 @@ export default async function transactionsDetailController(contexto) {
   };
 
   /**
-   * Concilia un pago con los cargos a los que se aplica: descuenta `pendingAmount`
-   * del cargo y registra el enlace en su `paidBy`. Es el mismo patrón que
-   * `PaymentNotification.approve()`, pero con dos diferencias que importan.
+   * Concilia un pago con los cargos a los que se aplica.
    *
-   * 1. IDEMPOTENTE POR PAGO. Si el cargo ya tiene una entrada en `paidBy` con este
-   *    `paymentId`, no se vuelve a descontar. Antes esta función no lo comprobaba y
-   *    un reintento la hacia descontar dos veces.
+   * Delega en `Transaction.reconcileCharges()`, que hace `upsert` por `paymentId` y
+   * DERIVA `pendingAmount` de la suma de `paidBy`. Por eso la operación es
+   * idempotente y AUTO-REPARABLE: volver a guardar el mismo pago repara cualquier
+   * cargo que hubiera quedado sin `paidBy`, aunque su `appliedTo` ya lo listara.
    *
-   * 2. EL SALDO VA EN UN BATCH APARTE. Antes compartía batch con los cargos, de modo
-   *    que una escritura en `properties/{id}` rechazada (reglas, permisos) tiraba
-   *    abajo también la conciliación. El saldo es un valor derivado de las
-   *    transacciones y se puede recomputar; un cargo sin conciliar hace que la factura
-   *    siga apareciendo como pendiente, y eso no tiene arreglo automático.
-   *
-   * @throws Si la conciliación de cargos falla, para que el formulario lo reporte en
-   *         lugar de mostrar un éxito falso.
-   * @returns {{conciliados: number, omitidos: number}}
+   * @throws Si la conciliación falla, para que el formulario lo reporte en lugar de
+   *         mostrar un éxito falso.
+   * @returns {Promise<{conciliados:number, liberados:number, omitidos:number}>}
    */
   const applyPaymentToCharges = async (paymentId, appliedTo, propertyId, paymentAmount) => {
-    const aplicables = (appliedTo || []).filter(a => a && a.transactionId && (a.amount || 0) > 0);
-    if (!aplicables.length) return { conciliados: 0, omitidos: 0 };
+    const links = (appliedTo || []).filter(a => a && a.transactionId && (a.amount || 0) > 0);
+    if (!links.length) return { conciliados: 0, liberados: 0, omitidos: 0 };
 
-    const snapshots = await Promise.all(
-      aplicables.map(a => getDoc(doc(db, "transactions", a.transactionId)))
-    );
-
-    const batch = writeBatch(db);
-    let conciliados = 0;
-    let omitidos = 0;
-
-    for (const applied of aplicables) {
-      const snap = snapshots.find(s => s.id === applied.transactionId);
-      if (!snap?.exists()) {
-        console.warn(`[TD] Cargo ${applied.transactionId} no existe. No se puede conciliar.`);
-        omitidos++;
-        continue;
-      }
-      const cargo = snap.data();
-
-      // El cargo debe ser de esta unidad: un enlace cruzado movería el saldo de una
-      // casa con el pago de otra.
-      if (cargo.propertyId && cargo.propertyId !== propertyId) {
-        console.warn(`[TD] Cargo ${applied.transactionId} es de ${cargo.propertyId} y el pago de ${propertyId}. Se omite.`);
-        omitidos++;
-        continue;
-      }
-
-      // Idempotencia: este pago ya está registrado en este cargo.
-      if ((cargo.paidBy || []).some(pb => pb.paymentId === paymentId)) {
-        omitidos++;
-        continue;
-      }
-
-      const currentPend = cargo.pendingAmount !== undefined
-        ? cargo.pendingAmount
-        : Math.abs(cargo.amount || 0);
-
-      batch.update(doc(db, "transactions", applied.transactionId), {
-        pendingAmount: Math.max(0, currentPend - applied.amount),
-        paidBy: arrayUnion({
-          paymentId: paymentId,
-          amount: applied.amount,
-          description: applied.description || ''
-        })
-      });
-      conciliados++;
-    }
-
-    if (conciliados > 0) {
-      await batch.commit();
-    }
-    console.log(`[TD] Pago ${paymentId}: ${conciliados} cargo(s) conciliados, ${omitidos} omitido(s).`);
-
-    // Aparte y a propósito: que falle no debe invalidar la conciliación de arriba.
-    try {
-      const propRef = doc(db, "properties", propertyId);
-      const propSnap = await getDoc(propRef);
-      if (propSnap.exists()) {
-        await updateDoc(propRef, {
-          balance: (propSnap.data().balance || 0) + paymentAmount,
-          lastBalanceUpdate: new Date()
-        });
-      }
-    } catch (e) {
-      console.warn(`[TD] No se actualizó el saldo de ${propertyId}. Los cargos sí quedaron conciliados.`, e);
-    }
-
-    return { conciliados, omitidos };
+    return Transaction.reconcileCharges({
+      paymentId,
+      propertyId,
+      links,
+      balanceDelta: paymentAmount
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -599,12 +532,25 @@ export default async function transactionsDetailController(contexto) {
 
     if (type === 'PAYMENT') {
       data.paymentMethod = paymentMethod.value;
-      if (selectedDebtIds.size > 0) {
-        data.appliedTo = Array.from(debtsContainer.querySelectorAll('.td-debt-card.selected')).map(card => ({
-          transactionId: card.dataset.debtId,
-          amount: parseFloat(card.dataset.amount),
-          description: card.querySelector('.td-debt-title')?.textContent || ''
-        }));
+
+      const selected = Array.from(debtsContainer.querySelectorAll('.td-debt-card.selected')).map(card => ({
+        transactionId: card.dataset.debtId,
+        amount: parseFloat(card.dataset.amount),
+        description: card.querySelector('.td-debt-title')?.textContent || ''
+      }));
+
+      if (isNew) {
+        data.appliedTo = selected;
+      } else {
+        // El formulario solo renderiza cargos PENDIENTES: los que este pago ya saldó
+        // (`pendingAmount` 0) no aparecen y no se pueden re-seleccionar. Se preservan
+        // sus vínculos por id para que un guardado no los desvincule por accidente.
+        const renderedIds = new Set(
+          Array.from(debtsContainer.querySelectorAll('.td-debt-card')).map(c => c.dataset.debtId)
+        );
+        const preserved = (originalTransaction?.appliedTo || [])
+          .filter(a => a && a.transactionId && !renderedIds.has(a.transactionId));
+        data.appliedTo = [...preserved, ...selected];
       }
     }
 
@@ -632,53 +578,32 @@ export default async function transactionsDetailController(contexto) {
         savedId = transId;
       }
 
-      // Conciliar cargos vinculados/desvinculados
+      // Conciliar cargos vinculados/desvinculados.
+      // `data.appliedTo` ya viene MEZCLADO (selección del formulario + vínculos que
+      // no se pudieron renderizar porque el cargo ya estaba saldado). Por eso se
+      // reconcilia el conjunto completo y no solo el diff: así, volver a guardar
+      // repara un cargo que quedó sin `paidBy` aunque su `appliedTo` ya lo listara.
       if (type === 'PAYMENT' && savedId) {
         if (isNew && data.appliedTo?.length > 0) {
           await applyPaymentToCharges(savedId, data.appliedTo, currentPropertyId, absAmount);
         } else if (!isNew) {
           const oldAT = originalTransaction?.appliedTo || [];
           const newAT = data.appliedTo || [];
-          const oldIds = new Set(oldAT.map(a => a.transactionId));
-          const newIds = new Set(newAT.map(a => a.transactionId));
-          const added = newAT.filter(a => !oldIds.has(a.transactionId));
-          const removedIds = [...oldIds].filter(id => !newIds.has(id));
+          const oldIds = new Set(oldAT.map(a => a.transactionId).filter(Boolean));
+          const newIds = new Set(newAT.map(a => a.transactionId).filter(Boolean));
+          const releaseIds = [...oldIds].filter(id => !newIds.has(id));
           const oldAmount = Math.abs(originalTransaction?.amount || 0);
 
-          if (added.length > 0 || removedIds.length > 0 || absAmount !== oldAmount) {
-            const allIds = [...new Set([...newAT.map(a => a.transactionId), ...oldAT.map(a => a.transactionId)])];
-            const [chargeSnaps, propSnap] = await Promise.all([
-              Promise.all(allIds.map(id => getDoc(doc(db, "transactions", id)))),
-              getDoc(doc(db, "properties", currentPropertyId))
-            ]);
-            const chargeData = {};
-            chargeSnaps.forEach(s => { if (s.exists()) chargeData[s.id] = s.data(); });
-
-            const batch = writeBatch(db);
-            for (const item of added) {
-              const ch = chargeData[item.transactionId];
-              if (!ch) continue;
-              const cur = ch.pendingAmount !== undefined ? ch.pendingAmount : Math.abs(ch.amount || 0);
-              batch.update(doc(db, "transactions", item.transactionId), {
-                pendingAmount: Math.max(0, cur - item.amount),
-                paidBy: arrayUnion({ paymentId: savedId, amount: item.amount, description: item.description || '' })
-              });
-            }
-            for (const rid of removedIds) {
-              const ch = chargeData[rid];
-              if (!ch) continue;
-              const item = oldAT.find(a => a.transactionId === rid);
-              batch.update(doc(db, "transactions", rid), {
-                pendingAmount: (ch.pendingAmount || 0) + (item?.amount || 0),
-                paidBy: (ch.paidBy || []).filter(pb => pb.paymentId !== savedId)
-              });
-            }
-            const curBal = propSnap.exists() ? (propSnap.data().balance || 0) : 0;
-            batch.update(doc(db, "properties", currentPropertyId), {
-              balance: curBal + (absAmount - oldAmount),
-              lastBalanceUpdate: new Date()
+          if (newAT.length > 0 || releaseIds.length > 0 || absAmount !== oldAmount) {
+            // El `appliedTo` ya lo guardó `Transaction.update` arriba; aquí solo se
+            // reconcilian los cargos (auto-reparable) y, si cambió, el saldo.
+            await Transaction.reconcileCharges({
+              paymentId: savedId,
+              propertyId: currentPropertyId,
+              links: newAT,
+              releaseIds,
+              balanceDelta: absAmount - oldAmount
             });
-            await batch.commit();
           }
         }
       }
