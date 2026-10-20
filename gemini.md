@@ -464,12 +464,14 @@ Para garantizar una gestión contable precisa y una UX fluida en el reporte de i
 *   **Estándares de Iconografía:** Se prohíbe el uso de colores fijos en los SVGs del catálogo. Todos los iconos en `icons.json` deben usar `fill='currentColor'` para permitir la estilización dinámica vía CSS (especialmente en tarjetas oscuras).
 
 ---
-### 22. Estándares del Entorno de Desarrollo (Windows/PowerShell)
+### 22. Estándares del Entorno de Desarrollo (Linux/GNOME Terminal)
 
 Para garantizar la compatibilidad con el entorno local del usuario y la correcta ejecución de tareas de automatización:
 
-- **Entorno Mandatorio:** El sistema operativo de desarrollo es **Windows (win32)**.
-- **Shell de Ejecución:** Se debe utilizar exclusivamente **PowerShell** para todos los comandos de shell y scripts de automatización.
-- **Sintaxis de Comandos:** No se debe asumir la disponibilidad de herramientas de Unix (bash, sh). Los comandos deben seguir la sintaxis de PowerShell (ej. `Write-Output` en lugar de `echo`, `Import-Csv`, manejo de variables con `$`).
-- **Scripts locales:** El uso de archivos `.ps1` es el estándar para tareas complejas de verificación o procesamiento de datos.
+- **Entorno Mandatorio:** El sistema operativo de desarrollo es **Linux (Debian Trixie)**.
+- **Terminal:** **GNOME Terminal 3.56.2**.
+- **Shell de Ejecución:** Se debe utilizar exclusivamente **bash** para todos los comandos de shell y scripts de automatización.
+- **Sintaxis de Comandos:** Los comandos deben seguir la sintaxis de bash (ej. `echo`, `export VAR=valor`, rutas con `/`). No asumir herramientas de Windows (PowerShell, CMD).
+- **Scripts locales:** El uso de archivos `.sh` es el estándar para tareas complejas de verificación o procesamiento de datos.
+- **Referencia:** Ver [`docs/environment.md`](docs/environment.md) para los detalles del entorno local.
 
