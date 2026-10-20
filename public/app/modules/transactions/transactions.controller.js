@@ -516,58 +516,160 @@ export default async function transactionsController(contexto) {
         if (!debtsContainer) return;
 
         debtsContainer.innerHTML = '<p class="conciliation-loading">Cargando deudas pendientes...</p>';
+        debtsContainer._knownDebtIds = new Set();
+        const loadToken = (debtsContainer._loadToken || 0) + 1;
+        debtsContainer._loadToken = loadToken;
 
         try {
-            const debts = await Transaction.getPendingDebts(tx.propertyId);
+            // Incluir los cargos que este pago ya cubre, aunque estén saldados, para
+            // que aparezcan seleccionados y se puedan desvincular.
+            const includeIds = (tx.appliedTo || []).map(a => a?.transactionId).filter(Boolean);
+            const debts = await Transaction.getPendingDebts(tx.propertyId, { includeIds });
+            if (loadToken !== debtsContainer._loadToken) return;
             renderDebtsInPanel(debtsContainer, debts, tx);
         } catch (e) {
+            if (loadToken !== debtsContainer._loadToken) return;
             console.error('[TX] Error loading debts for conciliation:', e);
             debtsContainer.innerHTML = '<p class="conciliation-empty">Error al cargar deudas</p>';
         }
     };
 
     const renderDebtsInPanel = (container, debts, paymentTx) => {
-        const preSelectedIds = new Set((paymentTx.appliedTo || []).map(a => a.transactionId));
+        const paymentAmount = Math.abs(Number(paymentTx.amount) || 0);
+        const appliedById = new Map(
+            (paymentTx.appliedTo || [])
+                .filter(a => a && a.transactionId)
+                .map(a => [a.transactionId, a])
+        );
+        const partialOf = t('modules.conciliation.partialOf');
 
-        if (debts.length === 0) {
-            container.innerHTML = '<p class="conciliation-empty">La unidad no tiene cargos pendientes</p>';
-            return;
-        }
+        // Normaliza cada cargo: monto pendiente real + lo que este pago ya le aplicó.
+        // `fullAmount` es lo que el cargo consume si se selecciona por completo.
+        const items = debts.map(debt => {
+            // `pendingAmount` ya descuenta lo pagado, incluido este pago. Si falta
+            // (datos antiguos), se deriva de `paidBy` para no sumar dos veces el
+            // importe vinculado.
+            const paidSum = (debt.paidBy || []).reduce((sum, p) => sum + (Number(p?.amount) || 0), 0);
+            const basePending = debt.pendingAmount != null
+                ? Math.abs(Number(debt.pendingAmount) || 0)
+                : Math.max(0, Math.abs(Number(debt.amount) || 0) - paidSum);
+            const applied = appliedById.get(debt.id);
+            let linkedAmount = applied ? Math.abs(Number(applied.amount) || 0) : 0;
 
-        container.innerHTML = debts.map(debt => {
-            const debtId = debt.id;
-            const isSelected = preSelectedIds.has(debtId);
-            const pending = debt.pendingAmount !== undefined ? debt.pendingAmount : Math.abs(debt.amount);
-            const voucherLabel = debt.voucherNumber || `Cargo ${debtId.slice(0, 6)}`;
-            const desc = debt.description || 'Cargo sin descripción';
+            // Compatibilidad con vínculos antiguos sin `amount`: se recupera de
+            // `paidBy` y, como último recurso, del propio cargo.
+            if (applied && linkedAmount <= 0) {
+                const paidBy = (debt.paidBy || []).find(p => p && p.paymentId === paymentTx.id);
+                linkedAmount = Math.abs(Number(paidBy?.amount) || 0);
+            }
+            if (applied && linkedAmount <= 0) {
+                linkedAmount = Math.min(basePending || Math.abs(Number(debt.amount) || 0), paymentAmount);
+            }
 
-            return `
-                <div class="conciliation-debt-card ${isSelected ? 'selected' : ''}" data-transaction-id="${debtId}" data-amount="${Math.abs(pending).toFixed(2)}">
-                    <div class="conciliation-debt-check">
-                        <input type="checkbox" ${isSelected ? 'checked' : ''}>
-                        <span class="check-indicator">
-                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="20 6 9 17 4 12"></polyline>
-                            </svg>
-                        </span>
-                    </div>
-                    <div class="conciliation-debt-info">
-                        <span class="conciliation-debt-title">${desc}</span>
-                        <span class="conciliation-debt-voucher">${voucherLabel}</span>
-                    </div>
-                    <span class="conciliation-debt-amount">$${Math.abs(pending).toFixed(2)}</span>
-                </div>
-            `;
-        }).join('');
-
-        container.querySelectorAll('.conciliation-debt-card').forEach(card => {
-            card.addEventListener('click', (e) => {
-                const checkbox = card.querySelector('input[type="checkbox"]');
-                e.preventDefault();
-                checkbox.checked = !checkbox.checked;
-                card.classList.toggle('selected', checkbox.checked);
-            });
+            return {
+                id: debt.id,
+                description: debt.description || 'Cargo sin descripción',
+                voucherNumber: debt.voucherNumber || `Cargo ${debt.id.slice(0, 6)}`,
+                basePending,
+                fullAmount: basePending + linkedAmount,
+                selected: !!applied,
+                amount: applied ? linkedAmount : 0
+            };
         });
+
+        const totalSelected = () => items
+            .filter(item => item.selected)
+            .reduce((sum, item) => sum + item.amount, 0);
+
+        // Todos los cargos que conoce el panel (visibles o no en este momento).
+        // Permite distinguir un vínculo desmarcado de un vínculo huérfano al guardar.
+        container._knownDebtIds = new Set(items.map(item => item.id));
+
+        // La consulta ya se hizo al abrir el panel. A partir de aquí las tarjetas
+        // se construyen UNA vez y solo se ocultan/muestran al marcar cargos: así
+        // las transiciones CSS pueden animar entrada y salida sin recrear el DOM
+        // ni volver a consultar Firestore.
+        container.innerHTML = '';
+
+        const emptyEl = document.createElement('p');
+        emptyEl.className = 'conciliation-empty';
+        emptyEl.textContent = 'La unidad no tiene cargos pendientes';
+        emptyEl.hidden = items.length > 0;
+        container.appendChild(emptyEl);
+
+        if (items.length === 0) return;
+
+        const cardById = new Map();
+
+        const update = () => {
+            const remaining = Math.max(0, paymentAmount - totalSelected());
+            let anyVisible = false;
+
+            items.forEach(item => {
+                const card = cardById.get(item.id);
+                if (!card) return;
+
+                // Mientras quede saldo se muestran todos los cargos por conciliar;
+                // si el pago quedó totalmente asignado, solo los ya vinculados.
+                const show = item.selected || remaining > 0;
+                const isPartial = item.selected && item.amount < item.fullAmount - 0.005;
+                const amountLabel = isPartial
+                    ? `$${item.amount.toFixed(2)} ${partialOf} $${item.fullAmount.toFixed(2)}`
+                    : `$${item.fullAmount.toFixed(2)}`;
+                const dataAmount = item.selected ? item.amount : item.fullAmount;
+
+                card.classList.toggle('selected', item.selected);
+                card.dataset.amount = dataAmount.toFixed(2);
+                card.querySelector('.conciliation-debt-amount').textContent = amountLabel;
+                card.querySelector('input[type="checkbox"]').checked = item.selected;
+                card.hidden = !show;
+                if (show) anyVisible = true;
+            });
+
+            emptyEl.hidden = anyVisible;
+        };
+
+        items.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'conciliation-debt-card';
+            card.dataset.transactionId = item.id;
+            card.innerHTML = `
+                <div class="conciliation-debt-check">
+                    <input type="checkbox">
+                    <span class="check-indicator">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="20 6 9 17 4 12"></polyline>
+                        </svg>
+                    </span>
+                </div>
+                <div class="conciliation-debt-info">
+                    <span class="conciliation-debt-title">${item.description}</span>
+                    <span class="conciliation-debt-voucher">${item.voucherNumber}</span>
+                </div>
+                <span class="conciliation-debt-amount"></span>
+            `;
+
+            card.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (item.selected) {
+                    item.selected = false;
+                    item.amount = 0;
+                } else {
+                    const available = Math.max(0, paymentAmount - totalSelected());
+                    if (available <= 0) return;
+                    // Si el cargo supera el saldo disponible se aplica un abono
+                    // parcial; el resto queda pendiente para otro pago.
+                    item.selected = true;
+                    item.amount = Math.min(item.fullAmount, available);
+                }
+                update();
+            });
+
+            cardById.set(item.id, card);
+            container.appendChild(card);
+        });
+
+        update();
     };
 
     const saveConciliation = async (paymentId) => {
@@ -587,14 +689,17 @@ export default async function transactionsController(contexto) {
             description: card.querySelector('.conciliation-debt-title')?.textContent || ''
         }));
 
-        // El panel solo muestra cargos PENDIENTES: los que este pago ya saldó
-        // (`pendingAmount` 0) no se renderizan y no se pueden re-seleccionar. Se
-        // preservan sus vínculos por id para no desvincularlos al guardar.
-        const renderedIds = new Set(
-            Array.from(debtsContainer.querySelectorAll('.conciliation-debt-card')).map(c => c.dataset.transactionId)
-        );
+        // El panel conoce todos los cargos de la unidad (aunque algunos queden
+        // ocultos al no quedar saldo). Los vínculos a cargos conocidos que el
+        // usuario desmarcó se liberan; los huérfanos (cargo eliminado o de otra
+        // unidad) se preservan por id para no perderlos al guardar.
+        const knownIds = debtsContainer._knownDebtIds instanceof Set
+            ? debtsContainer._knownDebtIds
+            : new Set(
+                Array.from(debtsContainer.querySelectorAll('.conciliation-debt-card')).map(c => c.dataset.transactionId)
+            );
         const oldAppliedTo = tx.appliedTo || [];
-        const preserved = oldAppliedTo.filter(a => a && a.transactionId && !renderedIds.has(a.transactionId));
+        const preserved = oldAppliedTo.filter(a => a && a.transactionId && !knownIds.has(a.transactionId));
         const newAppliedTo = [...preserved, ...selected];
 
         const newIds = new Set(newAppliedTo.map(a => a.transactionId).filter(Boolean));

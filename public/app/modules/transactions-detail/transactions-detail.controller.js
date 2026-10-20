@@ -74,7 +74,10 @@ export default async function transactionsDetailController(contexto) {
 
   // --- State ---
   let cachedProperties = [];
-  let selectedDebtIds = new Set();
+  let debtsCache = [];
+  let debtCardById = new Map();
+  let selectedDebtAmounts = new Map();
+  let debtsLoadToken = 0;
   let receiptFile = null;
   let currentPropertyId = '';
   let isManualAmount = false;
@@ -225,7 +228,7 @@ export default async function transactionsDetailController(contexto) {
     return 'FEE';
   };
 
-  const handleTypeChange = (type) => {
+  const handleTypeChange = (type, { skipDebts = false } = {}) => {
     const isPayment = type === 'PAYMENT';
     const isExpense = type === 'EXPENSE';
     const showReceiptSection = isPayment || isExpense;
@@ -247,7 +250,9 @@ export default async function transactionsDetailController(contexto) {
       statusField.classList.remove('hidden');
     }
 
-    if (isPayment && currentPropertyId) {
+    if (skipDebts) {
+      // El llamador ya cargó los cargos (p. ej. edición con vínculos existentes).
+    } else if (isPayment && currentPropertyId) {
       loadDebts(currentPropertyId);
     } else if (!isPayment) {
       clearDebts();
@@ -261,92 +266,166 @@ export default async function transactionsDetailController(contexto) {
   // =============================================
   //  DEBTS
   // =============================================
-  const loadDebts = async (propertyId, preSelectedIds = []) => {
+
+  // En edición el monto del pago ya está definido y no debe recalcularse a partir
+  // de los cargos. En alta solo es fijo si el usuario escribió el monto a mano.
+  const isFixedAmount = () => !isNew || isManualAmount;
+
+  const getSelectedTotal = () => {
+    let total = 0;
+    selectedDebtAmounts.forEach(amount => { total += amount; });
+    return total;
+  };
+
+  const getPaymentAmount = () => Math.abs(parseFloat(amountInput.value) || 0);
+
+  /**
+   * @param {string} propertyId
+   * @param {Array<{transactionId:string, amount:number}>} [appliedEntries]
+   *        Vínculos actuales del pago (modo edición). Se incluyen en la consulta
+   *        aunque ya estén saldados para poder mostrarlos seleccionados.
+   */
+  const loadDebts = async (propertyId, appliedEntries = []) => {
+    const token = ++debtsLoadToken;
     try {
       debtsContainer.innerHTML = '<p class="td-empty-hint">Buscando deudas pendientes...</p>';
       debtsSection.classList.remove('hidden');
+      debtsCache = [];
+      debtCardById = new Map();
+      selectedDebtAmounts = new Map();
 
-      const debts = await Transaction.getPendingDebts(propertyId);
-      selectedDebtIds = new Set();
+      const appliedById = new Map(
+        (appliedEntries || [])
+          .filter(a => a && a.transactionId)
+          .map(a => [a.transactionId, a])
+      );
+      const debts = await Transaction.getPendingDebts(propertyId, {
+        includeIds: [...appliedById.keys()]
+      });
+      if (token !== debtsLoadToken) return;
 
-      if (debts.length === 0) {
+      debtsCache = debts.map(debt => {
+        // `pendingAmount` ya descuenta lo pagado, incluido este pago. Si falta
+        // (datos antiguos), se deriva de `paidBy` para no sumar dos veces el
+        // importe vinculado.
+        const paidSum = (debt.paidBy || []).reduce((sum, p) => sum + (Number(p?.amount) || 0), 0);
+        const basePending = debt.pendingAmount != null
+          ? Math.abs(Number(debt.pendingAmount) || 0)
+          : Math.max(0, Math.abs(Number(debt.amount) || 0) - paidSum);
+        const applied = appliedById.get(debt.id);
+        let linkedAmount = applied ? Math.abs(Number(applied.amount) || 0) : 0;
+
+        // Compatibilidad con vínculos antiguos sin `amount`: se recupera de
+        // `paidBy` y, como último recurso, del propio cargo.
+        if (applied && linkedAmount <= 0) {
+          const paidBy = (debt.paidBy || []).find(p => p && p.paymentId === transId);
+          linkedAmount = Math.abs(Number(paidBy?.amount) || 0);
+        }
+        if (applied && linkedAmount <= 0) {
+          linkedAmount = Math.min(basePending || Math.abs(Number(debt.amount) || 0), getPaymentAmount());
+        }
+
+        const item = {
+          id: debt.id,
+          description: debt.description || 'Cargo sin descripción',
+          voucherNumber: debt.voucherNumber || `Cargo ${debt.id.slice(0, 6)}`,
+          fullAmount: basePending + linkedAmount
+        };
+
+        if (applied) selectedDebtAmounts.set(item.id, linkedAmount);
+        return item;
+      });
+
+      if (debtsCache.length === 0) {
         debtsContainer.innerHTML = '<p class="td-empty-hint">La unidad no tiene cargos pendientes</p>';
         updateDebtsCount(0);
         return;
       }
 
-      renderDebtCards(debts, preSelectedIds);
+      // Las tarjetas se crean una vez por carga de deudas. A partir de aquí solo
+      // se actualizan en sitio (visibilidad, selección e importe), sin recrear el
+      // DOM ni repetir la consulta a Firestore.
+      debtsContainer.innerHTML = '';
+      debtCardById = new Map();
+
+      debtsCache.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'td-debt-card';
+        card.dataset.debtId = item.id;
+        card.innerHTML = `
+          <div class="td-debt-check">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+          </div>
+          <div class="td-debt-info">
+            <span class="td-debt-title">${item.description}</span>
+            <span class="td-debt-sub">${item.voucherNumber}</span>
+          </div>
+          <span class="td-debt-amount"></span>
+        `;
+
+        card.addEventListener('click', () => toggleDebt(item));
+        debtCardById.set(item.id, card);
+        debtsContainer.appendChild(card);
+      });
+
+      renderDebtCards();
     } catch (e) {
+      if (token !== debtsLoadToken) return;
       console.error('[TD] Error loading debts:', e);
       debtsContainer.innerHTML = '<p class="td-empty-hint">Error al cargar deudas</p>';
     }
   };
 
-  const renderDebtCards = (debts, preSelectedIds = []) => {
-    debtsContainer.innerHTML = '';
+  const renderDebtCards = () => {
+    const fixed = isFixedAmount();
+    const remaining = fixed ? getPaymentAmount() - getSelectedTotal() : Infinity;
 
-    debts.forEach(debt => {
-      const card = document.createElement('div');
-      card.className = 'td-debt-card';
-      card.dataset.debtId = debt.id;
-      card.dataset.amount = Math.abs(debt.pending || Math.abs(debt.amount));
+    debtsCache.forEach(item => {
+      const card = debtCardById.get(item.id);
+      if (!card) return;
 
-      if (preSelectedIds.includes(debt.id)) {
-        card.classList.add('selected');
-        selectedDebtIds.add(debt.id);
-      }
+      const isSelected = selectedDebtAmounts.has(item.id);
+      // Con monto fijo, mientras quede saldo se muestran todos los cargos por
+      // conciliar. Si el pago ya está totalmente asignado, solo los vinculados.
+      const show = isSelected || !fixed || remaining > 0;
+      const amount = isSelected ? selectedDebtAmounts.get(item.id) : item.fullAmount;
+      const isPartial = isSelected && amount < item.fullAmount - 0.005;
+      const amountLabel = isPartial
+        ? `$${amount.toFixed(2)} ${t('modules.conciliation.partialOf')} $${item.fullAmount.toFixed(2)}`
+        : `$${item.fullAmount.toFixed(2)}`;
 
-      const voucherLabel = debt.voucherNumber || `Cargo ${debt.id.slice(0, 6)}`;
-      const desc = debt.description || 'Cargo sin descripción';
-
-      card.innerHTML = `
-        <div class="td-debt-check">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="20 6 9 17 4 12"></polyline>
-          </svg>
-        </div>
-        <div class="td-debt-info">
-          <span class="td-debt-title">${desc}</span>
-          <span class="td-debt-sub">${voucherLabel}</span>
-        </div>
-        <span class="td-debt-amount">$${Math.abs(debt.pending || Math.abs(debt.amount)).toFixed(2)}</span>
-      `;
-
-      card.addEventListener('click', () => toggleDebt(card));
-      debtsContainer.appendChild(card);
+      card.classList.toggle('selected', isSelected);
+      card.dataset.amount = amount.toFixed(2);
+      card.querySelector('.td-debt-amount').textContent = amountLabel;
+      card.hidden = !show;
     });
 
-    if (preSelectedIds.length > 0) {
-      recalculateAmount();
-    }
-    updateDebtsCount(selectedDebtIds.size);
+    updateDebtsCount(selectedDebtAmounts.size);
   };
 
-  const toggleDebt = (card) => {
-    const debtId = card.dataset.debtId;
-    const isSelected = card.classList.toggle('selected');
-
-    if (isSelected) {
-      selectedDebtIds.add(debtId);
+  const toggleDebt = (item) => {
+    if (selectedDebtAmounts.has(item.id)) {
+      selectedDebtAmounts.delete(item.id);
+    } else if (isFixedAmount()) {
+      const available = Math.max(0, getPaymentAmount() - getSelectedTotal());
+      if (available <= 0) return;
+      // Si el cargo supera el saldo disponible se aplica un abono parcial; el
+      // resto queda pendiente para un pago posterior.
+      selectedDebtAmounts.set(item.id, Math.min(item.fullAmount, available));
     } else {
-      selectedDebtIds.delete(debtId);
+      selectedDebtAmounts.set(item.id, item.fullAmount);
     }
 
-    recalculateAmount();
-    updateDebtsCount(selectedDebtIds.size);
+    if (!isFixedAmount()) recalculateAmount();
+    renderDebtCards();
   };
 
   const recalculateAmount = () => {
-    if (isManualAmount || selectedDebtIds.size === 0) return;
+    if (isManualAmount || selectedDebtAmounts.size === 0) return;
 
-    let total = 0;
-    const cards = debtsContainer.querySelectorAll('.td-debt-card');
-    cards.forEach(card => {
-      if (card.classList.contains('selected')) {
-        total += parseFloat(card.dataset.amount) || 0;
-      }
-    });
-
+    const total = getSelectedTotal();
     if (total > 0) {
       _settingAmount = true;
       amountInput.value = total.toFixed(2);
@@ -359,8 +438,11 @@ export default async function transactionsDetailController(contexto) {
   };
 
   const clearDebts = () => {
+    debtsLoadToken++;
     debtsContainer.innerHTML = '<p class="td-empty-hint">Seleccione una unidad para ver sus cargos pendientes</p>';
-    selectedDebtIds = new Set();
+    debtsCache = [];
+    debtCardById = new Map();
+    selectedDebtAmounts = new Map();
     updateDebtsCount(0);
   };
 
@@ -542,14 +624,13 @@ export default async function transactionsDetailController(contexto) {
       if (isNew) {
         data.appliedTo = selected;
       } else {
-        // El formulario solo renderiza cargos PENDIENTES: los que este pago ya saldó
-        // (`pendingAmount` 0) no aparecen y no se pueden re-seleccionar. Se preservan
-        // sus vínculos por id para que un guardado no los desvincule por accidente.
-        const renderedIds = new Set(
-          Array.from(debtsContainer.querySelectorAll('.td-debt-card')).map(c => c.dataset.debtId)
-        );
+        // El formulario conoce todos los cargos de la unidad (aunque algunos queden
+        // ocultos al no quedar saldo). Los vínculos a cargos conocidos que el
+        // usuario desmarcó se liberan; los huérfanos (cargo eliminado o de otra
+        // unidad) se preservan por id para no perderlos al guardar.
+        const knownIds = new Set(debtsCache.map(item => item.id));
         const preserved = (originalTransaction?.appliedTo || [])
-          .filter(a => a && a.transactionId && !renderedIds.has(a.transactionId));
+          .filter(a => a && a.transactionId && !knownIds.has(a.transactionId));
         data.appliedTo = [...preserved, ...selected];
       }
     }
@@ -732,10 +813,6 @@ export default async function transactionsDetailController(contexto) {
         paymentSection.classList.remove('hidden');
         debtsSection.classList.remove('hidden');
         paymentMethod.value = legacyPaymentMap[trans.paymentMethod] || trans.paymentMethod || '';
-        if (currentPropertyId) {
-          const preSelectedIds = (trans.appliedTo || []).map(a => a.transactionId).filter(Boolean);
-          await loadDebts(currentPropertyId, preSelectedIds);
-        }
       }
 
       // Existing receipt preview (from stored metadata.receiptURL)
@@ -766,8 +843,12 @@ export default async function transactionsDetailController(contexto) {
       // Store original for diff calculation on edit
       originalTransaction = trans;
 
-      // Trigger type change UI
-      handleTypeChange(type);
+      // Trigger type change UI (sin recargar cargos: se cargan abajo con los vínculos)
+      handleTypeChange(type, { skipDebts: true });
+
+      if (type === 'PAYMENT' && currentPropertyId) {
+        await loadDebts(currentPropertyId, trans.appliedTo || []);
+      }
 
       // Reconciliation
       const isFee = (trans.amount || 0) < 0;
@@ -817,6 +898,9 @@ export default async function transactionsDetailController(contexto) {
     amountInput.addEventListener('input', () => {
       if (_settingAmount) return;
       isManualAmount = amountInput.value !== '';
+      // Con monto manual/fijo, el saldo disponible cambia al teclear: recalcular
+      // qué cargos quedan visibles (y permitir abonos parciales).
+      if (debtsCache.length > 0) renderDebtCards();
     });
 
     // Save

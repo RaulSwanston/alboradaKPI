@@ -225,7 +225,8 @@
       "cancel": "Cancelar",
       "saved": "Conciliación guardada correctamente",
       "error": "Error al guardar conciliación",
-      "badge": "cargo(s) conciliado(s)"
+      "badge": "cargo(s) conciliado(s)",
+      "partialOf": "de"
     },
     "calendar": {
       "title": "Calendario Comunitario",

@@ -26,6 +26,7 @@
 - **ID:** Auto-generado.
 - **Campos:** `propertyId`, `status`, `amount`, `pendingAmount`, `paidBy` (Array), `appliedTo` (Array), `type`, `description`, `voucherType`, `voucherNumber`, `period`, `createdAt`, `effectiveDate`.
 - **Clasificación de gastos:** `expenseAccountId` referencia `expenseAccounts/{docId}`. Solo aplica a `type: 'EXPENSE'`; si está ausente, el gasto se muestra y agrupa como **"Sin clasificar"**. Es la fuente de verdad compartida por el módulo de Gastos Generales y por los gráficos de Analytics.
+- **Abonos parciales:** no hay un campo adicional. En un `PAYMENT`, `appliedTo[].amount` guarda el importe efectivamente aplicado a cada cargo (puede ser menor que el cargo). El cargo correspondiente guarda en `paidBy[].amount` la parte cubierta por ese pago y en `pendingAmount` el saldo restante. `overpayment` es solo para el excedente de un pago, no para abonos parciales.
 - **Comprobante de pago:** `metadata.receiptURL` guarda una **URL del Worker de Cloudflare** (Cloudflare R2 `alboradakpi/...`) tras subirla vía POST con API key. Para MOSTRARLA usar `getAuthObjectURL()` (fetch→blob), nunca `<img src>` directo.
 
 ## Colección `expenseAccounts`

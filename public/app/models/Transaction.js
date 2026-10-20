@@ -290,11 +290,18 @@ export default class Transaction {
   }
 
   /**
-   * Obtiene todos los cargos (amount < 0) pendientes de una propiedad.
-   * @param {string} propertyId 
+   * Obtiene los cargos (amount < 0) de una propiedad.
+   *
+   * Por defecto solo devuelve los que tienen saldo pendiente. `includeIds` permite
+   * traer también cargos ya saldados que estén vinculados al pago que se está
+   * editando, para poder mostrarlos seleccionados en el panel de conciliación.
+   * No cuesta lecturas extra: la consulta ya descarga todas las transacciones.
+   *
+   * @param {string} propertyId
+   * @param {{includeIds?: string[]}} [options]
    * @returns {Promise<Array>}
    */
-  static async getPendingDebts(propertyId) {
+  static async getPendingDebts(propertyId, { includeIds = [] } = {}) {
     try {
       const q = query(
         collection(db, "transactions"),
@@ -302,11 +309,12 @@ export default class Transaction {
       );
 
       const querySnapshot = await getDocs(q);
+      const include = new Set((includeIds || []).filter(Boolean));
       const list = [];
       querySnapshot.forEach(doc => {
         const data = doc.data();
         const pending = data.pendingAmount !== undefined ? data.pendingAmount : Math.abs(data.amount);
-        if (data.amount < 0 && pending > 0) {
+        if (data.amount < 0 && (pending > 0 || include.has(doc.id))) {
           list.push({ id: doc.id, ...data, pending });
         }
       });

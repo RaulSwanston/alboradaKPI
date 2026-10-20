@@ -361,7 +361,8 @@
       "cancel": "Cancel",
       "saved": "Cross-reference saved successfully",
       "error": "Error saving cross-reference",
-      "badge": "charge(s) cross-referenced"
+      "badge": "charge(s) cross-referenced",
+      "partialOf": "of"
     },
     "calendar": {
       "title": "Community Calendar",
