@@ -131,6 +131,14 @@
           <span class="td-section-label">Cargos a pagar</span>
           <span class="td-section-badge" id="td-debts-count">0 seleccionados</span>
         </div>
+        <div class="td-debts-amount-row">
+          <div class="td-debts-amount-slot" id="td-debts-amount-slot"></div>
+          <div class="td-debts-available" aria-live="polite">
+            <span class="td-debts-available-label" id="td-debts-available-label">Total seleccionado</span>
+            <span class="td-debts-available-value" id="td-debts-available-value">$0.00</span>
+          </div>
+        </div>
+        <p class="td-debts-amount-hint">Si el monto es menor al total seleccionado, se aplicará como abono parcial y el resto quedará pendiente.</p>
         <div id="td-debts-container">
           <p class="td-empty-hint">Seleccione una unidad para ver sus cargos pendientes</p>
         </div>
@@ -204,11 +212,11 @@
               <option value="">Sin clasificar</option>
             </select>
           </div>
-          <div class="td-field">
-            <label class="td-field-label" for="td-amount">Monto (USD)</label>
+          <div class="td-field" id="td-amount-field">
+            <label class="td-field-label" for="td-amount" id="td-amount-label">Monto (USD)</label>
             <input type="number" class="td-input td-input-amount" id="td-amount" name="amount" step="0.01" placeholder="0.00" required>
           </div>
-          <div class="td-field">
+          <div class="td-field" id="td-date-field">
             <label class="td-field-label" for="td-effective-date">Fecha de Efectividad</label>
             <input type="date" class="td-input" id="td-effective-date" name="effectiveDate" required>
           </div>

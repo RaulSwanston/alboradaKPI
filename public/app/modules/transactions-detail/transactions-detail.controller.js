@@ -32,6 +32,9 @@ export default async function transactionsDetailController(contexto) {
   const debtsSection = document.getElementById('td-debts-section');
   const debtsContainer = document.getElementById('td-debts-container');
   const debtsCount = document.getElementById('td-debts-count');
+  const debtsAmountSlot = document.getElementById('td-debts-amount-slot');
+  const debtsAvailableLabel = document.getElementById('td-debts-available-label');
+  const debtsAvailableValue = document.getElementById('td-debts-available-value');
 
   const paymentSection = document.getElementById('td-payment-section');
   const paymentSectionLabel = paymentSection.querySelector('.td-section-label');
@@ -64,7 +67,10 @@ export default async function transactionsDetailController(contexto) {
   const accountField = document.getElementById('td-account-field');
   const accountSelect = document.getElementById('td-expense-account');
   const amountInput = document.getElementById('td-amount');
+  const amountField = document.getElementById('td-amount-field');
+  const amountLabel = document.getElementById('td-amount-label');
   const dateInput = document.getElementById('td-effective-date');
+  const dateField = document.getElementById('td-date-field');
   const bankRefInput = document.getElementById('td-bank-ref');
   const statusField = document.getElementById('td-status-field');
   const statusSelect = document.getElementById('td-status');
@@ -76,6 +82,7 @@ export default async function transactionsDetailController(contexto) {
   let cachedProperties = [];
   let debtsCache = [];
   let debtCardById = new Map();
+  let selectedDebtIds = new Set();
   let selectedDebtAmounts = new Map();
   let debtsLoadToken = 0;
   let receiptFile = null;
@@ -228,10 +235,27 @@ export default async function transactionsDetailController(contexto) {
     return 'FEE';
   };
 
+  /**
+   * El monto es una única fuente de verdad: el mismo input se mueve entre
+   * "Cargos a pagar" (pagos) y "Detalles del Movimiento" (resto de tipos).
+   * Se conservan id, listeners y validación nativa.
+   */
+  const placeAmountField = (isPayment) => {
+    if (!amountField) return;
+    if (isPayment) {
+      debtsAmountSlot?.appendChild(amountField);
+      if (amountLabel) amountLabel.textContent = 'Monto del pago (USD)';
+    } else if (dateField?.parentNode) {
+      dateField.parentNode.insertBefore(amountField, dateField);
+      if (amountLabel) amountLabel.textContent = 'Monto (USD)';
+    }
+  };
+
   const handleTypeChange = (type, { skipDebts = false } = {}) => {
     const isPayment = type === 'PAYMENT';
     const isExpense = type === 'EXPENSE';
     const showReceiptSection = isPayment || isExpense;
+    placeAmountField(isPayment);
     debtsSection.classList.toggle('hidden', !isPayment);
     paymentSection.classList.toggle('hidden', !showReceiptSection);
     if (paymentMethodField) paymentMethodField.classList.toggle('hidden', !isPayment);
@@ -258,9 +282,7 @@ export default async function transactionsDetailController(contexto) {
       clearDebts();
     }
 
-    if (!isPayment) {
-      isManualAmount = false;
-    }
+    renderDebtCards();
   };
 
   // =============================================
@@ -292,7 +314,16 @@ export default async function transactionsDetailController(contexto) {
       debtsSection.classList.remove('hidden');
       debtsCache = [];
       debtCardById = new Map();
+      selectedDebtIds = new Set();
       selectedDebtAmounts = new Map();
+
+      // En alta, si el monto todavía se calcula solo, una nueva carga de cargos
+      // invalida el total anterior (p. ej. al cambiar de unidad).
+      if (isNew && !isManualAmount) {
+        _settingAmount = true;
+        amountInput.value = '';
+        _settingAmount = false;
+      }
 
       const appliedById = new Map(
         (appliedEntries || [])
@@ -332,13 +363,16 @@ export default async function transactionsDetailController(contexto) {
           fullAmount: basePending + linkedAmount
         };
 
-        if (applied) selectedDebtAmounts.set(item.id, linkedAmount);
+        if (applied) {
+          selectedDebtIds.add(item.id);
+          selectedDebtAmounts.set(item.id, linkedAmount);
+        }
         return item;
       });
 
       if (debtsCache.length === 0) {
         debtsContainer.innerHTML = '<p class="td-empty-hint">La unidad no tiene cargos pendientes</p>';
-        updateDebtsCount(0);
+        renderDebtCards();
         return;
       }
 
@@ -380,21 +414,29 @@ export default async function transactionsDetailController(contexto) {
 
   const renderDebtCards = () => {
     const fixed = isFixedAmount();
-    const remaining = fixed ? getPaymentAmount() - getSelectedTotal() : Infinity;
+    const paymentAmount = getPaymentAmount();
+    const selectedTotal = getSelectedTotal();
+    const remaining = fixed ? paymentAmount - selectedTotal : Infinity;
 
     debtsCache.forEach(item => {
       const card = debtCardById.get(item.id);
       if (!card) return;
 
-      const isSelected = selectedDebtAmounts.has(item.id);
+      const isSelected = selectedDebtIds.has(item.id);
       // Con monto fijo, mientras quede saldo se muestran todos los cargos por
       // conciliar. Si el pago ya está totalmente asignado, solo los vinculados.
-      const show = isSelected || !fixed || remaining > 0;
-      const amount = isSelected ? selectedDebtAmounts.get(item.id) : item.fullAmount;
-      const isPartial = isSelected && amount < item.fullAmount - 0.005;
-      const amountLabel = isPartial
-        ? `$${amount.toFixed(2)} ${t('modules.conciliation.partialOf')} $${item.fullAmount.toFixed(2)}`
-        : `$${item.fullAmount.toFixed(2)}`;
+      // Con monto 0 se muestran todos para poder seleccionar antes de escribir.
+      const show = isSelected || !fixed || remaining > 0.005 || paymentAmount <= 0;
+      const amount = isSelected ? (selectedDebtAmounts.get(item.id) || 0) : item.fullAmount;
+      const isPartial = isSelected && amount > 0 && amount < item.fullAmount - 0.005;
+      let amountLabel;
+      if (isSelected && amount <= 0) {
+        amountLabel = 'Sin asignar';
+      } else if (isPartial) {
+        amountLabel = `$${amount.toFixed(2)} ${t('modules.conciliation.partialOf')} $${item.fullAmount.toFixed(2)}`;
+      } else {
+        amountLabel = `$${item.fullAmount.toFixed(2)}`;
+      }
 
       card.classList.toggle('selected', isSelected);
       card.dataset.amount = amount.toFixed(2);
@@ -402,39 +444,114 @@ export default async function transactionsDetailController(contexto) {
       card.hidden = !show;
     });
 
-    updateDebtsCount(selectedDebtAmounts.size);
+    if (debtsAvailableLabel) {
+      debtsAvailableLabel.textContent = fixed ? 'Disponible' : 'Total seleccionado';
+    }
+    if (debtsAvailableValue) {
+      const value = fixed ? Math.max(0, paymentAmount - selectedTotal) : selectedTotal;
+      debtsAvailableValue.textContent = `$${value.toFixed(2)}`;
+    }
+
+    updateDebtsCount(selectedDebtIds.size);
+  };
+
+  /**
+   * En modo automático (alta sin editar el monto) el total del pago es la suma
+   * de los cargos seleccionados. Cada cargo se aplica completo.
+   */
+  const applyAutoAmount = () => {
+    if (isManualAmount) return;
+
+    if (selectedDebtIds.size === 0) {
+      selectedDebtAmounts.clear();
+      _settingAmount = true;
+      amountInput.value = '';
+      _settingAmount = false;
+      return;
+    }
+
+    selectedDebtAmounts.clear();
+    let total = 0;
+    selectedDebtIds.forEach(id => {
+      const item = debtsCache.find(debt => debt.id === id);
+      if (!item) return;
+      selectedDebtAmounts.set(id, item.fullAmount);
+      total += item.fullAmount;
+    });
+
+    _settingAmount = true;
+    amountInput.value = total > 0 ? total.toFixed(2) : '';
+    _settingAmount = false;
+  };
+
+  /**
+   * Recoloca los importes seleccionados cuando el usuario cambia el monto.
+   * Conserva lo ya asignado: al subir el monto completa los cargos en orden de
+   * selección; al bajarlo recorta desde el último seleccionado. Nunca asigna más
+   * que el monto del pago. Los cargos que quedan sin saldo siguen seleccionados
+   * para que, al volver a subir el monto, se rellenen sin perder la selección.
+   */
+  const rebalanceSelected = () => {
+    const target = getPaymentAmount();
+    const entries = [];
+    let total = 0;
+
+    selectedDebtIds.forEach(id => {
+      const item = debtsCache.find(debt => debt.id === id);
+      if (!item) return;
+      const current = Math.max(0, Math.min(item.fullAmount, selectedDebtAmounts.get(id) || 0));
+      entries.push({ id, full: item.fullAmount, amount: current });
+      total += current;
+    });
+
+    if (target > total) {
+      let extra = target - total;
+      for (const entry of entries) {
+        if (extra <= 0) break;
+        const room = entry.full - entry.amount;
+        if (room <= 0) continue;
+        const add = Math.min(room, extra);
+        entry.amount += add;
+        extra -= add;
+      }
+    } else if (target < total) {
+      let excess = total - target;
+      for (let i = entries.length - 1; i >= 0 && excess > 0; i--) {
+        const cut = Math.min(entries[i].amount, excess);
+        entries[i].amount -= cut;
+        excess -= cut;
+      }
+    }
+
+    selectedDebtAmounts.clear();
+    entries.forEach(entry => selectedDebtAmounts.set(entry.id, entry.amount));
+    selectedDebtIds.forEach(id => {
+      if (!selectedDebtAmounts.has(id)) selectedDebtAmounts.set(id, 0);
+    });
   };
 
   const toggleDebt = (item) => {
-    if (selectedDebtAmounts.has(item.id)) {
+    if (selectedDebtIds.has(item.id)) {
+      selectedDebtIds.delete(item.id);
       selectedDebtAmounts.delete(item.id);
-    } else if (isFixedAmount()) {
-      const available = Math.max(0, getPaymentAmount() - getSelectedTotal());
-      if (available <= 0) return;
-      // Si el cargo supera el saldo disponible se aplica un abono parcial; el
-      // resto queda pendiente para un pago posterior.
-      selectedDebtAmounts.set(item.id, Math.min(item.fullAmount, available));
     } else {
-      selectedDebtAmounts.set(item.id, item.fullAmount);
+      selectedDebtIds.add(item.id);
     }
 
-    if (!isFixedAmount()) recalculateAmount();
+    if (!isFixedAmount()) {
+      applyAutoAmount();
+    } else if (selectedDebtIds.has(item.id)) {
+      // Al añadir en modo manual/edición se asigna solo el saldo disponible,
+      // sin recolocar los importes ya elegidos por el usuario.
+      const available = Math.max(0, getPaymentAmount() - getSelectedTotal());
+      selectedDebtAmounts.set(item.id, Math.min(item.fullAmount, available));
+    }
+
     renderDebtCards();
   };
 
-  const recalculateAmount = () => {
-    if (isManualAmount || selectedDebtAmounts.size === 0) return;
-
-    const total = getSelectedTotal();
-    if (total > 0) {
-      _settingAmount = true;
-      amountInput.value = total.toFixed(2);
-      _settingAmount = false;
-    }
-  };
-
   const updateDebtsCount = (count) => {
-    debtsCount.textContent = count > 0 ? `${count} seleccionados` : '0 seleccionados';
+    debtsCount.textContent = count === 1 ? '1 seleccionado' : `${count} seleccionados`;
   };
 
   const clearDebts = () => {
@@ -442,8 +559,9 @@ export default async function transactionsDetailController(contexto) {
     debtsContainer.innerHTML = '<p class="td-empty-hint">Seleccione una unidad para ver sus cargos pendientes</p>';
     debtsCache = [];
     debtCardById = new Map();
+    selectedDebtIds = new Set();
     selectedDebtAmounts = new Map();
-    updateDebtsCount(0);
+    renderDebtCards();
   };
 
   // =============================================
@@ -573,6 +691,26 @@ export default async function transactionsDetailController(contexto) {
     if (isSaving) return;
     if (!validate()) return;
 
+    const type = getSelectedType();
+    const absAmount = Math.abs(parseFloat(amountInput.value));
+    let selectedDebts = [];
+
+    if (type === 'PAYMENT') {
+      selectedDebts = Array.from(debtsContainer.querySelectorAll('.td-debt-card.selected'))
+        .map(card => ({
+          transactionId: card.dataset.debtId,
+          amount: parseFloat(card.dataset.amount || '0') || 0,
+          description: card.querySelector('.td-debt-title')?.textContent || ''
+        }))
+        .filter(link => link.amount > 0);
+
+      const appliedTotal = selectedDebts.reduce((sum, link) => sum + link.amount, 0);
+      if (appliedTotal > absAmount + 0.005) {
+        alert('El importe aplicado a los cargos no puede superar el monto del pago.');
+        return;
+      }
+    }
+
     isSaving = true;
     setSavingState(true);
 
@@ -581,8 +719,6 @@ export default async function transactionsDetailController(contexto) {
       idempotencyKey = globalThis.crypto?.randomUUID?.() || `td-${Date.now()}-${Math.random().toString(36).slice(2)}`;
     }
 
-    const type = getSelectedType();
-    const absAmount = Math.abs(parseFloat(amountInput.value));
     const amount = type === 'PAYMENT' ? absAmount : -absAmount;
 
     const data = {
@@ -615,14 +751,8 @@ export default async function transactionsDetailController(contexto) {
     if (type === 'PAYMENT') {
       data.paymentMethod = paymentMethod.value;
 
-      const selected = Array.from(debtsContainer.querySelectorAll('.td-debt-card.selected')).map(card => ({
-        transactionId: card.dataset.debtId,
-        amount: parseFloat(card.dataset.amount),
-        description: card.querySelector('.td-debt-title')?.textContent || ''
-      }));
-
       if (isNew) {
-        data.appliedTo = selected;
+        data.appliedTo = selectedDebts;
       } else {
         // El formulario conoce todos los cargos de la unidad (aunque algunos queden
         // ocultos al no quedar saldo). Los vínculos a cargos conocidos que el
@@ -631,7 +761,7 @@ export default async function transactionsDetailController(contexto) {
         const knownIds = new Set(debtsCache.map(item => item.id));
         const preserved = (originalTransaction?.appliedTo || [])
           .filter(a => a && a.transactionId && !knownIds.has(a.transactionId));
-        data.appliedTo = [...preserved, ...selected];
+        data.appliedTo = [...preserved, ...selectedDebts];
       }
     }
 
@@ -897,10 +1027,13 @@ export default async function transactionsDetailController(contexto) {
     // Amount manual override (skip if being set programmatically)
     amountInput.addEventListener('input', () => {
       if (_settingAmount) return;
+      // Con un importe escrito, el monto manda. Si se borra, vuelve el modo
+      // automático (la selección se conserva y se rellena al volver a escribir).
       isManualAmount = amountInput.value !== '';
-      // Con monto manual/fijo, el saldo disponible cambia al teclear: recalcular
-      // qué cargos quedan visibles (y permitir abonos parciales).
-      if (debtsCache.length > 0) renderDebtCards();
+      if (getSelectedType() === 'PAYMENT' && debtsCache.length > 0) {
+        rebalanceSelected();
+        renderDebtCards();
+      }
     });
 
     // Save
