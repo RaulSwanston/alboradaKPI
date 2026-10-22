@@ -80,6 +80,19 @@
               <span class="td-type-name">Pago / Recibo</span>
             </span>
           </label>
+          <label class="td-type-option" data-type="OTHER_INCOME">
+            <input type="radio" name="td-type" value="OTHER_INCOME">
+            <span class="td-type-indicator"></span>
+            <span class="td-type-content">
+              <span class="td-type-icon td-icon-income">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
+                  <polyline points="17 6 23 6 23 12"></polyline>
+                </svg>
+              </span>
+              <span class="td-type-name">Ingreso</span>
+            </span>
+          </label>
           <label class="td-type-option" data-type="EXPENSE">
             <input type="radio" name="td-type" value="EXPENSE">
             <span class="td-type-indicator"></span>
@@ -211,6 +224,12 @@
             <label class="td-field-label" for="td-expense-account">Cuenta de Gasto</label>
             <select class="td-select" id="td-expense-account">
               <option value="">Sin clasificar</option>
+            </select>
+          </div>
+          <div class="td-field full-width hidden" id="td-income-type-field">
+            <label class="td-field-label" for="td-income-type">Tipo de Ingreso</label>
+            <select class="td-select" id="td-income-type">
+              <option value="">Seleccione...</option>
             </select>
           </div>
           <div class="td-field" id="td-amount-field">

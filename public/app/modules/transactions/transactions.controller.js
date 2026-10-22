@@ -114,6 +114,7 @@ export default async function transactionsController(contexto) {
         // que en realidad era una categoría (ej. "PAGOS" o "NAVIDAD").
         if (tx.type === 'EXPENSE') return t('modules.transactions.propertyCommunityExpense');
         if (tx.type === 'OTHER') return t('modules.transactions.propertyAdminMovement');
+        if (tx.type === 'OTHER_INCOME') return t('modules.transactions.propertyAdminIncome');
         if (tx.propertyId) return `${t('modules.transactions.propertyPrefix')} ${tx.propertyId}`;
         return t('modules.transactions.propertyNa');
     };
@@ -964,7 +965,7 @@ export default async function transactionsController(contexto) {
             </div>
             <div class="receipt-row">
                 <span class="receipt-label">${t('modules.transactions.receiptUnit')}</span>
-                <span class="receipt-value">${tx.propertyId || '—'}</span>
+                <span class="receipt-value">${getPropertyLabel(tx)}</span>
             </div>
             <div class="receipt-row">
                 <span class="receipt-label">${t('modules.transactions.receiptConcept')}</span>

@@ -2,6 +2,7 @@ import Transaction from "../../models/Transaction.js";
 import Property from "../../models/Property.js";
 import ExpenseAccount from "../../models/ExpenseAccount.js";
 import { t } from "../../core/i18n.js";
+import { activeIncomeTypes, resolveIncomeTypeId, INCOME_TYPE_IDS } from "../../core/incomeTypes.js";
 import { db, doc, updateDoc } from "../../core/firebase.js";
 import { uploadFileToR2, buildPropertyUploadKey, buildExpenseReceiptKey, getAuthObjectURL, revokeAuthObjectURLs } from "../../core/r2.js";
 import { compressImageFile } from "../../core/imageCompress.js";
@@ -67,6 +68,8 @@ export default async function transactionsDetailController(contexto) {
   const descriptionInput = document.getElementById('td-description');
   const accountField = document.getElementById('td-account-field');
   const accountSelect = document.getElementById('td-expense-account');
+  const incomeTypeField = document.getElementById('td-income-type-field');
+  const incomeTypeSelect = document.getElementById('td-income-type');
   const amountInput = document.getElementById('td-amount');
   const amountField = document.getElementById('td-amount-field');
   const amountLabel = document.getElementById('td-amount-label');
@@ -103,6 +106,7 @@ export default async function transactionsDetailController(contexto) {
   const init = async () => {
     // Set today as default date
     dateInput.value = new Date().toISOString().split('T')[0];
+    populateIncomeTypeSelect();
 
     if (isNew) {
       headerTitle.textContent = 'Nueva Transacción';
@@ -162,6 +166,20 @@ export default async function transactionsDetailController(contexto) {
         `</optgroup>`;
     });
     accountSelect.innerHTML = html;
+  };
+
+  const populateIncomeTypeSelect = (selectedId = INCOME_TYPE_IDS.INTERESES_BANCARIOS) => {
+    if (!incomeTypeSelect) return;
+    const types = activeIncomeTypes();
+    const options = types
+      .map(x => `<option value="${x.id}" ${x.id === selectedId ? 'selected' : ''}>${x.name}</option>`);
+    // Un id que ya no exista en el catálogo semilla no se pierde al editar: se
+    // añade como opción para que el guardado no lo reemplace por el primero.
+    if (selectedId && !types.some(x => x.id === selectedId)) {
+      options.unshift(`<option value="${selectedId}" selected>${selectedId}</option>`);
+    }
+    incomeTypeSelect.innerHTML = options.join('');
+    if (selectedId) incomeTypeSelect.value = selectedId;
   };
 
   // =============================================
@@ -259,23 +277,24 @@ export default async function transactionsDetailController(contexto) {
    * "Cargos a pagar" (pagos) y "Detalles del Movimiento" (resto de tipos).
    * Se conservan id, listeners y validación nativa.
    */
-  const placeAmountField = (isPayment) => {
+  const placeAmountField = (isPayment, isIncome = false) => {
     if (!amountField) return;
     if (isPayment) {
       debtsAmountSlot?.appendChild(amountField);
       if (amountLabel) amountLabel.textContent = 'Monto del pago (USD)';
     } else if (dateField?.parentNode) {
       dateField.parentNode.insertBefore(amountField, dateField);
-      if (amountLabel) amountLabel.textContent = 'Monto (USD)';
+      if (amountLabel) amountLabel.textContent = isIncome ? 'Monto del ingreso (USD)' : 'Monto (USD)';
     }
   };
 
   const handleTypeChange = (type, { skipDebts = false } = {}) => {
     const isPayment = type === 'PAYMENT';
     const isExpense = type === 'EXPENSE';
+    const isIncome = type === 'OTHER_INCOME';
     const needsProperty = requiresProperty(type);
     const showReceiptSection = isPayment || isExpense;
-    placeAmountField(isPayment);
+    placeAmountField(isPayment, isIncome);
 
     setPropertyFieldVisibility(needsProperty);
     if (!needsProperty) {
@@ -298,6 +317,15 @@ export default async function transactionsDetailController(contexto) {
 
     if (accountField) {
       accountField.classList.toggle('hidden', type !== 'EXPENSE');
+    }
+
+    if (incomeTypeField) {
+      incomeTypeField.classList.toggle('hidden', !isIncome);
+    }
+    if (descriptionInput) {
+      descriptionInput.placeholder = isIncome
+        ? 'Ej: Intereses cuenta de ahorros'
+        : 'Ej: Cuota de Mantenimiento Enero 2026';
     }
 
     if (!isNew) {
@@ -655,9 +683,13 @@ export default async function transactionsDetailController(contexto) {
 
   const uploadReceipt = async (propertyId) => {
     if (!receiptFile) return null;
+    const type = getSelectedType();
+    // Solo pagos y gastos usan el comprobante. Un ingreso administrativo no
+    // tiene unidad a la que asociar la clave de R2.
+    if (type !== 'PAYMENT' && type !== 'EXPENSE') return null;
     const { blob, ext } = await compressImageFile(receiptFile);
     const uid = contexto?.data?.user?.uid || 'admin';
-    const key = getSelectedType() === 'EXPENSE'
+    const key = type === 'EXPENSE'
       ? buildExpenseReceiptKey(uid, ext)
       : buildPropertyUploadKey(propertyId, uid, 'comprobante', ext);
     return await uploadFileToR2(blob, key);
@@ -670,6 +702,10 @@ export default async function transactionsDetailController(contexto) {
     const type = getSelectedType();
     if (requiresProperty(type) && !currentPropertyId) {
       alert('Debe seleccionar una unidad/propiedad para este tipo de movimiento');
+      return false;
+    }
+    if (type === 'OTHER_INCOME' && !incomeTypeSelect?.value) {
+      alert('Debe seleccionar un tipo de ingreso');
       return false;
     }
     if (!descriptionInput.value.trim()) {
@@ -722,6 +758,7 @@ export default async function transactionsDetailController(contexto) {
     if (!validate()) return;
 
     const type = getSelectedType();
+    const isIncome = type === 'OTHER_INCOME';
     const absAmount = Math.abs(parseFloat(amountInput.value));
     let selectedDebts = [];
 
@@ -749,10 +786,10 @@ export default async function transactionsDetailController(contexto) {
       idempotencyKey = globalThis.crypto?.randomUUID?.() || `td-${Date.now()}-${Math.random().toString(36).slice(2)}`;
     }
 
-    const amount = type === 'PAYMENT' ? absAmount : -absAmount;
+    const amount = (type === 'PAYMENT' || isIncome) ? absAmount : -absAmount;
 
     const data = {
-      propertyId: requiresProperty(type) ? currentPropertyId : null,
+      propertyId: requiresProperty(type) ? currentPropertyId : (isIncome ? '__ADMIN_INCOME__' : null),
       description: descriptionInput.value.trim(),
       amount,
       type,
@@ -770,6 +807,12 @@ export default async function transactionsDetailController(contexto) {
       data.metadata = { bankReference };
     } else {
       data['metadata.bankReference'] = bankReference;
+    }
+
+    if (isIncome) {
+      data.incomeTypeId = incomeTypeSelect?.value || INCOME_TYPE_IDS.OTROS_INGRESOS;
+      data.voucherType = 'Nota de Crédito';
+      data.voucherNumber = bankReference || originalTransaction?.voucherNumber || 'N/A';
     }
 
     if (type === 'EXPENSE') {
@@ -940,6 +983,10 @@ export default async function transactionsDetailController(contexto) {
           radio.checked = true;
           break;
         }
+      }
+
+      if (type === 'OTHER_INCOME') {
+        populateIncomeTypeSelect(resolveIncomeTypeId(trans) || INCOME_TYPE_IDS.INTERESES_BANCARIOS);
       }
 
       // Description

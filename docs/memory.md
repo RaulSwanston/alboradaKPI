@@ -1,6 +1,21 @@
 # Memoria de Sesiones - Bitácora de Proyecto
 
-## 📌 RETOMA AQUÍ (última sesión: 22 de Octubre de 2026)
+## 📌 RETOMA AQUÍ (última sesión: 22 de Octubre de 2026, tarde)
+
+**Estado:** ✅ **Alta de ingresos administrativos desde la interfaz.** El formulario de transacciones ahora tiene el tipo **Ingreso** (`OTHER_INCOME`): monto positivo, sin unidad (`propertyId: "__ADMIN_INCOME__"`), selector de **Tipo de Ingreso** (`incomeTypeId`, por defecto *Intereses bancarios*) y folio `Nota de Crédito`. Cubre el caso de los intereses bancarios, que antes solo entraban por los scripts de importación mensual.
+
+### Resumen de cambios — Ingreso administrativo (`OTHER_INCOME`)
+
+- **`transactions-detail.html|.css`:** nuevo radio «Ingreso» y campo `#td-income-type` (Tipo de Ingreso) visible solo para ese tipo. Icono verde propio.
+- **`transactions-detail.controller.js`:** `isIncome = type === 'OTHER_INCOME'`; monto positivo; `propertyId: "__ADMIN_INCOME__"`; guarda `incomeTypeId`, `voucherType: "Nota de Crédito"` y `voucherNumber` (referencia bancaria o `"N/A"`). El selector se llena con `activeIncomeTypes()`; al editar usa `resolveIncomeTypeId()` y conserva ids fuera del catálogo.
+- **`models/Transaction.js`:** la actividad del alta pasa a `OTHER_INCOME_REGISTERED` con target `TRANSACTION` («Ingreso de la administración»); `NON_PROPERTY_IDS` evita apuntar actividades a `__ADMIN_INCOME__`/`__UNIDENTIFIED__`/`PAGOS`. `update()` ahora también suma al agregado cuando el tipo cambia **de no-ingreso a ingreso** (antes solo restaba el previo).
+- **`models/Property.js`:** `OTHER_INCOME` se excluye del saldo individual de las unidades (sí cuenta en caja).
+- **`transactions.controller.js`:** columna «Unidad» muestra «Ingreso de la administración (sin unidad)»; `transactions.css` añade el badge `other_income`.
+- **`recentActivity.controller.js`:** configuración visual para `OTHER_INCOME_REGISTERED`.
+- **i18n:** `modules.transactions.propertyAdminIncome` (es/en).
+- **Datos históricos (sin tocar):** correctos como `OTHER_INCOME` en feb–abr 2025 (3 docs, `__ADMIN_INCOME__`) y ago 2026 ($2.54). Entre may 2025 y jul 2026 hay **15 intereses guardados como `PAYMENT`** con `propertyId: "INTERES"`/`__UNIDENTIFIED__`; se clasifican bien como `intereses-bancarios`, pero son candidatos a limpieza. No se ejecutó limpieza ni escritura alguna.
+
+## Entrada previa: tipos sin unidad (22 de Octubre de 2026)
 
 **Estado:** ✅ **Tipos de transacción separados por vínculo con unidad.** Se corrigió `transactions-detail`: crear un **Gasto/Compra** o **Otro** ya no exige unidad/propiedad, no genera deuda y no afecta el saldo de ningún residente. `FEE`, `PAYMENT` y `FINE` siguen exigiendo unidad. **Sin lecturas a Firestore**: la auditoría de datos se hizo sobre el snapshot local `scripts/data/expense_snapshot_2026-09-26.json`.
 

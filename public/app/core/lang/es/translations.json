@@ -181,6 +181,7 @@
       "propertyNa": "N/A",
       "propertyCommunityExpense": "Gasto comunitario (sin unidad)",
       "propertyAdminMovement": "Movimiento administrativo (sin unidad)",
+      "propertyAdminIncome": "Ingreso de la administración (sin unidad)",
       "deleteConfirm": "¿Estás seguro de eliminar esta transacción? Esta acción es irreversible.",
       "deleteError": "Error al eliminar: ",
       "receiptTitle": "Comprobante",

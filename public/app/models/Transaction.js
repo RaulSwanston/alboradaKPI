@@ -5,6 +5,18 @@ import AppConfig from "./AppConfig.js";
 /** Tipos que nunca representan una deuda de una unidad, aunque su monto sea negativo. */
 const NON_DEBT_TYPES = new Set(['EXPENSE', 'ADMIN_EXPENSE', 'OTHER']);
 
+/** IDs de `propertyId` que no corresponden a una unidad real. */
+const NON_PROPERTY_IDS = new Set([
+  '__UNIDENTIFIED__',
+  '__ADMIN_INCOME__',
+  '__ADMIN_EXPENSE__',
+  'PAGOS',
+  'INTERES'
+]);
+
+/** Tipos que alimentan `appConfig.stats.ingresosPorTipo`. */
+const INCOME_TYPES = new Set(['PAYMENT', 'OTHER_INCOME']);
+
 /**
  * La clase Transaction gestiona el historial contable del condominio.
  * Implementa un CRUD completo con registro automático de actividades para auditoría.
@@ -162,12 +174,15 @@ export default class Transaction {
       const docRef = await addDoc(collection(db, "transactions"), transData);
 
       // Registrar la actividad automáticamente.
-      // Un movimiento sin unidad (gasto comunitario, apunte administrativo) no
-      // puede apuntar a una propiedad inexistente: se enlaza a la transacción
-      // para que el feed pueda abrir su detalle.
-      const hasProperty = !!data.propertyId && data.propertyId !== '__UNIDENTIFIED__';
+      // Un movimiento sin unidad (gasto comunitario, apunte administrativo o
+      // ingreso de la administración) no puede apuntar a una propiedad
+      // inexistente: se enlaza a la transacción para que el feed abra su detalle.
+      const isOtherIncome = data.type === 'OTHER_INCOME';
+      const hasProperty = !!data.propertyId && !NON_PROPERTY_IDS.has(data.propertyId);
       await createActivity({
-        type: data.amount > 0 ? 'PAYMENT_REPORTED' : 'FEE_GENERATED',
+        type: isOtherIncome
+          ? 'OTHER_INCOME_REGISTERED'
+          : (data.amount > 0 ? 'PAYMENT_REPORTED' : 'FEE_GENERATED'),
         description: `${data.description} por ${Math.abs(Number(data.amount) || 0)} USD`,
         initiator: initiator,
         target: hasProperty
@@ -179,7 +194,7 @@ export default class Transaction {
           : {
               type: 'TRANSACTION',
               id: docRef.id,
-              name: 'Movimiento de administración'
+              name: isOtherIncome ? 'Ingreso de la administración' : 'Movimiento de administración'
             },
         visibility: ['admin'],
         details: { transactionId: docRef.id, amount: data.amount }
@@ -229,7 +244,7 @@ export default class Transaction {
       // el agregado sumaría los dos. Son 1 lectura, solo en escrituras de admins.
       const prevSnap = await getDoc(docRef);
       const prev = prevSnap.exists() ? prevSnap.data() : null;
-      const prevWasIncome = prev && (prev.type === 'PAYMENT' || prev.type === 'OTHER_INCOME');
+      const prevWasIncome = prev && INCOME_TYPES.has(prev.type);
 
       // Si se está actualizando la fecha, recalculamos el periodo y aseguramos objeto Date
       if (data.effectiveDate) {
@@ -249,12 +264,17 @@ export default class Transaction {
 
       // Restar lo viejo y sumar lo nuevo. `updateData` ya trae el `period`
       // recalculado arriba, así que mover un pago de mes no deja el cubo viejo.
+      // También cubre el cambio de tipo: antes, pasar de un gasto a un ingreso
+      // no sumaba el nuevo importe al agregado porque solo se miraba el tipo previo.
+      const nextTx = prev
+        ? { ...prev, ...updateData, period: updateData.period || prev.period }
+        : null;
+      const nextIsIncome = nextTx && INCOME_TYPES.has(nextTx.type);
       if (prevWasIncome) {
         await AppConfig.applyIncomeDelta(prev, -1);
-        await AppConfig.applyIncomeDelta(
-          { ...prev, ...updateData, period: updateData.period || prev.period },
-          1
-        );
+      }
+      if (nextTx && (prevWasIncome || nextIsIncome)) {
+        await AppConfig.applyIncomeDelta(nextTx, 1);
       }
 
       // Registrar actividad de actualización

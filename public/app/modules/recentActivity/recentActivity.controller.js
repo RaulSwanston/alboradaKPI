@@ -29,6 +29,12 @@ export default async function recentActivityController(contexto) {
       class: 'activity-type-income', 
       category: 'Transferencia' 
     },
+    'OTHER_INCOME_REGISTERED': { 
+      label: 'Ingreso Registrado', 
+      svg: '<svg class="activity-icon-svg" viewBox="0 0 16 16" fill="currentColor"><path d="M1 12.5 5.5 8l3 3L15 4.5V9h1V3h-6v1h4.5L9 10.5l-3-3L.7 13z"/></svg>', 
+      class: 'activity-type-income', 
+      category: 'Ingreso' 
+    },
     'SERVICE_REQUESTED': { 
       label: 'Servicio Solicitado', 
       svg: '<svg class="activity-icon-svg" viewBox="0 0 16 16" fill="currentColor"><path d="M1 2.5A1.5 1.5 0 0 1 2.5 1h11A1.5 1.5 0 0 1 15 2.5v11a1.5 1.5 0 0 1-1.5 1.5h-11A1.5 1.5 0 0 1 1 13.5zM2.5 2a.5.5 0 0 0-.5.5v11a.5.5 0 0 0 .5.5h11a.5.5 0 0 0 .5-.5v-11a.5.5 0 0 0-.5-.5z"/><path d="M4 4h8v2H4z"/></svg>', 

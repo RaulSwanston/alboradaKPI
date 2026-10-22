@@ -317,6 +317,7 @@
       "propertyNa": "N/A",
       "propertyCommunityExpense": "Community expense (no unit)",
       "propertyAdminMovement": "Administrative movement (no unit)",
+      "propertyAdminIncome": "Administrative income (no unit)",
       "deleteConfirm": "Are you sure you want to delete this transaction? This action is irreversible.",
       "deleteError": "Error deleting: ",
       "receiptTitle": "Receipt",

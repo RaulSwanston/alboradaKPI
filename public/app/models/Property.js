@@ -3,10 +3,10 @@ import { aggregateIncomeByType } from "../core/incomeTypes.js";
 
 /**
  * Movimientos que nunca forman parte del saldo individual de una unidad:
- * egresos de la administración y apuntes internos. Sí cuentan para la caja
- * real, pero no son deuda ni crédito de un residente.
+ * egresos de la administración, apuntes internos e ingresos administrativos.
+ * Sí cuentan para la caja real, pero no son deuda ni crédito de un residente.
  */
-const NON_PROPERTY_BALANCE_TYPES = new Set(['EXPENSE', 'ADMIN_EXPENSE', 'OTHER']);
+const NON_PROPERTY_BALANCE_TYPES = new Set(['EXPENSE', 'ADMIN_EXPENSE', 'OTHER', 'OTHER_INCOME']);
 
 /**
  * La clase Property encapsula la lógica para interactuar con la colección 'properties' en Firestore.
