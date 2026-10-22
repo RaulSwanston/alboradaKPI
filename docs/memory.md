@@ -1,6 +1,21 @@
 # Memoria de Sesiones - Bitácora de Proyecto
 
-## 📌 RETOMA AQUÍ (última sesión: 17 de Octubre de 2026)
+## 📌 RETOMA AQUÍ (última sesión: 22 de Octubre de 2026)
+
+**Estado:** ✅ **Tipos de transacción separados por vínculo con unidad.** Se corrigió `transactions-detail`: crear un **Gasto/Compra** o **Otro** ya no exige unidad/propiedad, no genera deuda y no afecta el saldo de ningún residente. `FEE`, `PAYMENT` y `FINE` siguen exigiendo unidad. **Sin lecturas a Firestore**: la auditoría de datos se hizo sobre el snapshot local `scripts/data/expense_snapshot_2026-09-26.json`.
+
+### Resumen de cambios (22 Oct 2026)
+
+- **`transactions-detail.controller.js`:** `PROPERTY_TYPES = {FEE, PAYMENT, FINE}` y `requiresProperty(type)`. La sección de unidad oculta el buscador y muestra un aviso explicativo para `EXPENSE`/`OTHER`; al cambiar de tipo se limpia la selección y se cancela el debounce pendiente. `validate()` solo exige unidad para esos tres tipos y el submit envía `propertyId: null` en los movimientos administrativos.
+- **`transactions-detail.html|.css`:** aviso `#td-property-hint` («Este tipo de movimiento no se vincula a una unidad ni afecta el saldo de un residente.») con estilo propio.
+- **`models/Transaction.js`:** `pendingAmount` solo se inicializa para `FEE`/`FINE`; `getPendingDebts()` excluye `EXPENSE`, `ADMIN_EXPENSE` y `OTHER`; la actividad de auditoría de un movimiento sin unidad apunta a `TRANSACTION` (antes a `PROPERTY` con id inexistente) y la descripción usa el monto absoluto.
+- **`models/Property.js`:** `EXPENSE`/`ADMIN_EXPENSE`/`OTHER` se excluyen del saldo individual en `recalculateBalance()` y `recalculateAllBalances()`, aunque traigan un `propertyId` heredado. La caja real los sigue sumando.
+- **`transactions.controller.js`:** columna «Unidad» con etiquetas descriptivas: «Gasto comunitario (sin unidad)» y «Movimiento administrativo (sin unidad)».
+- **i18n:** `modules.transactions.propertyCommunityExpense`, `propertyAdminMovement`, `modules.transactionsDetail.propertyNotApplicable` (es/en).
+- **Datos:** el snapshot del 26 sep (321 gastos, $67,287.70) muestra que solo **1** gasto histórico apunta a una unidad real: `6ySaCGBjJQL5trxrXb6E` (2025-12, -$50, `propertyId: D-03`, descripción de EVENTOS Casa D2). **Decisión del usuario: no tocarlo**, queda para revisión manual. El resto usa etiquetas (`PAGOS`, `__ADMIN_EXPENSE__`, `NAVIDAD`, rifas, etc.) que no son propiedades. No se ejecutó limpieza masiva ni cierre financiero.
+- **Pendiente:** revisar manualmente el gasto D-03; decidir si «Otro» debe contar para caja (hoy es un apunte administrativo sin efecto contable).
+
+## Entrada previa: 17 de Octubre de 2026
 
 **Estado:** ✅ **Conciliación de pagos AUTO-REPARABLE (Opción A) implementada y subida.** El foco fue un descuadre real: un pago con `appliedTo` presente pero sin `paidBy`/`pendingAmount` en sus cargos, que **no se podía reparar re-guardando**. Se centralizó la escritura de la conciliación en `Transaction.reconcileCharges()` y se corrigió el bug de raíz que lo provocaba. **Sin lecturas a Firestore** (solo cambios de código).
 

@@ -2,6 +2,13 @@ import { db, collection, getDocs, query, doc, getDoc, updateDoc, where, setDoc, 
 import { aggregateIncomeByType } from "../core/incomeTypes.js";
 
 /**
+ * Movimientos que nunca forman parte del saldo individual de una unidad:
+ * egresos de la administración y apuntes internos. Sí cuentan para la caja
+ * real, pero no son deuda ni crédito de un residente.
+ */
+const NON_PROPERTY_BALANCE_TYPES = new Set(['EXPENSE', 'ADMIN_EXPENSE', 'OTHER']);
+
+/**
  * La clase Property encapsula la lógica para interactuar con la colección 'properties' en Firestore.
  */
 export default class Property {
@@ -97,6 +104,10 @@ export default class Property {
 
       let newBalance = 0;
       txns.forEach(t => {
+        // Un gasto comunitario o un apunte administrativo no es saldo de la
+        // unidad, aunque un documento antiguo conserve un propertyId.
+        if (NON_PROPERTY_BALANCE_TYPES.has(t.type)) return;
+
         let amount = t.amount || 0;
 
         // Excluir FEEs de periodos futuros
@@ -211,6 +222,10 @@ export default class Property {
         // --- Balance por propiedad: filtro inteligente ---
         // Solo transacciones de unidades válidas: los gastos comunitarios y
         // movimientos sin propiedad no alteran el saldo individual.
+        // Los tipos de administración se excluyen SIEMPRE, aunque traigan un
+        // propertyId heredado (ya sumaron arriba a la caja real).
+        if (NON_PROPERTY_BALANCE_TYPES.has(t.type)) return;
+
         if (propBalances[propId] === undefined) return;
 
         // Excluir FEEs de periodos futuros (facturas adelantadas)

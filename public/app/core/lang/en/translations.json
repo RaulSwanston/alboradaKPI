@@ -270,7 +270,8 @@
       "expenseAccount": {
         "label": "Expense Account",
         "unclassified": "Unclassified"
-      }
+      },
+      "propertyNotApplicable": "This type of movement is not linked to a unit and does not affect any resident's balance."
     },
     "transactions": {
       "netBalance": "Net Period Balance",
@@ -314,6 +315,8 @@
       "defaultDescription": "Transaction",
       "propertyPrefix": "Unit",
       "propertyNa": "N/A",
+      "propertyCommunityExpense": "Community expense (no unit)",
+      "propertyAdminMovement": "Administrative movement (no unit)",
       "deleteConfirm": "Are you sure you want to delete this transaction? This action is irreversible.",
       "deleteError": "Error deleting: ",
       "receiptTitle": "Receipt",

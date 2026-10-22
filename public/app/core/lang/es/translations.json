@@ -127,7 +127,8 @@
       "expenseAccount": {
         "label": "Cuenta de Gasto",
         "unclassified": "Sin clasificar"
-      }
+      },
+      "propertyNotApplicable": "Este tipo de movimiento no se vincula a una unidad ni afecta el saldo de un residente."
     },
     "providers": {
       "title": "Proveedores",
@@ -178,6 +179,8 @@
       "defaultDescription": "Movimiento",
       "propertyPrefix": "Unidad",
       "propertyNa": "N/A",
+      "propertyCommunityExpense": "Gasto comunitario (sin unidad)",
+      "propertyAdminMovement": "Movimiento administrativo (sin unidad)",
       "deleteConfirm": "¿Estás seguro de eliminar esta transacción? Esta acción es irreversible.",
       "deleteError": "Error al eliminar: ",
       "receiptTitle": "Comprobante",

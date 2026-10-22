@@ -2,6 +2,9 @@ import { db, collection, addDoc, updateDoc, deleteDoc, doc, getDoc, getDocs, que
 import { createActivity } from "./Activities.js";
 import AppConfig from "./AppConfig.js";
 
+/** Tipos que nunca representan una deuda de una unidad, aunque su monto sea negativo. */
+const NON_DEBT_TYPES = new Set(['EXPENSE', 'ADMIN_EXPENSE', 'OTHER']);
+
 /**
  * La clase Transaction gestiona el historial contable del condominio.
  * Implementa un CRUD completo con registro automático de actividades para auditoría.
@@ -149,21 +152,35 @@ export default class Transaction {
       }
 
       if (transData.pendingAmount === undefined) {
-        transData.pendingAmount = data.amount < 0 ? Math.abs(data.amount) : 0;
+        // Solo FEE y FINE son cargos/deudas de una unidad. Un EXPENSE u OTHER
+        // con monto negativo no debe nacer con pendingAmount: lo haría aparecer
+        // como cargo por pagar en la conciliación y en el reporte del residente.
+        const isCharge = data.type === 'FEE' || data.type === 'FINE';
+        transData.pendingAmount = isCharge ? Math.abs(data.amount) : 0;
       }
 
       const docRef = await addDoc(collection(db, "transactions"), transData);
 
-      // Registrar la actividad automáticamente
+      // Registrar la actividad automáticamente.
+      // Un movimiento sin unidad (gasto comunitario, apunte administrativo) no
+      // puede apuntar a una propiedad inexistente: se enlaza a la transacción
+      // para que el feed pueda abrir su detalle.
+      const hasProperty = !!data.propertyId && data.propertyId !== '__UNIDENTIFIED__';
       await createActivity({
         type: data.amount > 0 ? 'PAYMENT_REPORTED' : 'FEE_GENERATED',
-        description: `${data.description} por ${Math.abs(data.amount)} USD`,
+        description: `${data.description} por ${Math.abs(Number(data.amount) || 0)} USD`,
         initiator: initiator,
-        target: {
-          type: 'PROPERTY',
-          id: data.propertyId,
-          name: data.propertyId === '__UNIDENTIFIED__' ? 'Sin identificar' : `Unidad ${data.propertyId}`
-        },
+        target: hasProperty
+          ? {
+              type: 'PROPERTY',
+              id: data.propertyId,
+              name: `Unidad ${data.propertyId}`
+            }
+          : {
+              type: 'TRANSACTION',
+              id: docRef.id,
+              name: 'Movimiento de administración'
+            },
         visibility: ['admin'],
         details: { transactionId: docRef.id, amount: data.amount }
       });
@@ -313,6 +330,10 @@ export default class Transaction {
       const list = [];
       querySnapshot.forEach(doc => {
         const data = doc.data();
+        // Un gasto o un apunte administrativo con monto negativo NO es una
+        // deuda del residente. Se excluye por tipo y no solo por propertyId:
+        // los datos antiguos pueden traer una unidad en esos movimientos.
+        if (NON_DEBT_TYPES.has(data.type)) return;
         const pending = data.pendingAmount !== undefined ? data.pendingAmount : Math.abs(data.amount);
         if (data.amount < 0 && (pending > 0 || include.has(doc.id))) {
           list.push({ id: doc.id, ...data, pending });

@@ -26,6 +26,7 @@ export default async function transactionsDetailController(contexto) {
   const propertySearch = document.getElementById('td-property-search');
   const propertiesList = document.getElementById('td-properties-list');
   const propertyMeta = document.getElementById('td-property-meta');
+  const propertyHint = document.getElementById('td-property-hint');
 
   const typeRadios = document.querySelectorAll('input[name="td-type"]');
 
@@ -180,6 +181,10 @@ export default async function transactionsDetailController(contexto) {
   };
 
   const handlePropertyChange = (val) => {
+    // Gasto/Compras y Otro no se vinculan a una unidad: si queda un debounce
+    // pendiente de cuando el tipo era un cargo, no debe fijar la propiedad.
+    if (!requiresProperty(getSelectedType())) return;
+
     const value = (val || '').trim();
     if (!value) {
       updatePropertyMeta(null);
@@ -236,6 +241,20 @@ export default async function transactionsDetailController(contexto) {
   };
 
   /**
+   * Tipos de movimiento que pertenecen a una unidad. Un Gasto/Compra es un
+   * egreso de la administración y "Otro" un apunte administrativo: ninguno se
+   * vincula a un residente ni debe afectar el saldo de una propiedad.
+   */
+  const PROPERTY_TYPES = new Set(['FEE', 'PAYMENT', 'FINE']);
+  const requiresProperty = (type) => PROPERTY_TYPES.has(type);
+
+  const setPropertyFieldVisibility = (needsProperty) => {
+    propertySearch.classList.toggle('hidden', !needsProperty);
+    propertyMeta.classList.toggle('hidden', !needsProperty);
+    propertyHint?.classList.toggle('hidden', needsProperty);
+  };
+
+  /**
    * El monto es una única fuente de verdad: el mismo input se mueve entre
    * "Cargos a pagar" (pagos) y "Detalles del Movimiento" (resto de tipos).
    * Se conservan id, listeners y validación nativa.
@@ -254,8 +273,19 @@ export default async function transactionsDetailController(contexto) {
   const handleTypeChange = (type, { skipDebts = false } = {}) => {
     const isPayment = type === 'PAYMENT';
     const isExpense = type === 'EXPENSE';
+    const needsProperty = requiresProperty(type);
     const showReceiptSection = isPayment || isExpense;
     placeAmountField(isPayment);
+
+    setPropertyFieldVisibility(needsProperty);
+    if (!needsProperty) {
+      // Al salir de un tipo con unidad, se limpia la selección para que no se
+      // guarde un vínculo heredado (ni se consulte el saldo de un residente).
+      clearTimeout(propertySearchTimer);
+      propertySearch.value = '';
+      updatePropertyMeta(null);
+    }
+
     debtsSection.classList.toggle('hidden', !isPayment);
     paymentSection.classList.toggle('hidden', !showReceiptSection);
     if (paymentMethodField) paymentMethodField.classList.toggle('hidden', !isPayment);
@@ -638,8 +668,8 @@ export default async function transactionsDetailController(contexto) {
   // =============================================
   const validate = () => {
     const type = getSelectedType();
-    if (!currentPropertyId) {
-      alert('Debe seleccionar una unidad/propiedad');
+    if (requiresProperty(type) && !currentPropertyId) {
+      alert('Debe seleccionar una unidad/propiedad para este tipo de movimiento');
       return false;
     }
     if (!descriptionInput.value.trim()) {
@@ -722,7 +752,7 @@ export default async function transactionsDetailController(contexto) {
     const amount = type === 'PAYMENT' ? absAmount : -absAmount;
 
     const data = {
-      propertyId: currentPropertyId,
+      propertyId: requiresProperty(type) ? currentPropertyId : null,
       description: descriptionInput.value.trim(),
       amount,
       type,

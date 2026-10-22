@@ -105,6 +105,20 @@ export default async function transactionsController(contexto) {
     };
 
     /**
+     * Texto de la columna "Unidad". Los movimientos de la administración no
+     * tienen unidad: se describe el tipo para que la fila no parezca un error.
+     */
+    const getPropertyLabel = (tx) => {
+        // Los gastos y apuntes administrativos nunca pertenecen a una unidad:
+        // se etiquetan por tipo aunque un dato antiguo conserve un propertyId
+        // que en realidad era una categoría (ej. "PAGOS" o "NAVIDAD").
+        if (tx.type === 'EXPENSE') return t('modules.transactions.propertyCommunityExpense');
+        if (tx.type === 'OTHER') return t('modules.transactions.propertyAdminMovement');
+        if (tx.propertyId) return `${t('modules.transactions.propertyPrefix')} ${tx.propertyId}`;
+        return t('modules.transactions.propertyNa');
+    };
+
+    /**
      * Genera los Chips de Filtro dinámicamente basados en los datos filtrados por fecha
      */
     const updateDynamicFilters = (dataByDate) => {
@@ -296,7 +310,7 @@ export default async function transactionsController(contexto) {
                         <div class="col-type">
                             <span class="badge badge-${(tx.type || 'fee').toLowerCase()}">${typeLabels[tx.type] || tx.type || t('modules.transactions.typeOther')}</span>
                         </div>
-                        <div class="col-prop">${t('modules.transactions.propertyPrefix')} ${tx.propertyId || t('modules.transactions.propertyNa')}</div>
+                        <div class="col-prop">${getPropertyLabel(tx)}</div>
                         <div class="col-amount ${isPos ? 'amount-pos' : 'amount-neg'}">
                             ${isPos ? '+' : ''}${currency(tx.amount)}
                         </div>
