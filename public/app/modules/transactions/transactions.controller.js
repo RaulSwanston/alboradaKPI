@@ -1,4 +1,4 @@
-import Transaction from "../../models/Transaction.js";
+import Transaction, { sortTransactionsByDateDesc } from "../../models/Transaction.js";
 import { t } from '../../core/i18n.js';
 import { db, doc, getDoc } from "../../core/firebase.js";
 import { getAuthObjectURL } from '../../core/r2.js';
@@ -38,11 +38,7 @@ export default async function transactionsController(contexto) {
     const loadResidentTransactions = async () => {
         if (myPropertyIds.length === 0) return [];
         const lists = await Promise.all(myPropertyIds.map(pid => Transaction.getByPropertyId(pid)));
-        return lists.flat().sort((a, b) => {
-            const da = a.effectiveDate?.toDate ? a.effectiveDate.toDate() : new Date(a.effectiveDate || 0);
-            const db = b.effectiveDate?.toDate ? b.effectiveDate.toDate() : new Date(b.effectiveDate || 0);
-            return db - da;
-        });
+        return sortTransactionsByDateDesc(lists.flat());
     };
 
     els.search.placeholder = t('modules.transactions.searchPlaceholder');

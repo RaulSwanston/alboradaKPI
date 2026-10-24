@@ -18,6 +18,30 @@ const NON_PROPERTY_IDS = new Set([
 const INCOME_TYPES = new Set(['PAYMENT', 'OTHER_INCOME']);
 
 /**
+ * Convierte un Timestamp de Firestore, un Date o un string a milisegundos.
+ * Devuelve 0 si el valor no existe o no es una fecha válida.
+ */
+const timestampMs = (value) => {
+  if (!value) return 0;
+  if (value.toDate) return value.toDate().getTime();
+  const d = new Date(value);
+  return Number.isNaN(d.getTime()) ? 0 : d.getTime();
+};
+
+/**
+ * Orden canónico de los listados: fecha efectiva descendente y, para el mismo
+ * día, el último creado primero. Sin este desempate, Firestore ordena los
+ * empates de `effectiveDate` por ID de documento, por lo que un pago recién
+ * creado podía aparecer en medio de los pagos del mismo día.
+ */
+export function sortTransactionsByDateDesc(list) {
+  return list.sort((a, b) =>
+    timestampMs(b.effectiveDate) - timestampMs(a.effectiveDate) ||
+    timestampMs(b.createdAt) - timestampMs(a.createdAt)
+  );
+}
+
+/**
  * La clase Transaction gestiona el historial contable del condominio.
  * Implementa un CRUD completo con registro automático de actividades para auditoría.
  */
@@ -526,12 +550,9 @@ export default class Transaction {
       const list = [];
       querySnapshot.forEach((doc) => list.push({ id: doc.id, ...doc.data() }));
       
-      // Ordenamos en memoria por fecha efectiva (descendente)
-      return list.sort((a, b) => {
-        const dateA = a.effectiveDate?.toDate ? a.effectiveDate.toDate() : new Date(a.effectiveDate || 0);
-        const dateB = b.effectiveDate?.toDate ? b.effectiveDate.toDate() : new Date(b.effectiveDate || 0);
-        return dateB - dateA;
-      });
+      // Ordenamos en memoria por fecha efectiva (descendente) y, para el mismo
+      // día, por fecha de creación (el último registrado primero).
+      return sortTransactionsByDateDesc(list);
     } catch (error) {
       console.error(`[Transaction] Error para unidad ${propertyId}:`, error);
       throw error;
@@ -551,7 +572,7 @@ export default class Transaction {
       const querySnapshot = await getDocs(q);
       const list = [];
       querySnapshot.forEach((doc) => list.push({ id: doc.id, ...doc.data() }));
-      return list;
+      return sortTransactionsByDateDesc(list);
     } catch (error) {
       console.error("[Transaction] Error al obtener no identificados:", error);
       throw error;
@@ -572,7 +593,7 @@ export default class Transaction {
       const querySnapshot = await getDocs(q);
       const list = [];
       querySnapshot.forEach((doc) => list.push({ id: doc.id, ...doc.data() }));
-      return list;
+      return sortTransactionsByDateDesc(list);
     } catch (error) {
       console.error(`[Transaction] Error al obtener periodo ${period}:`, error);
       throw error;
@@ -588,12 +609,7 @@ export default class Transaction {
   static async getByPeriods(periods) {
     try {
       const lists = await Promise.all(periods.map(p => this.getByPeriod(p)));
-      const merged = lists.flat();
-      return merged.sort((a, b) => {
-        const dateA = a.effectiveDate?.toDate ? a.effectiveDate.toDate() : new Date(a.effectiveDate || 0);
-        const dateB = b.effectiveDate?.toDate ? b.effectiveDate.toDate() : new Date(b.effectiveDate || 0);
-        return dateB - dateA;
-      });
+      return sortTransactionsByDateDesc(lists.flat());
     } catch (error) {
       console.error("[Transaction] Error en getByPeriods:", error);
       throw error;
@@ -629,7 +645,7 @@ export default class Transaction {
       const querySnapshot = await getDocs(q);
       const list = [];
       querySnapshot.forEach((doc) => list.push({ id: doc.id, ...doc.data() }));
-      return list;
+      return sortTransactionsByDateDesc(list);
     } catch (error) {
       console.error("[Transaction] Error en getByDateRange:", error);
       throw error;
@@ -650,7 +666,7 @@ export default class Transaction {
       const querySnapshot = await getDocs(q);
       const list = [];
       querySnapshot.forEach((doc) => list.push({ id: doc.id, ...doc.data() }));
-      return list;
+      return sortTransactionsByDateDesc(list);
     } catch (error) {
       console.error("[Transaction] Error al obtener todas:", error);
       throw error;
@@ -673,7 +689,7 @@ export default class Transaction {
       const querySnapshot = await getDocs(q);
       const list = [];
       querySnapshot.forEach((doc) => list.push({ id: doc.id, ...doc.data() }));
-      return list;
+      return sortTransactionsByDateDesc(list);
     } catch (error) {
       console.error(`[Transaction] Error al obtener por tipo ${type}:`, error);
       throw error;
@@ -769,7 +785,7 @@ export default class Transaction {
       const querySnapshot = await getDocs(q);
       const list = [];
       querySnapshot.forEach((doc) => list.push({ id: doc.id, ...doc.data() }));
-      return list;
+      return sortTransactionsByDateDesc(list);
     } catch (error) {
       console.error(`[Transaction] Error al obtener por concepto ${conceptId}:`, error);
       throw error;

@@ -7,6 +7,14 @@ import { db, doc, updateDoc } from "../../core/firebase.js";
 import { uploadFileToR2, buildPropertyUploadKey, buildExpenseReceiptKey, getAuthObjectURL, revokeAuthObjectURLs } from "../../core/r2.js";
 import { compressImageFile } from "../../core/imageCompress.js";
 
+/** Fecha local en formato YYYY-MM-DD para <input type="date">. */
+const toLocalDateInputValue = (date = new Date()) => {
+  const y = date.getFullYear();
+  const m = String(date.getMonth() + 1).padStart(2, '0');
+  const d = String(date.getDate()).padStart(2, '0');
+  return `${y}-${m}-${d}`;
+};
+
 /**
  * Controlador para creación/edición de transacciones.
  * Soporta búsqueda de propiedad, selección de deudas, carga de comprobante y auto-monto.
@@ -105,7 +113,7 @@ export default async function transactionsDetailController(contexto) {
   // =============================================
   const init = async () => {
     // Set today as default date
-    dateInput.value = new Date().toISOString().split('T')[0];
+    dateInput.value = toLocalDateInputValue();
     populateIncomeTypeSelect();
 
     if (isNew) {
@@ -999,6 +1007,8 @@ export default async function transactionsDetailController(contexto) {
       if (trans.effectiveDate) {
         const d = trans.effectiveDate.toDate ? trans.effectiveDate.toDate() : new Date(trans.effectiveDate);
         if (!isNaN(d.getTime())) {
+          // Se conserva la fecha tal como se almacenó (día UTC) para no mover
+          // los históricos importados a medianoche UTC al abrirlos para editar.
           dateInput.value = d.toISOString().split('T')[0];
         }
       }

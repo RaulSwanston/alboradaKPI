@@ -1,6 +1,21 @@
 # Memoria de Sesiones - Bitácora de Proyecto
 
-## 📌 RETOMA AQUÍ (última sesión: 22 de Octubre de 2026, tarde)
+## 📌 RETOMA AQUÍ — Orden de transacciones (24 de Octubre de 2026)
+
+**Estado:** ✅ **Desempate por `createdAt` en el listado.** La tabla sigue ordenando por `effectiveDate` descendente, pero cuando dos movimientos comparten fecha (todos los pagos manuales se guardan a las 12:00), el último creado queda primero. Se hace en memoria, sin índice compuesto ni lecturas extra. También se corrigió el default de fecha del formulario para usar la fecha local: antes `toISOString()` usaba UTC y en Venezuela podía adelantar un día después de las 20:00.
+
+### Cambios
+
+- **`models/Transaction.js`:** nuevo `sortTransactionsByDateDesc()` (fecha efectiva desc + `createdAt` desc, con soporte para Timestamp de Firestore, Date y string). Aplicado a `getByPropertyId`, `getUnidentified`, `getByPeriod`, `getByPeriods`, `getByDateRange`, `getAll`, `getByType` y `getByConcept`.
+- **`transactions.controller.js`:** `loadResidentTransactions()` usa el mismo helper.
+- **`transactions-detail.controller.js`:** `toLocalDateInputValue()` para el default del formulario; evita que `toISOString()` adelante un día en Venezuela después de las 20:00. Al editar se conserva la fecha almacenada (día UTC) para no mover históricos importados a medianoche UTC.
+- **Verificación:** `node --check` OK; prueba sintética del comparador OK. Sin lecturas a Firestore.
+
+### Límite conocido
+
+Un pago con fecha anterior sigue apareciendo debajo de fechas posteriores. Si el cliente quiere que el último creado quede siempre en la primera fila, habría que ordenar por `createdAt` como criterio principal o resaltar/posicionar el nuevo movimiento.
+
+## Entrada previa: ingreso administrativo (22 de Octubre de 2026, tarde)
 
 **Estado:** ✅ **Alta de ingresos administrativos desde la interfaz.** El formulario de transacciones ahora tiene el tipo **Ingreso** (`OTHER_INCOME`): monto positivo, sin unidad (`propertyId: "__ADMIN_INCOME__"`), selector de **Tipo de Ingreso** (`incomeTypeId`, por defecto *Intereses bancarios*) y folio `Nota de Crédito`. Cubre el caso de los intereses bancarios, que antes solo entraban por los scripts de importación mensual.
 
