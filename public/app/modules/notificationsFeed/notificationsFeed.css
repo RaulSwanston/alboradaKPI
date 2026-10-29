@@ -55,6 +55,7 @@
 .notif-type-membership { background: var(--bg-hero); color: var(--color-primary); }
 .notif-type-payment { background: #fff7ed; color: #c2410c; }
 .notif-type-service { background: #f0f9ff; color: #0369a1; }
+.notif-type-credit { background: #f5f3ff; color: #6d28d9; }
 .notif-type-info { background: var(--color-gurkha-100); color: var(--color-gurkha-900); }
 
 .notification-icon-wrapper svg {

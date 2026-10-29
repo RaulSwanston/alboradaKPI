@@ -1,5 +1,50 @@
 # Memoria de Sesiones - Bitácora de Proyecto
 
+## 📌 RETOMA AQUÍ — Notas de crédito / condonaciones (28 de Octubre de 2026)
+
+**Estado:** ✅ **Implementado; pendiente de verificación en navegador.** Se agregó el tipo de transacción `CREDIT_NOTE` (monto positivo, `propertyId` obligatorio) para condonar facturas pendientes, pasadas, presentes o futuras. Es un movimiento del libro mayor, **no caja**: reduce el saldo de la unidad pero no la liquidez ni los ingresos. Se crea y elimina solo desde `transactions-detail` (admin); no se edita. Se probaron las fórmulas de pendiente/condonación y la sintaxis; falta la prueba real en el navegador y crear una NC de prueba.
+
+### Resumen
+
+- **Modelo (`models/Transaction.js`):** `condonedBy: [{creditNoteId, amount, description}]` en el cargo; `getChargePending()` resta `paidBy` + `condonedBy`; `buildChargePaymentUpdate()` respeta las condonaciones (re-guardar un pago no revive deuda); nuevo `buildChargeCondonationUpdate()`. `createCreditNote()` es **atómico** (`runTransaction`): valida cargo/unidad/saldo con el cruce `appliedTo` de los pagos, genera folio `NC-YYYYMM-NNNN` con contador `nc` en `system/counters`, escribe la NC, actualiza `condonedBy`/`pendingAmount`, ajusta el saldo (excluye la porción de facturas futuras) y registra la actividad `CREDIT_NOTE_ISSUED` con visibilidad `['admin', ...residentUids]`. `delete()` libera `condonedBy`, revierte el saldo y deja actividad. `update()` bloquea las NC.
+- **Saldo (`models/Property.js`):** la NC cuenta en el saldo de la unidad; se excluye de caja; si se aplica a FEEs futuras se resta esa porción del saldo actual (igual que un pago). `AppConfig`/`incomeTypes` la ignoran por tipo.
+- **UI admin (`modules/transactions-detail`):** nuevo tipo “Nota de Crédito” (icono violeta), monto “Monto a condonar (USD)”, motivo obligatorio, selector de facturas pendientes y confirmación de que el monto coincida con lo condonado. Crear/eliminar únicamente; en edición se bloquea y el radio se oculta.
+- **Estado de cuenta/PDF (`propertyDetail`):** la NC aparece como abono con etiqueta “Nota de crédito”, folio en la columna Recibo y sin botón “Ver recibo”; las facturas con `condonedBy` muestran “Condonado con nota de crédito”. `isPayment` pasó a ser por tipo, no por signo.
+- **Listado (`modules/transactions`):** badge/filtro `CREDIT_NOTE`, folio visible, sin botones de recibo ni edición (sí eliminar).
+- **Notificaciones:** `CREDIT_NOTE_ISSUED` en `recentActivity` y `notificationsFeed` (ruta al estado de cuenta del residente); la actividad incluye a los residentes de la unidad.
+- **Contador:** `appConfig.counters.nc` como semilla; `system/counters.nc` guarda el último usado. No se añadió aún el campo en `configManager`.
+
+### Pendiente
+
+1. Probar en navegador: alta de una NC (pasada/presente/futura), ver el folio, el abono en el estado de cuenta/PDF y la notificación del residente; eliminarla y comprobar que la deuda y el saldo vuelven.
+2. Decidir si se agrega el contador `nc` a *Ajustes* (`configManager`) y una actividad de borrado visible para el residente.
+3. Las NC no arreglan los pagos sin asignar de la 240: eso sigue siendo conciliación de pagos.
+
+---
+
+## 📌 RETOMA AQUÍ — Flujo de reporte/aprobación de pagos (26 de Octubre de 2026)
+
+**Estado:** ✅ **Reporte → aprobación → pago contablemente correcto.** La aprobación del administrador ya no puede dejar el pago a medias: folio, cargos, saldo, caja e historial se escriben en una sola transacción. El residente ve el estado de sus reportes y se le avisa si tiene uno pendiente antes de enviar otro. **Sin lecturas a Firestore durante el desarrollo** (solo código y revisión de snapshots/índices locales).
+
+### Resumen de cambios
+
+- **Folio de recibo numérico (`models/Transaction.js`):** `_readVoucherCounters()` y `_generateVoucherInTransaction()` permiten generar el número DENTRO de una transacción ya abierta (la aprobación no puede abrir otra). Los pagos nuevos usan `String(next)` (ej. `19122`); los históricos `REC-...` no se reescriben. `_generateVoucher()` y `_generateBatchVouchers()` reutilizan el helper.
+- **Contador configurable (`models/AppConfig.js` + `configManager`):** `system/counters.rec` guarda el **último número usado**; `appConfig.counters.rec` es solo la semilla. El admin escribe el **próximo** en *Ajustes → Próximo número de recibo* y `setReceiptCounter(next)` persiste `next - 1`, rechazando bajar el contador para no repetir folios.
+- **Aprobación atómica (`models/PaymentNotification.js`):** `approve()` corre en una `runTransaction` con guard de estado/idempotencia (doble clic no duplica), validación de cargos (tipo, unidad, saldo real), folio en la misma transacción, `paidBy`/`pendingAmount` con `Transaction.buildChargePaymentUpdate()`, saldo de la unidad, campos de revisión y actividad `PAYMENT_APPROVED`. El tipo de ingreso se conserva o se corrige con `resolveApprovalIncomeType()` (cambio de categoría permitido: no altera montos ni reparto).
+- **Rechazo con motivo opcional (`PaymentNotification.reject()`):** transacción con idempotencia y actividad `PAYMENT_REJECTED`; el motivo puede quedar vacío.
+- **Caja al instante (`AppConfig.applyIncomeDelta()`):** además de `stats.ingresosPorTipo`, actualiza `saldoCajaDisponible`, `saldoPorPeriodo` y `ultimoPagoMonto`/`ultimoPagoFecha` cuando el pago es el más reciente. Coste: 1 lectura + 1 escritura, igual que antes. `Property.recalculateAllBalances()` ahora calcula `ultimoPagoFecha`.
+- **Historial del residente (`paymentHistory`):** filtros Todos/Pendientes/Aprobados/Rechazados, número de recibo, fecha de revisión, motivo de rechazo y botón «Ver recibo» hacia la transacción. Escape de HTML y fechas locales.
+- **Reporte (`paymentReport`):** fecha por defecto en hora local (no UTC), se restaura tras `form.reset()`, aviso de reportes pendientes con enlace a «Mis reportes» usando `PaymentNotification.getByUser()`.
+- **Notificaciones (`notificationsFeed` + `recentActivity`):** `PAYMENT_REPORTED` → bandeja de aprobación; `PAYMENT_APPROVED` → recibo (admin) o historial (residente); `PAYMENT_REJECTED` → bandeja/historial. Iconos y categorías nuevas; las rechazadas no muestran signo de monto.
+- **Rutas (`router.js`):** `/dashboard/payments/pending` exige `adminGuard`; se elimina `/dashboard/payments/:id` (vista inexistente).
+- **Reglas (`firestore.rules`):** `paymentNotifications` ya no se puede listar entero por cualquier autenticado (solo admin o dueño) y la creación valida `residentUid`, estado `pending_verification` y monto > 0. `activities` se lee por `visibility` (`admin` o UID incluido) y al crear exige una lista `visibility` no vacía. **Contrapartida asumida:** las actividades antiguas sin `visibility` dejan de ser legibles por residentes; el admin sigue viéndolas.
+
+### Límites conocidos
+
+- `applyIncomeDelta()` sigue siendo un segundo paso fuera de la transacción de aprobación: si falla, el pago queda correcto pero la caja/ingresos se reconstruyen con «Sincronizar saldos».
+- El contador de recibos solo impide descensos desde la UI; un reinicio manual en Firestore sigue siendo posible (y peligroso).
+- Índices necesarios ya existían (`paymentNotifications`: `residentUid + reportDate`, `status + reportDate`; `activities`: `visibility + timestamp`).
+
 ## 📌 RETOMA AQUÍ — Orden de transacciones (24 de Octubre de 2026)
 
 **Estado:** ✅ **Desempate por `createdAt` en el listado.** La tabla sigue ordenando por `effectiveDate` descendente, pero cuando dos movimientos comparten fecha (todos los pagos manuales se guardan a las 12:00), el último creado queda primero. Se hace en memoria, sin índice compuesto ni lecturas extra. También se corrigió el default de fecha del formulario para usar la fecha local: antes `toISOString()` usaba UTC y en Venezuela podía adelantar un día después de las 20:00.

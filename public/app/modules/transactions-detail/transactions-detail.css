@@ -297,6 +297,7 @@
 .td-icon-income { background: rgba(16, 185, 129, 0.12); color: #059669; }
 .td-icon-expense { background: rgba(234, 88, 12, 0.1); color: #ea580c; }
 .td-icon-fine { background: rgba(192, 62, 76, 0.1); color: var(--color-solid-pink-600); }
+.td-icon-credit { background: rgba(109, 40, 217, 0.1); color: #6d28d9; }
 .td-icon-other { background: rgba(107, 114, 128, 0.1); color: var(--color-gurkha-500); }
 
 .td-type-name {

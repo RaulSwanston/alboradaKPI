@@ -15,13 +15,39 @@ export default async function paymentApprovalController(contexto) {
   const btnRejectCancel = document.getElementById('btn-reject-cancel');
   const btnRejectConfirm = document.getElementById('btn-reject-confirm');
   let currentReportId = null;
+  let currentReports = [];
+
+  // El motivo es opcional; el placeholder no puede venir por `::i18n` en un
+  // atributo (Mosaic no procesa atributos), así que se asigna desde JS.
+  if (rejectReason) rejectReason.placeholder = t('paymentApproval.rejectPlaceholder');
+
+  const escapeHtml = (value) => String(value ?? '').replace(/[&<>"']/g, (ch) => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[ch]));
 
   const formatCurrency = (amount) =>
-    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(amount);
+    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(Number(amount) || 0);
+
+  const parseDate = (value) => {
+    if (!value) return null;
+    if (value.toDate) return value.toDate();
+    if (typeof value === 'string') {
+      const onlyDate = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
+      if (onlyDate) return new Date(Number(onlyDate[1]), Number(onlyDate[2]) - 1, Number(onlyDate[3]), 12, 0, 0);
+    }
+    const date = new Date(value);
+    return Number.isNaN(date.getTime()) ? null : date;
+  };
 
   const formatDate = (timestamp) => {
-    if (!timestamp) return '';
-    const date = timestamp.toDate ? timestamp.toDate() : new Date(timestamp);
+    const date = parseDate(timestamp);
+    if (!date) return '—';
+    return date.toLocaleDateString('es', { day: '2-digit', month: 'short', year: 'numeric' });
+  };
+
+  const formatDateTime = (timestamp) => {
+    const date = parseDate(timestamp);
+    if (!date) return '';
     return date.toLocaleDateString('es', { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
   };
 
@@ -50,6 +76,7 @@ export default async function paymentApprovalController(contexto) {
       listEl.innerHTML = `<div class="loading-state"><p>${t('paymentApproval.loading')}</p></div>`;
 
       const reports = await PaymentNotification.getPending();
+      currentReports = reports;
 
       if (reports.length === 0) {
         listEl.classList.add('hidden');
@@ -66,10 +93,10 @@ export default async function paymentApprovalController(contexto) {
         <div class="approval-card" data-id="${report.id}">
           <div class="approval-card-header">
             <div class="approval-resident">
-              <div class="approval-avatar">${(report.residentName || '?')[0].toUpperCase()}</div>
+              <div class="approval-avatar">${escapeHtml((report.residentName || '?')[0].toUpperCase())}</div>
               <div>
-                <span class="approval-resident-name">${report.residentName || '—'}</span>
-                <span class="approval-property">${t('paymentApproval.unit')} ${report.propertyId || '—'}</span>
+                <span class="approval-resident-name">${escapeHtml(report.residentName || '—')}</span>
+                <span class="approval-property">${t('paymentApproval.unit')} ${escapeHtml(report.propertyId || '—')}</span>
               </div>
             </div>
             <span class="approval-amount">${formatCurrency(report.amount)}</span>
@@ -78,16 +105,16 @@ export default async function paymentApprovalController(contexto) {
           <div class="approval-card-body">
             <div class="approval-detail-grid">
               <div class="approval-detail-item">
-                <span class="approval-label"><!-- ::i18n.paymentApproval.paymentDate --></span>
-                <span class="approval-value">${report.paymentDate || '—'}</span>
+                <span class="approval-label">${t('paymentApproval.paymentDate')}</span>
+                <span class="approval-value">${formatDate(report.paymentDate)}</span>
               </div>
               <div class="approval-detail-item">
-                <span class="approval-label"><!-- ::i18n.paymentApproval.reportedDate --></span>
-                <span class="approval-value">${formatDate(report.reportDate)}</span>
+                <span class="approval-label">${t('paymentApproval.reportedDate')}</span>
+                <span class="approval-value">${formatDateTime(report.reportDate)}</span>
               </div>
               <div class="approval-detail-item">
                 <span class="approval-label">${t('paymentApproval.paymentMethod')}</span>
-                <span class="approval-value">${paymentMethodLabels[report.paymentMethod] || paymentMethodLabels[legacyPaymentMap[report.paymentMethod]] || report.paymentMethod || 'No especificado'}</span>
+                <span class="approval-value">${escapeHtml(paymentMethodLabels[report.paymentMethod] || paymentMethodLabels[legacyPaymentMap[report.paymentMethod]] || report.paymentMethod || '—')}</span>
               </div>
               <div class="approval-detail-item">
                 <span class="approval-label">${t('paymentApproval.incomeType')}</span>
@@ -97,39 +124,39 @@ export default async function paymentApprovalController(contexto) {
             </div>
             ${report.notes ? `
             <div class="approval-detail-item">
-              <span class="approval-label"><!-- ::i18n.paymentApproval.notes --></span>
-              <span class="approval-value">${report.notes}</span>
+              <span class="approval-label">${t('paymentApproval.notes')}</span>
+              <span class="approval-value">${escapeHtml(report.notes)}</span>
             </div>` : ''}
             ${report.appliedTo?.length ? `
             <details class="approval-applied">
-              <summary class="approval-applied-summary"><!-- ::i18n.paymentApproval.appliedTo --></summary>
+              <summary class="approval-applied-summary">${t('paymentApproval.appliedTo')}</summary>
               ${report.appliedTo.map(a => `
                 <div class="approval-applied-row">
-                  <span>${a.description || a.transactionId}</span>
+                  <span>${escapeHtml(a.description || a.transactionId)}</span>
                   <span>${formatCurrency(a.amount)}</span>
                 </div>
               `).join('')}
               ${report.excessAmount > 0 ? `
               <div class="approval-applied-row approval-excess">
-                <span><!-- ::i18n.paymentApproval.excess --></span>
+                <span>${t('paymentApproval.excess')}</span>
                 <span>${formatCurrency(report.excessAmount)}</span>
               </div>` : ''}
             </details>` : ''}
           </div>
 
           <div class="approval-card-actions">
-            <button class="btn-receipt" data-url="${report.receiptUrl || ''}">
+            <button class="btn-receipt" data-url="${escapeHtml(report.receiptUrl || '')}">
               <div class="icon-slot-sm" data-icon="eye"></div>
-              <!-- ::i18n.paymentApproval.viewReceipt -->
+              ${t('paymentApproval.viewReceipt')}
             </button>
             <div class="approval-buttons">
               <button class="btn-approve" data-id="${report.id}">
                 <div class="icon-slot-sm" data-icon="check-circle"></div>
-                <!-- ::i18n.paymentApproval.approve -->
+                ${t('paymentApproval.approve')}
               </button>
               <button class="btn-reject" data-id="${report.id}">
                 <div class="icon-slot-sm" data-icon="x-circle"></div>
-                <!-- ::i18n.paymentApproval.reject -->
+                ${t('paymentApproval.reject')}
               </button>
             </div>
           </div>
@@ -165,22 +192,38 @@ export default async function paymentApprovalController(contexto) {
     listEl.querySelectorAll('.btn-approve').forEach(btn => {
       btn.addEventListener('click', async () => {
         const id = btn.dataset.id;
-btn.disabled = true;
-      btn.innerHTML = `<div class="icon-slot-sm" data-icon="loader"></div>`;
-      try {
-        // Si el admin dejó el tipo en "Sin especificar", no mandamos override:
-        // se conserva lo que declaró el residente, o null si no declaró nada.
-        const incomeTypeSelect = listEl.querySelector(`.income-type-override[data-id="${id}"]`);
-        const overrides = incomeTypeSelect && incomeTypeSelect.value
-          ? { incomeTypeId: incomeTypeSelect.value }
-          : {};
-        const result = await PaymentNotification.approve(id, { uid: user.uid, name: user.displayName || user.email }, overrides);
-          alert(`✅ Pago aprobado. Recibo generado: ${result.voucherNumber}`);
+        const report = currentReports.find(r => r.id === id);
+        if (!report) return;
+
+        const confirmed = confirm(t('paymentApproval.confirmApprove', {
+          amount: formatCurrency(report.amount),
+          property: report.propertyId || '—'
+        }));
+        if (!confirmed) return;
+
+        btn.disabled = true;
+        btn.innerHTML = `<div class="icon-slot-sm" data-icon="loader"></div>`;
+
+        try {
+          // Si el admin dejó el tipo en "Sin especificar", no mandamos override:
+          // se conserva lo que declaró el residente, o null si no declaró nada.
+          const incomeTypeSelect = listEl.querySelector(`.income-type-override[data-id="${id}"]`);
+          const overrides = incomeTypeSelect && incomeTypeSelect.value
+            ? { incomeTypeId: incomeTypeSelect.value }
+            : {};
+          const result = await PaymentNotification.approve(
+            id,
+            { uid: user.uid, name: user.displayName || user.email },
+            overrides
+          );
+          alert(t('paymentApproval.approveSuccess', { voucher: result.voucherNumber }));
           await loadPending();
         } catch (error) {
           console.error("Error al aprobar:", error);
+          alert(t('paymentApproval.approveError', { message: error?.message || '' }));
           btn.disabled = false;
           btn.innerHTML = `<div class="icon-slot-sm" data-icon="check-circle"></div> ${t('paymentApproval.approve')}`;
+          await handleIcons(btn);
         }
       });
     });
@@ -190,6 +233,7 @@ btn.disabled = true;
       btn.addEventListener('click', () => {
         currentReportId = btn.dataset.id;
         rejectReason.value = '';
+        rejectReason.classList.remove('input-error');
         rejectModal.classList.remove('hidden');
       });
     });
@@ -201,21 +245,23 @@ btn.disabled = true;
   });
 
   btnRejectConfirm.addEventListener('click', async () => {
+    // El motivo es OPCIONAL: el administrador puede rechazar sin explicar.
     const reason = rejectReason.value.trim();
-    if (!reason) {
-      rejectReason.classList.add('input-error');
-      return;
-    }
     rejectReason.classList.remove('input-error');
     btnRejectConfirm.disabled = true;
     btnRejectConfirm.textContent = '...';
     try {
-      await PaymentNotification.reject(currentReportId, reason, { uid: user.uid, name: user.displayName || user.email });
+      await PaymentNotification.reject(
+        currentReportId,
+        reason,
+        { uid: user.uid, name: user.displayName || user.email }
+      );
       rejectModal.classList.add('hidden');
       currentReportId = null;
       await loadPending();
     } catch (error) {
       console.error("Error al rechazar:", error);
+      alert(t('paymentApproval.rejectError', { message: error?.message || '' }));
     } finally {
       btnRejectConfirm.disabled = false;
       btnRejectConfirm.innerHTML = t('paymentApproval.confirmReject');

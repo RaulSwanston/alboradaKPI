@@ -80,6 +80,18 @@
               <span class="td-type-name">Pago / Recibo</span>
             </span>
           </label>
+          <label class="td-type-option" data-type="CREDIT_NOTE">
+            <input type="radio" name="td-type" value="CREDIT_NOTE">
+            <span class="td-type-indicator"></span>
+            <span class="td-type-content">
+              <span class="td-type-icon td-icon-credit">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="9" y1="15" x2="15" y2="15"></line>
+                </svg>
+              </span>
+              <span class="td-type-name">Nota de Crédito</span>
+            </span>
+          </label>
           <label class="td-type-option" data-type="OTHER_INCOME">
             <input type="radio" name="td-type" value="OTHER_INCOME">
             <span class="td-type-indicator"></span>
@@ -142,7 +154,7 @@
               <line x1="12" y1="17" x2="12" y2="21"></line>
             </svg>
           </span>
-          <span class="td-section-label">Cargos a pagar</span>
+          <span class="td-section-label" id="td-debts-label">Cargos a pagar</span>
           <span class="td-section-badge" id="td-debts-count">0 seleccionados</span>
         </div>
         <div class="td-debts-amount-row">
@@ -152,7 +164,7 @@
             <span class="td-debts-available-value" id="td-debts-available-value">$0.00</span>
           </div>
         </div>
-        <p class="td-debts-amount-hint">Si el monto es menor al total seleccionado, se aplicará como abono parcial y el resto quedará pendiente.</p>
+        <p class="td-debts-amount-hint" id="td-debts-hint">Si el monto es menor al total seleccionado, se aplicará como abono parcial y el resto quedará pendiente.</p>
         <div id="td-debts-container">
           <p class="td-empty-hint">Seleccione una unidad para ver sus cargos pendientes</p>
         </div>
@@ -217,7 +229,7 @@
         </div>
         <div class="td-detail-grid">
           <div class="td-field full-width">
-            <label class="td-field-label" for="td-description">Descripción</label>
+            <label class="td-field-label" for="td-description" id="td-description-label">Descripción</label>
             <input type="text" class="td-input" id="td-description" name="description" placeholder="Ej: Cuota de Mantenimiento Enero 2026" required>
           </div>
           <div class="td-field full-width hidden" id="td-account-field">

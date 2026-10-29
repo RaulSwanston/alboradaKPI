@@ -47,6 +47,102 @@ export function sortTransactionsByDateDesc(list) {
  */
 export default class Transaction {
   /**
+   * Lee el estado de los contadores de folios dentro de una transacción.
+   * Si `system/counters` no existe, usa `appConfig.counters` como semilla
+   * (último número utilizado, no el próximo).
+   * @param {Object} transaction - Transacción de Firestore ya abierta.
+   * @returns {Promise<{counterRef: Object, exists: boolean, fac: number, rec: number, nc: number}>}
+   */
+  static async _readVoucherCounters(transaction) {
+    const counterRef = doc(db, "system", "counters");
+    const counterSnap = await transaction.get(counterRef);
+
+    if (counterSnap.exists()) {
+      const data = counterSnap.data() || {};
+      return {
+        counterRef,
+        exists: true,
+        fac: Number(data.fac) || 0,
+        rec: Number(data.rec) || 0,
+        nc: Number(data.nc) || 0
+      };
+    }
+
+    const configRef = doc(db, "appConfig", "app");
+    const configSnap = await transaction.get(configRef);
+    const manualCounters = configSnap.data()?.counters || {};
+    return {
+      counterRef,
+      exists: false,
+      fac: Number(manualCounters.fac) || 0,
+      rec: Number(manualCounters.rec) || 0,
+      nc: Number(manualCounters.nc) || 0
+    };
+  }
+
+  /**
+   * Genera un voucherNumber DENTRO de una transacción ya abierta.
+   *
+   * Existe para que la aprobación de un reporte de pago pueda generar el recibo
+   * en la MISMA transacción que escribe el pago, los cargos y el saldo. Si se
+   * llamara a `_generateVoucher()` (que abre su propia transacción) desde dentro
+   * de otra, Firestore rechazaría la operación anidada o se perdería la
+   * atomicidad.
+   *
+   * El folio de los pagos es puramente numérico (ej. `19122`): es la referencia
+   * que el administrador usa como número de recibo. Los folios históricos
+   * `REC-...` no se reescriben.
+   *
+   * @param {Object} transaction - Transacción de Firestore ya abierta.
+   * @param {string} type - Tipo de transacción (FEE, FINE, PAYMENT, etc.)
+   * @param {Date} effectiveDate - Fecha efectiva para el prefijo del cargo.
+   * @returns {Promise<{voucherNumber: string, voucherType: string}|null>}
+   */
+  static async _generateVoucherInTransaction(transaction, type, effectiveDate) {
+    const counters = await this._readVoucherCounters(transaction);
+    const isCharge = type === 'FEE' || type === 'FINE';
+    const isPayment = type === 'PAYMENT';
+
+    if (isCharge) {
+      const newCount = counters.fac + 1;
+      if (counters.exists) {
+        transaction.update(counters.counterRef, { fac: newCount });
+      } else {
+        transaction.set(counters.counterRef, { fac: newCount, rec: counters.rec });
+      }
+      const seq = String(newCount).padStart(6, '0');
+      const yyyymm = `${effectiveDate.getFullYear()}${String(effectiveDate.getMonth() + 1).padStart(2, '0')}`;
+      return { voucherNumber: `FAC-${yyyymm}-${seq}`, voucherType: 'Cargo' };
+    }
+
+    if (isPayment) {
+      const newCount = counters.rec + 1;
+      if (counters.exists) {
+        transaction.update(counters.counterRef, { rec: newCount });
+      } else {
+        // Un solo `set`: Firestore no permite escribir dos veces el mismo
+        // documento dentro de una transacción.
+        transaction.set(counters.counterRef, { fac: counters.fac, rec: newCount, nc: counters.nc });
+      }
+      return { voucherNumber: String(newCount), voucherType: 'Recibo' };
+    }
+
+    if (type === 'CREDIT_NOTE') {
+      const newCount = counters.nc + 1;
+      if (counters.exists) {
+        transaction.update(counters.counterRef, { nc: newCount });
+      } else {
+        transaction.set(counters.counterRef, { fac: counters.fac, rec: counters.rec, nc: newCount });
+      }
+      const seq = String(newCount).padStart(4, '0');
+      const yyyymm = `${effectiveDate.getFullYear()}${String(effectiveDate.getMonth() + 1).padStart(2, '0')}`;
+      return { voucherNumber: `NC-${yyyymm}-${seq}`, voucherType: 'Nota de Crédito' };
+    }
+
+    return null;
+  }
+
+  /**
    * Genera un voucherNumber secuencial (FAC o REC) usando runTransaction.
    * Lee el contador desde system/counters, lo incrementa atómicamente,
    * y si no existe lo inicializa desde appConfig.app.counters (secuencial manual del admin).
@@ -55,45 +151,9 @@ export default class Transaction {
    * @returns {Promise<{voucherNumber: string, voucherType: string}|null>}
    */
   static async _generateVoucher(type, effectiveDate) {
-    const counterRef = doc(db, "system", "counters");
-
-    return await runTransaction(db, async (transaction) => {
-      const counterSnap = await transaction.get(counterRef);
-      let facCounter, recCounter;
-
-      if (!counterSnap.exists()) {
-        const configRef = doc(db, "appConfig", "app");
-        const configSnap = await transaction.get(configRef);
-        const manualCounters = configSnap.data()?.counters || {};
-        facCounter = manualCounters.fac || 0;
-        recCounter = manualCounters.rec || 0;
-        transaction.set(counterRef, { fac: facCounter, rec: recCounter });
-      } else {
-        facCounter = counterSnap.data().fac || 0;
-        recCounter = counterSnap.data().rec || 0;
-      }
-
-      const isCharge = type === 'FEE' || type === 'FINE';
-      const isPayment = type === 'PAYMENT';
-
-      if (isCharge) {
-        const newCount = facCounter + 1;
-        transaction.update(counterRef, { fac: newCount });
-        const seq = String(newCount).padStart(6, '0');
-        const yyyymm = `${effectiveDate.getFullYear()}${String(effectiveDate.getMonth() + 1).padStart(2, '0')}`;
-        return { voucherNumber: `FAC-${yyyymm}-${seq}`, voucherType: 'Cargo' };
-      }
-
-      if (isPayment) {
-        const newCount = recCounter + 1;
-        transaction.update(counterRef, { rec: newCount });
-        const seq = String(newCount).padStart(6, '0');
-        const yyyymmdd = `${effectiveDate.getFullYear()}${String(effectiveDate.getMonth() + 1).padStart(2, '0')}${String(effectiveDate.getDate()).padStart(2, '0')}`;
-        return { voucherNumber: `REC-${yyyymmdd}-${seq}`, voucherType: 'Recibo' };
-      }
-
-      return null;
-    });
+    return await runTransaction(db, (transaction) =>
+      this._generateVoucherInTransaction(transaction, type, effectiveDate)
+    );
   }
 
   /**
@@ -105,27 +165,18 @@ export default class Transaction {
    */
   static async _generateBatchVouchers(count, type, effectiveDate) {
     if (count <= 0) return [];
-    const counterRef = doc(db, "system", "counters");
     return await runTransaction(db, async (transaction) => {
-      const counterSnap = await transaction.get(counterRef);
-      let facCounter, recCounter;
-      if (!counterSnap.exists()) {
-        const configRef = doc(db, "appConfig", "app");
-        const configSnap = await transaction.get(configRef);
-        const manualCounters = configSnap.data()?.counters || {};
-        facCounter = manualCounters.fac || 0;
-        recCounter = manualCounters.rec || 0;
-        transaction.set(counterRef, { fac: facCounter, rec: recCounter });
-      } else {
-        facCounter = counterSnap.data().fac || 0;
-        recCounter = counterSnap.data().rec || 0;
-      }
-
+      const counters = await this._readVoucherCounters(transaction);
       const isCharge = type === 'FEE' || type === 'FINE';
       const vouchers = [];
       if (isCharge) {
-        const start = facCounter + 1;
-        transaction.update(counterRef, { fac: facCounter + count });
+        const start = counters.fac + 1;
+        const nextFac = counters.fac + count;
+        if (counters.exists) {
+          transaction.update(counters.counterRef, { fac: nextFac });
+        } else {
+          transaction.set(counters.counterRef, { fac: nextFac, rec: counters.rec });
+        }
         const yyyymm = `${effectiveDate.getFullYear()}${String(effectiveDate.getMonth() + 1).padStart(2, '0')}`;
         for (let i = 0; i < count; i++) {
           const seq = String(start + i).padStart(6, '0');
@@ -202,11 +253,14 @@ export default class Transaction {
       // ingreso de la administración) no puede apuntar a una propiedad
       // inexistente: se enlaza a la transacción para que el feed abra su detalle.
       const isOtherIncome = data.type === 'OTHER_INCOME';
+      const isCreditNote = data.type === 'CREDIT_NOTE';
       const hasProperty = !!data.propertyId && !NON_PROPERTY_IDS.has(data.propertyId);
       await createActivity({
-        type: isOtherIncome
-          ? 'OTHER_INCOME_REGISTERED'
-          : (data.amount > 0 ? 'PAYMENT_REPORTED' : 'FEE_GENERATED'),
+        type: isCreditNote
+          ? 'CREDIT_NOTE_ISSUED'
+          : (isOtherIncome
+            ? 'OTHER_INCOME_REGISTERED'
+            : (data.amount > 0 ? 'PAYMENT_REPORTED' : 'FEE_GENERATED')),
         description: `${data.description} por ${Math.abs(Number(data.amount) || 0)} USD`,
         initiator: initiator,
         target: hasProperty
@@ -234,6 +288,159 @@ export default class Transaction {
       console.error("[Transaction] Error al crear transacción:", error);
       throw error;
     }
+  }
+
+  /**
+   * Crea una nota de crédito (condonación) de forma ATÓMICA:
+   *  - valida que las facturas sean de la unidad y tengan saldo;
+   *  - genera el folio NC-YYYYMM-NNNN en la misma transacción;
+   *  - escribe la nota y actualiza `condonedBy`/`pendingAmount` de las facturas;
+   *  - ajusta el saldo de la unidad (excluyendo facturas futuras, igual que un pago);
+   *  - deja una actividad visible para el admin y los residentes de la unidad.
+   *
+   * No es caja: `Property` la excluye de la liquidez y `AppConfig` de los ingresos.
+   *
+   * @param {Object} data - { propertyId, amount, description, effectiveDate, appliedTo, metadata? }
+   * @param {Object} initiator - { type, name, id? }
+   * @returns {Promise<{id: string, voucherNumber: string|null}>}
+   */
+  static async createCreditNote(data, initiator = { type: 'USER', name: 'Administrador' }) {
+    const propertyId = String(data?.propertyId || '').trim();
+    if (!propertyId) throw new Error('La nota de crédito necesita una unidad.');
+
+    const amount = Math.abs(Number(data?.amount) || 0);
+    if (!(amount > 0)) throw new Error('El monto de la nota de crédito no es válido.');
+
+    const links = (Array.isArray(data?.appliedTo) ? data.appliedTo : [])
+      .filter(a => a && a.transactionId && Number(a.amount) > 0)
+      .map(a => ({
+        transactionId: String(a.transactionId),
+        amount: Math.round((Number(a.amount) || 0) * 100) / 100,
+        description: a.description || ''
+      }));
+    if (!links.length) throw new Error('Selecciona al menos una factura a condonar.');
+
+    const total = Math.round(links.reduce((sum, l) => sum + l.amount, 0) * 100) / 100;
+    if (Math.abs(total - amount) > 0.005) {
+      throw new Error('El monto debe coincidir con lo condonado en las facturas.');
+    }
+
+    const rawDate = data.effectiveDate;
+    const dateObj = rawDate instanceof Date
+      ? rawDate
+      : (rawDate?.toDate ? rawDate.toDate() : new Date(rawDate || Date.now()));
+    const period = `${dateObj.getFullYear()}-${String(dateObj.getMonth() + 1).padStart(2, '0')}`;
+    const now = new Date();
+    const currentPeriod = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+
+    // Lectura acotada a la unidad: permite validar el pendiente real cruzando
+    // `paidBy` con el `appliedTo` de los pagos (el mismo criterio que ve el
+    // admin en el formulario). Sin esto, un cargo con el `paidBy` incompleto
+    // podría condonarse por más de lo que realmente debe.
+    const unitTransactions = await this.getByPropertyId(propertyId);
+    const appliedByCharge = new Map();
+    for (const tx of unitTransactions) {
+      if (tx.type !== 'PAYMENT') continue;
+      for (const ap of (Array.isArray(tx.appliedTo) ? tx.appliedTo : [])) {
+        if (!ap?.transactionId) continue;
+        appliedByCharge.set(
+          ap.transactionId,
+          (appliedByCharge.get(ap.transactionId) || 0) + (Number(ap.amount) || 0)
+        );
+      }
+    }
+
+    return await runTransaction(db, async (transaction) => {
+      const propRef = doc(db, "properties", propertyId);
+      const chargeRefs = links.map(l => doc(db, "transactions", l.transactionId));
+      const [propSnap, ...chargeSnaps] = await Promise.all([
+        transaction.get(propRef),
+        ...chargeRefs.map(ref => transaction.get(ref))
+      ]);
+
+      if (!propSnap.exists()) throw new Error('La unidad no existe.');
+
+      let futurePortion = 0;
+      chargeSnaps.forEach((snap, i) => {
+        const link = links[i];
+        if (!snap.exists()) {
+          throw new Error(`La factura "${link.description || link.transactionId}" no existe.`);
+        }
+        const cargo = snap.data();
+        if (cargo.type !== 'FEE' && cargo.type !== 'FINE') {
+          throw new Error(`El movimiento "${link.description || link.transactionId}" no es una factura por pagar.`);
+        }
+        if (cargo.propertyId !== propertyId) {
+          throw new Error(`La factura "${link.description || link.transactionId}" no pertenece a esta unidad.`);
+        }
+        const appliedPaid = appliedByCharge.get(link.transactionId) || 0;
+        const pending = this.getChargePending(cargo, appliedPaid);
+        if (link.amount > pending + 0.005) {
+          throw new Error(`La factura "${link.description || link.transactionId}" solo tiene $${pending.toFixed(2)} pendientes.`);
+        }
+        if (cargo.type === 'FEE' && cargo.period && cargo.period > currentPeriod) {
+          futurePortion += link.amount;
+        }
+      });
+
+      const voucher = await this._generateVoucherInTransaction(transaction, 'CREDIT_NOTE', dateObj);
+      const noteRef = doc(collection(db, "transactions"));
+      const prop = propSnap.data();
+      const residentUids = Array.isArray(prop.residentUids) ? prop.residentUids : [];
+
+      transaction.set(noteRef, {
+        ...data,
+        propertyId,
+        amount,
+        type: 'CREDIT_NOTE',
+        status: 'verified',
+        effectiveDate: dateObj,
+        period,
+        pendingAmount: 0,
+        appliedTo: links,
+        voucherNumber: voucher?.voucherNumber || null,
+        voucherType: voucher?.voucherType || 'Nota de Crédito',
+        createdAt: serverTimestamp()
+      });
+
+      chargeSnaps.forEach((snap, i) => {
+        const next = this.buildChargeCondonationUpdate(snap.data(), noteRef.id, links[i]);
+        transaction.update(chargeRefs[i], {
+          condonedBy: next.condonedBy,
+          pendingAmount: next.pendingAmount
+        });
+      });
+
+      // Igual que un pago: la porción aplicada a facturas futuras no entra al
+      // saldo actual (esas facturas todavía no cuentan como deuda).
+      const newBalance = (Number(prop.balance) || 0) + amount - futurePortion;
+      transaction.update(propRef, {
+        balance: newBalance,
+        lastBalanceUpdate: new Date()
+      });
+
+      const activityRef = doc(collection(db, "activities"));
+      transaction.set(activityRef, {
+        timestamp: serverTimestamp(),
+        type: 'CREDIT_NOTE_ISSUED',
+        description: `Nota de crédito ${voucher?.voucherNumber || ''} por $${amount} en la unidad ${propertyId}`.trim(),
+        initiator: initiator,
+        target: {
+          type: 'PROPERTY',
+          id: propertyId,
+          name: `Unidad ${propertyId}`
+        },
+        visibility: ['admin', ...residentUids],
+        details: {
+          creditNoteId: noteRef.id,
+          amount,
+          voucherNumber: voucher?.voucherNumber || null,
+          reason: data.description || ''
+        }
+      });
+
+      return { id: noteRef.id, voucherNumber: voucher?.voucherNumber || null };
+    });
   }
 
   /**
@@ -269,6 +476,13 @@ export default class Transaction {
       const prevSnap = await getDoc(docRef);
       const prev = prevSnap.exists() ? prevSnap.data() : null;
       const prevWasIncome = prev && INCOME_TYPES.has(prev.type);
+
+      // Las notas de crédito son inmutables: se crean o se eliminan. Editar una
+      // obligaría a recalcular condonaciones y saldo; el flujo acordado es
+      // eliminar y volver a crear.
+      if (prev?.type === 'CREDIT_NOTE' || data.type === 'CREDIT_NOTE') {
+        throw new Error('Las notas de crédito no se editan. Elimínala y crea una nueva.');
+      }
 
       // Si se está actualizando la fecha, recalculamos el periodo y aseguramos objeto Date
       if (data.effectiveDate) {
@@ -329,6 +543,61 @@ export default class Transaction {
       // conoce cuánto estaba sumando al desglose de ingresos.
       const prevSnap = await getDoc(docRef);
       const prev = prevSnap.exists() ? prevSnap.data() : null;
+      const actor = initiator || { type: 'SYSTEM', name: 'Sistema' };
+
+      // Una nota de crédito no es un pago: al borrarla hay que liberar las
+      // facturas que condonaba y revertir el saldo de la unidad. Las facturas y
+      // la nota se borran en el mismo batch; el saldo va aparte y no es fatal.
+      if (prev?.type === 'CREDIT_NOTE') {
+        const links = (Array.isArray(prev.appliedTo) ? prev.appliedTo : [])
+          .filter(a => a && a.transactionId);
+        const chargeRefs = links.map(a => doc(db, "transactions", a.transactionId));
+        const chargeSnaps = await Promise.all(chargeRefs.map(ref => getDoc(ref)));
+        const now = new Date();
+        const currentPeriod = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+        let futurePortion = 0;
+
+        const batch = writeBatch(db);
+        chargeSnaps.forEach((snap, i) => {
+          if (!snap.exists()) return;
+          const cargo = snap.data();
+          const next = Transaction.buildChargeCondonationUpdate(cargo, id, null);
+          batch.update(chargeRefs[i], {
+            condonedBy: next.condonedBy,
+            pendingAmount: next.pendingAmount
+          });
+          if (cargo.type === 'FEE' && cargo.period && cargo.period > currentPeriod) {
+            futurePortion += Number(links[i].amount) || 0;
+          }
+        });
+        batch.delete(docRef);
+        await batch.commit();
+
+        try {
+          const propRef = doc(db, "properties", prev.propertyId);
+          const propSnap = await getDoc(propRef);
+          if (propSnap.exists()) {
+            // La NC había sumado (importe − porción futura) al saldo; al borrarla
+            // se revierte exactamente esa cantidad.
+            const delta = -((Number(prev.amount) || 0) - futurePortion);
+            await updateDoc(propRef, {
+              balance: (Number(propSnap.data().balance) || 0) + delta,
+              lastBalanceUpdate: new Date()
+            });
+          }
+        } catch (balanceError) {
+          console.warn(`[Transaction] No se revirtió el saldo de ${prev.propertyId}. Las facturas sí quedaron liberadas.`, balanceError);
+        }
+
+        await createActivity({
+          type: 'TRANSACTION_DELETED',
+          description: `Eliminación de nota de crédito ${prev.voucherNumber || id}`,
+          initiator: actor,
+          target: { type: 'TRANSACTION', id: id },
+          visibility: ['admin']
+        });
+        return;
+      }
 
       await deleteDoc(docRef);
 
@@ -340,7 +609,7 @@ export default class Transaction {
       await createActivity({
         type: 'TRANSACTION_DELETED',
         description: `Eliminación de transacción ${id}`,
-        initiator: initiator,
+        initiator: actor,
         target: { type: 'TRANSACTION', id: id },
         visibility: ['admin']
       });
@@ -370,28 +639,171 @@ export default class Transaction {
       );
 
       const querySnapshot = await getDocs(q);
-      const include = new Set((includeIds || []).filter(Boolean));
-      const list = [];
+
+      // La query ya trae TODAS las transacciones de la unidad, así que se puede
+      // cruzar el vínculo desde los dos lados sin lecturas extra: `paidBy` en el
+      // cargo y `appliedTo` en el pago. Si una de las dos caras se quedó sin
+      // escribir (bug histórico de conciliación), el cargo ya no se muestra
+      // como impago solo porque el `paidBy` esté incompleto.
+      const appliedByCharge = new Map();
+      const docs = [];
       querySnapshot.forEach(doc => {
         const data = doc.data();
+        // `id` al final: si el documento trae un campo `id` heredado, no debe
+        // pisar el ID real del documento (es la clave con la que se cruzan los
+        // `appliedTo` de los pagos).
+        docs.push({ ...data, id: doc.id });
+        if (data.type !== 'PAYMENT') return;
+        for (const ap of (Array.isArray(data.appliedTo) ? data.appliedTo : [])) {
+          if (!ap?.transactionId) continue;
+          appliedByCharge.set(
+            ap.transactionId,
+            (appliedByCharge.get(ap.transactionId) || 0) + (Number(ap.amount) || 0)
+          );
+        }
+      });
+
+      const include = new Set((includeIds || []).filter(Boolean));
+      const list = [];
+      for (const data of docs) {
         // Un gasto o un apunte administrativo con monto negativo NO es una
         // deuda del residente. Se excluye por tipo y no solo por propertyId:
         // los datos antiguos pueden traer una unidad en esos movimientos.
-        if (NON_DEBT_TYPES.has(data.type)) return;
-        const pending = data.pendingAmount !== undefined ? data.pendingAmount : Math.abs(data.amount);
-        if (data.amount < 0 && (pending > 0 || include.has(doc.id))) {
-          list.push({ id: doc.id, ...data, pending });
+        if (NON_DEBT_TYPES.has(data.type)) continue;
+        if (!(Number(data.amount) < 0)) continue;
+
+        // `paidBy` es la fuente de verdad del pendiente; `pendingAmount` solo
+        // un caché que puede quedar desactualizado (cargos parcialmente pagos).
+        // El `appliedTo` del pago es la otra cara y cubre el caso en que el
+        // cargo se quedó sin `paidBy` aunque el pago ya lo liste.
+        const appliedPaid = appliedByCharge.get(data.id) || 0;
+        const pending = Transaction.getChargePending(data, appliedPaid);
+        if (pending > 0.005 || include.has(data.id)) {
+          const total = Math.abs(Number(data.amount) || 0);
+          list.push({
+            ...data,
+            pending,
+            state: pending <= 0.005
+              ? 'settled'
+              : (pending >= total - 0.005 ? 'pending' : 'partial')
+          });
         }
-      });
+      }
       return list.sort((a, b) => {
-        const dateA = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt || 0);
-        const dateB = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt || 0);
+        const pa = a.period || '';
+        const pb = b.period || '';
+        if (pa !== pb) return pa.localeCompare(pb);
+        const dateA = a.effectiveDate?.toDate ? a.effectiveDate.toDate() : new Date(a.effectiveDate || 0);
+        const dateB = b.effectiveDate?.toDate ? b.effectiveDate.toDate() : new Date(b.effectiveDate || 0);
         return dateA - dateB;
       });
     } catch (error) {
       console.error(`[Transaction] Error al obtener deudas de ${propertyId}:`, error);
       throw error;
     }
+  }
+
+  /**
+   * Pendiente real de un cargo (FEE/FINE), derivado de `paidBy` cuando existe.
+   *
+   * `paidBy` es la fuente de verdad; `pendingAmount` es solo un caché derivado
+   * que puede quedar desactualizado. Por eso, si hay entradas en `paidBy`, se
+   * recalcula desde ellas; solo se recurre a `pendingAmount` (o al monto bruto)
+   * cuando no hay vínculos (datos antiguos).
+   *
+   * @param {Object} cargo - Documento del cargo.
+   * @param {number} [appliedPaid=0] - Suma que los pagos declaran en su
+   *        `appliedTo` para este cargo (la otra cara de `paidBy`). El llamador
+   *        la obtiene del snapshot de la unidad, sin lecturas extra.
+   * @returns {number}
+   */
+  static getChargePending(cargo, appliedPaid = 0) {
+    const amount = Math.abs(Number(cargo?.amount) || 0);
+    const paidBy = Array.isArray(cargo?.paidBy) ? cargo.paidBy : [];
+    const paidTotal = paidBy.reduce((sum, pb) => sum + (Number(pb?.amount) || 0), 0);
+    const condonedBy = Array.isArray(cargo?.condonedBy) ? cargo.condonedBy : [];
+    const condonedTotal = condonedBy.reduce((sum, cn) => sum + (Number(cn?.amount) || 0), 0);
+    // Evidencia por las dos caras del vínculo. Si una quedó incompleta (un
+    // `paidBy` sin `amount`, o un pago cuyo cargo nunca recibió `paidBy`), la
+    // otra evita mostrar una factura ya pagada como pendiente. Las
+    // condonaciones de notas de crédito se suman aparte: no son dinero.
+    const settled = Math.max(paidTotal, Number(appliedPaid) || 0) + condonedTotal;
+    if (settled > 0) {
+      return Math.round(Math.max(0, amount - settled) * 100) / 100;
+    }
+    // Antes se exigía `paidBy.length > 0`; una entrada sin `amount` devolvía el
+    // importe completo aunque el cargo estuviera saldado. Cuando no hay
+    // evidencia utilizable, el caché `pendingAmount` es más fiable.
+    if (cargo?.pendingAmount !== undefined) {
+      return Math.round(Math.max(0, Number(cargo.pendingAmount) || 0) * 100) / 100;
+    }
+    return Math.round(amount * 100) / 100;
+  }
+
+  /**
+   * Calcula el estado de un cargo después de aplicar (o liberar) el pago indicado.
+   *
+   * Es la regla canónica de conciliación: `paidBy` guarda una entrada por pago
+   * (se reemplaza la del mismo `paymentId`, nunca se duplica) y `pendingAmount`
+   * se DERIVA de la suma de `paidBy`, no se resta incrementalmente. Así, volver
+   * a guardar repara un cargo descuadrado en vez de acumular el error.
+   *
+   * @param {Object} cargo - Documento del cargo (FEE/FINE).
+   * @param {string} paymentId - ID del pago que se aplica o libera.
+   * @param {{amount?: number, description?: string}|null} [link] - Vínculo a
+   *        aplicar. `null` libera el pago del cargo.
+   * @returns {{paidBy: Array, pendingAmount: number}}
+   */
+  static buildChargePaymentUpdate(cargo, paymentId, link = null) {
+    const curPaidBy = Array.isArray(cargo?.paidBy) ? cargo.paidBy : [];
+    const others = curPaidBy.filter(pb => pb && pb.paymentId !== paymentId);
+    const newPaidBy = link
+      ? [...others, {
+          paymentId,
+          amount: Number(link.amount) || 0,
+          description: link.description || ''
+        }]
+      : others;
+    const paidTotal = newPaidBy.reduce((sum, pb) => sum + (Number(pb?.amount) || 0), 0);
+    const condonedTotal = (Array.isArray(cargo?.condonedBy) ? cargo.condonedBy : [])
+      .reduce((sum, cn) => sum + (Number(cn?.amount) || 0), 0);
+    const cargoAmount = Math.abs(Number(cargo?.amount) || 0);
+    return {
+      paidBy: newPaidBy,
+      pendingAmount: Math.max(0, Math.round((cargoAmount - paidTotal - condonedTotal) * 100) / 100)
+    };
+  }
+
+  /**
+   * Calcula el estado de un cargo después de aplicar (o liberar) una nota de
+   * crédito. Es el equivalente de `buildChargePaymentUpdate` para condonaciones:
+   * `condonedBy` guarda una entrada por nota (se reemplaza la del mismo id) y
+   * `pendingAmount` se DERIVA de `paidBy` + `condonedBy`, nunca se resta a mano.
+   *
+   * @param {Object} cargo - Documento del cargo (FEE/FINE).
+   * @param {string} creditNoteId - ID de la nota de crédito.
+   * @param {{amount?: number, description?: string}|null} [link] - Condonación a
+   *        aplicar. `null` la libera.
+   * @returns {{condonedBy: Array, pendingAmount: number}}
+   */
+  static buildChargeCondonationUpdate(cargo, creditNoteId, link = null) {
+    const cur = Array.isArray(cargo?.condonedBy) ? cargo.condonedBy : [];
+    const others = cur.filter(cn => cn && cn.creditNoteId !== creditNoteId);
+    const newCondoned = link
+      ? [...others, {
+          creditNoteId,
+          amount: Number(link.amount) || 0,
+          description: link.description || ''
+        }]
+      : others;
+    const condonedTotal = newCondoned.reduce((sum, cn) => sum + (Number(cn?.amount) || 0), 0);
+    const paidTotal = (Array.isArray(cargo?.paidBy) ? cargo.paidBy : [])
+      .reduce((sum, pb) => sum + (Number(pb?.amount) || 0), 0);
+    const cargoAmount = Math.abs(Number(cargo?.amount) || 0);
+    return {
+      condonedBy: newCondoned,
+      pendingAmount: Math.max(0, Math.round((cargoAmount - paidTotal - condonedTotal) * 100) / 100)
+    };
   }
 
   /**
@@ -447,7 +859,6 @@ export default class Transaction {
     let omitidos = omitidosSet.size;
     let wrote = false;
 
-    const sumAmounts = (arr) => (arr || []).reduce((s, pb) => s + (Number(pb.amount) || 0), 0);
     const samePaidBy = (a, b) =>
       a.length === b.length &&
       b.every(nb => a.some(cb => cb.paymentId === nb.paymentId && (Number(cb.amount) || 0) === (Number(nb.amount) || 0)));
@@ -471,15 +882,16 @@ export default class Transaction {
       if (omitidosSet.has(snap.id)) continue; // link sin monto: no se toca
 
       const curPaidBy = Array.isArray(cargo.paidBy) ? cargo.paidBy : [];
-      const others = curPaidBy.filter(pb => pb.paymentId !== paymentId);
       const desired = linkById.get(snap.id);
 
       // Upsert (link) o remove (release). El resto de entradas de otros pagos se conserva.
-      const newPaidBy = desired
-        ? [...others, { paymentId, amount: desired.amount, description: desired.description || '' }]
-        : others;
-
-      const newPending = Math.max(0, Math.abs(cargo.amount || 0) - sumAmounts(newPaidBy));
+      // La misma regla la usa `PaymentNotification.approve()` al crear un pago, para
+      // que ambos caminos de escritura dejen exactamente el mismo shape en `paidBy`.
+      const { paidBy: newPaidBy, pendingAmount: newPending } = this.buildChargePaymentUpdate(
+        cargo,
+        paymentId,
+        desired || null
+      );
       const curPending = cargo.pendingAmount !== undefined ? cargo.pendingAmount : Math.abs(cargo.amount || 0);
 
       if (samePaidBy(curPaidBy, newPaidBy) && curPending === newPending) continue; // ya consistente

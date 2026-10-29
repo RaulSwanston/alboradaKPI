@@ -122,6 +122,16 @@ export default class Property {
           }
         }
 
+        // Una nota de crédito aplicada a facturas futuras tampoco entra al saldo
+        // actual: la factura que condona aún no cuenta como deuda.
+        if (t.type === 'CREDIT_NOTE' && t.appliedTo?.length) {
+          for (const ap of t.appliedTo) {
+            if (feePeriodMap[ap.transactionId] && feePeriodMap[ap.transactionId] > currentPeriod) {
+              amount -= (ap.amount || 0);
+            }
+          }
+        }
+
         newBalance += amount;
       });
 
@@ -161,6 +171,7 @@ export default class Property {
         totalCuentasPorCobrar: 0,
         totalSaldosAFavor: 0,
         ultimoPagoMonto: 0,
+        ultimoPagoFecha: null,
         unidadesAlDiaCount: 0,
         totalUnidades: total,
         ultimaSincronizacion: now
@@ -240,8 +251,22 @@ export default class Property {
           }
         }
 
+        // Condonaciones aplicadas a facturas futuras: mismo criterio.
+        if (t.type === 'CREDIT_NOTE' && t.appliedTo?.length) {
+          for (const ap of t.appliedTo) {
+            if (feePeriodMap[ap.transactionId] && feePeriodMap[ap.transactionId] > currentPeriod) {
+              amount -= (ap.amount || 0);
+            }
+          }
+        }
+
         propBalances[propId] += amount;
       });
+
+      // Fecha del último pago global, para que `AppConfig.applyIncomeDelta()`
+      // pueda decidir si un pago nuevo es realmente el más reciente sin releer
+      // todo el histórico.
+      stats.ultimoPagoFecha = ultimoPagoFecha ? new Date(ultimoPagoFecha) : null;
 
       // Desglose de ingresos por tipo de ingreso (cuota, rifa, tarjeta, ...).
       // Solo sumas y conteos: ni nombres ni direcciones, asi que puede publicarse

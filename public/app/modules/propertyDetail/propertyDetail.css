@@ -428,10 +428,20 @@
   color: var(--color-kaitoke-green-600);
 }
 
+.ref-badge.credit {
+  background: rgba(109, 40, 217, 0.1);
+  color: #6d28d9;
+}
+
+tr.credit-note-row {
+  background: rgba(109, 40, 217, 0.04);
+}
+
 .text-right { text-align: right; }
 .font-bold { font-weight: 700; }
 .text-error { color: var(--color-solid-pink-600); }
 .text-success { color: var(--color-kaitoke-green-600); }
+.text-credit { color: #6d28d9; }
 .text-muted { color: var(--color-gurkha-200); }
 
 /* --- Table Footer --- */

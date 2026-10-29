@@ -74,22 +74,42 @@ service cloud.firestore {
 
     // Eventos del Calendario Comunitario
     match /communityEvents/{eventId} {
-      // Cualquier usuario autenticado puede leer y crear eventos.
-      allow read, create: if request.auth != null;
-      // Solo el admin o el creador del evento pueden modificarlo/borrarlo.
-      allow update, delete: if isAdmin() || isOwner(resource.data.createdBy);
+      // Cualquier usuario autenticado puede leer (los residentes consultan el
+      // calendario comunitario). La gestión (crear/editar/borrar) es solo del
+      // administrador; antes cualquier autenticado podía crear eventos.
+      allow read: if request.auth != null;
+      allow create, update, delete: if isAdmin();
     }
 
     // Notificaciones de Pago
     match /paymentNotifications/{notificationId} {
-      allow create, read, list: if request.auth != null;
+      // El residente solo puede crear SU reporte, siempre en estado pendiente y
+      // con un monto válido. El estado, el recibo y la revisión los escribe el
+      // admin en la aprobación: por eso `update` queda restringido a admin.
+      allow create: if request.auth != null
+        && request.resource.data.residentUid == request.auth.uid
+        && request.resource.data.status == 'pending_verification'
+        && request.resource.data.amount is number
+        && request.resource.data.amount > 0;
+      // Antes cualquier autenticado podía listar TODOS los reportes (nombre,
+      // monto, comprobante, motivo de rechazo) de las demás unidades.
+      allow get, list: if isAdmin() || resource.data.residentUid == request.auth.uid;
       allow update, delete: if isAdmin();
     }
 
     // Colección de Actividades: Log inmutable de eventos.
     match /activities/{activityId} {
-      // Permitimos crear y leer a cualquier usuario autenticado.
-      allow create, read, list: if request.auth != null;
+      // Crear: cualquier autenticado, pero la actividad debe declarar quién
+      // puede verla (`visibility` es el filtro de las consultas del cliente).
+      allow create: if request.auth != null
+        && request.resource.data.visibility is list
+        && request.resource.data.visibility.size() > 0;
+      // Leer: el admin ve todo; el residente solo lo que lo incluye
+      // explícitamente en `visibility` (antes podía leer todo el log).
+      // Las actividades antiguas sin `visibility` dejan de ser legibles por
+      // residentes; el admin sigue viéndolas.
+      allow get, list: if isAdmin()
+        || request.auth.uid in resource.data.get('visibility', []);
       allow update, delete: if false; // Nadie puede modificar o borrar lo ya registrado.
     }
 

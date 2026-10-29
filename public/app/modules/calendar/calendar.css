@@ -40,14 +40,14 @@
     border-radius: 1.25rem;
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
     overflow: hidden;
-    padding: 1rem;
+    padding: 0;
 }
 
 @media (max-width: 767px) {
     .calendar-module-container {
         height: 85vh;
         min-height: 480px;
-        padding: 0.5rem;
+        padding: 0;
     }
 }
 
@@ -279,13 +279,25 @@
     cursor: not-allowed;
 }
 
-@media (max-width: 767px) {
-    .calendar-form-row {
-        flex-direction: column;
-        gap: 1.25rem;
-    }
+/* --- Legibilidad de eventos en la grilla de tiempo --- */
+/* schedule-x calcula la altura en línea según la duración; con 24 h en ~600px
+   un evento de 1 h queda en ~25px y el texto se recorta. Estos overrides dan
+   un alto mínimo legible sin tocar la librería. */
+.sx__time-grid-event {
+    min-height: 2.25rem;
+    padding: 2px 4px;
+    line-height: 1.15;
+}
 
-    .calendar-modal-actions {
-        flex-wrap: wrap;
-    }
+.sx__time-grid-event-title {
+    font-size: 0.8rem;
+    white-space: normal;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sx__time-grid-event-time,
+.sx__time-grid-event-people,
+.sx__time-grid-event-location {
+    font-size: 0.7rem;
 }

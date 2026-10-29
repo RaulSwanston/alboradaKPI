@@ -262,6 +262,18 @@
 
 .badge-payment { background: rgba(40, 191, 99, 0.1); color: var(--color-kaitoke-green-600); }
 .badge-fee { background: rgba(37, 99, 235, 0.1); color: #2563eb; }
+.badge-credit_note { background: rgba(109, 40, 217, 0.1); color: #6d28d9; }
+.credit-note-voucher {
+    display: inline-block;
+    margin-top: 0.25rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: 0.35rem;
+    background: rgba(109, 40, 217, 0.08);
+    color: #6d28d9;
+    font-family: monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
 .badge-other_income { background: rgba(16, 185, 129, 0.12); color: #059669; }
 
 .col-type { text-align: center; }

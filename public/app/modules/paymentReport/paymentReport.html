@@ -10,6 +10,14 @@
   </header>
 
   <main class="report-main">
+    <div id="pending-reports-notice" class="pending-reports-notice hidden">
+      <p id="pending-reports-text"></p>
+      <button type="button" id="btn-view-my-reports" class="pending-reports-btn">
+        <div class="icon-slot-sm" data-icon="receipt"></div>
+        <span><!-- ::i18n.paymentReport.myReports --></span>
+      </button>
+    </div>
+
     <form id="payment-report-form" class="report-form">
       
       <!-- Panel de Comprobante (Prioridad 1) -->
@@ -43,9 +51,29 @@
         </div>
       </div>
 
-      <!-- Listado de Deudas Pendientes (Prioridad 2) -->
+      <!-- Monto + Listado de Deudas Pendientes (Prioridad 2) -->
       <div class="summary-card" id="debts-section">
-        <label class="card-label"><!-- ::i18n.paymentReport.selectDebts --></label>
+        <div class="debts-head">
+          <label class="card-label"><!-- ::i18n.paymentReport.selectDebts --></label>
+          <span id="debts-count" class="debts-count"></span>
+        </div>
+
+        <div class="debts-amount-row">
+          <div class="form-group debts-amount-field">
+            <label for="amount" class="card-label"><!-- ::i18n.paymentReport.amountLabel --></label>
+            <div class="input-prefix-wrapper">
+              <span class="input-prefix">$</span>
+              <input type="number" id="amount" name="amount" class="form-input" placeholder="0.00" step="0.01" min="0" inputmode="decimal" required>
+            </div>
+          </div>
+          <div class="debts-available">
+            <span id="debts-available-label" class="debts-available-label"><!-- ::i18n.paymentReport.selectedTotal --></span>
+            <span id="debts-available-value" class="debts-available-value">$0.00</span>
+          </div>
+        </div>
+        <p class="input-help"><!-- ::i18n.paymentReport.amountHelp --></p>
+        <p class="debts-hint"><!-- ::i18n.paymentReport.partialHint --></p>
+
         <div id="debts-list" class="debts-grid">
           <div class="loading-state">
             <p><!-- ::i18n.paymentReport.searchingDebts --></p>
@@ -56,15 +84,6 @@
       <!-- Resumen Financiero y Detalles -->
       <div class="summary-card brand-watermark">
         <div class="form-row">
-          <div class="form-group">
-            <label for="amount" class="card-label"><!-- ::i18n.paymentReport.amountLabel --></label>
-            <div class="input-prefix-wrapper">
-              <span class="input-prefix">$</span>
-              <input type="number" id="amount" name="amount" class="form-input" placeholder="0.00" step="0.01" required>
-            </div>
-            <p class="input-help"><!-- ::i18n.paymentReport.amountHelp --></p>
-          </div>
-
           <div class="form-group">
             <label for="paymentDate" class="card-label"><!-- ::i18n.paymentReport.dateLabel --></label>
             <input type="date" id="paymentDate" name="paymentDate" class="form-input" required>

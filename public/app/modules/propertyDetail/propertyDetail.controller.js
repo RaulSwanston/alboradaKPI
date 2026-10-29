@@ -195,7 +195,9 @@ export default async function propertyDetailController(contexto) {
       const saldoRight = margin + 168;
 
       allMovements.forEach((t) => {
-        const isPayment = (t.amount || 0) > 0;
+        const isPayment = t.type === 'PAYMENT';
+        const isCreditNote = t.type === 'CREDIT_NOTE';
+        const isAbono = (t.amount || 0) > 0;
         const descLines = doc.splitTextToSize(t.description || 'Movimiento', descWidth);
         const rowH = descLines.length * lineH + 3;
         if (y + rowH > 280) {
@@ -210,13 +212,16 @@ export default async function propertyDetailController(contexto) {
 doc.text(formatDate(t.effectiveDate), margin + 2, y);
         descLines.forEach((line, i) => doc.text(line, descX, y + i * lineH));
         let receiptLabel = "";
-        if (isPayment) {
+        if (isCreditNote) {
+          receiptLabel = t.voucherNumber || "";
+        } else if (isAbono) {
           receiptLabel = t.metadata?.bankReference || t.voucherNumber || "";
         }
         doc.text(receiptLabel, reciboCenter, y, { align: "center" });
-        doc.text(!isPayment ? `-${Math.abs(t.amount).toFixed(2)}` : "", cargoCenter, y, { align: "center" });
-        doc.setTextColor(25, 124, 64);
-        doc.text(isPayment ? `+${Math.abs(t.amount).toFixed(2)}` : "", abonoCenter, y, { align: "center" });
+        doc.text(!isAbono ? `-${Math.abs(t.amount).toFixed(2)}` : "", cargoCenter, y, { align: "center" });
+        if (isCreditNote) doc.setTextColor(109, 40, 217);
+        else doc.setTextColor(25, 124, 64);
+        doc.text(isAbono ? `+${Math.abs(t.amount).toFixed(2)}` : "", abonoCenter, y, { align: "center" });
         doc.setTextColor(0, 0, 0);
         doc.text(`${t.currentBalance.toFixed(2)}`, margin + 168, y, { align: "right" });
         y += rowH;
@@ -234,31 +239,34 @@ doc.text(formatDate(t.effectiveDate), margin + 2, y);
     const items = allMovements.slice(start, start + state.pagination.perPage);
 
     listContainer.innerHTML = items.map(t => {
-      const isPayment = (t.amount || 0) > 0;
+      const isPayment = t.type === 'PAYMENT';
+      const isCreditNote = t.type === 'CREDIT_NOTE';
+      const isAbono = (t.amount || 0) > 0;
+      const typeLabel = t.type === 'FEE' ? 'Cuota Ordinaria' : (isCreditNote ? 'Nota de crédito' : brandName);
       let reference = t.voucherNumber || t.metadata?.bankReference || '';
       if (reference.toUpperCase() === 'S/N' || reference.toUpperCase() === 'SN') reference = '';
 
       return `
-        <tr class="${isPayment ? 'bg-highlight' : ''}">
+        <tr class="${isPayment ? 'bg-highlight' : (isCreditNote ? 'credit-note-row' : '')}">
           <td>${formatDate(t.effectiveDate)}</td>
           <td>
             <div class="concept-cell">
               <span class="concept-main">${t.description || 'Movimiento'}</span>
-              <span class="concept-sub">${t.type === 'FEE' ? 'Cuota Ordinaria' : brandName}</span>
-              ${(t.paidBy?.length || t.appliedTo?.length) ? `
+              <span class="concept-sub">${typeLabel}</span>
+              ${(t.paidBy?.length || t.appliedTo?.length || t.condonedBy?.length) ? `
                 <div class="recon-indicator">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>
-                  <span>${isPayment ? 'Aplicado a deudas' : 'Pagado con recibos'}</span>
+                  <span>${t.condonedBy?.length ? 'Condonado con nota de crédito' : (isCreditNote ? 'Condona facturas' : (isPayment ? 'Aplicado a deudas' : 'Pagado con recibos'))}</span>
                 </div>
               ` : ''}
             </div>
           </td>
           <td>
-            ${reference ? `<span class="ref-badge ${isPayment ? 'payment' : ''}">${reference}</span>` : ''}
+            ${reference ? `<span class="ref-badge ${isCreditNote ? 'credit' : (isPayment ? 'payment' : '')}">${reference}</span>` : ''}
             ${isPayment ? `<button class="btn-receipt-link" data-receipt-id="${t.id}">Ver recibo</button>` : ''}
           </td>
-          <td class="text-right font-bold ${!isPayment ? 'text-error' : ''}">${!isPayment ? `-$${Math.abs(t.amount).toFixed(2)}` : ''}</td>
-          <td class="text-right font-bold ${isPayment ? 'text-success' : ''}">${isPayment ? `+$${Math.abs(t.amount).toFixed(2)}` : ''}</td>
+          <td class="text-right font-bold ${!isAbono ? 'text-error' : ''}">${!isAbono ? `-$${Math.abs(t.amount).toFixed(2)}` : ''}</td>
+          <td class="text-right font-bold ${isCreditNote ? 'text-credit' : (isPayment ? 'text-success' : '')}">${isAbono ? `+$${Math.abs(t.amount).toFixed(2)}` : ''}</td>
           <td class="text-right font-bold">${formatCurrency(t.currentBalance)}</td>
         </tr>
       `;

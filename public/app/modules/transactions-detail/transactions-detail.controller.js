@@ -42,6 +42,8 @@ export default async function transactionsDetailController(contexto) {
   const debtsSection = document.getElementById('td-debts-section');
   const debtsContainer = document.getElementById('td-debts-container');
   const debtsCount = document.getElementById('td-debts-count');
+  const debtsLabel = document.getElementById('td-debts-label');
+  const debtsHint = document.getElementById('td-debts-hint');
   const debtsAmountSlot = document.getElementById('td-debts-amount-slot');
   const debtsAvailableLabel = document.getElementById('td-debts-available-label');
   const debtsAvailableValue = document.getElementById('td-debts-available-value');
@@ -74,6 +76,7 @@ export default async function transactionsDetailController(contexto) {
   const previewImg = document.getElementById('td-preview-img');
 
   const descriptionInput = document.getElementById('td-description');
+  const descriptionLabel = document.getElementById('td-description-label');
   const accountField = document.getElementById('td-account-field');
   const accountSelect = document.getElementById('td-expense-account');
   const incomeTypeField = document.getElementById('td-income-type-field');
@@ -235,7 +238,7 @@ export default async function transactionsDetailController(contexto) {
     const prop = matches.length === 1 ? matches[0] : null;
     updatePropertyMeta(prop);
     const type = getSelectedType();
-    if (type === 'PAYMENT' && currentPropertyId) {
+    if ((type === 'PAYMENT' || type === 'CREDIT_NOTE') && currentPropertyId) {
       loadDebts(currentPropertyId);
     } else {
       clearDebts();
@@ -271,7 +274,7 @@ export default async function transactionsDetailController(contexto) {
    * egreso de la administración y "Otro" un apunte administrativo: ninguno se
    * vincula a un residente ni debe afectar el saldo de una propiedad.
    */
-  const PROPERTY_TYPES = new Set(['FEE', 'PAYMENT', 'FINE']);
+  const PROPERTY_TYPES = new Set(['FEE', 'PAYMENT', 'FINE', 'CREDIT_NOTE']);
   const requiresProperty = (type) => PROPERTY_TYPES.has(type);
 
   const setPropertyFieldVisibility = (needsProperty) => {
@@ -285,24 +288,28 @@ export default async function transactionsDetailController(contexto) {
    * "Cargos a pagar" (pagos) y "Detalles del Movimiento" (resto de tipos).
    * Se conservan id, listeners y validación nativa.
    */
-  const placeAmountField = (isPayment, isIncome = false) => {
+  const placeAmountField = (inDebtsSlot, labelText) => {
     if (!amountField) return;
-    if (isPayment) {
+    if (inDebtsSlot) {
       debtsAmountSlot?.appendChild(amountField);
-      if (amountLabel) amountLabel.textContent = 'Monto del pago (USD)';
+      if (amountLabel) amountLabel.textContent = labelText;
     } else if (dateField?.parentNode) {
       dateField.parentNode.insertBefore(amountField, dateField);
-      if (amountLabel) amountLabel.textContent = isIncome ? 'Monto del ingreso (USD)' : 'Monto (USD)';
+      if (amountLabel) amountLabel.textContent = labelText;
     }
   };
 
   const handleTypeChange = (type, { skipDebts = false } = {}) => {
     const isPayment = type === 'PAYMENT';
+    const isCreditNote = type === 'CREDIT_NOTE';
     const isExpense = type === 'EXPENSE';
     const isIncome = type === 'OTHER_INCOME';
     const needsProperty = requiresProperty(type);
     const showReceiptSection = isPayment || isExpense;
-    placeAmountField(isPayment, isIncome);
+    const amountLabelText = isCreditNote
+      ? 'Monto a condonar (USD)'
+      : (isPayment ? 'Monto del pago (USD)' : (isIncome ? 'Monto del ingreso (USD)' : 'Monto (USD)'));
+    placeAmountField(isPayment || isCreditNote, amountLabelText);
 
     setPropertyFieldVisibility(needsProperty);
     if (!needsProperty) {
@@ -313,7 +320,7 @@ export default async function transactionsDetailController(contexto) {
       updatePropertyMeta(null);
     }
 
-    debtsSection.classList.toggle('hidden', !isPayment);
+    debtsSection.classList.toggle('hidden', !(isPayment || isCreditNote));
     paymentSection.classList.toggle('hidden', !showReceiptSection);
     if (paymentMethodField) paymentMethodField.classList.toggle('hidden', !isPayment);
     if (paymentSectionLabel) {
@@ -321,6 +328,18 @@ export default async function transactionsDetailController(contexto) {
     }
     if (receiptLabel) {
       receiptLabel.textContent = isExpense ? 'Comprobante del Gasto (opcional)' : 'Comprobante de Pago (opcional)';
+    }
+
+    if (debtsLabel) {
+      debtsLabel.textContent = isCreditNote ? 'Facturas a condonar' : 'Cargos a pagar';
+    }
+    if (debtsHint) {
+      debtsHint.textContent = isCreditNote
+        ? 'El monto de la nota se aplica a las facturas seleccionadas. El resto de cada factura queda pendiente.'
+        : 'Si el monto es menor al total seleccionado, se aplicará como abono parcial y el resto quedará pendiente.';
+    }
+    if (descriptionLabel) {
+      descriptionLabel.textContent = isCreditNote ? 'Motivo de la condonación' : 'Descripción';
     }
 
     if (accountField) {
@@ -331,9 +350,11 @@ export default async function transactionsDetailController(contexto) {
       incomeTypeField.classList.toggle('hidden', !isIncome);
     }
     if (descriptionInput) {
-      descriptionInput.placeholder = isIncome
-        ? 'Ej: Intereses cuenta de ahorros'
-        : 'Ej: Cuota de Mantenimiento Enero 2026';
+      descriptionInput.placeholder = isCreditNote
+        ? 'Ej: Condonación cuota marzo 2025 - acuerdo con el residente'
+        : (isIncome
+          ? 'Ej: Intereses cuenta de ahorros'
+          : 'Ej: Cuota de Mantenimiento Enero 2026');
     }
 
     if (!isNew) {
@@ -342,9 +363,9 @@ export default async function transactionsDetailController(contexto) {
 
     if (skipDebts) {
       // El llamador ya cargó los cargos (p. ej. edición con vínculos existentes).
-    } else if (isPayment && currentPropertyId) {
+    } else if ((isPayment || isCreditNote) && currentPropertyId) {
       loadDebts(currentPropertyId);
-    } else if (!isPayment) {
+    } else if (!(isPayment || isCreditNote)) {
       clearDebts();
     }
 
@@ -406,9 +427,14 @@ export default async function transactionsDetailController(contexto) {
         // (datos antiguos), se deriva de `paidBy` para no sumar dos veces el
         // importe vinculado.
         const paidSum = (debt.paidBy || []).reduce((sum, p) => sum + (Number(p?.amount) || 0), 0);
-        const basePending = debt.pendingAmount != null
-          ? Math.abs(Number(debt.pendingAmount) || 0)
-          : Math.max(0, Math.abs(Number(debt.amount) || 0) - paidSum);
+        // `getPendingDebts` ya devuelve el pendiente cruzando `paidBy` con el
+        // `appliedTo` de los pagos; usar `pendingAmount` aquí resucitaría un
+        // residual fantasma cuando ese caché quedó viejo.
+        const basePending = debt.pending != null
+          ? Math.abs(Number(debt.pending) || 0)
+          : (debt.pendingAmount != null
+            ? Math.abs(Number(debt.pendingAmount) || 0)
+            : Math.max(0, Math.abs(Number(debt.amount) || 0) - paidSum));
         const applied = appliedById.get(debt.id);
         let linkedAmount = applied ? Math.abs(Number(applied.amount) || 0) : 0;
 
@@ -617,7 +643,10 @@ export default async function transactionsDetailController(contexto) {
   };
 
   const updateDebtsCount = (count) => {
-    debtsCount.textContent = count === 1 ? '1 seleccionado' : `${count} seleccionados`;
+    const isNC = getSelectedType() === 'CREDIT_NOTE';
+    debtsCount.textContent = count === 1
+      ? (isNC ? '1 seleccionada' : '1 seleccionado')
+      : `${count} ${isNC ? 'seleccionadas' : 'seleccionados'}`;
   };
 
   const clearDebts = () => {
@@ -767,10 +796,11 @@ export default async function transactionsDetailController(contexto) {
 
     const type = getSelectedType();
     const isIncome = type === 'OTHER_INCOME';
+    const isCreditNote = type === 'CREDIT_NOTE';
     const absAmount = Math.abs(parseFloat(amountInput.value));
     let selectedDebts = [];
 
-    if (type === 'PAYMENT') {
+    if (type === 'PAYMENT' || isCreditNote) {
       selectedDebts = Array.from(debtsContainer.querySelectorAll('.td-debt-card.selected'))
         .map(card => ({
           transactionId: card.dataset.debtId,
@@ -780,7 +810,16 @@ export default async function transactionsDetailController(contexto) {
         .filter(link => link.amount > 0);
 
       const appliedTotal = selectedDebts.reduce((sum, link) => sum + link.amount, 0);
-      if (appliedTotal > absAmount + 0.005) {
+      if (isCreditNote) {
+        if (!selectedDebts.length) {
+          alert('Selecciona al menos una factura a condonar.');
+          return;
+        }
+        if (Math.abs(appliedTotal - absAmount) > 0.005) {
+          alert('El monto de la nota debe coincidir con lo condonado en las facturas.');
+          return;
+        }
+      } else if (appliedTotal > absAmount + 0.005) {
         alert('El importe aplicado a los cargos no puede superar el monto del pago.');
         return;
       }
@@ -794,7 +833,7 @@ export default async function transactionsDetailController(contexto) {
       idempotencyKey = globalThis.crypto?.randomUUID?.() || `td-${Date.now()}-${Math.random().toString(36).slice(2)}`;
     }
 
-    const amount = (type === 'PAYMENT' || isIncome) ? absAmount : -absAmount;
+    const amount = (type === 'PAYMENT' || isIncome || isCreditNote) ? absAmount : -absAmount;
 
     const data = {
       propertyId: requiresProperty(type) ? currentPropertyId : (isIncome ? '__ADMIN_INCOME__' : null),
@@ -846,6 +885,10 @@ export default async function transactionsDetailController(contexto) {
       }
     }
 
+    if (isCreditNote) {
+      data.appliedTo = selectedDebts;
+    }
+
     // Fuera del `try` a propósito: el `catch` necesita saber si el pago llegó a
     // escribirse, para no informar una conciliación fallida como si nada se hubiera guardado.
     let savedId = null;
@@ -854,16 +897,21 @@ export default async function transactionsDetailController(contexto) {
       const initiator = { type: 'USER', name: 'Administrador' };
 
       if (isNew) {
-        const created = await Transaction.create(data, initiator);
-        savedId = created.id;
-        // Duplicado (re-intento del mismo envío): el pago no se vuelve a crear, pero
-        // la conciliación de cargos SÍ se reintenta más abajo. Antes se hacía
-        // `window.history.back()` aquí, lo que convertía un fallo transitorio de la
-        // conciliación en un descuadre permanente: el reintento siempre caía en esta
-        // rama y nunca llegaba a conciliar. `applyPaymentToCharges` ya es idempotente,
-        // así que repetirla no descuenta dos veces.
-        if (created.duplicate) {
-          console.warn(`[TD] Reintento del pago ${savedId}: se reintenta la conciliación de cargos.`);
+        if (isCreditNote) {
+          const created = await Transaction.createCreditNote(data, initiator);
+          savedId = created.id;
+        } else {
+          const created = await Transaction.create(data, initiator);
+          savedId = created.id;
+          // Duplicado (re-intento del mismo envío): el pago no se vuelve a crear, pero
+          // la conciliación de cargos SÍ se reintenta más abajo. Antes se hacía
+          // `window.history.back()` aquí, lo que convertía un fallo transitorio de la
+          // conciliación en un descuadre permanente: el reintento siempre caía en esta
+          // rama y nunca llegaba a conciliar. `applyPaymentToCharges` ya es idempotente,
+          // así que repetirla no descuenta dos veces.
+          if (created.duplicate) {
+            console.warn(`[TD] Reintento del pago ${savedId}: se reintenta la conciliación de cargos.`);
+          }
         }
       } else {
         await Transaction.update(transId, data, initiator);
@@ -922,7 +970,9 @@ export default async function transactionsDetailController(contexto) {
       // facturas en estado correcto. Informar solo "no se pudo guardar" haría que
       // el administrador asumiera que no se guardó nada, y el descuadre quedaría
       // invisible.
-      if (savedId && type === 'PAYMENT' && data.appliedTo?.length) {
+      if (isCreditNote) {
+        alert(error?.message || 'No se pudo guardar la nota de crédito.');
+      } else if (savedId && type === 'PAYMENT' && data.appliedTo?.length) {
         alert(
           'El pago se guardó, pero no se pudo conciliar con las cuotas seleccionadas.\n\n' +
           'Vuelva a guardar el mismo registro para reintentar la conciliación. ' +
@@ -973,6 +1023,19 @@ export default async function transactionsDetailController(contexto) {
         alert('La transacción no existe o fue eliminada.');
         window.history.back();
         return;
+      }
+
+      if (trans.type === 'CREDIT_NOTE') {
+        alert('Las notas de crédito no se editan. Si necesitas corregirla, elimínala y crea una nueva.');
+        window.history.back();
+        return;
+      }
+
+      // En edición no se permite convertir una transacción existente en nota de
+      // crédito (solo se crean desde cero).
+      const creditNoteRadio = document.querySelector('input[name="td-type"][value="CREDIT_NOTE"]');
+      if (creditNoteRadio) {
+        creditNoteRadio.closest('.td-type-option')?.classList.add('hidden');
       }
 
       headerTitle.textContent = 'Editar Transacción';

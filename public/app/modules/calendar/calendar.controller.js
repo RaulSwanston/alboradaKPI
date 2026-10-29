@@ -67,6 +67,7 @@ export default async function calendar(contexto) {
   const locale = toScheduleXLocale(getCurrentLang());
   const user = contexto.data?.user || {};
   const userProfile = contexto.data?.userProfile || {};
+  const isAdmin = !!(contexto.data?.permissions?.isAdmin);
 
   const eventModalPlugin = createEventModalPlugin();
   let calendar;
@@ -95,12 +96,15 @@ export default async function calendar(contexto) {
           }
         },
         onDoubleClickDate(date) {
+          if (!isAdmin) return;
           openEventModal(null, date);
         },
         onDoubleClickDateTime(dateTime) {
+          if (!isAdmin) return;
           openEventModal(null, dateTime);
         },
         onDoubleClickEvent(calendarEvent) {
+          if (!isAdmin) return;
           openEventModal(calendarEvent);
         }
       }
@@ -200,6 +204,7 @@ export default async function calendar(contexto) {
 
   const handleSave = async (e) => {
     e.preventDefault();
+    if (!isAdmin) return;
 
     const title = titleField.value.trim();
     if (!title) {
@@ -248,6 +253,7 @@ export default async function calendar(contexto) {
   };
 
   const handleDelete = async () => {
+    if (!isAdmin) return;
     if (!editingId) return;
     if (!window.confirm(t('modules.calendar.eventDeleteConfirm'))) return;
 

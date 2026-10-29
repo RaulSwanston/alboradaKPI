@@ -97,6 +97,7 @@ export default async function transactionsController(contexto) {
         'EXPENSE': t('modules.transactions.typeExpense'),
         'FINE': t('modules.transactions.typeFine'),
         'OTHER_INCOME': t('modules.transactions.typeOtherIncome'),
+        'CREDIT_NOTE': t('modules.transactions.typeCreditNote'),
         'OTHER': t('modules.transactions.typeOther')
     };
 
@@ -296,6 +297,7 @@ export default async function transactionsController(contexto) {
                         <div class="col-date">${dateObj.toLocaleDateString()}</div>
                         <div class="col-desc">
                             <h3>${tx.description || t('modules.transactions.defaultDescription')}</h3>
+                            ${tx.type === 'CREDIT_NOTE' && tx.voucherNumber ? `<span class="credit-note-voucher">${tx.voucherNumber}</span>` : ''}
                             <div class="col-status">
                                 <span class="status-dot ${statusClass}">● ${statusLabel}</span>
                             </div>
@@ -313,12 +315,12 @@ export default async function transactionsController(contexto) {
                         </div>
                         <div class="col-actions">
                             ${!isResident ? `
-                            <button class="btn-action btn-receipt" title="Ver Comprobante" data-id="${tx.id}" ${tx.voucherNumber ? '' : 'style="display:none"'}>
+                            <button class="btn-action btn-receipt" title="Ver Comprobante" data-id="${tx.id}" ${tx.voucherNumber && tx.type !== 'CREDIT_NOTE' ? '' : 'style="display:none"'}>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414a1 1 0 0 1 .293.707V19a2 2 0 0 1-2 2z"/>
                                 </svg>
                             </button>` : `
-                            <button class="btn-receipt btn-receipt-pill" title="Ver Comprobante" data-id="${tx.id}" ${tx.voucherNumber ? '' : 'style="display:none"'}>
+                            <button class="btn-receipt btn-receipt-pill" title="Ver Comprobante" data-id="${tx.id}" ${tx.voucherNumber && tx.type !== 'CREDIT_NOTE' ? '' : 'style="display:none"'}>
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                     <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
                                     <circle cx="12" cy="12" r="3"/>
@@ -331,7 +333,7 @@ export default async function transactionsController(contexto) {
                                     <circle cx="12" cy="12" r="2"/>
                                 </svg>
                             </button>
-                            ${isAdmin ? `
+                            ${isAdmin && tx.type !== 'CREDIT_NOTE' ? `
                             <button class="btn-action btn-edit" title="Editar" data-id="${tx.id}">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" viewBox="0 0 16 16">
                                     <path d="m13.498.795.149-.149a1.207 1.207 0 1 1 1.707 1.708l-.149.148a1.5 1.5 0 0 1-.059 2.059L4.854 14.854a.5.5 0 0 1-.233.131l-4 1a.5.5 0 0 1-.606-.606l1-4a.5.5 0 0 1 .131-.232l9.642-9.642a.5.5 0 0 0-.642.056L6.854 4.854a.5.5 0 1 1-.708-.708L9.44.854A1.5 1.5 0 0 1 11.5.796a1.5 1.5 0 0 1 1.998-.001"/>
@@ -557,13 +559,15 @@ export default async function transactionsController(contexto) {
         // Normaliza cada cargo: monto pendiente real + lo que este pago ya le aplicó.
         // `fullAmount` es lo que el cargo consume si se selecciona por completo.
         const items = debts.map(debt => {
-            // `pendingAmount` ya descuenta lo pagado, incluido este pago. Si falta
-            // (datos antiguos), se deriva de `paidBy` para no sumar dos veces el
-            // importe vinculado.
+            // `getPendingDebts` ya devuelve el pendiente cruzando `paidBy` con el
+            // `appliedTo` de los pagos; usar `pendingAmount` aquí resucitaría un
+            // residual fantasma cuando ese caché quedó viejo.
             const paidSum = (debt.paidBy || []).reduce((sum, p) => sum + (Number(p?.amount) || 0), 0);
-            const basePending = debt.pendingAmount != null
-                ? Math.abs(Number(debt.pendingAmount) || 0)
-                : Math.max(0, Math.abs(Number(debt.amount) || 0) - paidSum);
+            const basePending = debt.pending != null
+                ? Math.abs(Number(debt.pending) || 0)
+                : (debt.pendingAmount != null
+                    ? Math.abs(Number(debt.pendingAmount) || 0)
+                    : Math.max(0, Math.abs(Number(debt.amount) || 0) - paidSum));
             const applied = appliedById.get(debt.id);
             let linkedAmount = applied ? Math.abs(Number(applied.amount) || 0) : 0;
 

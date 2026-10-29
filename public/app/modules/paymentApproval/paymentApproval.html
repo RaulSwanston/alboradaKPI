@@ -29,7 +29,9 @@
   <div class="modal-content">
     <div class="modal-icon" data-icon="x-circle"></div>
     <h3 class="modal-title"><!-- ::i18n.paymentApproval.rejectTitle --></h3>
-    <textarea id="rejection-reason" class="form-textarea" placeholder="<!-- ::i18n.paymentApproval.rejectPlaceholder -->"></textarea>
+    <label class="config-label" for="rejection-reason"><!-- ::i18n.paymentApproval.rejectReasonLabel --></label>
+    <textarea id="rejection-reason" class="form-textarea"></textarea>
+    <p class="approval-hint"><!-- ::i18n.paymentApproval.rejectReasonOptional --></p>
     <div class="modal-actions">
       <button id="btn-reject-cancel" class="btn-secondary"><!-- ::i18n.paymentApproval.cancel --></button>
       <button id="btn-reject-confirm" class="btn-danger"><!-- ::i18n.paymentApproval.confirmReject --></button>

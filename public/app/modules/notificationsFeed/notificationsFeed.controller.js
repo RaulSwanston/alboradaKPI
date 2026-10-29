@@ -31,7 +31,31 @@ export default async function notificationsFeedController(contexto) {
     'PAYMENT_REPORTED': {
       icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"></rect><line x1="2" y1="10" x2="22" y2="10"></line></svg>`,
       class: 'notif-type-payment',
-      route: '/dashboard/transactions' // Ajustar a vista de validación de pagos en el futuro
+      route: () => '/dashboard/payments/pending'
+    },
+    'PAYMENT_APPROVED': {
+      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>`,
+      class: 'notif-type-payment',
+      // El admin quiere el comprobante; el residente, el estado de su reporte.
+      route: (data) => {
+        const txId = data?.details?.transactionId;
+        if (permissions.isAdmin && txId) return `/dashboard/transactions/${txId}`;
+        return permissions.isAdmin ? '/dashboard/payments/pending' : '/dashboard/payments/history';
+      }
+    },
+    'PAYMENT_REJECTED': {
+      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>`,
+      class: 'notif-type-payment',
+      route: () => (permissions.isAdmin ? '/dashboard/payments/pending' : '/dashboard/payments/history')
+    },
+    'CREDIT_NOTE_ISSUED': {
+      icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="9" y1="15" x2="15" y2="15"></line></svg>`,
+      class: 'notif-type-credit',
+      route: (data) => {
+        if (permissions.isAdmin) return '/dashboard/transactions';
+        const propertyId = data?.target?.id;
+        return propertyId ? `/dashboard/properties/${propertyId}` : '/dashboard/estado-cuenta';
+      }
     },
     'SERVICE_REQUESTED': {
       icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"></path></svg>`,
@@ -44,6 +68,13 @@ export default async function notificationsFeedController(contexto) {
       route: '/dashboard/resumen'
     }
   };
+
+  /**
+   * Algunas rutas dependen del rol o del documento (ej. ver el recibo del pago
+   * aprobado). `route` puede ser un string fijo o una función (data) => string.
+   */
+  const resolveRoute = (config, data) =>
+    typeof config.route === 'function' ? config.route(data) : config.route;
 
   /**
    * Carga las notificaciones según el rol.
@@ -85,7 +116,15 @@ export default async function notificationsFeedController(contexto) {
         const data = snap.data();
         // Filtro adicional: Solo mostramos lo que "requiere atención" o confirmación
         // (Ej: Solicitudes de membresía, aprobación de servicios, etc.)
-        const activeTypes = ['MEMBERSHIP_REQUESTED', 'MEMBERSHIP_APPROVED', 'PAYMENT_REPORTED', 'SERVICE_REQUESTED'];
+        const activeTypes = [
+          'MEMBERSHIP_REQUESTED',
+          'MEMBERSHIP_APPROVED',
+          'PAYMENT_REPORTED',
+          'PAYMENT_APPROVED',
+          'PAYMENT_REJECTED',
+          'SERVICE_REQUESTED',
+          'CREDIT_NOTE_ISSUED'
+        ];
         if (!activeTypes.includes(data.type)) return;
 
         const config = configMap[data.type] || configMap['DEFAULT'];
@@ -103,13 +142,13 @@ export default async function notificationsFeedController(contexto) {
 
         // Botón de acción
         item.querySelector('.notification-action-btn').addEventListener('click', () => {
-          router.navigate(config.route, 'dashboard');
+          router.navigate(resolveRoute(config, data), 'dashboard');
         });
 
         // Click en toda la tarjeta también navega
         item.addEventListener('click', (e) => {
           if (!e.target.closest('button')) {
-            router.navigate(config.route, 'dashboard');
+            router.navigate(resolveRoute(config, data), 'dashboard');
           }
         });
 

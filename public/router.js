@@ -37,8 +37,7 @@ router
   // --- Rutas de Pagos ---
   .get('/dashboard/payments/report', 'dashboard/payments/report', [sessionGuard])
   .get('/dashboard/payments/history', 'dashboard/payments/history', [sessionGuard])
-  .get('/dashboard/payments/pending', 'dashboard/payments/pending', [sessionGuard])
-  .get('/dashboard/payments/:id', 'dashboard/payments/detail', [sessionGuard]);
+  .get('/dashboard/payments/pending', 'dashboard/payments/pending', [sessionGuard, adminGuard]);
 
 
 import { loadTranslations } from './app/core/i18n.js';

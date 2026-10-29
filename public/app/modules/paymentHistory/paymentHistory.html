@@ -8,6 +8,13 @@
     </div>
   </header>
 
+  <div id="history-filters" class="history-filters hidden" role="tablist">
+    <button type="button" class="history-filter active" data-filter="all" role="tab"><!-- ::i18n.paymentHistory.filterAll --></button>
+    <button type="button" class="history-filter" data-filter="pending_verification" role="tab"><!-- ::i18n.paymentHistory.filterPending --></button>
+    <button type="button" class="history-filter" data-filter="approved" role="tab"><!-- ::i18n.paymentHistory.filterApproved --></button>
+    <button type="button" class="history-filter" data-filter="rejected" role="tab"><!-- ::i18n.paymentHistory.filterRejected --></button>
+  </div>
+
   <div id="history-list" class="history-list">
     <div class="loading-state">
       <p><!-- ::i18n.paymentHistory.loading --></p>

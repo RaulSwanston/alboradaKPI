@@ -27,6 +27,7 @@ export default async function configManagerController(contexto) {
     // --- REFERENCIAS AL DOM ---
     const languageSelect = document.getElementById('config-language');
     const appNameInput = document.getElementById('config-app-name');
+    const receiptNextInput = document.getElementById('config-receipt-next');
     const matrixContainer = document.getElementById('roles-matrix-container');
     const viewSelector = document.getElementById('config-view-selector');
     const cascadeList = document.getElementById('draggable-modules-list');
@@ -213,6 +214,24 @@ export default async function configManagerController(contexto) {
     };
 
     // --- LÓGICA GENERAL ---
+    /**
+     * El contador real vive en `system/counters.rec` (último número usado).
+     * `appConfig.counters.rec` solo es la semilla de arranque, por eso no basta
+     * con leer `localConfig`: si el administrador ya emitió recibos, la semilla
+     * se quedó atrás. Se lee el documento autoritativo (1 lectura, solo admin).
+     */
+    const loadReceiptCounter = async () => {
+        if (!receiptNextInput) return;
+        let lastUsed = Number(localConfig.counters?.rec) || 0;
+        try {
+            const snap = await getDoc(doc(db, "system", "counters"));
+            if (snap.exists()) lastUsed = Number(snap.data().rec) || 0;
+        } catch (error) {
+            console.warn("[ConfigManager] No se pudo leer system/counters; se usa appConfig como respaldo:", error);
+        }
+        receiptNextInput.value = String(lastUsed + 1);
+    };
+
     const initGeneralSettings = () => {
         const { systemDefaults, branding } = localConfig;
         if (languageSelect) languageSelect.value = systemDefaults.language;
@@ -251,6 +270,7 @@ export default async function configManagerController(contexto) {
         }
         if (appNameInput) appNameInput.oninput = (e) => localConfig.branding.appName = e.target.value;
         if (languageSelect) languageSelect.onchange = (e) => localConfig.systemDefaults.language = e.target.value;
+        loadReceiptCounter();
     };
 
     // --- MATRIZ DE PERMISOS ---
@@ -805,7 +825,30 @@ export default async function configManagerController(contexto) {
                     console.log(`✅ ${userUpdatePromises.length} roles de usuario actualizados.`);
                 }
 
-                // 3. Configuración Global (Uso del modelo AppConfig)
+                // 3. Próximo número de recibo (si el admin lo cambió)
+                // Se escribe en system/counters (autoritativo) y en appConfig como
+                // semilla. Se impide bajar el contador para no reutilizar folios.
+                const receiptNextRaw = receiptNextInput?.value;
+                if (receiptNextRaw !== undefined && receiptNextRaw !== '') {
+                    const receiptNext = Math.floor(Number(receiptNextRaw));
+                    if (!Number.isFinite(receiptNext) || receiptNext < 1) {
+                        alert(t('configManager.general.nextReceiptNumberError') || 'El próximo número de recibo debe ser un entero positivo.');
+                        saveBtn.disabled = false;
+                        saveBtn.innerHTML = `<span>${t('configManager.actions.save')}</span>`;
+                        return;
+                    }
+                    try {
+                        await AppConfig.setReceiptCounter(receiptNext);
+                    } catch (counterError) {
+                        alert(counterError.message || t('configManager.general.nextReceiptNumberError'));
+                        saveBtn.disabled = false;
+                        saveBtn.innerHTML = `<span>${t('configManager.actions.save')}</span>`;
+                        return;
+                    }
+                    localConfig.counters = { ...(localConfig.counters || {}), rec: receiptNext - 1 };
+                }
+
+                // 4. Configuración Global (Uso del modelo AppConfig)
                 await AppConfig.save(localConfig);
                 
                 localStorage.setItem('gph_app_config', JSON.stringify(localConfig));

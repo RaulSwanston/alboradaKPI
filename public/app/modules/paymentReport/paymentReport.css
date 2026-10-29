@@ -153,6 +153,18 @@
   gap: 1rem;
 }
 
+/* `.hidden` de root.css (0,1,0) pierde contra `.debts-grid` por orden de carga.
+   Esta regla (0,2,0) es la que permite ocultar el bloque de facturas futuras. */
+.debts-grid.hidden {
+  display: none;
+}
+
+/* `card.hidden = true` usa el atributo, no la clase: la regla del navegador
+   ([hidden] { display:none }) pierde contra `.debt-card { display:grid }`. */
+.debt-card[hidden] {
+  display: none;
+}
+
 .debt-card {
   display: grid;
   grid-template-columns: 48px 1fr auto;
@@ -221,6 +233,10 @@
 }
 
 .debt-amount {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.25rem;
   font-weight: 800;
   font-size: 1.2rem;
   color: var(--color-text-primary);
@@ -229,6 +245,132 @@
 .debt-amount .currency {
   font-size: 0.9rem;
   color: var(--color-gurkha-400);
+}
+
+/* Importe por factura: el residente decide cuánto abona (10 de 15, etc.). */
+.debt-amount-input {
+  width: 4.75rem;
+  padding: 0.35rem 0.4rem;
+  border: 1px solid var(--color-kaitoke-green-500);
+  border-radius: 0.5rem;
+  background: #ffffff;
+  font: inherit;
+  font-weight: 800;
+  text-align: right;
+  color: var(--color-text-primary);
+}
+
+.debt-amount-input:focus {
+  outline: 2px solid var(--color-kaitoke-green-500);
+  outline-offset: 1px;
+}
+
+.debt-amount-max {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-gurkha-400);
+  white-space: nowrap;
+}
+
+/* --- Monto + disponible (mismo modelo que transactions-detail) --- */
+.debts-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.75rem;
+}
+
+.debts-count {
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  background: rgba(40, 191, 99, 0.08);
+  color: var(--color-kaitoke-green-600);
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.debts-count:empty {
+  display: none;
+}
+
+.debts-amount-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 1.25rem;
+  margin-bottom: 0.25rem;
+}
+
+.debts-amount-field {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+.debts-amount-field .form-input {
+  font-size: 1.25rem;
+  font-weight: 800;
+}
+
+.debts-available {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.25rem;
+  flex-shrink: 0;
+  padding-bottom: 0.15rem;
+}
+
+.debts-available-label {
+  color: var(--color-gurkha-400);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.debts-available-value {
+  color: var(--color-kaitoke-green-600);
+  font-size: 1.125rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+}
+
+.debts-hint {
+  margin: 0 0 1rem;
+  color: var(--color-gurkha-400);
+  font-size: 0.75rem;
+}
+
+/* Factura ya cubierta por un reporte pendiente: visible pero no seleccionable. */
+.debt-card.in-review {
+  cursor: not-allowed;
+  border-style: dashed;
+  background: var(--color-gurkha-50);
+  opacity: 0.75;
+}
+
+.debt-card.in-review:hover {
+  border-color: var(--color-gurkha-100);
+  background: var(--color-gurkha-50);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+
+.debt-card.in-review .debt-check {
+  color: var(--color-gurkha-300);
+}
+
+.debt-review-badge {
+  width: fit-content;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.4rem;
+  background: #fef3c7;
+  color: #92400e;
+  font-size: 0.68rem;
+  font-weight: 800;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
 }
 
 /* --- Form Fields --- */
@@ -403,15 +545,117 @@
   font-weight: 600;
 }
 
-.error-text {
-  color: var(--color-error);
+.debt-period {
+  display: inline-block;
+  font-size: 0.7rem;
+  font-weight: 800;
+  padding: 0.15rem 0.5rem;
+  border-radius: 0.4rem;
+  background: #e0e7ff;
+  color: #3730a3;
+  margin-right: 0.4rem;
+}
+
+.debt-future-toggle {
+  width: 100%;
+  margin-top: 0.5rem;
+  padding: 0.6rem 1rem;
+  border: 1px dashed var(--color-gurkha-300);
+  border-radius: 0.75rem;
+  background: var(--color-gurkha-50);
+  color: var(--color-gurkha-600);
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.debt-future-toggle:hover {
+  background: white;
+  border-color: var(--color-kaitoke-green-500);
+  color: var(--color-kaitoke-green-700);
+}
+
+/* --- Aviso de reportes pendientes --- */
+.pending-reports-notice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 0 0 1rem;
+  padding: 0.9rem 1.1rem;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 1rem;
+  color: #92400e;
+}
+
+/* Mismo conflicto que `.debts-grid`: el display:flex gana a `.hidden`. */
+.pending-reports-notice.hidden {
+  display: none;
+}
+
+.pending-reports-notice p {
+  margin: 0;
+  font-size: 0.9rem;
   font-weight: 600;
+}
+
+.pending-reports-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  flex-shrink: 0;
+  padding: 0.5rem 0.9rem;
+  border-radius: 2rem;
+  border: 1px solid #f59e0b;
+  background: white;
+  color: #92400e;
+  font-family: inherit;
+  font-size: 0.8rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.pending-reports-btn:hover {
+  background: #fef3c7;
+}
+
+@media (max-width: 600px) {
+  .pending-reports-notice {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 /* --- Responsive --- */
 @media (max-width: 600px) {
   .form-row { grid-template-columns: 1fr; }
   .summary-card { padding: 1.25rem; }
+  /* El importe editable baja a una segunda fila para no aplastar la descripción. */
+  .debt-card {
+    grid-template-columns: 36px 1fr;
+    row-gap: 0.75rem;
+  }
+  .debt-amount {
+    grid-column: 2;
+    justify-content: flex-start;
+  }
+  .debt-amount-input {
+    width: 5rem;
+  }
+  .debts-amount-row {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+  .debts-available {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    padding-bottom: 0;
+  }
 }
 
 @media (min-width: 1024px) {

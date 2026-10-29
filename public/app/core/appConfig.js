@@ -299,7 +299,8 @@ export const appConfig = {
   // como semilla inicial para system/counters. Si son null, arranca desde 1.
   counters: {
     fac: null,
-    rec: null
+    rec: null,
+    nc: null
   },
 
   // 6. Identidad Visual y Branding
