@@ -1,4 +1,4 @@
-import { db, collection, query, where, orderBy, getDocs, getCountFromServer, limit, offset } from '../../core/firebase.js';
+import { db, collection, query, where, orderBy, getDocs, getCountFromServer, limit, startAfter } from '../../core/firebase.js';
 import { router } from '../../../router.js';
 
 /**
@@ -9,7 +9,7 @@ import { router } from '../../../router.js';
  * se pedían las últimas 20 actividades y se filtraba en memoria: una ráfaga de
  * facturas o movimientos podía desplazar las notificaciones recientes y hacer
  * que la más nueva no apareciera. La paginación es de 8 en 8 y también se
- * resuelve en el servidor (limit + offset), para no leer todo el historial.
+ * resuelve en el servidor (limit + startAfter), para no leer todo el historial.
  */
 
 const PER_PAGE = 8;
@@ -114,6 +114,35 @@ export default async function notificationsFeedController(contexto) {
   let totalItems = 0;
   let loading = false;
 
+  // El SDK web no expone `offset`. La paginación se resuelve con `startAfter`
+  // y una caché de cursores: cada página se pide una sola vez y volver atrás
+  // no vuelve a leer Firestore.
+  const pageCache = new Map();   // página -> DocumentSnapshot[]
+  const pageCursors = new Map(); // página -> último DocumentSnapshot
+
+  const fetchPage = async (page) => {
+    if (pageCache.has(page)) return pageCache.get(page);
+
+    // Para saltar a una página lejana hacen falta los cursores intermedios.
+    if (page > 1 && !pageCursors.has(page - 1)) {
+      await fetchPage(page - 1);
+    }
+
+    const constraints = [limit(PER_PAGE)];
+    if (page > 1) {
+      const cursor = pageCursors.get(page - 1);
+      if (!cursor) return [];
+      constraints.unshift(startAfter(cursor));
+    }
+
+    const snapshot = await getDocs(query(buildBaseQuery(), ...constraints));
+    pageCache.set(page, snapshot.docs);
+    if (snapshot.docs.length > 0) {
+      pageCursors.set(page, snapshot.docs[snapshot.docs.length - 1]);
+    }
+    return snapshot.docs;
+  };
+
   const renderNotification = (data) => {
     const config = configMap[data.type] || configMap['DEFAULT'];
     const clone = template.content.cloneNode(true);
@@ -197,19 +226,14 @@ export default async function notificationsFeedController(contexto) {
     if (paginationContainer) paginationContainer.innerHTML = '';
 
     try {
-      const pageQuery = query(
-        buildBaseQuery(),
-        limit(PER_PAGE),
-        offset((page - 1) * PER_PAGE)
-      );
-      const snapshot = await getDocs(pageQuery);
+      const docs = await fetchPage(page);
 
       container.innerHTML = '';
-      if (snapshot.empty) {
+      if (docs.length === 0) {
         emptyFeed.classList.remove('hidden');
       } else {
         emptyFeed.classList.add('hidden');
-        snapshot.forEach((docSnap) => renderNotification(docSnap.data()));
+        docs.forEach((docSnap) => renderNotification(docSnap.data()));
       }
 
       renderPagination();
