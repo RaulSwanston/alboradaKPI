@@ -57,6 +57,12 @@ export default class PaymentNotification {
       if (appliedTotal > amount + 0.005) {
         throw new Error("El reparto del pago supera el monto reportado.");
       }
+      // Un reporte sin facturas dejaría el pago huérfano: el saldo de la unidad
+      // bajaría pero los cargos seguirían pendientes al aprobarlo. El formulario
+      // ya lo bloquea; esto protege el invariante ante cualquier otro llamador.
+      if (appliedTo.length === 0) {
+        throw validationError("El reporte debe indicar a qué factura corresponde el pago.");
+      }
 
       // No confiar en el reparto que llega del formulario: cada enlace debe
       // caber en el saldo real del cargo y no puede chocar con otro reporte

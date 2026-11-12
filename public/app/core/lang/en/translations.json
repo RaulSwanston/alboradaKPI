@@ -474,7 +474,12 @@
     "partialHint": "If the amount is less than the selected total, it will be applied as a partial payment and the rest will remain pending.",
     "amountToApply": "Amount to apply to this charge",
     "unassigned": "Unassigned",
+    "futureShow": "Show future charges ({count})",
+    "futureHide": "Hide future charges",
+    "chargeFallback": "Charge {id}",
+    "ofAmount": "of ${amount}",
     "requiredAmount": "Enter the total amount you paid.",
+    "requiredDebts": "Select at least one charge to indicate what the payment is for.",
     "allocationExceeds": "The amount assigned to charges exceeds the total payment amount."
   },
   "navigation": {

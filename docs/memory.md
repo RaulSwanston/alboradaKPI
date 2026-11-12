@@ -1,5 +1,27 @@
 # Memoria de Sesiones - Bitácora de Proyecto
 
+## 📌 RETOMA AQUÍ — paymentReport: paso de facturas obligatorio y pulido (12 de Noviembre de 2026)
+
+**Estado:** ✅ **Implementado; pendiente de prueba en navegador.** El reporte de pago ya no se puede enviar sin indicar a qué factura corresponde. Además se corrigieron dos detalles del formulario y se cerró la deuda de i18n del módulo.
+
+### Resumen
+
+- **Paso 2 obligatorio:** `paymentReport.controller.js` bloquea el envío si `appliedTo` queda vacío (`requiredDebts`) antes de subir el comprobante a R2. `PaymentNotification.create()` replica el invariante con `validationError`, para cualquier llamador futuro. El admin conserva la vía de registrar pagos sin reparto desde `transactions-detail`.
+- **Botón de envío deshabilitado** mientras no haya facturas cargadas o cuando todas están “En revisión” (`updateSubmitState()`), para no mostrar el mensaje de selección en una cuenta al día.
+- **Select de unidad tras el éxito:** `form.reset()` devolvía el `<select>` al placeholder mientras `currentPropertyId` seguía apuntando a la unidad anterior. Ahora se restaura el valor si el select es visible; la pantalla y el envío quedan alineados.
+- **i18n:** se sacaron los literales `Mostrar/Ocultar facturas futuras`, `Cargo {id}` y `de $X`. Claves nuevas: `futureShow`, `futureHide`, `chargeFallback`, `ofAmount` (ES/EN).
+
+### Deuda técnica documentada (no implementada)
+
+1. **Excedente sin asignar:** si el monto supera la suma de facturas, el formulario no avisa; el admin recién ve “Excedente sin aplicar” en aprobación. La clave `unassigned` existe sin usar. Mostrar “Sin asignar: $X” sería informativo (no aplica saldo a favor).
+2. **Fecha futura:** `paymentDate` no tiene `max`; se puede reportar con fecha posterior a hoy. Candidato a `max = localToday()`.
+3. **Factura en revisión parcial:** un reporte pendiente que cubre parte de una factura bloquea la tarjeta completa; no se puede reportar el resto hasta aprobar/rechazar. Cambiarlo exige tocar `PaymentNotification.create()`.
+4. **Admin sin unidades:** muestra el select vacío y deja “Buscando deudas pendientes...” indefinidamente; debería mostrar `noProperties`.
+5. **`Property.getById` puede devolver `null`:** `props.map(p => p.id)` rompería toda la inicialización si un `propertyId` del perfil ya no existe. Filtrar nulos.
+6. **Accesibilidad:** las tarjetas de factura y la zona de carga son `div` con `click`, sin `role="button"`, `tabindex` ni Enter/Espacio.
+
+---
+
 ## 📌 RETOMA AQUÍ — Notas de crédito / condonaciones (28 de Octubre de 2026)
 
 **Estado:** ✅ **Implementado; pendiente de verificación en navegador.** Se agregó el tipo de transacción `CREDIT_NOTE` (monto positivo, `propertyId` obligatorio) para condonar facturas pendientes, pasadas, presentes o futuras. Es un movimiento del libro mayor, **no caja**: reduce el saldo de la unidad pero no la liquidez ni los ingresos. Se crea y elimina solo desde `transactions-detail` (admin); no se edita. Se probaron las fórmulas de pendiente/condonación y la sintaxis; falta la prueba real en el navegador y crear una NC de prueba.
@@ -34,7 +56,7 @@
 - **Rechazo con motivo opcional (`PaymentNotification.reject()`):** transacción con idempotencia y actividad `PAYMENT_REJECTED`; el motivo puede quedar vacío.
 - **Caja al instante (`AppConfig.applyIncomeDelta()`):** además de `stats.ingresosPorTipo`, actualiza `saldoCajaDisponible`, `saldoPorPeriodo` y `ultimoPagoMonto`/`ultimoPagoFecha` cuando el pago es el más reciente. Coste: 1 lectura + 1 escritura, igual que antes. `Property.recalculateAllBalances()` ahora calcula `ultimoPagoFecha`.
 - **Historial del residente (`paymentHistory`):** filtros Todos/Pendientes/Aprobados/Rechazados, número de recibo, fecha de revisión, motivo de rechazo y botón «Ver recibo» hacia la transacción. Escape de HTML y fechas locales.
-- **Reporte (`paymentReport`):** fecha por defecto en hora local (no UTC), se restaura tras `form.reset()`, aviso de reportes pendientes con enlace a «Mis reportes» usando `PaymentNotification.getByUser()`.
+- **Reporte (`paymentReport`):** fecha por defecto en hora local (no UTC), se restaura tras `form.reset()`, aviso de reportes pendientes con enlace a «Mis reportes» usando `PaymentNotification.getByUser()`. El paso 2 es **obligatorio**: sin al menos una factura seleccionada con importe > 0 no se envía (`requiredDebts`), porque un pago sin reparto sumaría al saldo dejando las facturas pendientes. La validación se replica en `PaymentNotification.create()`; el admin conserva la vía de registrar pagos sin reparto desde `transactions-detail`.
 - **Notificaciones (`notificationsFeed` + `recentActivity`):** `PAYMENT_REPORTED` → bandeja de aprobación; `PAYMENT_APPROVED` → recibo (admin) o historial (residente); `PAYMENT_REJECTED` → bandeja/historial. Iconos y categorías nuevas; las rechazadas no muestran signo de monto.
 - **Rutas (`router.js`):** `/dashboard/payments/pending` exige `adminGuard`; se elimina `/dashboard/payments/:id` (vista inexistente).
 - **Reglas (`firestore.rules`):** `paymentNotifications` ya no se puede listar entero por cualquier autenticado (solo admin o dueño) y la creación valida `residentUid`, estado `pending_verification` y monto > 0. `activities` se lee por `visibility` (`admin` o UID incluido) y al crear exige una lista `visibility` no vacía. **Contrapartida asumida:** las actividades antiguas sin `visibility` dejan de ser legibles por residentes; el admin sigue viéndolas.

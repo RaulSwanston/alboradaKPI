@@ -380,7 +380,12 @@
     "partialHint": "Si el monto es menor al total seleccionado, se aplicará como abono parcial y el resto quedará pendiente.",
     "amountToApply": "Importe a abonar a esta factura",
     "unassigned": "Sin asignar",
+    "futureShow": "Mostrar facturas futuras ({count})",
+    "futureHide": "Ocultar facturas futuras",
+    "chargeFallback": "Cargo {id}",
+    "ofAmount": "de ${amount}",
     "requiredAmount": "Ingresa el monto total que pagaste.",
+    "requiredDebts": "Selecciona al menos una factura para indicar a qué corresponde el pago.",
     "allocationExceeds": "Lo asignado a las facturas supera el monto total del pago."
   },
   "paymentApproval": {

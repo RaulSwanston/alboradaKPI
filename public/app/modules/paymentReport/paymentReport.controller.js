@@ -49,6 +49,7 @@ export default async function paymentReportController(contexto) {
   const pendingNotice = document.getElementById('pending-reports-notice');
   const pendingNoticeText = document.getElementById('pending-reports-text');
   const btnViewMyReports = document.getElementById('btn-view-my-reports');
+  const btnSubmit = document.getElementById('btn-submit-report');
 
   let selectedFile = null;
   let currentPropertyId = null;
@@ -134,6 +135,9 @@ export default async function paymentReportController(contexto) {
   }
 
   loadPendingNotice();
+  // Mientras no haya facturas cargadas (o el residente no tenga deudas) no se
+  // puede enviar: el paso 2 es obligatorio.
+  updateSubmitState();
 
   try {
     // Perfil ya preparado por el middleware (role claim-aware: admin por custom claim).
@@ -164,6 +168,12 @@ export default async function paymentReportController(contexto) {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
   };
+
+  /** Habilita el envío solo si hay al menos una factura seleccionable. */
+  function updateSubmitState() {
+    if (!btnSubmit) return;
+    btnSubmit.disabled = !debtsCache.some(item => !item.inReview);
+  }
 
   const getSelectedTotal = () => {
     let total = 0;
@@ -226,6 +236,7 @@ export default async function paymentReportController(contexto) {
     pinnedIds = new Set();
     isManualAmount = false;
     showFutureDebts = false;
+    updateSubmitState();
     _settingAmount = true;
     amountInput.value = '';
     _settingAmount = false;
@@ -259,7 +270,7 @@ export default async function paymentReportController(contexto) {
       debtsCache = debts.map(debt => ({
         id: debt.id,
         description: debt.description || t('paymentReport.debtTypeFallback'),
-        voucherNumber: debt.voucherNumber || `Cargo ${debt.id.slice(0, 6)}`,
+        voucherNumber: debt.voucherNumber || t('paymentReport.chargeFallback', { id: debt.id.slice(0, 6) }),
         fullAmount: Number(debt.pending ?? Transaction.getChargePending(debt)),
         period: debt.period || '',
         isFuture: !!debt.period && debt.period > cp,
@@ -270,6 +281,7 @@ export default async function paymentReportController(contexto) {
 
       if (debtsCache.length === 0) {
         updateDebtsSummary();
+        updateSubmitState();
         debtsList.innerHTML = `<div class="info-message"><p>${t('paymentReport.noDebts')}</p></div>`;
         return;
       }
@@ -296,7 +308,7 @@ export default async function paymentReportController(contexto) {
             <span class="currency">$</span>
             <span class="value">${item.fullAmount.toFixed(2)}</span>
             <input class="debt-amount-input hidden" type="number" min="0" max="${item.fullAmount.toFixed(2)}" step="0.01" inputmode="decimal" placeholder="0.00" aria-label="${t('paymentReport.amountToApply')}">
-            <span class="debt-amount-max hidden">de $${item.fullAmount.toFixed(2)}</span>
+            <span class="debt-amount-max hidden">${t('paymentReport.ofAmount', { amount: item.fullAmount.toFixed(2) })}</span>
           </div>
         `;
         if (item.inReview) {
@@ -353,7 +365,7 @@ export default async function paymentReportController(contexto) {
         const toggle = document.createElement('button');
         toggle.type = 'button';
         toggle.className = 'debt-future-toggle';
-        toggle.textContent = `Mostrar facturas futuras (${futureItems.length})`;
+        toggle.textContent = t('paymentReport.futureShow', { count: futureItems.length });
         const futureContainer = document.createElement('div');
         futureContainer.className = 'debts-grid hidden';
         futureItems.forEach(item => renderCard(item, futureContainer));
@@ -361,8 +373,8 @@ export default async function paymentReportController(contexto) {
           showFutureDebts = !showFutureDebts;
           futureContainer.classList.toggle('hidden', !showFutureDebts);
           toggle.textContent = showFutureDebts
-            ? 'Ocultar facturas futuras'
-            : `Mostrar facturas futuras (${futureItems.length})`;
+            ? t('paymentReport.futureHide')
+            : t('paymentReport.futureShow', { count: futureItems.length });
           // Reevaluar la visibilidad individual: en modo manual con el monto ya
           // repartido las tarjetas quedan ocultas hasta que su bloque se abre.
           renderDebtCards();
@@ -372,11 +384,13 @@ export default async function paymentReportController(contexto) {
       }
 
       renderDebtCards();
+      updateSubmitState();
       await handleIcons(debtsList);
     } catch (error) {
       if (token !== debtsLoadToken) return;
       console.error("Error al cargar deudas:", error);
       debtsList.innerHTML = `<p class="error-text">${t('paymentReport.debtsError')}</p>`;
+      updateSubmitState();
     }
   }
 
@@ -615,6 +629,13 @@ export default async function paymentReportController(contexto) {
       }
     });
     const appliedTotal = Math.round(appliedTo.reduce((sum, a) => sum + a.amount, 0) * 100) / 100;
+    // El paso 2 no es opcional: un pago sin factura dejaría el dinero sumado al
+    // saldo pero las facturas seguirían pendientes (pago "huérfano"). El admin
+    // conserva la vía de registrar pagos sin reparto desde transactions-detail.
+    if (appliedTo.length === 0) {
+      alert(t('paymentReport.requiredDebts'));
+      return;
+    }
     if (appliedTotal > reportedAmount + 0.005) {
       alert(t('paymentReport.allocationExceeds'));
       return;
@@ -659,6 +680,12 @@ export default async function paymentReportController(contexto) {
       form.reset();
       // `form.reset()` borra la fecha porque el input no tiene value por defecto.
       dateInput.value = localToday();
+      // El select vuelve a su placeholder, pero `currentPropertyId` sigue siendo
+      // la unidad cuyas facturas se están mostrando. Sin esto la pantalla diría
+      // "Selecciona una unidad" mientras el envío apunta a la anterior.
+      if (propertyContainer && !propertyContainer.classList.contains('hidden') && currentPropertyId) {
+        propertySelect.value = currentPropertyId;
+      }
       btnRemoveFile.click();
       // El reporte recién creado debe verse como "En revisión" en la próxima carga.
       pendingReportsPromise = null;
@@ -675,8 +702,10 @@ export default async function paymentReportController(contexto) {
         "x-circle"
       );
     } finally {
-      submitBtn.disabled = false;
       submitBtn.innerHTML = `<div class="icon-slot-sm" data-icon="send"></div> ${t('paymentReport.submit')}`;
+      // No se re-habilita a ciegas: tras un envío correcto `loadDebts` está
+      // recargando y hasta que termine no hay facturas seleccionables.
+      updateSubmitState();
       await handleIcons();
     }
   };
