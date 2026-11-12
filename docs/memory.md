@@ -1,8 +1,8 @@
 # Memoria de Sesiones - Bitácora de Proyecto
 
-## 📌 RETOMA AQUÍ — paymentReport: paso de facturas obligatorio y pulido (12 de Noviembre de 2026)
+## 📌 RETOMA AQUÍ — paymentReport (validación) y paymentHistory (rejilla + comprobante) (12 de Noviembre de 2026)
 
-**Estado:** ✅ **Implementado; pendiente de prueba en navegador.** El reporte de pago ya no se puede enviar sin indicar a qué factura corresponde. Además se corrigieron dos detalles del formulario y se cerró la deuda de i18n del módulo.
+**Estado:** ✅ **Implementado; pendiente de prueba en navegador.** El reporte de pago ya no se puede enviar sin indicar a qué factura corresponde. Además se corrigieron dos detalles del formulario, se cerró la deuda de i18n del módulo y el historial muestra el comprobante con miniatura y visor con zoom.
 
 ### Resumen
 
@@ -10,6 +10,9 @@
 - **Botón de envío deshabilitado** mientras no haya facturas cargadas o cuando todas están “En revisión” (`updateSubmitState()`), para no mostrar el mensaje de selección en una cuenta al día.
 - **Select de unidad tras el éxito:** `form.reset()` devolvía el `<select>` al placeholder mientras `currentPropertyId` seguía apuntando a la unidad anterior. Ahora se restaura el valor si el select es visible; la pantalla y el envío quedan alineados.
 - **i18n:** se sacaron los literales `Mostrar/Ocultar facturas futuras`, `Cargo {id}` y `de $X`. Claves nuevas: `futureShow`, `futureHide`, `chargeFallback`, `ofAmount` (ES/EN).
+- **Historial en rejilla (`paymentHistory`):** `.history-list` pasó de columna flex a `grid` con `auto-fill` y mínimo `min(100%, 320px)`. El `auto-fill` es clave: con `auto-fit` las pistas vacías se colapsaban y las tarjetas se estiraban más de 320px (valores muy separados). Los mensajes de carga/error ocupan toda la fila y el wrapper usa el ancho completo en ≥992px.
+- **Miniatura del comprobante:** cada tarjeta con `receiptUrl` muestra un thumbnail que abre un visor modal. Los thumbnails se cargan con `IntersectionObserver` (solo los visibles) usando `getAuthObjectURL()`; el botón ocupa el ancho completo de la tarjeta y el texto “Ver comprobante” queda centrado junto a la miniatura. No hay miniaturas generadas en R2: se descarga la imagen ya comprimida por el formulario (≤500KB).
+- **Zoom del visor:** en escritorio, clic alterna 1×/2×, la rueda hace zoom continuo (1×–4×) anclado al puntero, arrastrar mueve la imagen y doble clic restablece. Barra inferior con `−`, porcentaje/reinicio y `+`; el desplazamiento se acota para no perder la imagen. En móvil: toque para ampliar y arrastre. Se reinicia al abrir/cerrar y se cierra con botón, fondo o Escape.
 
 ### Deuda técnica documentada (no implementada)
 
