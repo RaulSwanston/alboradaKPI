@@ -1,13 +1,33 @@
-import { db, collection, query, where, orderBy, getDocs, limit } from '../../core/firebase.js';
+import { db, collection, query, where, orderBy, getDocs, getCountFromServer, limit, offset } from '../../core/firebase.js';
 import { router } from '../../../router.js';
 
 /**
  * notificationsFeed.controller.js
  * Gestiona la bandeja de entrada de notificaciones accionables.
+ *
+ * La consulta filtra en Firestore por los tipos que realmente se muestran. Antes
+ * se pedían las últimas 20 actividades y se filtraba en memoria: una ráfaga de
+ * facturas o movimientos podía desplazar las notificaciones recientes y hacer
+ * que la más nueva no apareciera. La paginación es de 8 en 8 y también se
+ * resuelve en el servidor (limit + offset), para no leer todo el historial.
  */
+
+const PER_PAGE = 8;
+
+const NOTIFICATION_TYPES = [
+  'MEMBERSHIP_REQUESTED',
+  'MEMBERSHIP_APPROVED',
+  'PAYMENT_REPORTED',
+  'PAYMENT_APPROVED',
+  'PAYMENT_REJECTED',
+  'SERVICE_REQUESTED',
+  'CREDIT_NOTE_ISSUED'
+];
+
 export default async function notificationsFeedController(contexto) {
   const container = document.getElementById('notifications-container');
   const emptyFeed = document.getElementById('no-notifications');
+  const paginationContainer = document.getElementById('notifications-pagination');
   const template = document.getElementById('notification-item-template');
   const user = contexto.data.user;
   const permissions = contexto.data.permissions;
@@ -76,95 +96,158 @@ export default async function notificationsFeedController(contexto) {
   const resolveRoute = (config, data) =>
     typeof config.route === 'function' ? config.route(data) : config.route;
 
-  /**
-   * Carga las notificaciones según el rol.
-   */
-  const loadNotifications = async () => {
-    try {
-      let q;
-      if (permissions.isAdmin) {
-        // Admin: Ve todas las peticiones entrantes (pendientes)
-        // Por ahora, buscamos en activities lo que es para admin
-        q = query(
-          collection(db, "activities"),
-          where("visibility", "array-contains", "admin"),
-          orderBy("timestamp", "desc"),
-          limit(20)
-        );
-      } else {
-        // Residente: Ve lo que el sistema le notifica directamente
-        q = query(
-          collection(db, "activities"),
-          where("visibility", "array-contains", user.uid),
-          orderBy("timestamp", "desc"),
-          limit(20)
-        );
-      }
+  const visibilityKey = permissions.isAdmin ? 'admin' : user.uid;
 
-      const querySnap = await getDocs(q);
+  /**
+   * Consulta base: solo actividades que forman parte de la bandeja. El filtro
+   * por tipo va en Firestore para que el límite de página no se consuma con
+   * facturas o movimientos ajenos al feed.
+   */
+  const buildBaseQuery = () => query(
+    collection(db, 'activities'),
+    where('visibility', 'array-contains', visibilityKey),
+    where('type', 'in', NOTIFICATION_TYPES),
+    orderBy('timestamp', 'desc')
+  );
+
+  let currentPage = 1;
+  let totalItems = 0;
+  let loading = false;
+
+  const renderNotification = (data) => {
+    const config = configMap[data.type] || configMap['DEFAULT'];
+    const clone = template.content.cloneNode(true);
+    const item = clone.querySelector('.notification-item');
+
+    const iconWrapper = item.querySelector('.notification-icon-wrapper');
+    iconWrapper.innerHTML = config.icon;
+    iconWrapper.classList.add(config.class);
+
+    item.querySelector('.notification-message').textContent = data.description;
+
+    const time = data.timestamp?.toDate
+      ? data.timestamp.toDate().toLocaleString()
+      : 'Recientemente';
+    item.querySelector('.notification-time').textContent = time;
+
+    // Botón de acción
+    item.querySelector('.notification-action-btn').addEventListener('click', () => {
+      router.navigate(resolveRoute(config, data), 'dashboard');
+    });
+
+    // Click en toda la tarjeta también navega
+    item.addEventListener('click', (e) => {
+      if (!e.target.closest('button')) {
+        router.navigate(resolveRoute(config, data), 'dashboard');
+      }
+    });
+
+    container.appendChild(clone);
+  };
+
+  const renderPagination = () => {
+    if (!paginationContainer) return;
+
+    const totalPages = Math.ceil(totalItems / PER_PAGE);
+    if (totalPages <= 1) {
+      paginationContainer.innerHTML = '';
+      return;
+    }
+
+    const prevDisabled = currentPage === 1 ? 'disabled' : '';
+    const nextDisabled = currentPage === totalPages ? 'disabled' : '';
+
+    let html = `
+      <button type="button" class="nf-btn-pagination ${prevDisabled}" data-page="${currentPage - 1}" ${prevDisabled ? 'disabled' : ''} aria-label="Página anterior">
+        <svg viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/></svg>
+      </button>
+      <button type="button" class="nf-btn-pagination ${currentPage === 1 ? 'active' : ''}" data-page="1" ${currentPage === 1 ? 'aria-current="page"' : ''}>1</button>
+    `;
+
+    if (currentPage > 3) {
+      html += `<span class="nf-pagination-ellipsis">...</span>`;
+    }
+
+    for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+      html += `<button type="button" class="nf-btn-pagination ${i === currentPage ? 'active' : ''}" data-page="${i}" ${i === currentPage ? 'aria-current="page"' : ''}>${i}</button>`;
+    }
+
+    if (currentPage < totalPages - 2) {
+      html += `<span class="nf-pagination-ellipsis">...</span>`;
+    }
+
+    if (totalPages > 1) {
+      html += `<button type="button" class="nf-btn-pagination ${currentPage === totalPages ? 'active' : ''}" data-page="${totalPages}" ${currentPage === totalPages ? 'aria-current="page"' : ''}>${totalPages}</button>`;
+    }
+
+    html += `
+      <button type="button" class="nf-btn-pagination ${nextDisabled}" data-page="${currentPage + 1}" ${nextDisabled ? 'disabled' : ''} aria-label="Página siguiente">
+        <svg viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/></svg>
+      </button>
+    `;
+
+    paginationContainer.innerHTML = html;
+  };
+
+  const loadPage = async (page) => {
+    if (loading) return;
+    loading = true;
+    currentPage = page;
+    container.innerHTML = '<div class="loading-state">Consultando notificaciones...</div>';
+    if (paginationContainer) paginationContainer.innerHTML = '';
+
+    try {
+      const pageQuery = query(
+        buildBaseQuery(),
+        limit(PER_PAGE),
+        offset((page - 1) * PER_PAGE)
+      );
+      const snapshot = await getDocs(pageQuery);
 
       container.innerHTML = '';
-      
-      if (querySnap.empty) {
+      if (snapshot.empty) {
         emptyFeed.classList.remove('hidden');
-        return;
+      } else {
+        emptyFeed.classList.add('hidden');
+        snapshot.forEach((docSnap) => renderNotification(docSnap.data()));
       }
 
-      emptyFeed.classList.add('hidden');
-
-      querySnap.forEach(snap => {
-        const data = snap.data();
-        // Filtro adicional: Solo mostramos lo que "requiere atención" o confirmación
-        // (Ej: Solicitudes de membresía, aprobación de servicios, etc.)
-        const activeTypes = [
-          'MEMBERSHIP_REQUESTED',
-          'MEMBERSHIP_APPROVED',
-          'PAYMENT_REPORTED',
-          'PAYMENT_APPROVED',
-          'PAYMENT_REJECTED',
-          'SERVICE_REQUESTED',
-          'CREDIT_NOTE_ISSUED'
-        ];
-        if (!activeTypes.includes(data.type)) return;
-
-        const config = configMap[data.type] || configMap['DEFAULT'];
-        const clone = template.content.cloneNode(true);
-        const item = clone.querySelector('.notification-item');
-        
-        const iconWrapper = item.querySelector('.notification-icon-wrapper');
-        iconWrapper.innerHTML = config.icon;
-        iconWrapper.classList.add(config.class);
-
-        item.querySelector('.notification-message').textContent = data.description;
-        
-        const time = data.timestamp ? data.timestamp.toDate().toLocaleString() : 'Recientemente';
-        item.querySelector('.notification-time').textContent = time;
-
-        // Botón de acción
-        item.querySelector('.notification-action-btn').addEventListener('click', () => {
-          router.navigate(resolveRoute(config, data), 'dashboard');
-        });
-
-        // Click en toda la tarjeta también navega
-        item.addEventListener('click', (e) => {
-          if (!e.target.closest('button')) {
-            router.navigate(resolveRoute(config, data), 'dashboard');
-          }
-        });
-
-        container.appendChild(clone);
-      });
-
-      // Si después del filtrado manual no quedó nada
-      if (container.children.length === 0) {
-        emptyFeed.classList.remove('hidden');
-      }
-
+      renderPagination();
+      document.querySelector('.notifications-feed-module')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (error) {
-      console.error("Error al cargar notificaciones accionables:", error);
+      console.error('Error al cargar notificaciones accionables:', error);
       container.innerHTML = '<div class="loading-state">Error al cargar la bandeja.</div>';
+      if (paginationContainer) paginationContainer.innerHTML = '';
+    } finally {
+      loading = false;
     }
   };
 
-  await loadNotifications();
+  if (paginationContainer) {
+    paginationContainer.addEventListener('click', (event) => {
+      const button = event.target.closest('.nf-btn-pagination');
+      if (!button || button.disabled) return;
+      const page = Number(button.dataset.page);
+      if (!Number.isInteger(page) || page < 1 || page === currentPage) return;
+      loadPage(page);
+    });
+  }
+
+  try {
+    const countSnapshot = await getCountFromServer(buildBaseQuery());
+    totalItems = countSnapshot.data().count;
+
+    if (totalItems === 0) {
+      container.innerHTML = '';
+      emptyFeed.classList.remove('hidden');
+      if (paginationContainer) paginationContainer.innerHTML = '';
+      return;
+    }
+
+    await loadPage(1);
+  } catch (error) {
+    console.error('Error al contar notificaciones accionables:', error);
+    container.innerHTML = '<div class="loading-state">Error al cargar la bandeja.</div>';
+    if (paginationContainer) paginationContainer.innerHTML = '';
+  }
 }

@@ -13,7 +13,7 @@ import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com
 import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithCredential, getAdditionalUserInfo, sendPasswordResetEmail, sendEmailVerification, reload, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
 
 // Cloud Firestore: Proporciona acceso a una base de datos NoSQL, escalable y en tiempo real. Se utiliza para almacenar, consultar y sincronizar datos (como perfiles de usuario, transacciones, etc.).
-import { getFirestore, doc, getDoc, setDoc, collection, query, where, orderBy, getDocs, getCountFromServer, serverTimestamp, addDoc, onSnapshot, deleteDoc, updateDoc, runTransaction, writeBatch, limit, startAfter, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, setDoc, collection, query, where, orderBy, getDocs, getCountFromServer, serverTimestamp, addDoc, onSnapshot, deleteDoc, updateDoc, runTransaction, writeBatch, limit, startAfter, offset, arrayUnion, increment } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
 
 // Cloud Storage: Ahora gestionado por el Worker de Cloudflare (r2.js) — ver core/r2.js
 
@@ -61,4 +61,4 @@ export function waitForAuth() {
   });
 }
 
-export { signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithCredential, getAdditionalUserInfo, sendPasswordResetEmail, sendEmailVerification, reload, EmailAuthProvider, reauthenticateWithCredential, updatePassword, doc, getDoc, setDoc, collection, query, where, orderBy, getDocs, getCountFromServer, serverTimestamp, addDoc, onSnapshot, deleteDoc, updateDoc, runTransaction, writeBatch, getGenerativeModel, limit, startAfter, arrayUnion, increment };
+export { signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithCredential, getAdditionalUserInfo, sendPasswordResetEmail, sendEmailVerification, reload, EmailAuthProvider, reauthenticateWithCredential, updatePassword, doc, getDoc, setDoc, collection, query, where, orderBy, getDocs, getCountFromServer, serverTimestamp, addDoc, onSnapshot, deleteDoc, updateDoc, runTransaction, writeBatch, getGenerativeModel, limit, startAfter, offset, arrayUnion, increment };

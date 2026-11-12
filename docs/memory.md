@@ -1,6 +1,26 @@
 # Memoria de Sesiones - Bitácora de Proyecto
 
-## 📌 RETOMA AQUÍ — Alerta de reportes de pago (12 de Noviembre de 2026)
+## 📌 RETOMA AQUÍ — Bandeja de notificaciones con paginación (12 de Noviembre de 2026)
+
+**Estado:** ✅ **Implementado; pendiente de prueba con datos reales.** La bandeja muestra siempre la notificación más reciente y pagina de 8 en 8.
+
+### Resumen
+
+- **Causa del “no veo la más reciente”:** la consulta pedía las últimas 20 actividades y filtraba los tipos en memoria. Una ráfaga de `FEE_GENERATED` o movimientos consumía el límite y desplazaba las notificaciones reales.
+- **Consulta filtrada en Firestore:** `where("visibility","array-contains", …)` + `where("type","in", NOTIFICATION_TYPES)` + `orderBy("timestamp","desc")`. Los tipos visibles quedan en `NOTIFICATION_TYPES`; la primera página es la más reciente real.
+- **Paginación server-side:** `PER_PAGE = 8`, total con `getCountFromServer()`, páginas con `limit(8) + offset((página-1)*8)`. Solo se leen los 8 documentos de la página actual.
+- **UI:** paginador con anterior, números, elipsis y siguiente, con el mismo estilo de `generalExpenses`/`transactions` (`nf-btn-pagination`). Al cambiar de página vuelve al inicio del módulo.
+- **Índice nuevo:** `activities` → `visibility CONTAINS + type ASC + timestamp DESC` en `firestore.indexes.json`. Desplegado en `alboradakpi` con `firebase deploy --only firestore:indexes`.
+- **Export nuevo:** `offset` en `core/firebase.js`.
+
+### Verificación
+
+- Sintaxis JS/JSON/CSS correcta.
+- Prueba en Chromium con Firestore simulado y 20 notificaciones: página 1 = 1–8, página 2 = 9–16, página 3 = 17–20. Orden descendente y paginador correcto.
+
+---
+
+## Alerta de reportes de pago (12 de Noviembre de 2026)
 
 **Estado:** ✅ **Implementado; pendiente de prueba en navegador.** Crear un reporte de pago ahora enciende el punto rojo de la campana del administrador, igual que una solicitud de vinculación.
 
