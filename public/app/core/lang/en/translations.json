@@ -37,6 +37,14 @@
     "estadoCuenta": "Account Statement",
     "gastosGenerales": "General Expenses"
   },
+  "receiptViewer": {
+    "imageAlt": "Payment receipt",
+    "close": "Close receipt",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "zoomReset": "Reset zoom",
+    "zoomHint": "Use the wheel or click to zoom; drag to move"
+  },
   "configManager": {
     "title": "System Configuration",
     "tabs": {
@@ -189,6 +197,8 @@
     "appliedTo": "Payment Distribution",
     "excess": "Unapplied surplus",
     "viewReceipt": "View Receipt",
+    "pendingCountOne": "{count} pending",
+    "pendingCountMany": "{count} pending",
     "approve": "Approve",
     "reject": "Reject",
     "rejectTitle": "Rejection Reason",
@@ -222,12 +232,6 @@
     "receiptNumber": "Receipt No.",
     "viewReceipt": "View receipt",
     "viewReceiptImage": "View receipt",
-    "receiptImageAlt": "Payment receipt",
-    "closeReceipt": "Close receipt",
-    "zoomIn": "Zoom in",
-    "zoomOut": "Zoom out",
-    "zoomReset": "Reset zoom",
-    "zoomHint": "Use the wheel or click to zoom; drag to move",
     "reviewed": "Reviewed on",
     "filterAll": "All",
     "filterPending": "Pending",

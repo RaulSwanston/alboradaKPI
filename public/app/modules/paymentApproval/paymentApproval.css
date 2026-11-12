@@ -1,10 +1,35 @@
+@import url('/app/core/receiptViewer.css');
+
 .payment-approval-wrapper {
   padding: 1rem;
   max-width: 900px;
   margin: 0 auto;
 }
 
+.payment-approval-wrapper .detail-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.payment-approval-wrapper .header-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.payment-approval-wrapper .header-title {
+  font-size: 1.25rem;
+  margin: 0;
+}
+
 .approval-count-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: var(--color-kaitoke-green-500);
   color: white;
   font-size: 0.75rem;
@@ -12,7 +37,12 @@
   padding: 0.25rem 0.6rem;
   border-radius: 2rem;
   min-width: 1.5rem;
+  white-space: nowrap;
   text-align: center;
+}
+
+.approval-count-badge.hidden {
+  display: none;
 }
 
 .approval-list {
@@ -167,37 +197,11 @@
 
 .approval-card-actions {
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: center;
   padding: 1rem 1.5rem;
   border-top: 1px solid var(--color-gurkha-100);
   gap: 0.75rem;
-}
-
-.btn-receipt {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.375rem;
-  padding: 0.3rem 0.75rem;
-  background: white;
-  border: 1px solid var(--color-gurkha-200);
-  border-radius: 0.625rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: var(--color-text-primary);
-  cursor: pointer;
-  transition: all 0.2s;
-  white-space: nowrap;
-}
-
-.btn-receipt .icon-slot-sm {
-  width: 0.875rem;
-  height: 0.875rem;
-}
-
-.btn-receipt:hover {
-  background: var(--color-gurkha-50);
-  border-color: var(--color-gurkha-300);
 }
 
 .approval-buttons {

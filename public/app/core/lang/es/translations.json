@@ -405,6 +405,8 @@
     "appliedTo": "Distribución del pago",
     "excess": "Excedente sin aplicar",
     "viewReceipt": "Ver Comprobante",
+    "pendingCountOne": "{count} pendiente",
+    "pendingCountMany": "{count} pendientes",
     "approve": "Aprobar",
     "reject": "Rechazar",
     "rejectTitle": "Motivo del Rechazo",
@@ -438,12 +440,6 @@
     "receiptNumber": "N.º de recibo",
     "viewReceipt": "Ver recibo",
     "viewReceiptImage": "Ver comprobante",
-    "receiptImageAlt": "Comprobante de pago",
-    "closeReceipt": "Cerrar comprobante",
-    "zoomIn": "Acercar",
-    "zoomOut": "Alejar",
-    "zoomReset": "Restablecer zoom",
-    "zoomHint": "Usa la rueda o haz clic para ampliar; arrastra para mover",
     "reviewed": "Revisado el",
     "filterAll": "Todos",
     "filterPending": "Pendientes",
@@ -451,6 +447,14 @@
     "filterRejected": "Rechazados",
     "noFiltered": "No hay reportes con este estado.",
     "error": "No se pudo cargar el historial."
+  },
+  "receiptViewer": {
+    "imageAlt": "Comprobante de pago",
+    "close": "Cerrar comprobante",
+    "zoomIn": "Acercar",
+    "zoomOut": "Alejar",
+    "zoomReset": "Restablecer zoom",
+    "zoomHint": "Usa la rueda o haz clic para ampliar; arrastra para mover"
   },
   "configManager": {
     "title": "Configuración del Sistema",

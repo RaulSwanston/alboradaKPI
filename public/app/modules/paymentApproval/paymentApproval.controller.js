@@ -1,11 +1,13 @@
 import PaymentNotification from "../../models/PaymentNotification.js";
 import { activeIncomeTypes } from '../../core/incomeTypes.js';
+import { initReceiptViewer, hydrateReceiptPreviews, disposeReceiptPreviews } from '../../core/receiptViewer.js';
 import { t } from '../../core/i18n.js';
-import { getAuthObjectURL } from '../../core/r2.js';
 
 export default async function paymentApprovalController(contexto) {
   const user = contexto?.data?.user;
   if (!user) return;
+
+  initReceiptViewer();
 
   const listEl = document.getElementById('approval-list');
   const emptyEl = document.getElementById('approval-empty');
@@ -16,6 +18,14 @@ export default async function paymentApprovalController(contexto) {
   const btnRejectConfirm = document.getElementById('btn-reject-confirm');
   let currentReportId = null;
   let currentReports = [];
+
+  const renderPendingCount = (count) => {
+    if (!countEl) return;
+    countEl.classList.toggle('hidden', count < 1);
+    countEl.textContent = count > 0
+      ? t(count === 1 ? 'paymentApproval.pendingCountOne' : 'paymentApproval.pendingCountMany', { count })
+      : '';
+  };
 
   // El motivo es opcional; el placeholder no puede venir por `::i18n` en un
   // atributo (Mosaic no procesa atributos), así que se asigna desde JS.
@@ -81,13 +91,14 @@ export default async function paymentApprovalController(contexto) {
       if (reports.length === 0) {
         listEl.classList.add('hidden');
         emptyEl.classList.remove('hidden');
-        countEl.textContent = '';
+        renderPendingCount(0);
+        disposeReceiptPreviews();
         return;
       }
 
       listEl.classList.remove('hidden');
       emptyEl.classList.add('hidden');
-      countEl.textContent = reports.length;
+      renderPendingCount(reports.length);
 
       listEl.innerHTML = reports.map(report => `
         <div class="approval-card" data-id="${report.id}">
@@ -142,13 +153,14 @@ export default async function paymentApprovalController(contexto) {
                 <span>${formatCurrency(report.excessAmount)}</span>
               </div>` : ''}
             </details>` : ''}
+            ${report.receiptUrl ? `
+            <button type="button" class="receipt-preview" data-receipt-url="${escapeHtml(report.receiptUrl)}">
+              <img class="receipt-thumb" alt="" />
+              <span class="receipt-preview-label">${t('paymentApproval.viewReceipt')}</span>
+            </button>` : ''}
           </div>
 
           <div class="approval-card-actions">
-            <button class="btn-receipt" data-url="${escapeHtml(report.receiptUrl || '')}">
-              <div class="icon-slot-sm" data-icon="eye"></div>
-              ${t('paymentApproval.viewReceipt')}
-            </button>
             <div class="approval-buttons">
               <button class="btn-approve" data-id="${report.id}">
                 <div class="icon-slot-sm" data-icon="check-circle"></div>
@@ -165,29 +177,15 @@ export default async function paymentApprovalController(contexto) {
 
       await handleIcons(listEl);
       bindActions();
+      hydrateReceiptPreviews(listEl);
     } catch (error) {
       console.error("Error al cargar pendientes:", error);
+      disposeReceiptPreviews();
       listEl.innerHTML = `<p class="error-text">${t('paymentApproval.error')}</p>`;
     }
   };
 
   const bindActions = () => {
-    // Ver comprobante
-    listEl.querySelectorAll('.btn-receipt').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const url = btn.dataset.url;
-        if (!url) return;
-        const win = window.open('', '_blank');
-        if (!win) return;
-        getAuthObjectURL(url).then((blobUrl) => {
-          win.location = blobUrl;
-        }).catch(() => {
-          win.close();
-          console.error('No se pudo cargar el comprobante');
-        });
-      });
-    });
-
     // Aprobar
     listEl.querySelectorAll('.btn-approve').forEach(btn => {
       btn.addEventListener('click', async () => {
@@ -282,4 +280,8 @@ export default async function paymentApprovalController(contexto) {
   }
 
   await loadPending();
+
+  return () => {
+    disposeReceiptPreviews();
+  };
 }

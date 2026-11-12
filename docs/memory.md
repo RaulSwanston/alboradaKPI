@@ -1,8 +1,8 @@
 # Memoria de Sesiones - Bitácora de Proyecto
 
-## 📌 RETOMA AQUÍ — paymentReport (validación) y paymentHistory (rejilla + comprobante) (12 de Noviembre de 2026)
+## 📌 RETOMA AQUÍ — paymentReport, paymentHistory y paymentApproval (comprobante compartido) (12 de Noviembre de 2026)
 
-**Estado:** ✅ **Implementado; pendiente de prueba en navegador.** El reporte de pago ya no se puede enviar sin indicar a qué factura corresponde. Además se corrigieron dos detalles del formulario, se cerró la deuda de i18n del módulo y el historial muestra el comprobante con miniatura y visor con zoom.
+**Estado:** ✅ **Implementado; pendiente de prueba en navegador.** El reporte de pago ya no se puede enviar sin indicar a qué factura corresponde. Además se corrigieron dos detalles del formulario, se cerró la deuda de i18n del módulo y el comprobante se muestra con miniatura y visor con zoom tanto en el historial como en la aprobación de pagos.
 
 ### Resumen
 
@@ -13,6 +13,8 @@
 - **Historial en rejilla (`paymentHistory`):** `.history-list` pasó de columna flex a `grid` con `auto-fill` y mínimo `min(100%, 320px)`. El `auto-fill` es clave: con `auto-fit` las pistas vacías se colapsaban y las tarjetas se estiraban más de 320px (valores muy separados). Los mensajes de carga/error ocupan toda la fila y el wrapper usa el ancho completo en ≥992px.
 - **Miniatura del comprobante:** cada tarjeta con `receiptUrl` muestra un thumbnail que abre un visor modal. Los thumbnails se cargan con `IntersectionObserver` (solo los visibles) usando `getAuthObjectURL()`; el botón ocupa el ancho completo de la tarjeta y el texto “Ver comprobante” queda centrado junto a la miniatura. No hay miniaturas generadas en R2: se descarga la imagen ya comprimida por el formulario (≤500KB).
 - **Zoom del visor:** en escritorio, clic alterna 1×/2×, la rueda hace zoom continuo (1×–4×) anclado al puntero, arrastrar mueve la imagen y doble clic restablece. Barra inferior con `−`, porcentaje/reinicio y `+`; el desplazamiento se acota para no perder la imagen. En móvil: toque para ampliar y arrastre. Se reinicia al abrir/cerrar y se cierra con botón, fondo o Escape.
+- **Visor compartido (`core/receiptViewer.js` + `.css`):** el modal, el zoom y la miniatura se extrajeron de `paymentHistory` para reutilizarlos en `paymentApproval`. El modal se inyecta una sola vez en `<body>`; `hydrateReceiptPreviews()` carga miniaturas con `IntersectionObserver` y abre el visor. Los CSS de ambos módulos importan el estilo compartido y el historial conserva el mismo comportamiento y aspecto.
+- **Aprobar pagos:** el contador de pendientes pasó a mostrarse junto al título como “1 pendiente” / “N pendientes” (con `aria` implícito en el texto) y se oculta en cero. El botón “Ver Comprobante” ahora usa la misma miniatura y el mismo modal con zoom; los botones Aprobar/Rechazar quedan en su fila, alineados a la derecha. Los reportes sin `receiptUrl` ya no muestran un botón inerte.
 
 ### Deuda técnica documentada (no implementada)
 
