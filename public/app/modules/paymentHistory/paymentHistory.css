@@ -209,5 +209,9 @@
 @media (min-width: 992px) {
   [data-content="dashboard"] > .payment-history-wrapper {
     grid-column: 1 / -1;
+    /* Sin tope, el ancho disponible manda: 2 tarjetas en laptop y 3-4 en
+       monitores grandes, según el auto-fit del grid. */
+    max-width: none;
+    margin: 0;
   }
 }
