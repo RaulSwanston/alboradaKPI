@@ -35,10 +35,16 @@
 }
 
 .history-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
   gap: 1rem;
   margin-top: 1.5rem;
+}
+
+/* Los mensajes de carga / error / filtro sin resultados ocupan toda la fila. */
+.history-list > .loading-state,
+.history-list > .error-text {
+  grid-column: 1 / -1;
 }
 
 .history-card {
@@ -197,4 +203,11 @@
 
 .hidden {
   display: none;
+}
+
+/* --- Ocupar ambas columnas del grid padre [data-content="dashboard"] en escritorio --- */
+@media (min-width: 992px) {
+  [data-content="dashboard"] > .payment-history-wrapper {
+    grid-column: 1 / -1;
+  }
 }
