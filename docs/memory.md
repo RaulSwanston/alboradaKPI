@@ -1,6 +1,19 @@
 # Memoria de Sesiones - Bitácora de Proyecto
 
-## 📌 RETOMA AQUÍ — paymentReport, paymentHistory y paymentApproval (comprobante compartido) (12 de Noviembre de 2026)
+## 📌 RETOMA AQUÍ — Alerta de reportes de pago (12 de Noviembre de 2026)
+
+**Estado:** ✅ **Implementado; pendiente de prueba en navegador.** Crear un reporte de pago ahora enciende el punto rojo de la campana del administrador, igual que una solicitud de vinculación.
+
+### Resumen
+
+- **Causa:** el aviso de la bandeja ya existía (`PAYMENT_REPORTED` con `visibility: ['admin']` en `PaymentNotification.create()`), pero `navigator.controller.js` solo vigilaba `membershipRequests` y `serviceRequests` pendientes. No había ningún `onSnapshot` sobre `paymentNotifications`, así que la campana nunca se iluminaba.
+- **Punto rojo:** en `initNotifiers()` (solo admin) se agregó el watcher `payments` con `where("status", "==", "pending_verification")`. El contador se apaga solo cuando el reporte pasa a aprobado/rechazado. Sin reglas ni índices nuevos (el índice `status + reportDate` ya existe).
+- **Texto de la actividad:** ahora incluye al residente y el monto con dos decimales: “Nuevo reporte de pago de {nombre} para la unidad {propertyId} por $X.XX”. Las actividades antiguas conservan su texto.
+- **Consumo:** un único listener en tiempo real compartido con los otros contadores; no agrega lecturas por consulta.
+
+---
+
+## paymentReport, paymentHistory y paymentApproval (comprobante compartido) (12 de Noviembre de 2026)
 
 **Estado:** ✅ **Implementado; pendiente de prueba en navegador.** El reporte de pago ya no se puede enviar sin indicar a qué factura corresponde. Además se corrigieron dos detalles del formulario, se cerró la deuda de i18n del módulo y el comprobante se muestra con miniatura y visor con zoom tanto en el historial como en la aprobación de pagos.
 

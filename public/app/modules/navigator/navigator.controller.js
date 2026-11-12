@@ -250,6 +250,13 @@ export default async function navigator(contexto) {
         collection(db, "serviceRequests"), 
         where("status", "==", "pending")
       ), updateBadge);
+
+      // Reportes de pago esperando revisión: avisa al admin con el mismo
+      // punto rojo que las vinculaciones y las solicitudes de servicio.
+      notifier.registerWatcher('payments', query(
+        collection(db, "paymentNotifications"),
+        where("status", "==", "pending_verification")
+      ), updateBadge);
     }
   };
 

@@ -129,7 +129,7 @@ export default class PaymentNotification {
       batch.set(activityRef, {
         timestamp: serverTimestamp(),
         type: 'PAYMENT_REPORTED',
-        description: `Nuevo reporte de pago de ${propertyId} por $${amount}`,
+        description: `Nuevo reporte de pago de ${initiator.name || initiator.email} para la unidad ${propertyId} por $${amount.toFixed(2)}`,
         initiator: {
           type: 'USER',
           id: initiator.id,
