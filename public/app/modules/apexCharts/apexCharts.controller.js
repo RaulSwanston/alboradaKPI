@@ -27,6 +27,10 @@ export default async function apexChartsController(contexto) {
   const isAdmin = contexto.data.permissions?.isAdmin;
   const analytics = new Analytics(contexto);
 
+  // `stats.charts` lo publica "Sincronizar saldos" en appConfig. Si no existe,
+  // no hay datos agregados: los gráficos salen vacíos y se avisa al usuario.
+  const hasAggregates = !!contexto.data.appConfig?.stats?.charts;
+
   let instances = [];
   const tabListeners = [];
   const resizeObservers = [];
@@ -178,6 +182,12 @@ export default async function apexChartsController(contexto) {
     if (charts.length === 0) {
       grid.innerHTML = `<p class="apex-charts-empty">${t('modules.apexCharts.empty')}</p>`;
       return;
+    }
+    if (!hasAggregates) {
+      const notice = document.createElement('p');
+      notice.className = 'apex-charts-empty apex-charts-notice';
+      notice.textContent = t('modules.apexCharts.noDataUnsynced');
+      grid.appendChild(notice);
     }
     for (const chartDef of charts) {
       await loadChart(chartDef);

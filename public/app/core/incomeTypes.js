@@ -10,7 +10,7 @@
  * en la descripción (el 87% es literalmente "YAPPY DE <NOMBRE>"). Escribir un
  * backfill obligaría a adivinar y produciría un gráfico que miente. En su lugar se
  * infiere en tiempo de lectura, exactamente igual que ya hace `inferPaymentMethod`
- * (Analytics.js) para `paymentMethod`, que también está vacío en Firestore.
+ * (ChartsData.js) para `paymentMethod`, que también está vacío en Firestore.
  *
  * De ahí la precedencia: el campo declarado gana, la inferencia es el respaldo.
  *

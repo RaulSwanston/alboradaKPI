@@ -75,3 +75,8 @@
   border: 1px dashed var(--color-border);
   border-radius: 0.75rem;
 }
+
+.apex-charts-notice {
+  grid-column: 1 / -1;
+  padding: 1rem;
+}

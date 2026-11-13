@@ -1,6 +1,28 @@
 # Memoria de Sesiones - Bitácora de Proyecto
 
-## 📌 RETOMA AQUÍ — Bandeja de notificaciones con paginación (12 de Noviembre de 2026)
+## 📌 RETOMA AQUÍ — Dashboard sin lecturas a Firestore (13 de Noviembre de 2026)
+
+**Estado:** ✅ **Implementado; pendiente de escribir el snapshot inicial y probar en navegador.** Los gráficos de `apexCharts` ya no consultan la base: leen `appConfig.stats.charts`, cacheado en `localStorage`.
+
+### Resumen
+
+- **Causa del problema:** `models/Analytics.js` leía en cada render `transactions` (12 meses), `properties`, `paymentNotifications`, `serviceRequests`, `communityEvents`, `chargeConcepts` y `expenseAccounts`. Eran **~6.500 lecturas por visita** (13 % de la cuota diaria gratuita); ocho visitas dejaban la app caída. Además `apexCharts.controller.js` hacía `new Analytics()` en cada montaje, así que la memoización moría al cambiar de pestaña.
+- **Nuevo productor:** `Property.recalculateAllBalances()` (botón "Sincronizar saldos") construye `stats.charts` con los datos que ya tiene en memoria (la lectura maestra de `transactions` + el saldo recién calculado). Solo añade 5 consultas a colecciones pequeñas (decenas de documentos en total) en una acción manual, nunca al abrir el dashboard.
+- **Nuevo generador puro:** `models/ChartsData.js`. Funciones sin red que producen los datasets de los 15 gráficos + `balancesByProperty`. `chartKey(method, params)` canonicaliza la clave (`getCashFlow:months=6`) y la comparten productor y lector.
+- **Nuevo lector:** `models/Analytics.js` ya no importa `core/firebase.js`. Cada método busca su clave en `contexto.data.appConfig.stats.charts` y devuelve `{categories:[],series:[]}` si falta. `getMyBalance` se arma con `charts.balancesByProperty[id]`. **No hay fallback a Firestore** (lo reintroduciría).
+- **Estado vacío:** si `stats.charts` no existe, el controlador muestra un aviso (`modules.apexCharts.noDataUnsynced`) pidiendo "Sincronizar saldos", más las tarjetas vacías de siempre.
+- **Seed inicial sin lecturas:** `scripts/build_charts_snapshot.js` calcula el snapshot desde `scripts/backups/snapshot_2026-11-13/*.ndjson` (dry-run por defecto; `--commit` = 1 escritura en `appConfig/app`). Tamaño del snapshot: **8,4 KB**.
+- **Riesgo asumido:** los gráficos son un *snapshot*: entre sincronizaciones no reflejan movimientos nuevos. Es el precio de no leer la base; el resto de tarjetas financieras ya funcionaba así.
+
+### Verificación
+
+- Sintaxis JS/JSON correcta.
+- Dry-run del seed: 29 claves de gráfico, 358 unidades en `balancesByProperty`, `getUnitsHealth` suma 358, `getPaymentReportStatus` = 1.
+- Prueba del lector con el snapshot real y con contexto sin `stats.charts` (devuelve vacío).
+
+---
+
+## Bandeja de notificaciones con paginación (12 de Noviembre de 2026)
 
 **Estado:** ✅ **Implementado; pendiente de prueba con datos reales.** La bandeja muestra siempre la notificación más reciente y pagina de 8 en 8.
 

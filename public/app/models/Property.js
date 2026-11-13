@@ -1,5 +1,6 @@
 import { db, collection, getDocs, query, doc, getDoc, updateDoc, where, setDoc, orderBy } from "../core/firebase.js";
 import { aggregateIncomeByType } from "../core/incomeTypes.js";
+import { buildChartsData } from "./ChartsData.js";
 
 /**
  * Movimientos que nunca forman parte del saldo individual de una unidad:
@@ -272,6 +273,41 @@ export default class Property {
       // Solo sumas y conteos: ni nombres ni direcciones, asi que puede publicarse
       // en `appConfig` y leerse sin filtrar datos de ningun residente.
       stats.ingresosPorTipo = aggregateIncomeByType(incomePassTx, { generatedAt: now });
+
+      // 2.5 Agregados de los gráficos del dashboard.
+      //
+      // Antes `Analytics` los calculaba consultando Firestore en cada render
+      // (~6.500 lecturas por visita). Ahora se calculan aquí, con la misma
+      // lectura maestra de `transactions` que ya está en memoria, y se publican
+      // en `appConfig.stats.charts` para que el navegador los lea del caché.
+      //
+      // Las 5 colecciones que faltan son diminutas (decenas de documentos) y
+      // solo se leen en una sincronización manual, nunca al abrir el dashboard.
+      const [notifSnap, srSnap, eventsSnap, conceptsSnap, accountsSnap] = await Promise.all([
+        getDocs(collection(db, "paymentNotifications")),
+        getDocs(collection(db, "serviceRequests")),
+        getDocs(collection(db, "communityEvents")),
+        getDocs(collection(db, "chargeConcepts")),
+        getDocs(collection(db, "expenseAccounts"))
+      ]);
+      const docsOf = (snap) => {
+        const out = [];
+        snap.forEach(d => out.push({ id: d.id, ...d.data() }));
+        return out;
+      };
+
+      stats.charts = buildChartsData({
+        // `incomePassTx` ya contiene TODAS las transacciones (se llena antes del
+        // filtro de saldo), así que no hace falta otra lectura.
+        transactions: incomePassTx,
+        // Saldo recién calculado, no el que estaba guardado en el documento.
+        properties: allProps.map(p => ({ ...p, balance: propBalances[p.id] })),
+        paymentNotifications: docsOf(notifSnap),
+        serviceRequests: docsOf(srSnap),
+        communityEvents: docsOf(eventsSnap),
+        chargeConcepts: docsOf(conceptsSnap),
+        expenseAccounts: docsOf(accountsSnap)
+      }, { now });
 
       // 3. Preparar guardado atómico (Batch)
       const batch = writeBatch(db);

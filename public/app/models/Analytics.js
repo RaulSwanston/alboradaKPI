@@ -1,332 +1,107 @@
-import { db, collection, getDocs, query, where } from "../core/firebase.js";
-import { resolveIncomeTypeId, incomeTypeName } from "../core/incomeTypes.js";
-
-const MONTH_LABELS_ES = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
-
 /**
- * Normaliza cualquier representación de fecha (Timestamp de Firestore, Date, string) a Date.
+ * Analytics — lector de los agregados que ya están en `appConfig.stats.charts`.
+ *
+ * IMPORTANTE: este modelo NO consulta Firestore.
+ *
+ * Antes leía `transactions`, `properties`, `paymentNotifications`,
+ * `serviceRequests`, `communityEvents`, `chargeConcepts` y `expenseAccounts`
+ * en cada render del dashboard: ~6.500 lecturas por visita, el 13 % de la
+ * cuota diaria gratuita. Ocho visitas dejaban la app caída para los residentes.
+ *
+ * Ahora el cálculo lo hace `Property.recalculateAllBalances()` (el botón
+ * "Sincronizar") usando los datos que ya tiene en memoria, y lo publica en
+ * `appConfig/app`. El middleware `sessionGuard` carga ese documento UNA vez por
+ * sesión y lo cachea en `localStorage['gph_app_config']`, así que los gráficos
+ * se dibujan sin tocar la base.
+ *
+ * Contrato:
+ *   - Cada método devuelve `{ categories, series }` o un dataset vacío.
+ *   - Si no hay snapshot, devuelve vacío; el controlador muestra "sin datos".
+ *   - Nunca hay fallback a Firestore: un fallback silencioso reintroduciría el
+ *     problema de cuota que este diseño elimina.
+ *
+ * El productor de los datasets es `models/ChartsData.js`, que comparte con este
+ * archivo las claves `chartKey()` y `BALANCES_KEY`.
  */
-function toDate(value) {
-  if (!value) return null;
-  if (typeof value.toDate === 'function') return value.toDate();
-  if (value instanceof Date) return value;
-  return new Date(value);
-}
 
-/**
- * Devuelve la clave de periodo "YYYY-MM" de una fecha.
- */
-function monthKey(date) {
-  return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
-}
+import { chartKey, emptyChartData, BALANCES_KEY } from "./ChartsData.js";
 
-/**
- * Etiqueta corta de periodo, ej. "2026-03" -> "Mar 26".
- */
-function monthLabel(period) {
-  const [y, m] = period.split('-').map(Number);
-  return `${MONTH_LABELS_ES[m - 1]} ${String(y).slice(2)}`;
-}
+const round = (v) => Math.round((Number(v) || 0) * 100) / 100;
 
-/**
- * Secuencia de periodos "YYYY-MM" de los últimos N meses (incluye meses sin datos).
- */
-function monthSequence(months) {
-  const now = new Date();
-  const out = [];
-  for (let i = months - 1; i >= 0; i--) {
-    out.push(monthKey(new Date(now.getFullYear(), now.getMonth() - i, 1)));
-  }
-  return out;
-}
-
-/**
- * Palabras clave para inferir el método de pago cuando el campo paymentMethod
- * no existe (los pagos históricos no lo tienen; las descripciones sí lo indican).
- */
-function inferPaymentMethod(transaction) {
-  const desc = ((transaction.description || '') + ' ' + (transaction.paymentMethod || '')).toUpperCase();
-  if (desc.includes('YAPPY')) return 'Yappy';
-  if (desc.includes('CHEQUE')) return 'Cheque';
-  if (desc.includes('EFECTIVO') || desc.includes(' CASH')) return 'Efectivo';
-  if (desc.includes('TARJETA') || desc.includes('CARD') || desc.includes('POS')) return 'Tarjeta';
-  if (desc.includes('DEPOSIT') || desc.includes('DEPÓSITO')) return 'Depósito';
-  if (desc.includes('TRANSFER') || desc.includes('BANCA') || desc.includes('ACH') || desc.includes(' BG ')) return 'Transferencia';
-  return 'Otro';
-}
-
-/**
- * Normaliza una descripción de cargo (FEE) para agrupar por concepto,
- * eliminando la referencia temporal (mes/año) de la descripción.
- */
-function normalizeConcept(description) {
-  return (description || 'SIN CONCEPTO')
-    .replace(/\b(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|sept|octubre|noviembre|diciembre)\b/gi, '')
-    .replace(/\b(19|20)\d{2}\b/g, '')
-    .replace(/\s+/g, ' ')
-    .trim() || 'SIN CONCEPTO';
-}
-
-/**
- * Analytics
- * Capa de datos agregados para los gráficos del módulo apexCharts.
- * Cada instancia memoiza las lecturas a Firestore: una única consulta por
- * colección por render, y todos los gráficos se computan en memoria.
- */
 export default class Analytics {
   constructor(contexto = {}) {
     this.contexto = contexto;
-    this._cache = {};
   }
 
-  /**
-   * Cache simple de promesas: lee cada colección una sola vez por instancia.
-   */
-  _data(key, loader) {
-    if (!this._cache[key]) this._cache[key] = loader();
-    return this._cache[key];
+  /** Snapshot publicado por el último "Sincronizar". Puede no existir. */
+  _charts() {
+    return this.contexto.data?.appConfig?.stats?.charts || null;
   }
 
-  async _collectionDocs(name) {
-    const snap = await getDocs(collection(db, name));
-    const list = [];
-    snap.forEach(d => list.push({ id: d.id, ...d.data() }));
-    return list;
+  /** Lee un gráfico por su clave canónica. Devuelve `null` si no existe. */
+  _chart(method, params = {}) {
+    const charts = this._charts();
+    if (!charts) return null;
+    return charts[chartKey(method, params)] || null;
   }
-
-  _properties() {
-    return this._data('properties', () => this._collectionDocs('properties'));
-  }
-
-  _transactions() {
-    return this._data('transactions', async () => {
-      const start = new Date();
-      start.setMonth(start.getMonth() - 12, 1);
-      start.setHours(0, 0, 0, 0);
-      const q = query(collection(db, "transactions"), where("effectiveDate", ">=", start));
-      const snap = await getDocs(q);
-      const list = [];
-      snap.forEach(d => list.push({ id: d.id, ...d.data() }));
-      return list;
-    });
-  }
-
-  _paymentNotifications() { return this._data('paymentNotifications', () => this._collectionDocs('paymentNotifications')); }
-  _serviceRequests() { return this._data('serviceRequests', () => this._collectionDocs('serviceRequests')); }
-  _communityEvents() { return this._data('communityEvents', () => this._collectionDocs('communityEvents')); }
-  _chargeConcepts() { return this._data('chargeConcepts', () => this._collectionDocs('chargeConcepts')); }
-  _expenseAccounts() { return this._data('expenseAccounts', () => this._collectionDocs('expenseAccounts')); }
-
-  /**
-   * Filtra transacciones a los últimos `months` meses.
-   */
-  _window(transactions, months) {
-    const start = new Date();
-    start.setMonth(start.getMonth() - months, 1);
-    start.setHours(0, 0, 0, 0);
-    return transactions.filter(t => {
-      const d = toDate(t.effectiveDate);
-      return d && d >= start;
-    });
-  }
-
-  _round(v) { return Math.round(v * 100) / 100; }
-
-  _unitLabel(prop) { return prop.name || `Unidad ${prop.id}`; }
 
   // ---------------------------------------------------------------------------
   // ADMINISTRACIÓN
   // ---------------------------------------------------------------------------
 
-  /**
-   * Flujo de caja mensual: Ingresos (pagos recibidos) vs Gastos (egresos).
-   */
-  async getCashFlow({ months = 6 } = {}) {
-    const tx = this._window(await this._transactions(), months);
-    const periods = monthSequence(months);
-    const idx = Object.fromEntries(periods.map((p, i) => [p, i]));
-    const ingresos = new Array(periods.length).fill(0);
-    const gastos = new Array(periods.length).fill(0);
-    for (const t of tx) {
-      const i = idx[t.period];
-      if (i === undefined) continue;
-      if (t.type === 'PAYMENT' || t.type === 'OTHER_INCOME') ingresos[i] += (t.amount || 0);
-      else if (t.type === 'EXPENSE' || t.type === 'ADMIN_EXPENSE') gastos[i] += Math.abs(t.amount || 0);
-    }
-    return {
-      categories: periods.map(monthLabel),
-      series: [
-        { name: 'Ingresos', data: ingresos.map(v => this._round(v)) },
-        { name: 'Gastos', data: gastos.map(v => this._round(v)) }
-      ]
-    };
+  /** Flujo de caja mensual: ingresos vs gastos. */
+  async getCashFlow(params = { months: 6 }) {
+    return this._chart('getCashFlow', params) || emptyChartData();
   }
 
-  /**
-   * Recaudación vs Facturación por mes: lo facturado (cargos FEE) vs lo cobrado (pagos).
-   */
-  async getCollectionRate({ months = 6 } = {}) {
-    const tx = this._window(await this._transactions(), months);
-    const periods = monthSequence(months);
-    const idx = Object.fromEntries(periods.map((p, i) => [p, i]));
-    const facturado = new Array(periods.length).fill(0);
-    const cobrado = new Array(periods.length).fill(0);
-    for (const t of tx) {
-      const i = idx[t.period];
-      if (i === undefined) continue;
-      if (t.type === 'FEE' || t.type === 'FINE') facturado[i] += Math.abs(t.amount || 0);
-      else if (t.type === 'PAYMENT') cobrado[i] += (t.amount || 0);
-    }
-    return {
-      categories: periods.map(monthLabel),
-      series: [
-        { name: 'Facturado', data: facturado.map(v => this._round(v)) },
-        { name: 'Cobrado', data: cobrado.map(v => this._round(v)) }
-      ]
-    };
+  /** Recaudación vs facturación por mes. */
+  async getCollectionRate(params = { months: 6 }) {
+    return this._chart('getCollectionRate', params) || emptyChartData();
   }
 
-  /**
-   * Salud de la comunidad: unidades al día vs unidades en mora.
-   */
+  /** Unidades al día vs en mora. */
   async getUnitsHealth() {
-    const props = await this._properties();
-    let alDia = 0, mora = 0;
-    for (const p of props) {
-      const b = p.balance || 0;
-      if (b >= -0.01) alDia++;
-      else mora++;
-    }
-    return { categories: ['Al día', 'En mora'], series: [alDia, mora] };
+    return this._chart('getUnitsHealth') || emptyChartData();
   }
 
-  /**
-   * Top deudores: unidades con mayor saldo pendiente.
-   */
-  async getTopDebtors({ top = 6 } = {}) {
-    const props = (await this._properties())
-      .filter(p => (p.balance || 0) < -0.01)
-      .sort((a, b) => (a.balance || 0) - (b.balance || 0))
-      .slice(0, top);
-    return {
-      categories: props.map(p => this._unitLabel(p)),
-      series: [{ name: 'Deuda', data: props.map(p => this._round(Math.abs(p.balance))) }]
-    };
+  /** Top deudores. */
+  async getTopDebtors(params = { top: 6 }) {
+    return this._chart('getTopDebtors', params) || emptyChartData();
   }
 
-  /**
-   * Saldos a favor: unidades con saldo positivo.
-   */
-  async getOverpayments({ top = 6 } = {}) {
-    const props = (await this._properties())
-      .filter(p => (p.balance || 0) > 0.01)
-      .sort((a, b) => (b.balance || 0) - (a.balance || 0))
-      .slice(0, top);
-    return {
-      categories: props.map(p => this._unitLabel(p)),
-      series: [{ name: 'Saldo a favor', data: props.map(p => this._round(p.balance)) }]
-    };
+  /** Saldos a favor. */
+  async getOverpayments(params = { top: 6 }) {
+    return this._chart('getOverpayments', params) || emptyChartData();
   }
 
-  /**
-   * Distribución de cobros por método de pago (inferido de la descripción si falta el campo).
-   */
-  async getPaymentMethodDistribution({ months = 12 } = {}) {
-    const tx = this._window(await this._transactions(), months).filter(t => t.type === 'PAYMENT');
-    const counts = {};
-    for (const t of tx) {
-      const method = inferPaymentMethod(t);
-      counts[method] = (counts[method] || 0) + 1;
-    }
-    const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
-    return { categories: entries.map(([k]) => k), series: entries.map(([, v]) => v) };
+  /** Distribución de cobros por método de pago. */
+  async getPaymentMethodDistribution(params = { months: 12 }) {
+    return this._chart('getPaymentMethodDistribution', params) || emptyChartData();
   }
 
-  /**
-   * Ingresos agrupados por tipo (cuota, rifa, tarjeta, eventos...).
-   *
-   * Complementa a `getPaymentMethodDistribution`: el método dice *cómo* pagó el
-   * residente, el tipo dice *para qué* entró el dinero. Son dimensiones distintas y
-   * no se deben sumar entre sí.
-   *
-   * `resolveIncomeTypeId` usa el `incomeTypeId` que declaró el residente (o que
-   * corrigió el admin al aprobar) y, solo si no existe, lo infiere de la descripción.
-   * Por eso este gráfico cubre también el histórico sin necesidad de backfill.
-   *
-   * El catálogo se resuelve contra el módulo local `core/incomeTypes.js` y no contra
-   * la colección `incomeTypes`: son 8 entradas fijas y leerlas costaría una lectura de
-   * Firestore en cada carga del gráfico. Si algún día el catálogo pasa a ser editable
-   * desde la app, aquí se cambia por `await this._incomeTypes()`.
-   */
-  async getIncomeByType({ months = 12 } = {}) {
-    const tx = this._window(await this._transactions(), months)
-      .filter(t => t.type === 'PAYMENT' || t.type === 'OTHER_INCOME');
-    const totals = {};
-    for (const t of tx) {
-      const label = incomeTypeName(resolveIncomeTypeId(t));
-      totals[label] = (totals[label] || 0) + Math.abs(t.amount || 0);
-    }
-    const entries = Object.entries(totals).sort((a, b) => b[1] - a[1]);
-    return {
-      categories: entries.map(([k]) => k),
-      series: entries.map(([, v]) => this._round(v))
-    };
+  /** Ingresos agrupados por tipo (cuota, rifa, tarjeta...). */
+  async getIncomeByType(params = { months: 12 }) {
+    return this._chart('getIncomeByType', params) || emptyChartData();
   }
 
-  /**
-   * Ingresos por concepto: cargos agrupados por concepto normalizado.
-   */
-  async getIncomeByConcept({ months = 12 } = {}) {
-    const tx = this._window(await this._transactions(), months).filter(t => t.type === 'FEE' || t.type === 'FINE');
-    const totals = {};
-    for (const t of tx) {
-      const concept = normalizeConcept(t.description);
-      totals[concept] = (totals[concept] || 0) + Math.abs(t.amount || 0);
-    }
-    const entries = Object.entries(totals).sort((a, b) => b[1] - a[1]).slice(0, 8);
-    return { categories: entries.map(([k]) => k), series: entries.map(([, v]) => this._round(v)) };
+  /** Ingresos por concepto (cargos agrupados). */
+  async getIncomeByConcept(params = { months: 12 }) {
+    return this._chart('getIncomeByConcept', params) || emptyChartData();
   }
 
-  /**
-   * Gastos por categoría, resolviendo `expenseAccountId` contra el catálogo
-   * `expenseAccounts` (misma fuente de verdad que el módulo de gastos generales, de
-   * modo que el gráfico y la tabla nunca se contradicen).
-   * Se agrupa por la `category` de la cuenta; los gastos sin cuenta asignada caen
-   * en "Sin clasificar" en lugar de inventar una categoría por palabras clave.
-   */
-  async getExpensesByCategory({ months = 12 } = {}) {
-    const tx = this._window(await this._transactions(), months).filter(t => t.type === 'EXPENSE' || t.type === 'ADMIN_EXPENSE');
-    const accounts = await this._expenseAccounts();
-    const labelByAccount = new Map(accounts.map(a => [a.id, a.category || a.name || 'Sin clasificar']));
-    const totals = {};
-    for (const t of tx) {
-      const label = labelByAccount.get(t.expenseAccountId) || 'Sin clasificar';
-      totals[label] = (totals[label] || 0) + Math.abs(t.amount || 0);
-    }
-    const entries = Object.entries(totals).sort((a, b) => b[1] - a[1]);
-    return { categories: entries.map(([k]) => k), series: entries.map(([, v]) => this._round(v)) };
+  /** Gastos por categoría de cuenta. */
+  async getExpensesByCategory(params = { months: 12 }) {
+    return this._chart('getExpensesByCategory', params) || emptyChartData();
   }
 
-  /**
-   * Estados de los reportes de pago.
-   */
+  /** Estados de los reportes de pago. */
   async getPaymentReportStatus() {
-    const pn = await this._paymentNotifications();
-    const counts = {};
-    for (const r of pn) counts[r.status || 'unknown'] = (counts[r.status || 'unknown'] || 0) + 1;
-    const entries = Object.entries(counts);
-    return { categories: entries.map(([k]) => k), series: entries.map(([, v]) => v) };
+    return this._chart('getPaymentReportStatus') || emptyChartData();
   }
 
-  /**
-   * Estados de las solicitudes de servicio.
-   */
+  /** Estados de las solicitudes de servicio. */
   async getServiceRequestStatus() {
-    const sr = await this._serviceRequests();
-    const counts = {};
-    for (const r of sr) counts[r.status || 'unknown'] = (counts[r.status || 'unknown'] || 0) + 1;
-    const entries = Object.entries(counts);
-    return { categories: entries.map(([k]) => k), series: entries.map(([, v]) => v) };
+    return this._chart('getServiceRequestStatus') || emptyChartData();
   }
 
   // ---------------------------------------------------------------------------
@@ -335,18 +110,22 @@ export default class Analytics {
 
   /**
    * Estado de cuenta de la unidad activa del residente.
+   *
+   * Se arma aquí a partir de `charts.balancesByProperty[id]`; no hay documento
+   * que leer. Mismo formato que antes: donut Deuda / Saldo a favor, o "Al día".
    */
   async getMyBalance({ propertyId } = {}) {
     const id = propertyId || this.contexto.data?.activePropertyId;
-    if (!id) return { categories: [], series: [] };
-    const props = await this._properties();
-    const prop = props.find(p => p.id === id);
-    if (!prop) return { categories: [], series: [] };
-    const balance = prop.balance || 0;
+    if (!id) return emptyChartData();
+
+    const balances = this._charts()?.[BALANCES_KEY];
+    if (!balances || balances[id] === undefined) return emptyChartData();
+
+    const balance = Number(balances[id]) || 0;
     const deuda = Math.max(-balance, 0);
     const favor = Math.max(balance, 0);
     const categories = ['Deuda', 'Saldo a favor'];
-    const series = [this._round(deuda), this._round(favor)];
+    const series = [round(deuda), round(favor)];
     if (deuda === 0 && favor === 0) {
       categories.unshift('Al día');
       series.unshift(1);
@@ -354,54 +133,23 @@ export default class Analytics {
     return { categories, series };
   }
 
-  /**
-   * % de unidades al día: indicador global de salud financiera (solo agregado).
-   */
+  /** % de unidades al día (agregado global). */
   async getCommunityHealth() {
-    const props = await this._properties();
-    const total = props.length || 1;
-    let alDia = 0;
-    for (const p of props) if ((p.balance || 0) >= -0.01) alDia++;
-    return { categories: [''], series: [this._round((alDia / total) * 100)] };
+    return this._chart('getCommunityHealth') || emptyChartData();
   }
 
-  /**
-   * ¿En qué se invierte la comunidad? (agregado público de gastos por categoría).
-   */
-  async getCommunityExpenses({ months = 12 } = {}) {
-    return this.getExpensesByCategory({ months });
+  /** ¿En qué se invierte la comunidad? (agregado de gastos). */
+  async getCommunityExpenses(params = { months: 12 }) {
+    return this._chart('getCommunityExpenses', params) || emptyChartData();
   }
 
-  /**
-   * Servicios más solicitados (por concepto).
-   */
-  async getTopServices({ top = 6 } = {}) {
-    const [sr, concepts] = await Promise.all([this._serviceRequests(), this._chargeConcepts()]);
-    const conceptName = {};
-    for (const c of concepts) conceptName[c.id] = c.name;
-    const counts = {};
-    for (const r of sr) {
-      const name = conceptName[r.chargeConceptId] || r.chargeConceptId || 'Sin concepto';
-      counts[name] = (counts[name] || 0) + 1;
-    }
-    const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, top);
-    return { categories: entries.map(([k]) => k), series: [{ name: 'Solicitudes', data: entries.map(([, v]) => v) }] };
+  /** Servicios más solicitados. */
+  async getTopServices(params = { top: 6 }) {
+    return this._chart('getTopServices', params) || emptyChartData();
   }
 
-  /**
-   * Eventos comunitarios por mes.
-   */
-  async getEventsByMonth({ months = 6 } = {}) {
-    const events = await this._communityEvents();
-    const periods = monthSequence(months);
-    const counts = new Array(periods.length).fill(0);
-    for (const e of events) {
-      const d = toDate(e.start || e.date || e.timestamp);
-      if (!d) continue;
-      const key = monthKey(d);
-      const i = periods.indexOf(key);
-      if (i !== -1) counts[i]++;
-    }
-    return { categories: periods.map(monthLabel), series: [{ name: 'Eventos', data: counts }] };
+  /** Eventos comunitarios por mes. */
+  async getEventsByMonth(params = { months: 6 }) {
+    return this._chart('getEventsByMonth', params) || emptyChartData();
   }
 }

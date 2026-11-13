@@ -262,6 +262,7 @@
     "apexCharts": {
       "empty": "No hay gráficos configurados",
       "noData": "Sin datos suficientes para este gráfico",
+      "noDataUnsynced": "Todavía no hay datos agregados. Pide al administrador que use «Sincronizar saldos» para generarlos.",
       "renderError": "Error al renderizar los gráficos",
       "tabs": {
         "admin": "Administración",
