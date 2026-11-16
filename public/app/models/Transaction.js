@@ -19,6 +19,42 @@ const NON_PROPERTY_IDS = new Set([
 const INCOME_TYPES = new Set(['PAYMENT', 'OTHER_INCOME']);
 
 /**
+ * Tope duro de filas que el cliente acepta traer en una sola consulta.
+ * Es una red de seguridad, no un límite funcional: con 13.000 asientos el
+ * ledger completo entra de sobra.
+ */
+const MAX_ROWS = 20000;
+
+/** Filas por pagina que pide al Worker (su maximo por peticion). */
+const PAGE_SIZE = 2000;
+
+/**
+ * Recorre todas las paginas de `/movements` encadenando el cursor.
+ *
+ * El Worker devuelve 500 filas por peticion; antes el modelo se quedaba con
+ * la primera pagina y recortaba el resultado en silencio. Con 1.432 cargos
+ * de periodos futuros, el preset "Todas" devolvia 500 cargos y ni un pago.
+ */
+async function fetchAllMovementPages(params = {}, maxRows = MAX_ROWS) {
+  const out = [];
+  let cursor = null;
+  let guard = 0;
+
+  do {
+    const page = await d1Movements({ ...params, limit: PAGE_SIZE, cursor });
+    out.push(...page.movements);
+
+    const next = page.nextCursor;
+    // Sin cursor nuevo (o repetido) no hay mas paginas: evita un bucle infinito.
+    if (!next || next === cursor) break;
+    cursor = next;
+    guard += 1;
+  } while (out.length < maxRows && guard < Math.ceil(maxRows / PAGE_SIZE) + 2);
+
+  return out.slice(0, maxRows);
+}
+
+/**
  * Convierte un Timestamp de Firestore, un Date o un string a milisegundos.
  * Devuelve 0 si el valor no existe o no es una fecha válida.
  */
@@ -1085,7 +1121,7 @@ export default class Transaction {
   static async getByPeriod(period) {
     if (isD1()) {
       try {
-        const { movements } = await d1Movements({ period, limit: 500 });
+        const movements = await fetchAllMovementPages({ period });
         return sortTransactionsByDateDesc(movements);
       } catch (error) {
         console.error(`[Transaction] Error D1 al obtener periodo ${period}:`, error);
@@ -1133,15 +1169,18 @@ export default class Transaction {
   static async getByDateRange(start, end, limitCount = null) {
     if (isD1()) {
       try {
-        const dStart = start instanceof Date ? start : new Date(start);
         const dEnd = end instanceof Date ? end : new Date(end);
-        dStart.setHours(0, 0, 0, 0);
         dEnd.setHours(23, 59, 59, 999);
-        const { movements } = await d1Movements({
-          from: dStart.getTime(),
-          to: dEnd.getTime(),
-          limit: limitCount ? Math.min(limitCount, 500) : 500
-        });
+        let from = null;
+        if (start != null) {
+          const dStart = start instanceof Date ? start : new Date(start);
+          dStart.setHours(0, 0, 0, 0);
+          from = dStart.getTime();
+        }
+        const movements = await fetchAllMovementPages(
+          { from, to: dEnd.getTime() },
+          limitCount ? Math.min(limitCount, MAX_ROWS) : MAX_ROWS
+        );
         return sortTransactionsByDateDesc(movements);
       } catch (error) {
         console.error("[Transaction] Error D1 en getByDateRange:", error);
@@ -1178,13 +1217,18 @@ export default class Transaction {
   }
 
   /**
-   * Obtiene las transacciones más recientes (Feed).
-   * @param {number} limitCount - Cantidad de registros a traer (por defecto 100 para ahorrar).
+   * Obtiene las transacciones mas recientes (Feed).
+   * @param {number} limitCount - Cantidad maxima de registros a traer.
+   * @param {number|Date|null} to - Corte superior (exclusivo hacia el futuro).
    */
-  static async getAll(limitCount = 100) {
+  static async getAll(limitCount = 100, to = null) {
     if (isD1()) {
       try {
-        const { movements } = await d1Movements({ limit: Math.min(limitCount, 500) });
+        const toMs = to == null ? null : (to instanceof Date ? to.getTime() : Number(to));
+        const movements = await fetchAllMovementPages(
+          { to: Number.isFinite(toMs) ? toMs : null },
+          Math.min(limitCount, MAX_ROWS)
+        );
         return sortTransactionsByDateDesc(movements);
       } catch (error) {
         console.error("[Transaction] Error D1 al obtener todas:", error);

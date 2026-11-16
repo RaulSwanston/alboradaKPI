@@ -754,39 +754,50 @@ export default async function transactionsController(contexto) {
 
     const setPreset = async (val) => {
         const now = new Date();
-        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-        state.range = { start: null, end: null };
-        let periodToFetch = null;
-        let fetchRange = false;
+        const nowMs = now.getTime();
+        const y = now.getFullYear();
+        const m = now.getMonth();
+        const startOfToday = new Date(y, m, now.getDate()).getTime();
+
+        // Todos los presets son rangos de FECHA (cuando ocurrio el movimiento),
+        // no de periodo facturado: el filtro dice "transacciones hechas entre
+        // estas fechas". El corte superior siempre es el instante actual, para
+        // no arrastrar facturas de periodos futuros.
+        let start = null;
+        let end = nowMs;
 
         switch (val) {
-            case 'today': state.range.start = today; state.range.end = today; fetchRange = true; break;
-            case 'yesterday': const yest = today - 86400000; state.range.start = yest; state.range.end = yest; fetchRange = true; break;
-            case 'thisMonth': state.range.start = new Date(now.getFullYear(), now.getMonth(), 1).getTime(); state.range.end = today; periodToFetch = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`; break;
-            case 'lastMonth': const lastM = new Date(now.getFullYear(), now.getMonth() - 1, 1); state.range.start = lastM.getTime(); state.range.end = new Date(now.getFullYear(), now.getMonth(), 0).getTime(); periodToFetch = `${lastM.getFullYear()}-${String(lastM.getMonth() + 1).padStart(2, '0')}`; break;
-            case 'last7days': state.range.start = today - (7 * 86400000); state.range.end = today; fetchRange = true; break;
-            case 'last30days': state.range.start = today - (30 * 86400000); state.range.end = today; fetchRange = true; break;
-            case 'last3months': state.range.start = new Date(now.getFullYear(), now.getMonth() - 3, 1).getTime(); state.range.end = today; fetchRange = true; break;
-            case 'last6months': state.range.start = new Date(now.getFullYear(), now.getMonth() - 6, 1).getTime(); state.range.end = today; fetchRange = true; break;
-            case 'thisYear': state.range.start = new Date(now.getFullYear(), 0, 1).getTime(); state.range.end = today; fetchRange = true; break;
-            case 'lastYear': state.range.start = new Date(now.getFullYear() - 1, 0, 1).getTime(); state.range.end = new Date(now.getFullYear() - 1, 11, 31).getTime(); fetchRange = true; break;
-            case 'all': state.range.start = null; state.range.end = null; fetchRange = true; break;
+            case 'today': start = startOfToday; break;
+            case 'yesterday': start = startOfToday - 86400000; end = startOfToday - 1; break;
+            case 'last7days': start = startOfToday - (7 * 86400000); break;
+            case 'last30days': start = startOfToday - (30 * 86400000); break;
+            case 'thisMonth': start = new Date(y, m, 1).getTime(); break;
+            case 'lastMonth':
+                start = new Date(y, m - 1, 1).getTime();
+                end = new Date(y, m, 0, 23, 59, 59, 999).getTime();
+                break;
+            case 'last3months': start = new Date(y, m - 3, 1).getTime(); break;
+            case 'last6months': start = new Date(y, m - 6, 1).getTime(); break;
+            case 'thisYear': start = new Date(y, 0, 1).getTime(); break;
+            case 'lastYear':
+                start = new Date(y - 1, 0, 1).getTime();
+                end = new Date(y - 1, 11, 31, 23, 59, 59, 999).getTime();
+                break;
+            case 'all': start = null; end = nowMs; break;
+            default: return;
         }
+
+        state.range = { start, end };
 
         expandedRows.clear();
         conciliationDataCache.clear();
 
         state.smartFilter = val !== 'all';
 
-        if (periodToFetch) {
-            els.list.innerHTML = `<div style="text-align: center; padding: 4rem;">${t('modules.transactions.loadingPeriod')} ${periodToFetch}...</div>`;
-            allData = isAdmin ? await Transaction.getByPeriod(periodToFetch) : await loadResidentTransactions();
-        } else if (fetchRange) {
-            els.list.innerHTML = `<div style="text-align: center; padding: 4rem;">${t('modules.transactions.loadingDb')}</div>`;
-            allData = isAdmin
-                ? (val === 'all' ? await Transaction.getAll(5000) : await Transaction.getByDateRange(state.range.start, state.range.end))
-                : await loadResidentTransactions();
-        }
+        els.list.innerHTML = `<div style="text-align: center; padding: 4rem;">${t('modules.transactions.loadingDb')}</div>`;
+        allData = isAdmin
+            ? await Transaction.getByDateRange(state.range.start, state.range.end)
+            : await loadResidentTransactions();
 
         state.pagination.current = 1;
         state.selectedTypes = []; 
@@ -823,9 +834,13 @@ export default async function transactionsController(contexto) {
     try {
         els.list.innerHTML = `<div style="text-align: center; padding: 4rem;">${t('modules.transactions.loadingDb')}</div>`;
         const now = new Date();
-        const prevMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
+        // Vista inicial: del inicio del mes anterior hasta este instante.
+        state.range = {
+            start: new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime(),
+            end: now.getTime()
+        };
         if (isAdmin) {
-            allData = await Transaction.getByPeriods([getPeriodKey(prevMonth)]);
+            allData = await Transaction.getByDateRange(state.range.start, state.range.end);
         } else {
             allData = await loadResidentTransactions();
         }
