@@ -1,5 +1,6 @@
 import { db, doc, getDoc, setDoc, runTransaction, serverTimestamp } from "../core/firebase.js";
 import { applyIncomeDelta, incomePeriodKey } from "../core/incomeTypes.js";
+import { isD1, d1GetSettings, d1UpdateSettings, d1GetVoucherCounter, d1SetVoucherCounter } from "../core/api.js";
 
 const round2 = (value) => Math.round((Number(value) || 0) * 100) / 100;
 
@@ -20,6 +21,14 @@ export default class AppConfig {
    * @returns {Promise<Object|null>}
    */
   static async get() {
+    if (isD1()) {
+      try {
+        return await d1GetSettings();
+      } catch (error) {
+        console.error("[AppConfig] Error D1 al obtener configuración:", error);
+        throw error;
+      }
+    }
     try {
       const docRef = doc(db, "appConfig", "app");
       const docSnap = await getDoc(docRef);
@@ -38,6 +47,15 @@ export default class AppConfig {
    * @param {Object} config - Objeto de configuración completo.
    */
   static async save(config) {
+    if (isD1()) {
+      try {
+        await d1UpdateSettings(config);
+        return true;
+      } catch (error) {
+        console.error("[AppConfig] Error D1 al guardar configuración:", error);
+        throw error;
+      }
+    }
     try {
       const docRef = doc(db, "appConfig", "app");
       await setDoc(docRef, config, { merge: true });
@@ -80,6 +98,11 @@ export default class AppConfig {
    * @returns {Promise<Object|null>} El agregado de ingresos resultante, o null si no aplicaba.
    */
   static async applyIncomeDelta(tx, sign = 1) {
+    if (isD1()) {
+      // En D1 los agregados (ingresos por tipo, caja) se derivan de
+      // period_totals/unit_balances; no hay que mantenerlos a mano.
+      return;
+    }
     const isIncome = tx && (tx.type === 'PAYMENT' || tx.type === 'OTHER_INCOME');
     if (!isIncome) return null;
 
@@ -160,7 +183,15 @@ export default class AppConfig {
     if (!Number.isFinite(next) || next < 1) {
       throw new Error("El próximo número de recibo debe ser un entero positivo.");
     }
-
+    if (isD1()) {
+      try {
+        await d1SetVoucherCounter('rec', next);
+        return next;
+      } catch (error) {
+        console.error("[AppConfig] Error D1 al fijar contador de recibo:", error);
+        throw error;
+      }
+    }
     const configRef = doc(db, "appConfig", "app");
     const counterRef = doc(db, "system", "counters");
 
@@ -188,5 +219,29 @@ export default class AppConfig {
 
       return next;
     });
+  }
+
+  /**
+   * Último número de recibo usado (el contador real, no la semilla).
+   * @returns {Promise<number>}
+   */
+  static async getReceiptCounter() {
+    if (isD1()) {
+      try {
+        return await d1GetVoucherCounter('rec');
+      } catch (error) {
+        console.error("[AppConfig] Error D1 al leer contador de recibo:", error);
+        throw error;
+      }
+    }
+    try {
+      const snap = await getDoc(doc(db, "system", "counters"));
+      if (snap.exists()) return Number(snap.data().rec) || 0;
+      const configSnap = await getDoc(doc(db, "appConfig", "app"));
+      return configSnap.exists() ? (Number(configSnap.data().counters?.rec) || 0) : 0;
+    } catch (error) {
+      console.error("[AppConfig] Error al leer contador de recibo:", error);
+      throw error;
+    }
   }
 }

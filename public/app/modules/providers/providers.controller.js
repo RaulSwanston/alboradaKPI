@@ -1,4 +1,4 @@
-import { db, collection, query, where, getDocs, orderBy } from "../../core/firebase.js";
+import User from "../../models/User.js";
 
 /**
  * providers.controller.js
@@ -86,14 +86,7 @@ export default async function providersController(contexto) {
     try {
       listContainer.innerHTML = '<div class="loading-text" style="grid-column: 1/-1;">Cargando proveedores...</div>';
 
-      const usersRef = collection(db, "users");
-      const q = query(usersRef, where("role", "==", "provider"), orderBy("email"));
-      const snapshot = await getDocs(q);
-
-      allProviders = [];
-      snapshot.forEach(doc => {
-        allProviders.push({ id: doc.id, ...doc.data() });
-      });
+      allProviders = await User.getByRole('provider');
 
       renderProviders();
     } catch (error) {

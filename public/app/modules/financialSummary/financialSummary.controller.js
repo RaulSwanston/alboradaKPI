@@ -2,7 +2,6 @@ import Property from '../../models/Property.js';
 import Transaction from '../../models/Transaction.js';
 import User from '../../models/User.js';
 import { t } from '../../core/i18n.js';
-import { db, collection, query, where, orderBy, limit, getDocs, doc, getDoc } from '../../core/firebase.js';
 
 /**
  * Controlador para el módulo de Resumen Financiero (financialSummary).
@@ -140,16 +139,9 @@ export default async function financialSummary(contexto) {
    */
   const loadLastPayment = async (propertyId) => {
     try {
-      const q = query(
-        collection(db, "transactions"),
-        where("propertyId", "==", propertyId),
-        where("type", "==", "PAYMENT"),
-        orderBy("effectiveDate", "desc"),
-        limit(1)
-      );
-      const snapshot = await getDocs(q);
-      if (!snapshot.empty) {
-        const lastPay = snapshot.docs[0].data();
+      const list = await Transaction.getByPropertyId(propertyId);
+      const lastPay = list.find((t) => t.type === 'PAYMENT');
+      if (lastPay) {
         if (creditBalanceAmountEl) creditBalanceAmountEl.textContent = formatCurrency(lastPay.amount);
         if (lastPaymentDateEl) lastPaymentDateEl.textContent = `Realizado el ${formatDate(lastPay.effectiveDate)}`;
       } else {

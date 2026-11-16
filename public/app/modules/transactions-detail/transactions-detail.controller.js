@@ -3,7 +3,6 @@ import Property from "../../models/Property.js";
 import ExpenseAccount from "../../models/ExpenseAccount.js";
 import { t } from "../../core/i18n.js";
 import { activeIncomeTypes, resolveIncomeTypeId, INCOME_TYPE_IDS } from "../../core/incomeTypes.js";
-import { db, doc, updateDoc } from "../../core/firebase.js";
 import { uploadFileToR2, buildPropertyUploadKey, buildExpenseReceiptKey, getAuthObjectURL, revokeAuthObjectURLs } from "../../core/r2.js";
 import { compressImageFile } from "../../core/imageCompress.js";
 
@@ -952,10 +951,7 @@ export default async function transactionsDetailController(contexto) {
         try {
           const receiptURL = await uploadReceipt(currentPropertyId);
           if (receiptURL) {
-            const transRef = doc(db, "transactions", savedId);
-            await updateDoc(transRef, {
-              'metadata.receiptURL': receiptURL
-            });
+            await Transaction.update(savedId, { metadata: { receiptURL } });
           }
         } catch (uploadErr) {
           console.warn('[TD] Receipt upload failed (non-fatal):', uploadErr);

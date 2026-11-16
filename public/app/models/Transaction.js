@@ -1,6 +1,7 @@
 import { db, collection, addDoc, updateDoc, deleteDoc, doc, getDoc, getDocs, query, where, orderBy, limit, startAfter, serverTimestamp, runTransaction, writeBatch } from "../core/firebase.js";
 import { createActivity } from "./Activities.js";
 import AppConfig from "./AppConfig.js";
+import { isD1, d1UnitTransactions, d1PendingDebts, d1Movements, d1GetMovement, d1CreateCharge, d1CreatePayment, d1CreateExpense, d1CreateOtherIncome, d1CreateCreditNote, d1ApplyPayment, d1VoidMovement, d1UpdateMovement, TYPE_TO_KIND } from "../core/api.js";
 
 /** Tipos que nunca representan una deuda de una unidad, aunque su monto sea negativo. */
 const NON_DEBT_TYPES = new Set(['EXPENSE', 'ADMIN_EXPENSE', 'OTHER']);
@@ -196,6 +197,20 @@ export default class Transaction {
    * @returns {Promise<{id: string, duplicate: boolean}>} El ID de la transacción y si fue un duplicado.
    */
   static async create(data, initiator = { type: 'SYSTEM', name: 'Sistema' }) {
+    if (isD1()) {
+      try {
+        const type = data.type || 'FEE';
+        let result;
+        if (type === 'PAYMENT') result = await d1CreatePayment(data);
+        else if (type === 'EXPENSE' || type === 'ADMIN_EXPENSE') result = await d1CreateExpense(data);
+        else if (type === 'OTHER_INCOME') result = await d1CreateOtherIncome(data);
+        else result = await d1CreateCharge(data); // FEE, FINE, ...
+        return { id: result.id, duplicate: Boolean(result.duplicate) };
+      } catch (error) {
+        console.error("[Transaction] Error D1 al crear transacción:", error);
+        throw error;
+      }
+    }
     try {
       // Idempotencia: si llega un idempotencyKey que ya fue procesado antes (doble clic,
       // re-intento tras timeout), reutilizamos la transacción existente en vez de duplicar.
@@ -305,6 +320,15 @@ export default class Transaction {
    * @returns {Promise<{id: string, voucherNumber: string|null}>}
    */
   static async createCreditNote(data, initiator = { type: 'USER', name: 'Administrador' }) {
+    if (isD1()) {
+      try {
+        const result = await d1CreateCreditNote(data);
+        return { id: result.id, voucherNumber: result.number || null };
+      } catch (error) {
+        console.error("[Transaction] Error D1 al crear nota de crédito:", error);
+        throw error;
+      }
+    }
     const propertyId = String(data?.propertyId || '').trim();
     if (!propertyId) throw new Error('La nota de crédito necesita una unidad.');
 
@@ -465,6 +489,15 @@ export default class Transaction {
    * @param {Object} initiator - Datos del usuario que realiza la acción.
    */
   static async update(id, data, initiator = { type: 'SYSTEM', name: 'Sistema' }) {
+    if (isD1()) {
+      try {
+        await d1UpdateMovement(id, data);
+        return { id };
+      } catch (error) {
+        console.error(`[Transaction] Error D1 al actualizar ${id}:`, error);
+        throw error;
+      }
+    }
     try {
       const updateData = { ...data, updatedAt: serverTimestamp() };
       
@@ -536,6 +569,15 @@ export default class Transaction {
    * @param {Object} initiator - Datos del usuario que realiza la acción.
    */
   static async delete(id, initiator) {
+    if (isD1()) {
+      try {
+        const result = await d1VoidMovement(id);
+        return { id, voided: Boolean(result.voided), alreadyVoid: Boolean(result.alreadyVoid) };
+      } catch (error) {
+        console.error("[Transaction] Error D1 al anular:", error);
+        throw error;
+      }
+    }
     try {
       const docRef = doc(db, "transactions", id);
 
@@ -632,6 +674,14 @@ export default class Transaction {
    * @returns {Promise<Array>}
    */
   static async getPendingDebts(propertyId, { includeIds = [] } = {}) {
+    if (isD1()) {
+      try {
+        return await d1PendingDebts(propertyId, { includeIds });
+      } catch (error) {
+        console.error(`[Transaction] Error D1 al obtener deudas de ${propertyId}:`, error);
+        throw error;
+      }
+    }
     try {
       const q = query(
         collection(db, "transactions"),
@@ -834,6 +884,18 @@ export default class Transaction {
    * @returns {Promise<{conciliados:number, liberados:number, omitidos:number}>}
    */
   static async reconcileCharges({ paymentId, propertyId, links = [], releaseIds = [], appliedTo = null, balanceDelta = 0 }) {
+    if (isD1()) {
+      try {
+        const effectiveLinks = (links || [])
+          .map((l) => (typeof l === 'string' ? { transactionId: l, amount: 0 } : l))
+          .filter((l) => l && l.transactionId && (Number(l.amount) || 0) > 0);
+        const result = await d1ApplyPayment(paymentId, effectiveLinks);
+        return { conciliados: result.links ?? effectiveLinks.length, liberados: 0, omitidos: 0 };
+      } catch (error) {
+        console.error("[Transaction] Error D1 al conciliar:", error);
+        throw error;
+      }
+    }
     // Normaliza `links` (acepta objetos o ids sueltos por compatibilidad) e ignora
     // los que no tengan monto válido: un enlace sin monto no se puede derivar.
     const linkById = new Map();
@@ -938,6 +1000,14 @@ export default class Transaction {
    * Obtiene una transacción específica por ID.
    */
   static async getById(id) {
+    if (isD1()) {
+      try {
+        return await d1GetMovement(id);
+      } catch (error) {
+        console.error(`[Transaction] Error D1 al obtener transacción ${id}:`, error);
+        throw error;
+      }
+    }
     try {
       const docSnap = await getDoc(doc(db, "transactions", id));
       return docSnap.exists() ? { id: docSnap.id, ...docSnap.data() } : null;
@@ -951,6 +1021,14 @@ export default class Transaction {
    * Obtiene todos los movimientos vinculados a una unidad.
    */
   static async getByPropertyId(propertyId) {
+    if (isD1()) {
+      try {
+        return await d1UnitTransactions(propertyId);
+      } catch (error) {
+        console.error(`[Transaction] Error D1 para unidad ${propertyId}:`, error);
+        throw error;
+      }
+    }
     try {
       // Consulta simple (sin orderBy) para no requerir índices compuestos
       const q = query(
@@ -975,6 +1053,15 @@ export default class Transaction {
    * Obtiene todos los pagos no identificados.
    */
   static async getUnidentified() {
+    if (isD1()) {
+      try {
+        const { movements } = await d1Movements({ kind: 'payment', status: 'unidentified', limit: 500 });
+        return sortTransactionsByDateDesc(movements);
+      } catch (error) {
+        console.error("[Transaction] Error D1 al obtener no identificados:", error);
+        throw error;
+      }
+    }
     try {
       const q = query(
         collection(db, "transactions"),
@@ -996,6 +1083,15 @@ export default class Transaction {
    * Muy eficiente para cierres mensuales.
    */
   static async getByPeriod(period) {
+    if (isD1()) {
+      try {
+        const { movements } = await d1Movements({ period, limit: 500 });
+        return sortTransactionsByDateDesc(movements);
+      } catch (error) {
+        console.error(`[Transaction] Error D1 al obtener periodo ${period}:`, error);
+        throw error;
+      }
+    }
     try {
       const q = query(
         collection(db, "transactions"),
@@ -1035,6 +1131,23 @@ export default class Transaction {
    * @param {number|null} limitCount - Límite opcional de resultados.
    */
   static async getByDateRange(start, end, limitCount = null) {
+    if (isD1()) {
+      try {
+        const dStart = start instanceof Date ? start : new Date(start);
+        const dEnd = end instanceof Date ? end : new Date(end);
+        dStart.setHours(0, 0, 0, 0);
+        dEnd.setHours(23, 59, 59, 999);
+        const { movements } = await d1Movements({
+          from: dStart.getTime(),
+          to: dEnd.getTime(),
+          limit: limitCount ? Math.min(limitCount, 500) : 500
+        });
+        return sortTransactionsByDateDesc(movements);
+      } catch (error) {
+        console.error("[Transaction] Error D1 en getByDateRange:", error);
+        throw error;
+      }
+    }
     try {
       const dStart = start instanceof Date ? start : new Date(start);
       const dEnd = end instanceof Date ? end : new Date(end);
@@ -1069,6 +1182,15 @@ export default class Transaction {
    * @param {number} limitCount - Cantidad de registros a traer (por defecto 100 para ahorrar).
    */
   static async getAll(limitCount = 100) {
+    if (isD1()) {
+      try {
+        const { movements } = await d1Movements({ limit: Math.min(limitCount, 500) });
+        return sortTransactionsByDateDesc(movements);
+      } catch (error) {
+        console.error("[Transaction] Error D1 al obtener todas:", error);
+        throw error;
+      }
+    }
     try {
       const q = query(
         collection(db, "transactions"), 
@@ -1091,6 +1213,17 @@ export default class Transaction {
    * @param {number} limitCount - Cantidad de registros a traer.
    */
   static async getByType(type, limitCount = 100) {
+    if (isD1()) {
+      try {
+        const kind = TYPE_TO_KIND[type];
+        if (!kind) return [];
+        const { movements } = await d1Movements({ kind, limit: Math.min(limitCount, 500) });
+        return sortTransactionsByDateDesc(movements);
+      } catch (error) {
+        console.error(`[Transaction] Error D1 al obtener por tipo ${type}:`, error);
+        throw error;
+      }
+    }
     try {
       const q = query(
         collection(db, "transactions"),
@@ -1126,6 +1259,23 @@ export default class Transaction {
    * @returns {Promise<Array>} Lista completa de gastos.
    */
   static async getAllExpenses(batchSize = 1000) {
+    if (isD1()) {
+      try {
+        const all = [];
+        let cursor = null;
+        while (true) {
+          const { movements, nextCursor } = await d1Movements({ kind: 'expense', limit: 500, cursor });
+          all.push(...movements);
+          cursor = nextCursor;
+          if (!cursor || all.length >= batchSize) break;
+        }
+        console.log(`[Transaction] Carga completa de gastos (D1): ${all.length} registros.`);
+        return all;
+      } catch (error) {
+        console.error("[Transaction] Error D1 al obtener todos los gastos:", error);
+        throw error;
+      }
+    }
     try {
       const base = [
         where("type", "==", "EXPENSE"),
@@ -1187,6 +1337,19 @@ export default class Transaction {
    * @param {number} limitCount - Cantidad de registros a traer.
    */
   static async getByConcept(conceptId, limitCount = 100) {
+    if (isD1()) {
+      try {
+        // El endpoint de movimientos no filtra por concepto; se filtra en el
+        // cliente sobre la tabla de cargos (que sí trae concept_id). El
+        // catálogo es pequeño y esta vista no es la ruta caliente.
+        const { movements } = await d1Movements({ kind: 'charge', limit: 500 });
+        return sortTransactionsByDateDesc(
+          movements.filter((m) => (m.concept ?? m.concept_id ?? '') === conceptId).slice(0, limitCount)
+        );      } catch (error) {
+        console.error(`[Transaction] Error D1 al obtener por concepto ${conceptId}:`, error);
+        throw error;
+      }
+    }
     try {
       const q = query(
         collection(db, "transactions"),

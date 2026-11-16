@@ -3,6 +3,7 @@ import ChargeConcept from "../../models/ChargeConcept.js";
 import Property from "../../models/Property.js";
 import { db, collection, doc, writeBatch, serverTimestamp, getDoc, auth } from "../../core/firebase.js";
 import { createActivity } from "../../models/Activities.js";
+import { isD1, d1BatchCharges } from "../../core/api.js";
 
 export default async function billingGeneratorController(contexto) {
   const permissions = contexto.data.permissions;
@@ -110,6 +111,16 @@ export default async function billingGeneratorController(contexto) {
 
     try {
       const dateObj = new Date(`${period}-01T15:00:00`);
+
+      if (isD1()) {
+        const items = properties.map((prop) => ({ unitId: prop.id || prop.name, conceptId, amount }));
+        const result = await d1BatchCharges(items, { effectiveDate: dateObj, period, note: description });
+        resultDiv.className = 'billing-result success';
+        resultDiv.innerHTML = `<strong>✅ ${result.count} cuotas generadas exitosamente.</strong><br>Periodo: ${period} | Monto: $${amount.toFixed(2)} c/u | Total: $${(amount * result.count).toFixed(2)}`;
+        resultDiv.style.display = 'block';
+        return;
+      }
+
       const vouchers = await Transaction._generateBatchVouchers(properties.length, 'FEE', dateObj);
 
       // Pre-leer balances actuales de todas las propiedades

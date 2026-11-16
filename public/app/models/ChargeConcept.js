@@ -1,4 +1,5 @@
 import { db, collection, addDoc, getDoc, getDocs, updateDoc, deleteDoc, query, where, doc, serverTimestamp } from "../core/firebase.js";
+import { isD1, d1ChargeConcepts, d1CreateChargeConcept, d1UpdateChargeConcept, d1DeactivateChargeConcept } from "../core/api.js";
 
 /**
  * La clase ChargeConcept gestiona las definiciones de cargos y servicios (el "catálogo").
@@ -20,6 +21,15 @@ export default class ChargeConcept {
    * @returns {Promise<string>} El ID del documento creado en Firestore.
    */
   static async create(conceptData) {
+    if (isD1()) {
+      try {
+        const result = await d1CreateChargeConcept(conceptData);
+        return result.id;
+      } catch (error) {
+        console.error("[ChargeConcept] Error D1 al crear concepto:", error);
+        throw error;
+      }
+    }
     try {
       const docRef = await addDoc(collection(db, this.collectionName), {
         ...conceptData,
@@ -39,6 +49,14 @@ export default class ChargeConcept {
    * @returns {Promise<Array>} Lista de conceptos, cada uno incluyendo su ID de Firestore.
    */
   static async getAll() {
+    if (isD1()) {
+      try {
+        return await d1ChargeConcepts();
+      } catch (error) {
+        console.error("[ChargeConcept] Error D1 al obtener la lista de conceptos:", error);
+        throw error;
+      }
+    }
     try {
       const q = query(collection(db, this.collectionName));
       const querySnapshot = await getDocs(q);
@@ -116,6 +134,15 @@ export default class ChargeConcept {
    * @returns {Promise<void>}
    */
   static async update(id, updateData) {
+    if (isD1()) {
+      try {
+        await d1UpdateChargeConcept(id, updateData);
+        return;
+      } catch (error) {
+        console.error(`[ChargeConcept] Error D1 al actualizar ${id}:`, error);
+        throw error;
+      }
+    }
     try {
       const docRef = doc(db, this.collectionName, id);
       await updateDoc(docRef, {
@@ -135,6 +162,15 @@ export default class ChargeConcept {
    * @returns {Promise<void>}
    */
   static async delete(id) {
+    if (isD1()) {
+      try {
+        await d1DeactivateChargeConcept(id);
+        return;
+      } catch (error) {
+        console.error(`[ChargeConcept] Error D1 al eliminar ${id}:`, error);
+        throw error;
+      }
+    }
     try {
       const docRef = doc(db, this.collectionName, id);
       await deleteDoc(docRef);

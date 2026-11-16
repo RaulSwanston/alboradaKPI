@@ -1,6 +1,5 @@
 import Transaction, { sortTransactionsByDateDesc } from "../../models/Transaction.js";
 import { t } from '../../core/i18n.js';
-import { db, doc, getDoc } from "../../core/firebase.js";
 import { getAuthObjectURL } from '../../core/r2.js';
 import { buildPhysicalReceiptHtml } from '../../core/receipt.js';
 
@@ -183,15 +182,9 @@ export default async function transactionsController(contexto) {
         if (missing.size === 0) return;
 
         const ids = Array.from(missing);
-        const snaps = await Promise.all(ids.map(id => getDoc(doc(db, "transactions", id)).catch(() => null)));
-        snaps.forEach((snap, i) => {
-            const id = ids[i];
-            if (snap && snap.exists()) {
-                const d = snap.data();
-                linkCache.set(id, { id, ...d });
-            } else {
-                linkCache.set(id, null);
-            }
+        const snaps = await Promise.all(ids.map(id => Transaction.getById(id).catch(() => null)));
+        snaps.forEach((doc, i) => {
+            linkCache.set(ids[i], doc);
         });
         render();
     };
@@ -892,15 +885,9 @@ export default async function transactionsController(contexto) {
             if (id && !byId.has(id) && !linkCache.has(id)) missing.push(id);
         });
         if (missing.length) {
-            const snaps = await Promise.all(missing.map(id => getDoc(doc(db, "transactions", id)).catch(() => null)));
-            snaps.forEach((snap, i) => {
-                const id = missing[i];
-                if (snap && snap.exists()) {
-                    const d = snap.data();
-                    linkCache.set(id, { id, ...d });
-                } else {
-                    linkCache.set(id, null);
-                }
+            const snaps = await Promise.all(missing.map(id => Transaction.getById(id).catch(() => null)));
+            snaps.forEach((doc, i) => {
+                linkCache.set(missing[i], doc);
             });
         }
 

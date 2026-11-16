@@ -1,4 +1,4 @@
-import { db, collection, query, where, orderBy, getDocs, getCountFromServer, limit, startAfter } from '../../core/firebase.js';
+import { getActivitiesFeed } from '../../models/Activities.js';
 import { router } from '../../../router.js';
 
 /**
@@ -98,27 +98,14 @@ export default async function notificationsFeedController(contexto) {
 
   const visibilityKey = permissions.isAdmin ? 'admin' : user.uid;
 
-  /**
-   * Consulta base: solo actividades que forman parte de la bandeja. El filtro
-   * por tipo va en Firestore para que el límite de página no se consuma con
-   * facturas o movimientos ajenos al feed.
-   */
-  const buildBaseQuery = () => query(
-    collection(db, 'activities'),
-    where('visibility', 'array-contains', visibilityKey),
-    where('type', 'in', NOTIFICATION_TYPES),
-    orderBy('timestamp', 'desc')
-  );
-
   let currentPage = 1;
   let totalItems = 0;
   let loading = false;
 
-  // El SDK web no expone `offset`. La paginación se resuelve con `startAfter`
-  // y una caché de cursores: cada página se pide una sola vez y volver atrás
-  // no vuelve a leer Firestore.
-  const pageCache = new Map();   // página -> DocumentSnapshot[]
-  const pageCursors = new Map(); // página -> último DocumentSnapshot
+  // El SDK web no expone `offset`. La paginación se resuelve con cursor y una
+  // caché: cada página se pide una sola vez y volver atrás no vuelve a leer.
+  const pageCache = new Map();   // página -> actividades
+  const pageCursors = new Map(); // página -> cursor para la siguiente
 
   const fetchPage = async (page) => {
     if (pageCache.has(page)) return pageCache.get(page);
@@ -128,19 +115,24 @@ export default async function notificationsFeedController(contexto) {
       await fetchPage(page - 1);
     }
 
-    const constraints = [limit(PER_PAGE)];
+    let cursor = null;
     if (page > 1) {
-      const cursor = pageCursors.get(page - 1);
+      cursor = pageCursors.get(page - 1);
       if (!cursor) return [];
-      constraints.unshift(startAfter(cursor));
     }
 
-    const snapshot = await getDocs(query(buildBaseQuery(), ...constraints));
-    pageCache.set(page, snapshot.docs);
-    if (snapshot.docs.length > 0) {
-      pageCursors.set(page, snapshot.docs[snapshot.docs.length - 1]);
+    const result = await getActivitiesFeed({
+      count: PER_PAGE,
+      cursor,
+      visibilityKey,
+      types: NOTIFICATION_TYPES
+    });
+    const items = result.activities;
+    pageCache.set(page, items);
+    if (items.length > 0) {
+      pageCursors.set(page, result.nextCursor ?? result.lastVisible ?? null);
     }
-    return snapshot.docs;
+    return items;
   };
 
   const renderNotification = (data) => {
@@ -154,9 +146,8 @@ export default async function notificationsFeedController(contexto) {
 
     item.querySelector('.notification-message').textContent = data.description;
 
-    const time = data.timestamp?.toDate
-      ? data.timestamp.toDate().toLocaleString()
-      : 'Recientemente';
+    const ts = data.timestamp?.toDate ? data.timestamp.toDate() : data.timestamp;
+    const time = ts ? new Date(ts).toLocaleString() : 'Recientemente';
     item.querySelector('.notification-time').textContent = time;
 
     // Botón de acción
@@ -233,7 +224,7 @@ export default async function notificationsFeedController(contexto) {
         emptyFeed.classList.remove('hidden');
       } else {
         emptyFeed.classList.add('hidden');
-        docs.forEach((docSnap) => renderNotification(docSnap.data()));
+        docs.forEach((data) => renderNotification(data));
       }
 
       renderPagination();
@@ -258,8 +249,8 @@ export default async function notificationsFeedController(contexto) {
   }
 
   try {
-    const countSnapshot = await getCountFromServer(buildBaseQuery());
-    totalItems = countSnapshot.data().count;
+    const countResult = await getActivitiesFeed({ count: 1, visibilityKey, types: NOTIFICATION_TYPES });
+    totalItems = countResult.totalCount ?? 0;
 
     if (totalItems === 0) {
       container.innerHTML = '';

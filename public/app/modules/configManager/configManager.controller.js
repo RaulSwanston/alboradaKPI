@@ -7,7 +7,6 @@
 
 import { appConfig } from '../../core/appConfig.js';
 import { t } from '../../core/i18n.js';
-import { db, doc, getDoc } from '../../core/firebase.js';
 import { uploadFileToR2, buildSystemImageKey, getAuthObjectURL, revokeAuthObjectURLs } from '../../core/r2.js';
 import { compressImageFile } from '../../core/imageCompress.js';
 import User from '../../models/User.js';
@@ -224,10 +223,9 @@ export default async function configManagerController(contexto) {
         if (!receiptNextInput) return;
         let lastUsed = Number(localConfig.counters?.rec) || 0;
         try {
-            const snap = await getDoc(doc(db, "system", "counters"));
-            if (snap.exists()) lastUsed = Number(snap.data().rec) || 0;
+            lastUsed = await AppConfig.getReceiptCounter();
         } catch (error) {
-            console.warn("[ConfigManager] No se pudo leer system/counters; se usa appConfig como respaldo:", error);
+            console.warn("[ConfigManager] No se pudo leer el contador de recibo; se usa appConfig como respaldo:", error);
         }
         receiptNextInput.value = String(lastUsed + 1);
     };

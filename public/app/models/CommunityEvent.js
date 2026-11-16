@@ -1,6 +1,7 @@
 import 'temporal-polyfill/global';
 
 import { db, collection, doc, getDocs, getDoc, setDoc, updateDoc, deleteDoc, serverTimestamp, query, where, orderBy } from "../core/firebase.js";
+import { isD1, d1CommunityEvents, d1CreateCommunityEvent, d1UpdateCommunityEvent, d1DeleteCommunityEvent } from "../core/api.js";
 
 const EVENT_TYPES = ['social', 'birthday', 'meeting', 'maintenance', 'other'];
 
@@ -34,6 +35,15 @@ const buildPayload = (data, initiator) => {
 
 export default class CommunityEvent {
   static async create(data, initiator) {
+    if (isD1()) {
+      try {
+        const result = await d1CreateCommunityEvent(data, initiator);
+        return result.id;
+      } catch (e) {
+        console.error("[CommunityEvent] Error D1 al crear:", e);
+        throw e;
+      }
+    }
     try {
       const ref = doc(collection(db, "communityEvents"));
       await setDoc(ref, buildPayload(data, initiator));
@@ -45,6 +55,16 @@ export default class CommunityEvent {
   }
 
   static async getByRange(start, end) {
+    if (isD1()) {
+      try {
+        const from = start?.epochMilliseconds ?? start?.getTime?.() ?? new Date(start).getTime();
+        const to = end?.epochMilliseconds ?? end?.getTime?.() ?? new Date(end).getTime();
+        return await d1CommunityEvents({ from, to });
+      } catch (e) {
+        console.error("[CommunityEvent] Error D1 getByRange:", e);
+        throw e;
+      }
+    }
     try {
       const q = query(
         collection(db, "communityEvents"),
@@ -61,6 +81,15 @@ export default class CommunityEvent {
   }
 
   static async getById(id) {
+    if (isD1()) {
+      try {
+        const all = await d1CommunityEvents({});
+        return all.find((e) => e.id === id) || null;
+      } catch (e) {
+        console.error("[CommunityEvent] Error D1 getById:", e);
+        throw e;
+      }
+    }
     try {
       const snap = await getDoc(doc(db, "communityEvents", id));
       return snap.exists() ? { id: snap.id, ...snap.data() } : null;
@@ -71,6 +100,15 @@ export default class CommunityEvent {
   }
 
   static async update(id, data) {
+    if (isD1()) {
+      try {
+        await d1UpdateCommunityEvent(id, data);
+        return;
+      } catch (e) {
+        console.error("[CommunityEvent] Error D1 al actualizar:", e);
+        throw e;
+      }
+    }
     try {
       const payload = {};
       if (data.title !== undefined) payload.title = data.title;
@@ -94,6 +132,15 @@ export default class CommunityEvent {
   }
 
   static async remove(id) {
+    if (isD1()) {
+      try {
+        await d1DeleteCommunityEvent(id);
+        return;
+      } catch (e) {
+        console.error("[CommunityEvent] Error D1 al eliminar:", e);
+        throw e;
+      }
+    }
     try {
       await deleteDoc(doc(db, "communityEvents", id));
     } catch (error) {

@@ -2,6 +2,7 @@ import { db, collection, doc, getDoc, writeBatch, serverTimestamp, query, where,
 import { resolveApprovalIncomeType } from "../core/incomeTypes.js";
 import Transaction from "./Transaction.js";
 import AppConfig from "./AppConfig.js";
+import { isD1, d1CreatePaymentNotification, d1PaymentNotifications, d1ApprovePaymentNotification, d1RejectPaymentNotification } from "../core/api.js";
 
 /**
  * Error de validación con mensaje apto para el usuario final. El controlador
@@ -27,6 +28,15 @@ export default class PaymentNotification {
    * @returns {Promise<string>} El ID de la notificación creada.
    */
   static async create(data, initiator) {
+    if (isD1()) {
+      try {
+        const result = await d1CreatePaymentNotification({ ...data, residentUid: initiator?.id });
+        return result.id;
+      } catch (error) {
+        console.error("[PaymentNotification] Error D1 al crear reporte:", error);
+        throw error;
+      }
+    }
     try {
       if (!initiator?.id) {
         throw new Error("No se pudo identificar al residente que reporta el pago.");
@@ -163,6 +173,14 @@ export default class PaymentNotification {
    * @returns {Promise<Array>}
    */
   static async getByUser(uid) {
+    if (isD1()) {
+      try {
+        return await d1PaymentNotifications({ residentUid: uid });
+      } catch (error) {
+        console.error("[PaymentNotification] Error D1 getByUser:", error);
+        throw error;
+      }
+    }
     try {
       const q = query(
         collection(db, "paymentNotifications"),
@@ -184,6 +202,14 @@ export default class PaymentNotification {
    * @returns {Promise<Array>}
    */
   static async getPending() {
+    if (isD1()) {
+      try {
+        return await d1PaymentNotifications({ status: 'pending_verification' });
+      } catch (error) {
+        console.error("[PaymentNotification] Error D1 getPending:", error);
+        throw error;
+      }
+    }
     try {
       const q = query(
         collection(db, "paymentNotifications"),
@@ -245,6 +271,15 @@ export default class PaymentNotification {
    * @returns {Promise<{transactionId: string, voucherNumber: string}>}
    */
   static async approve(id, adminData, overrides = {}) {
+    if (isD1()) {
+      try {
+        const result = await d1ApprovePaymentNotification(id, adminData);
+        return { transactionId: result.paymentId, voucherNumber: result.number || '' };
+      } catch (error) {
+        console.error("[PaymentNotification] Error D1 al aprobar:", error);
+        throw error;
+      }
+    }
     const notifRef = doc(db, "paymentNotifications", id);
     let approvedPayment = null;
 
@@ -472,6 +507,15 @@ export default class PaymentNotification {
    * @param {Object} adminData - Datos del admin {uid, name}.
    */
   static async reject(id, reason, adminData) {
+    if (isD1()) {
+      try {
+        await d1RejectPaymentNotification(id, reason, adminData);
+        return;
+      } catch (error) {
+        console.error("[PaymentNotification] Error D1 al rechazar:", error);
+        throw error;
+      }
+    }
     const ref = doc(db, "paymentNotifications", id);
     const cleanReason = String(reason || '').trim();
 

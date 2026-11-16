@@ -1,6 +1,7 @@
 import { db, collection, getDocs, query, doc, getDoc, updateDoc, where, setDoc, orderBy } from "../core/firebase.js";
 import { aggregateIncomeByType } from "../core/incomeTypes.js";
 import { buildChartsData } from "./ChartsData.js";
+import { isD1, d1GetAllUnits, d1GetUnit, d1ImportUnits, d1RebuildProjections } from "../core/api.js";
 
 /**
  * Movimientos que nunca forman parte del saldo individual de una unidad:
@@ -19,6 +20,14 @@ export default class Property {
    * @returns {Promise<Object|null>} Un objeto con los datos de la propiedad o null si no existe.
    */
   static async getById(id) {
+    if (isD1()) {
+      try {
+        return await d1GetUnit(id);
+      } catch (error) {
+        console.error(`[Property] Error D1 al obtener propiedad ${id}:`, error);
+        throw error;
+      }
+    }
     try {
       const docRef = doc(db, "properties", id);
       const docSnap = await getDoc(docRef);
@@ -42,6 +51,17 @@ export default class Property {
    * @returns {Promise<{success: boolean, total: number}>}
    */
   static async importMany(properties, onBatchComplete = null) {
+    if (isD1()) {
+      try {
+        const items = properties.map((p) => ({ id: p.id, name: p.name, address: p.address }));
+        await d1ImportUnits(items);
+        if (onBatchComplete) onBatchComplete(1, 1, items.length);
+        return { success: true, total: items.length };
+      } catch (error) {
+        console.error("[Property] Error D1 en importación masiva:", error);
+        throw error;
+      }
+    }
     const { writeBatch } = await import("../core/firebase.js");
     
     try {
@@ -155,6 +175,31 @@ export default class Property {
    * @returns {Promise<{success: boolean, stats: Object}>} Devuelve las nuevas estadísticas.
    */
   static async recalculateAllBalances(onProgress = null) {
+    if (isD1()) {
+      try {
+        await d1RebuildProjections();
+        if (onProgress) onProgress(1, 1);
+        const units = await d1GetAllUnits('id');
+        const stats = {
+          saldoCajaDisponible: 0,
+          saldoPorPeriodo: {},
+          totalCuentasPorCobrar: 0,
+          totalSaldosAFavor: 0,
+          ultimoPagoMonto: 0,
+          ultimoPagoFecha: null,
+          unidadesAlDiaCount: 0,
+          totalUnidades: units.length
+        };
+        for (const u of units) {
+          if (u.balance < 0) stats.totalCuentasPorCobrar += Math.abs(u.balance);
+          else if (u.balance > 0) stats.totalSaldosAFavor += u.balance;
+        }
+        return { success: true, stats };
+      } catch (error) {
+        console.error("Error D1 en la sincronización masiva de saldos:", error);
+        throw error;
+      }
+    }
     const { writeBatch, serverTimestamp } = await import("../core/firebase.js");
 
     try {
@@ -350,6 +395,21 @@ export default class Property {
    *          y la suma de todos los saldos positivos (Saldo a Favor).
    */
   static async getFinancialSummary() {
+    if (isD1()) {
+      try {
+        const units = await d1GetAllUnits('id');
+        let totalReceivable = 0;
+        let creditBalance = 0;
+        for (const u of units) {
+          if (u.balance < 0) totalReceivable += Math.abs(u.balance);
+          else if (u.balance > 0) creditBalance += u.balance;
+        }
+        return { totalReceivable, creditBalance };
+      } catch (error) {
+        console.error("Error D1 al obtener el resumen financiero:", error);
+        return { totalReceivable: 0, creditBalance: 0 };
+      }
+    }
     let totalReceivable = 0;
     let creditBalance = 0;
 
@@ -389,6 +449,14 @@ export default class Property {
    * @returns {Promise<Array>} Lista de propiedades con su ID y datos.
    */
   static async getAll(sortBy = 'name') {
+    if (isD1()) {
+      try {
+        return await d1GetAllUnits(sortBy);
+      } catch (error) {
+        console.error("[Property] Error D1 al obtener propiedades:", error);
+        throw error;
+      }
+    }
     try {
       const q = query(collection(db, "properties"), orderBy(sortBy));
       const querySnapshot = await getDocs(q);

@@ -1,4 +1,5 @@
 import { db, collection, getCountFromServer, query, where, doc, getDoc, setDoc, getDocs, orderBy, limit, startAfter, updateDoc } from "../core/firebase.js";
+import { isD1, d1GetUserProfile, d1ListUsers, d1UpdateUserProfile, d1UpdateUserRole } from "../core/api.js";
 
 /**
  * La clase User gestiona la interacción con la colección 'users' en Firestore.
@@ -10,6 +11,10 @@ export default class User {
    * @returns {Promise<Object|null>} Los datos del usuario o null si no existe.
    */
   static async getById(uid) {
+    if (isD1()) {
+      try { return await d1GetUserProfile(uid); }
+      catch (error) { console.error(`[User] Error D1 al obtener usuario ${uid}:`, error); throw error; }
+    }
     try {
       const docRef = doc(db, "users", uid);
       const docSnap = await getDoc(docRef);
@@ -24,10 +29,46 @@ export default class User {
   }
 
   /**
+   * Todos los usuarios con un rol dado, sin paginación (catálogos, proveedores).
+   * @param {string} role - Rol a filtrar (ej. 'provider').
+   * @returns {Promise<Array>} Lista de { id, ...data }.
+   */
+  static async getByRole(role) {
+    if (isD1()) {
+      try { return (await d1ListUsers()).filter((u) => u.role === role); }
+      catch (error) { console.error(`[User] Error D1 getByRole ${role}:`, error); throw error; }
+    }
+    try {
+      const q = query(collection(db, "users"), where("role", "==", role), orderBy("email"));
+      const snapshot = await getDocs(q);
+      const users = [];
+      snapshot.forEach((docSnap) => users.push({ id: docSnap.id, ...docSnap.data() }));
+      return users;
+    } catch (error) {
+      console.error(`[User] Error al obtener usuarios con rol ${role}:`, error);
+      throw error;
+    }
+  }
+
+  /**
    * Obtiene usuarios con filtros de rol, búsqueda y paginación.
    * @param {Object} options - { role, searchTerm, pageSize, lastDoc }
    */
   static async queryUsers({ role = 'all', searchTerm = '', pageSize = 10, lastDoc = null } = {}) {
+    if (isD1()) {
+      try {
+        const term = (searchTerm || '').toLowerCase();
+        const all = (await d1ListUsers()).filter((u) => {
+          if (role !== 'all' && u.role !== role) return false;
+          if (term && !(String(u.displayName || '').toLowerCase().includes(term) || String(u.email || '').toLowerCase().includes(term))) return false;
+          return true;
+        });
+        return { users: all.slice(0, pageSize), lastDoc: null, size: all.length };
+      } catch (error) {
+        console.error("[User] Error D1 en queryUsers:", error);
+        throw error;
+      }
+    }
     try {
       const usersRef = collection(db, "users");
       const constraints = [orderBy("email"), limit(pageSize)];
@@ -66,6 +107,10 @@ export default class User {
    * @param {Object} data - Objeto con los campos a actualizar (displayName, mobile, photoUrl, etc.).
    */
   static async updateProfile(uid, data) {
+    if (isD1()) {
+      try { await d1UpdateUserProfile(uid, data); return true; }
+      catch (error) { console.error(`[User] Error D1 al actualizar perfil de ${uid}:`, error); throw error; }
+    }
     try {
       const userRef = doc(db, "users", uid);
       await updateDoc(userRef, {
@@ -85,6 +130,10 @@ export default class User {
    * @param {string} newRole 
    */
   static async updateRole(uid, newRole) {
+    if (isD1()) {
+      try { await d1UpdateUserRole(uid, newRole); return true; }
+      catch (error) { console.error(`[User] Error D1 al actualizar rol de ${uid}:`, error); throw error; }
+    }
     try {
       const userRef = doc(db, "users", uid);
       await updateDoc(userRef, { role: newRole });
@@ -99,6 +148,10 @@ export default class User {
    * Obtiene el conteo de usuarios marcados como activos.
    */
   static async contarUsuariosActivos() {
+    if (isD1()) {
+      try { return (await d1ListUsers()).filter((u) => u.isActive).length; }
+      catch (error) { console.error("[User] Error D1 al contar usuarios activos:", error); throw error; }
+    }
     try {
       const usersCollectionRef = collection(db, "users");
       const activeUsersQuery = query(usersCollectionRef, where("isActive", "==", true));

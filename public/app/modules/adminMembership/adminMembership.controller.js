@@ -1,4 +1,3 @@
-import { db, collection, getDocs, doc, updateDoc, query, where, arrayUnion, writeBatch, serverTimestamp } from '../../core/firebase.js';
 import MembershipRequest from '../../models/MembershipRequest.js';
 
 /**

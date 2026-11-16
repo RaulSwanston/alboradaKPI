@@ -1,5 +1,6 @@
 import { router } from '/router.js';
 import { db, collection, query, where, onSnapshot } from '../../core/firebase.js';
+import { isD1, d1PendingCounts } from '../../core/api.js';
 import { getInternalPath, getFriendlyPath, t } from '../../core/i18n.js';
 import { getAuthObjectURL } from '../../core/r2.js';
 import { injectIcons } from '../../utils/icons.js';
@@ -36,6 +37,10 @@ export default async function navigator(contexto) {
       this.watchers.forEach(unsub => unsub());
       this.watchers.clear();
       this.counts.clear();
+      if (this._d1Interval) {
+        clearInterval(this._d1Interval);
+        this._d1Interval = null;
+      }
     }
   }
 
@@ -241,6 +246,22 @@ export default async function navigator(contexto) {
     };
 
     if (permissions.isAdmin) {
+      if (isD1()) {
+        // D1 no tiene onSnapshot: se usa polling. Cada minuto se consultan los
+        // pendientes y se actualiza el badge. El intervalo se limpia en destroy().
+        const poll = async () => {
+          try {
+            const c = await d1PendingCounts();
+            updateBadge(c.memberships + c.services + c.payments);
+          } catch (error) {
+            console.warn('⚠️ Error al consultar pendientes (D1):', error.message);
+          }
+        };
+        poll();
+        notifier._d1Interval = setInterval(poll, 60000);
+        return;
+      }
+
       notifier.registerWatcher('memberships', query(
         collection(db, "membershipRequests"), 
         where("status", "==", "pending")
@@ -248,7 +269,7 @@ export default async function navigator(contexto) {
       
       notifier.registerWatcher('services', query(
         collection(db, "serviceRequests"), 
-        where("status", "==", "pending")
+        where("status", "==", "pending_approval")
       ), updateBadge);
 
       // Reportes de pago esperando revisión: avisa al admin con el mismo

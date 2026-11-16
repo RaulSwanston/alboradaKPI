@@ -1,4 +1,5 @@
 import { db, collection, addDoc, getDocs, getDoc, updateDoc, deleteDoc, doc, serverTimestamp } from "../core/firebase.js";
+import { isD1, d1ExpenseAccounts, d1CreateExpenseAccount, d1UpdateExpenseAccount, d1DeactivateExpenseAccount } from "../core/api.js";
 
 /**
  * La clase ExpenseAccount gestiona el catálogo de cuentas de gastos generales.
@@ -19,6 +20,15 @@ export default class ExpenseAccount {
    * @returns {Promise<string>} El ID del documento creado.
    */
   static async create(accountData) {
+    if (isD1()) {
+      try {
+        const result = await d1CreateExpenseAccount(accountData);
+        return result.id;
+      } catch (error) {
+        console.error("[ExpenseAccount] Error D1 al crear cuenta:", error);
+        throw error;
+      }
+    }
     try {
       const docRef = await addDoc(collection(db, this.collectionName), {
         ...accountData,
@@ -40,6 +50,14 @@ export default class ExpenseAccount {
    * @returns {Promise<Array>} Lista de cuentas con su ID de Firestore.
    */
   static async getAll() {
+    if (isD1()) {
+      try {
+        return await d1ExpenseAccounts();
+      } catch (error) {
+        console.error("[ExpenseAccount] Error D1 al obtener las cuentas:", error);
+        throw error;
+      }
+    }
     try {
       const q = collection(db, this.collectionName);
       const querySnapshot = await getDocs(q);
@@ -82,6 +100,15 @@ export default class ExpenseAccount {
    * @returns {Promise<void>}
    */
   static async update(id, updateData) {
+    if (isD1()) {
+      try {
+        await d1UpdateExpenseAccount(id, updateData);
+        return;
+      } catch (error) {
+        console.error(`[ExpenseAccount] Error D1 al actualizar ${id}:`, error);
+        throw error;
+      }
+    }
     try {
       const docRef = doc(db, this.collectionName, id);
       await updateDoc(docRef, {
@@ -101,6 +128,15 @@ export default class ExpenseAccount {
    * @returns {Promise<void>}
    */
   static async delete(id) {
+    if (isD1()) {
+      try {
+        await d1DeactivateExpenseAccount(id);
+        return;
+      } catch (error) {
+        console.error(`[ExpenseAccount] Error D1 al eliminar ${id}:`, error);
+        throw error;
+      }
+    }
     try {
       const docRef = doc(db, this.collectionName, id);
       await deleteDoc(docRef);

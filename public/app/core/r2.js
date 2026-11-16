@@ -11,7 +11,7 @@
  */
 
 const R2_BASE_URL = 'https://gestionph.synch.workers.dev/api/v1/r2';
-const R2_SLUG = 'alboradakpi';
+const R2_SLUG = 'residencial-alborada';
 const R2_API_KEY = 'gest_9Fvi1DLQEKIkLY206k2oO1byRvnncxgE9Gw0ws4p1tE';
 
 const objectUrlCache = new Map();
@@ -121,3 +121,6 @@ export function revokeAuthObjectURLs() {
   });
   objectUrlCache.clear();
 }
+
+// Exposición para el cliente de datos (core/api.js): mismo Worker, misma key.
+export { R2_BASE_URL, R2_SLUG, R2_API_KEY };

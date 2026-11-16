@@ -1,4 +1,5 @@
 import { db, collection, doc, writeBatch, serverTimestamp, query, where, getDocs, orderBy, arrayUnion, updateDoc } from "../core/firebase.js";
+import { isD1, d1CreateMembershipRequests, d1MembershipRequests, d1ProcessMembershipRequest, d1LinkResident } from "../core/api.js";
 
 /**
  * Modelo para gestionar las solicitudes de vinculación a propiedades.
@@ -10,6 +11,14 @@ export default class MembershipRequest {
    * @returns {Promise<Array>}
    */
   static async getByUserId(userId) {
+    if (isD1()) {
+      try {
+        return (await d1MembershipRequests({})).filter((r) => r.userId === userId);
+      } catch (error) {
+        console.error("[MembershipRequest] Error D1 getByUserId:", error);
+        throw error;
+      }
+    }
     try {
       const q = query(
         collection(db, "membershipRequests"), 
@@ -33,6 +42,14 @@ export default class MembershipRequest {
    * @returns {Promise<Array>}
    */
   static async getByStatus(status = 'pending') {
+    if (isD1()) {
+      try {
+        return await d1MembershipRequests({ status });
+      } catch (error) {
+        console.error(`[MembershipRequest] Error D1 getByStatus ${status}:`, error);
+        throw error;
+      }
+    }
     try {
       const q = query(
         collection(db, "membershipRequests"), 
@@ -59,6 +76,15 @@ export default class MembershipRequest {
    * @param {string} newStatus - 'approved' o 'rejected'.
    */
   static async process(requestId, requestData, newStatus) {
+    if (isD1()) {
+      try {
+        await d1ProcessMembershipRequest(requestId, newStatus === 'approved' ? 'approved' : 'rejected');
+        return true;
+      } catch (error) {
+        console.error("[MembershipRequest] Error D1 al procesar:", error);
+        throw error;
+      }
+    }
     try {
       const batch = writeBatch(db);
 
@@ -109,6 +135,26 @@ export default class MembershipRequest {
    * @param {Map} selectedProperties - Map con los IDs de propiedades y sus detalles {name, relationship}.
    */
   static async createMany(user, selectedProperties) {
+    if (isD1()) {
+      try {
+        const requests = [];
+        selectedProperties.forEach((data, id) => {
+          requests.push({
+            uid: user.uid,
+            userEmail: user.email,
+            userName: user.displayName || (user.email ? user.email.split('@')[0] : ''),
+            unitId: String(id),
+            requestedUnitName: data.name,
+            relationship: data.relationship
+          });
+        });
+        await d1CreateMembershipRequests(requests);
+        return true;
+      } catch (error) {
+        console.error("[MembershipRequest] Error D1 al crear solicitudes:", error);
+        throw error;
+      }
+    }
     try {
       const batch = writeBatch(db);
 
@@ -156,6 +202,17 @@ export default class MembershipRequest {
    * @param {Map} selectedProperties - Map con propertyId -> {name, relationship}
    */
   static async linkDirectly(user, selectedProperties) {
+    if (isD1()) {
+      try {
+        for (const [propertyId] of selectedProperties) {
+          await d1LinkResident(String(propertyId), user.uid, null);
+        }
+        return true;
+      } catch (error) {
+        console.error("[MembershipRequest] Error D1 en vinculación directa:", error);
+        throw error;
+      }
+    }
     try {
       const batch = writeBatch(db);
       const propertyIds = Array.from(selectedProperties.keys());
@@ -196,6 +253,15 @@ export default class MembershipRequest {
    * @param {string} userId - UID del usuario propietario.
    */
   static async dismiss(requestId, userId) {
+    if (isD1()) {
+      try {
+        await d1ProcessMembershipRequest(requestId, 'dismissed');
+        return true;
+      } catch (error) {
+        console.error("[MembershipRequest] Error D1 al descartar:", error);
+        throw error;
+      }
+    }
     try {
       await updateDoc(doc(db, "membershipRequests", requestId), {
         visibleToUser: false

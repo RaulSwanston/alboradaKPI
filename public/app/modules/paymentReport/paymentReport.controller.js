@@ -1,4 +1,3 @@
-import { db, serverTimestamp, query, where, getDocs, orderBy } from "../../core/firebase.js";
 import { uploadFileToR2, buildPropertyUploadKey } from '../../core/r2.js';
 import { compressImageFile } from '../../core/imageCompress.js';
 import Property from "../../models/Property.js";
@@ -658,7 +657,6 @@ export default async function paymentReportController(contexto) {
         residentUid: user.uid,
         amount: reportedAmount,
         paymentDate: dateInput.value,
-        reportDate: serverTimestamp(),
         status: 'pending_verification',
         receiptUrl: downloadUrl,
         appliedTo: appliedTo,

@@ -1,9 +1,19 @@
 import { db, collection, doc, writeBatch, serverTimestamp, query, where, orderBy, getDocs, getDoc, updateDoc } from "../core/firebase.js";
 import Transaction from "./Transaction.js";
 import { createActivity } from "./Activities.js";
+import { isD1, d1CreateServiceRequest, d1ServiceRequests, d1ApproveServiceRequest, d1RejectServiceRequest } from "../core/api.js";
 
 export default class ServiceRequest {
   static async create(data, initiator) {
+    if (isD1()) {
+      try {
+        const result = await d1CreateServiceRequest({ ...data, residentUid: initiator?.id, residentName: initiator?.name });
+        return result.id;
+      } catch (error) {
+        console.error("[ServiceRequest] Error D1 al crear solicitud:", error);
+        throw error;
+      }
+    }
     try {
       const batch = writeBatch(db);
 
@@ -42,6 +52,10 @@ export default class ServiceRequest {
   }
 
   static async getPending() {
+    if (isD1()) {
+      try { return await d1ServiceRequests({ status: 'pending_approval' }); }
+      catch (e) { console.error("[ServiceRequest] Error D1 getPending:", e); throw e; }
+    }
     try {
       const q = query(
         collection(db, "serviceRequests"),
@@ -57,6 +71,10 @@ export default class ServiceRequest {
   }
 
   static async getByProperty(propertyId) {
+    if (isD1()) {
+      try { return await d1ServiceRequests({}); }
+      catch (e) { console.error("[ServiceRequest] Error D1 getByProperty:", e); throw e; }
+    }
     try {
       const q = query(
         collection(db, "serviceRequests"),
@@ -72,6 +90,15 @@ export default class ServiceRequest {
   }
 
   static async getById(id) {
+    if (isD1()) {
+      try {
+        const all = await d1ServiceRequests({});
+        return all.find((r) => r.id === id) || null;
+      } catch (e) {
+        console.error("[ServiceRequest] Error D1 getById:", e);
+        throw e;
+      }
+    }
     try {
       const snap = await getDoc(doc(db, "serviceRequests", id));
       return snap.exists() ? { id: snap.id, ...snap.data() } : null;
@@ -82,6 +109,17 @@ export default class ServiceRequest {
   }
 
   static async approve(id, adminData) {
+    if (isD1()) {
+      try {
+        const request = await this.getById(id);
+        if (!request) throw new Error("Solicitud no encontrada");
+        const result = await d1ApproveServiceRequest(id, { finalAmount: request.finalAmount || 0 });
+        return { transactionId: result.chargeId, voucherNumber: result.number || '' };
+      } catch (error) {
+        console.error("[ServiceRequest] Error D1 al aprobar:", error);
+        throw error;
+      }
+    }
     try {
       const requestRef = doc(db, "serviceRequests", id);
       const snap = await getDoc(requestRef);
@@ -158,6 +196,15 @@ export default class ServiceRequest {
   }
 
   static async reject(id, reason, adminData) {
+    if (isD1()) {
+      try {
+        await d1RejectServiceRequest(id, reason);
+        return;
+      } catch (error) {
+        console.error("[ServiceRequest] Error D1 al rechazar:", error);
+        throw error;
+      }
+    }
     try {
       const ref = doc(db, "serviceRequests", id);
       await updateDoc(ref, {

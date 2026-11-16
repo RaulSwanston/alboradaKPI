@@ -2,6 +2,8 @@ import { auth, db, doc, getDoc, signOut, waitForAuth } from '../core/firebase.js
 import { createUserProfile } from "../models/Profile.js";
 import { getAuthMethod } from "../models/Authentication.js";
 import Property from '../models/Property.js';
+import AppConfig from "../models/AppConfig.js";
+import { isD1, d1GetUserSession } from "../core/api.js";
 import { appConfig } from '../core/appConfig.js';
 import { loadTranslations } from '../core/i18n.js';
 
@@ -15,16 +17,27 @@ export const sessionGuard = async (contexto) => {
   let currentConfig = { ...appConfig };
 
   try {
-    const configDoc = await getDoc(doc(db, "appConfig", "app"));
-    if (configDoc.exists()) {
-      // FUSIONAMOS: La nube sobreescribe los campos que tenga (ej: stats)
-      // pero preserva lo que no tenga (ej: navigation, accessControl)
-      currentConfig = { ...currentConfig, ...configDoc.data() };
-      localStorage.setItem('gph_app_config', JSON.stringify(currentConfig));
+    if (isD1()) {
+      const cloud = await AppConfig.get();
+      if (cloud) {
+        currentConfig = { ...currentConfig, ...cloud };
+        localStorage.setItem('gph_app_config', JSON.stringify(currentConfig));
+      } else {
+        const cached = localStorage.getItem('gph_app_config');
+        if (cached) currentConfig = JSON.parse(cached);
+      }
     } else {
-      // Si no hay nube, intentamos recuperar del caché local
-      const cached = localStorage.getItem('gph_app_config');
-      if (cached) currentConfig = JSON.parse(cached);
+      const configDoc = await getDoc(doc(db, "appConfig", "app"));
+      if (configDoc.exists()) {
+        // FUSIONAMOS: La nube sobreescribe los campos que tenga (ej: stats)
+        // pero preserva lo que no tenga (ej: navigation, accessControl)
+        currentConfig = { ...currentConfig, ...configDoc.data() };
+        localStorage.setItem('gph_app_config', JSON.stringify(currentConfig));
+      } else {
+        // Si no hay nube, intentamos recuperar del caché local
+        const cached = localStorage.getItem('gph_app_config');
+        if (cached) currentConfig = JSON.parse(cached);
+      }
     }
   } catch (error) {
     // Modo offline: Usamos localStorage o nos quedamos con el default del archivo JS
@@ -49,16 +62,21 @@ export const sessionGuard = async (contexto) => {
 
   // 1. Cargar Datos de Identidad
   const idTokenResult = await user.getIdTokenResult();
-  const userDocRef = doc(db, "users", user.uid);
-  let userDoc = await getDoc(userDocRef);
+  let profile;
+  if (isD1()) {
+    profile = await d1GetUserSession(user);
+  } else {
+    const userDocRef = doc(db, "users", user.uid);
+    let userDoc = await getDoc(userDocRef);
 
-  // Si el usuario no tiene documento en Firestore, lo creamos
-  if (!userDoc.exists()) {
-    await createUserProfile(user);
-    userDoc = await getDoc(userDocRef);
+    // Si el usuario no tiene documento en Firestore, lo creamos
+    if (!userDoc.exists()) {
+      await createUserProfile(user);
+      userDoc = await getDoc(userDocRef);
+    }
+
+    profile = userDoc.data();
   }
-
-  const profile = userDoc.data();
 
   // 2. Construir Ficha de Identidad (Permissions)
   contexto.data.user = user;
