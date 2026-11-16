@@ -6,8 +6,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebas
 // Google Analytics: Recopila métricas y telemetría sobre el uso de la aplicación. Esencial para entender el comportamiento de los usuarios y tomar decisiones basadas en datos.
 import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-analytics.js";
 
-// App Check: Protege los recursos de backend (bases de datos, APIs) contra el abuso, asegurando que las solicitudes provengan únicamente de tu aplicación real y no de clientes no autorizados.
-import { initializeAppCheck, ReCaptchaV3Provider } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app-check.js";
+// App Check: se retiro al cortar con Firestore. Protegia Firestore, Storage y
+// Functions contra abuso; la app ya no usa ninguno (los datos viven en D1 y
+// los archivos en R2). Firebase Auth no esta sujeto a App Check.
 
 // Firebase Authentication: Gestiona el ciclo de vida de la autenticación de usuarios. Permite el registro, inicio de sesión (con email, Google, etc.) y controla la seguridad del acceso.
 import { getAuth, onAuthStateChanged, signOut, createUserWithEmailAndPassword, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup, signInWithCredential, getAdditionalUserInfo, sendPasswordResetEmail, sendEmailVerification, reload, EmailAuthProvider, reauthenticateWithCredential, updatePassword } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
@@ -34,19 +35,12 @@ const firebaseConfig = {
   measurementId: "G-Y23MSYLH7B"
 };
 
-// Habilita el modo de depuración de App Check
-self.FIREBASE_APPCHECK_DEBUG_TOKEN = true; // bc55717e-f112-4cf8-aa07-5c77d44f6604 token-depuracion
-
 // Initialize FirebaseApp
 const app = initializeApp(firebaseConfig);
 export const analytics = getAnalytics(app);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const ai = getAI(app, { backend: new GoogleAIBackend() }); // Initialize the Gemini Developer API backend service
-export const appCheck = initializeAppCheck(app, {
-  provider: new ReCaptchaV3Provider('6LeRfEUsAAAAAGYOim2yrbu52OIpdZVSKzpZ6HHA'),
-  isTokenAutoRefreshEnabled: true
-});
 
 /**
  * @summary Espera a que Firebase Auth inicialice y devuelve el usuario actual.
