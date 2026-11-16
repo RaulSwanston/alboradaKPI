@@ -18,6 +18,8 @@ import { R2_BASE_URL, R2_API_KEY } from './r2.js';
 
 const PROPERTY_ID = () => window.GPH_PROPERTY_ID || 'residencial-alborada';
 
+// Base de la API v1 (incluye `/api/v1`). Las rutas se pasan SIN version:
+// `apiRoot() + '/users'` → `.../api/v1/users`. Concatenar otro `/v1` da 404.
 const apiRoot = () =>
   window.GPH_API_BASE_URL || localStorage.getItem('gph_api_base') || R2_BASE_URL.replace(/\/r2\/?$/, '');
 
@@ -820,7 +822,7 @@ export async function d1SetVoucherCounter(name, next) {
 
 /* Sesión de usuario (identidad/permisos), leída de D1 */
 export async function d1GetUserSession(user) {
-  const res = await fetch(`${apiRoot()}/v1/users/session`, {
+  const res = await fetch(`${apiRoot()}/users/session`, {
     method: 'POST',
     headers: { 'x-api-key': R2_API_KEY, 'Content-Type': 'application/json' },
     body: JSON.stringify({
@@ -838,22 +840,22 @@ export async function d1GetUserSession(user) {
 
 /* Identidad de usuario (modelo User) */
 export async function d1GetUserProfile(uid) {
-  const j = await apiGetRoot(`v1/users/${encodeURIComponent(uid)}`);
+  const j = await apiGetRoot(`users/${encodeURIComponent(uid)}`);
   return j.user ?? null;
 }
 export async function d1ListUsers() {
-  const j = await apiGetRoot('v1/users');
+  const j = await apiGetRoot('users');
   return j.users ?? [];
 }
 export async function d1UpdateUserProfile(uid, data) {
-  return apiSendRoot('PATCH', `v1/users/${encodeURIComponent(uid)}`, {
+  return apiSendRoot('PATCH', `users/${encodeURIComponent(uid)}`, {
     displayName: data.displayName,
     photoUrl: data.photoUrl,
     phone: data.phone ?? data.mobile ?? data.phoneNumber
   });
 }
 export async function d1UpdateUserRole(uid, role) {
-  return apiSendRoot('PATCH', `v1/users/${encodeURIComponent(uid)}/role`, { role });
+  return apiSendRoot('PATCH', `users/${encodeURIComponent(uid)}/role`, { role });
 }
 
 /* Conteos pendientes para el badge del navigator (polling, sin onSnapshot) */
