@@ -165,10 +165,14 @@ function mapCharge(row, allocationsByCharge, unitIdFallback) {
     propertyId: row.unit_id ?? unitIdFallback,
     effectiveDate: toDate(row.issued_at),
     amount: cents(row.amount_cents),
-    pendingAmount: cents(row.amount_cents - (row.paid_cents ?? 0) - (row.credited_cents ?? 0)),
+    pendingAmount: row.paid_cents == null && row.credited_cents == null
+      // La proyección delgada del ledger no trae `paid_cents`: no se inventa
+      // "todo pendiente", se deja sin dato.
+      ? undefined
+      : cents(row.amount_cents - (row.paid_cents ?? 0) - (row.credited_cents ?? 0)),
     paidBy: linked.map((a) => ({ paymentId: a.payment_id, amount: cents(a.amount_cents) })),
     appliedTo: [],
-    description: row.note || row.concept_name || 'Cargo',
+    description: row.note || row.concept_name || row.description || 'Cargo',
     voucherNumber: row.number || '',
     concept: row.concept_id || row.concept_slug || '',
     conceptName: row.concept_name || '',
@@ -189,7 +193,7 @@ function mapPayment(row, allocationsByPayment) {
     pendingAmount: 0,
     paidBy: [],
     appliedTo: linked.map((a) => ({ transactionId: a.charge_id, amount: cents(a.amount_cents) })),
-    description: row.note || 'Pago',
+    description: row.note || row.description || 'Pago',
     voucherNumber: row.number ?? row.reference ?? '',
     reference: row.reference ?? null,
     paymentMethod: row.method ?? '',
@@ -209,7 +213,7 @@ function mapExpense(row) {
     pendingAmount: 0,
     paidBy: [],
     appliedTo: [],
-    description: row.note || 'Gasto',
+    description: row.note || row.description || 'Gasto',
     voucherNumber: row.number ?? row.reference ?? '',
     reference: row.reference ?? null,
     paymentMethod: row.method ?? '',
@@ -230,7 +234,7 @@ function mapOtherIncome(row) {
     pendingAmount: 0,
     paidBy: [],
     appliedTo: [],
-    description: row.description || 'Otro ingreso',
+    description: row.description || row.note || 'Otro ingreso',
     voucherNumber: row.reference ?? '',
     reference: row.reference ?? null,
     status: row.status === 'issued' ? 'active' : 'void',
@@ -249,28 +253,57 @@ function mapCreditNote(row) {
     pendingAmount: 0,
     paidBy: [],
     appliedTo: [],
-    description: row.reason || 'Nota de crédito',
+    description: row.reason || row.description || 'Nota de crédito',
     voucherNumber: row.number ?? '',
     status: row.status === 'issued' ? 'active' : 'void',
     createdAt: toDate(row.created_at ?? row.issued_at)
   };
 }
 
+/**
+ * Normaliza la fila delgada de la vista `ledger` a la forma "completa" que
+ * esperan los mapeadores.
+ *
+ * `/movements?kind=all` devuelve solo 9 columnas (`occurred_at`, `description`,
+ * `number`, `amount_cents`...), mientras que las rutas por tipo (`kind=charge`,
+ * `/movements/:id`, `/units/:id/ledger`) devuelven la fila entera de su tabla
+ * (`issued_at`, `received_at`, `paid_at`, `created_at`, `note`, `paid_cents`).
+ *
+ * Sin esta normalización `toDate(undefined)` caía en epoch 0: todas las filas
+ * quedaban fechadas en 1970 y el filtro por rango del módulo de transacciones
+ * las descartaba todas (el módulo se veía vacío con cualquier preset).
+ *
+ * Solo rellena huecos: nunca pisa una columna que ya venga.
+ */
+function normalizeLedgerRow(row) {
+  const at = row.occurred_at;
+  if (at == null) return row;
+  return {
+    ...row,
+    issued_at: row.issued_at ?? at,
+    received_at: row.received_at ?? at,
+    paid_at: row.paid_at ?? at,
+    created_at: row.created_at ?? at,
+    note: row.note ?? row.description ?? null
+  };
+}
+
 function mapMovement(row, kind = null, unitIdFallback = null) {
   const entryKind = kind && kind !== 'all' ? kind : row.entry_kind ?? KIND_TO_TYPE[row.kind];
+  const r = normalizeLedgerRow(row);
   switch (entryKind) {
     case 'charge':
-      return mapCharge(row, new Map(), unitIdFallback);
+      return mapCharge(r, new Map(), unitIdFallback);
     case 'payment':
-      return mapPayment(row, new Map());
+      return mapPayment(r, new Map());
     case 'expense':
-      return mapExpense(row);
+      return mapExpense(r);
     case 'other_income':
-      return mapOtherIncome(row);
+      return mapOtherIncome(r);
     case 'credit_note':
-      return mapCreditNote(row);
+      return mapCreditNote(r);
     default:
-      return row;
+      return r;
   }
 }
 

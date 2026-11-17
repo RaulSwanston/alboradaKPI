@@ -217,7 +217,15 @@ export default async function transactionsController(contexto) {
         if (state.range.start || state.range.end) {
             dataByDate = allData.filter(t => {
                 const tTime = toTimestamp(t.effectiveDate || t.createdAt);
-                if (!tTime) return false;
+                // El rango ya lo aplica el Worker; esto es una red de
+                // seguridad (el rol residente recibe el ledger completo de su
+                // unidad). Una fila sin fecha válida NO se descarta: antes se
+                // descartaba en silencio y una fecha mal mapeada vaciaba el
+                // módulo entero sin ningún error en consola.
+                if (!tTime) {
+                    console.warn('[TX] Fila sin fecha válida, se conserva:', t.id, t.type, t.effectiveDate);
+                    return true;
+                }
                 if (state.range.start && tTime < state.range.start) return false;
                 if (state.range.end && tTime > state.range.end) return false;
                 return true;
