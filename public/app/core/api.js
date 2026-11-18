@@ -156,6 +156,15 @@ const TYPE_TO_KIND = Object.fromEntries(
 TYPE_TO_KIND.FINE = 'charge';
 export { TYPE_TO_KIND };
 
+/**
+ * Convención de signo (heredada de Firestore, y que usa toda la app):
+ *   cargo / gasto  → NEGATIVO (es deuda o salida de caja)
+ *   pago / ingreso → POSITIVO
+ * D1 guarda todas las magnitudes en positivo, así que el signo se aplica aquí.
+ * `-Math.abs()` es idempotente a propósito: la proyección delgada del ledger ya
+ * entrega los gastos en negativo, mientras que `kind=expense` trae la fila
+ * cruda en positivo. Ambas rutas convergen al mismo resultado.
+ */
 function mapCharge(row, allocationsByCharge, unitIdFallback) {
   const linked = allocationsByCharge.get(row.id) ?? [];
   return {
@@ -164,7 +173,7 @@ function mapCharge(row, allocationsByCharge, unitIdFallback) {
     period: row.period,
     propertyId: row.unit_id ?? unitIdFallback,
     effectiveDate: toDate(row.issued_at),
-    amount: cents(row.amount_cents),
+    amount: -Math.abs(cents(row.amount_cents)),
     pendingAmount: row.paid_cents == null && row.credited_cents == null
       // La proyección delgada del ledger no trae `paid_cents`: no se inventa
       // "todo pendiente", se deja sin dato.
@@ -189,7 +198,7 @@ function mapPayment(row, allocationsByPayment) {
     period: row.period,
     propertyId: row.unit_id ?? '',
     effectiveDate: toDate(row.received_at),
-    amount: cents(row.amount_cents),
+    amount: Math.abs(cents(row.amount_cents)),
     pendingAmount: 0,
     paidBy: [],
     appliedTo: linked.map((a) => ({ transactionId: a.charge_id, amount: cents(a.amount_cents) })),
@@ -209,7 +218,7 @@ function mapExpense(row) {
     period: row.period,
     propertyId: '',
     effectiveDate: toDate(row.paid_at),
-    amount: cents(row.amount_cents),
+    amount: -Math.abs(cents(row.amount_cents)),
     pendingAmount: 0,
     paidBy: [],
     appliedTo: [],
@@ -230,7 +239,7 @@ function mapOtherIncome(row) {
     period: row.period,
     propertyId: '',
     effectiveDate: toDate(row.received_at),
-    amount: cents(row.amount_cents),
+    amount: Math.abs(cents(row.amount_cents)),
     pendingAmount: 0,
     paidBy: [],
     appliedTo: [],
@@ -249,7 +258,7 @@ function mapCreditNote(row) {
     period: row.period,
     propertyId: row.unit_id ?? '',
     effectiveDate: toDate(row.issued_at),
-    amount: cents(row.amount_cents),
+    amount: Math.abs(cents(row.amount_cents)),
     pendingAmount: 0,
     paidBy: [],
     appliedTo: [],
