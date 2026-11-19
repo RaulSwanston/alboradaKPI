@@ -15,6 +15,8 @@
  * para que los controladores no cambien.
  */
 import { R2_BASE_URL, R2_API_KEY } from './r2.js';
+import { INCOME_TYPE_IDS } from './incomeTypes.js';
+import { auth, waitForAuth } from './firebase.js';
 
 const PROPERTY_ID = () => window.GPH_PROPERTY_ID || 'residencial-alborada';
 
@@ -24,6 +26,55 @@ const apiRoot = () =>
   window.GPH_API_BASE_URL || localStorage.getItem('gph_api_base') || R2_BASE_URL.replace(/\/r2\/?$/, '');
 
 const apiBase = () => `${apiRoot()}/properties/${PROPERTY_ID()}`;
+
+/**
+ * ID token de Firebase del usuario en sesión.
+ *
+ * Es la credencial de PERSONA: el Worker verifica la firma contra las llaves
+ * públicas de Google y saca de ahí el uid y el rol. La API key del condominio
+ * sigue viajando solo como respaldo/transición (y para R2), pero ya no es la
+ * que identifica a quien llama.
+ *
+ * `getIdToken()` devuelve el token cacheado y lo renueva solo cuando está por
+ * vencer, así que no hay que persistirlo ni refrescarlo a mano.
+ */
+let cachedToken = null; // { value, expMs }
+
+function decodeJwtPayload(token) {
+  try {
+    const part = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
+    const bin = atob(part + '='.repeat((4 - (part.length % 4)) % 4));
+    const bytes = Uint8Array.from(bin, (ch) => ch.charCodeAt(0));
+    return JSON.parse(new TextDecoder().decode(bytes));
+  } catch {
+    return null;
+  }
+}
+
+async function currentIdToken() {
+  if (cachedToken && cachedToken.expMs - 60_000 > Date.now()) return cachedToken.value;
+  const user = auth.currentUser || await waitForAuth();
+  if (!user) return null;
+  try {
+    const value = await user.getIdToken();
+    const payload = decodeJwtPayload(value);
+    cachedToken = { value, expMs: (payload?.exp || 0) * 1000 };
+    return value;
+  } catch (error) {
+    console.warn('[api] No se pudo obtener el ID token:', error?.message);
+    return null;
+  }
+}
+
+/** Cabeceras de la API: identidad de persona (si hay) + llave de respaldo. */
+async function apiHeaders(extra = {}) {
+  const token = await currentIdToken();
+  return {
+    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    'x-api-key': R2_API_KEY,
+    ...extra
+  };
+}
 
 /**
  * ¿Los modelos deben leer de D1 en lugar de Firestore?
@@ -51,7 +102,7 @@ export function isD1() {
 
 async function apiGet(path) {
   const res = await fetch(`${apiBase()}/${path}`, {
-    headers: { 'x-api-key': R2_API_KEY }
+    headers: await apiHeaders()
   });
   if (!res.ok) {
     let msg = `D1 ${res.status}`;
@@ -67,7 +118,7 @@ async function apiGet(path) {
 async function apiSend(method, path, body) {
   const res = await fetch(`${apiBase()}/${path}`, {
     method,
-    headers: { 'x-api-key': R2_API_KEY, 'Content-Type': 'application/json' },
+    headers: await apiHeaders({ 'Content-Type': 'application/json' }),
     body: body == null ? undefined : JSON.stringify(body)
   });
   const j = await res.json().catch(() => ({}));
@@ -76,7 +127,7 @@ async function apiSend(method, path, body) {
 }
 
 async function apiGetRoot(path) {
-  const res = await fetch(`${apiRoot()}/${path}`, { headers: { 'x-api-key': R2_API_KEY } });
+  const res = await fetch(`${apiRoot()}/${path}`, { headers: await apiHeaders() });
   if (!res.ok) {
     let msg = `D1 ${res.status}`;
     try { const j = await res.json(); if (j?.error) msg = j.error; } catch { /* sin cuerpo */ }
@@ -88,7 +139,7 @@ async function apiGetRoot(path) {
 async function apiSendRoot(method, path, body) {
   const res = await fetch(`${apiRoot()}/${path}`, {
     method,
-    headers: { 'x-api-key': R2_API_KEY, 'Content-Type': 'application/json' },
+    headers: await apiHeaders({ 'Content-Type': 'application/json' }),
     body: body == null ? undefined : JSON.stringify(body)
   });
   const j = await res.json().catch(() => ({}));
@@ -206,6 +257,12 @@ function mapPayment(row, allocationsByPayment) {
     voucherNumber: row.number ?? row.reference ?? '',
     reference: row.reference ?? null,
     paymentMethod: row.method ?? '',
+    // En D1, `payments` ES la cuota: el dinero de los residentes aplicado a
+    // cargos. Los demas ingresos viven en `other_incomes` con su tipo. Sin
+    // esto, el dashboard re-infiere por descripcion y un pago de $100 o de
+    // $125 (que no son multiplos de 15) cae en "sin clasificar" aunque sea
+    // cuota. Si algun dia la tabla gana `income_type_id`, ese valor manda.
+    incomeTypeId: row.income_type_id || INCOME_TYPE_IDS.CUOTA_AREA_SOCIAL,
     status: row.status ?? 'verified',
     createdAt: toDate(row.created_at ?? row.received_at)
   };
@@ -246,6 +303,10 @@ function mapOtherIncome(row) {
     description: row.description || row.note || 'Otro ingreso',
     voucherNumber: row.reference ?? '',
     reference: row.reference ?? null,
+    // El tipo se guarda en `other_incomes.income_type_id` y el ledger lo
+    // transporta. Si falta (filas anteriores a la migracion 0034), se deja
+    // sin definir y `resolveIncomeTypeId` infiere por descripcion.
+    incomeTypeId: row.income_type_id || undefined,
     status: row.status === 'issued' ? 'active' : 'void',
     createdAt: toDate(row.created_at ?? row.received_at)
   };
@@ -866,7 +927,7 @@ export async function d1SetVoucherCounter(name, next) {
 export async function d1GetUserSession(user) {
   const res = await fetch(`${apiRoot()}/users/session`, {
     method: 'POST',
-    headers: { 'x-api-key': R2_API_KEY, 'Content-Type': 'application/json' },
+    headers: await apiHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({
       uid: user.uid,
       email: user.email || null,

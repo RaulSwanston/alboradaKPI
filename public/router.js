@@ -26,7 +26,10 @@ router
   .get('/dashboard/profile', 'dashboard/profile', [sessionGuard])
   .get('/dashboard/requests', 'dashboard/requests', [sessionGuard])
   .get('/dashboard/transactions', 'dashboard/transactions', [sessionGuard])
-  .get('/dashboard/transactions/:id', 'dashboard/transactions-detail', [sessionGuard])
+  // Solo admin: la vista es el formulario de alta/edicion. Un residente que
+  // escriba /dashboard/transactions/new en la barra de direcciones entraba al
+  // formulario y podia guardar con la API key del condominio.
+  .get('/dashboard/transactions/:id', 'dashboard/transactions-detail', [sessionGuard, adminGuard])
   .get('/dashboard/notifications', 'dashboard/notifications', [sessionGuard])
   .get('/dashboard/events', 'dashboard/events', [sessionGuard])
   .get('/dashboard/providers', 'dashboard/providers', [sessionGuard])

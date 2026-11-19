@@ -215,7 +215,11 @@ export default async function transactionsController(contexto) {
     const render = (skipFilterUpdate = false) => {
         let dataByDate = state.smartFilter ? applySmartFilter(allData) : [...allData];
         if (state.range.start || state.range.end) {
-            dataByDate = allData.filter(t => {
+            // Se filtra sobre `dataByDate`, no sobre `allData`: si se parte de
+            // `allData` se descarta el smart filter recien aplicado y las
+            // facturas de periodos futuros emitidas con fecha pasada se cuelan
+            // en la lista.
+            dataByDate = dataByDate.filter(t => {
                 const tTime = toTimestamp(t.effectiveDate || t.createdAt);
                 // El rango ya lo aplica el Worker; esto es una red de
                 // seguridad (el rol residente recibe el ledger completo de su
@@ -842,15 +846,30 @@ export default async function transactionsController(contexto) {
     try {
         els.list.innerHTML = `<div style="text-align: center; padding: 4rem;">${t('modules.transactions.loadingDb')}</div>`;
         const now = new Date();
-        // Vista inicial: del inicio del mes anterior hasta este instante.
-        state.range = {
-            start: new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime(),
-            end: now.getTime()
-        };
+        // Vista inicial por rol.
+        //
+        // Admin: del inicio del mes anterior hasta ahora. Tiene sentido porque
+        // el ledger del condominio son ~13.000 asientos y "todo" multiplica las
+        // peticiones al Worker.
+        //
+        // Residente: historial COMPLETO de su unidad. `loadResidentTransactions()`
+        // ya trae el ledger entero (unos cientos de filas) y filtra en memoria,
+        // asi que recortar por fecha solo esconde sus propios movimientos: un
+        // residente que no paga desde julio veia unicamente las facturas de
+        // octubre y noviembre, sin un solo pago, y parecia que el modulo estaba
+        // roto. El selector arranca en "Todas" para que el rango visible sea el
+        // que de verdad se esta aplicando.
+        state.range = isAdmin
+            ? {
+                start: new Date(now.getFullYear(), now.getMonth() - 1, 1).getTime(),
+                end: now.getTime()
+            }
+            : { start: null, end: now.getTime() };
         if (isAdmin) {
             allData = await Transaction.getByDateRange(state.range.start, state.range.end);
         } else {
             allData = await loadResidentTransactions();
+            if (els.datePreset) els.datePreset.value = 'all';
         }
         render();
         resolveRefs();

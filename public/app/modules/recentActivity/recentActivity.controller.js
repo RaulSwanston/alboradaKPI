@@ -161,8 +161,14 @@ export default async function recentActivityController(contexto) {
 
             switch (type) {
               case 'TRANSACTION':
+                // El detalle es una vista de admin. Al residente se le lleva a
+                // su propio listado de movimientos, donde si puede ver el
+                // comprobante en el modal.
                 console.log(`Navegando al detalle de la transacción: ${id}`);
-                router.navigate(`/dashboard/transactions/${id}`, 'dashboard');
+                router.navigate(
+                  permissions?.isAdmin ? `/dashboard/transactions/${id}` : '/dashboard/transactions',
+                  'dashboard'
+                );
                 break;
               
               case 'PROPERTY':

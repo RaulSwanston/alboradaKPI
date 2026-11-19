@@ -19,6 +19,17 @@ const toLocalDateInputValue = (date = new Date()) => {
  * Soporta búsqueda de propiedad, selección de deudas, carga de comprobante y auto-monto.
  */
 export default async function transactionsDetailController(contexto) {
+  // Defensa en profundidad: el router ya aplica adminGuard a esta ruta. Si
+  // alguien llega por otro camino (navegacion programatica, cache del router),
+  // no se construye el formulario. Sin esto, el residente podia crear cargos,
+  // pagos, gastos o anular movimientos con la API key del condominio.
+  if (contexto?.data?.permissions?.isAdmin !== true) {
+    console.warn('[transactions-detail] Acceso denegado: se requiere rol admin.');
+    if (window.router?.navigate) window.router.navigate('/dashboard/transactions', 'dashboard');
+    else window.location.href = '/dashboard/transactions';
+    return;
+  }
+
   const isNew = contexto.params.id === 'new';
   const transId = contexto.params.id;
 

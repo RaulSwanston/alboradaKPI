@@ -52,6 +52,7 @@ export const INCOME_TYPE_IDS = {
   INTERESES_BANCARIOS: 'intereses-bancarios',
   DONACIONES: 'donaciones',
   MULTAS_PENALIZACIONES: 'multas-penalizaciones',
+  REPOSICION_DANOS: 'reposicion-danos',
   OTROS_INGRESOS: 'otros-ingresos',
 };
 
@@ -121,12 +122,20 @@ export const INCOME_TYPES = [
     order: 7,
   },
   {
+    id: INCOME_TYPE_IDS.REPOSICION_DANOS,
+    name: 'Reposición de daños',
+    description: 'Resarcimiento por daños causados a áreas o bienes comunes.',
+    defaultAmount: null,
+    active: true,
+    order: 8,
+  },
+  {
     id: INCOME_TYPE_IDS.OTROS_INGRESOS,
     name: 'Otros ingresos',
     description: 'Ingresos que no encajan en ninguna otra categoría.',
     defaultAmount: null,
     active: true,
-    order: 8,
+    order: 9,
   },
 ];
 

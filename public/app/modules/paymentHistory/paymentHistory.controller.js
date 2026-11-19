@@ -7,6 +7,11 @@ export default async function paymentHistoryController(contexto) {
   const user = contexto?.data?.user;
   if (!user) return;
 
+  // El detalle de la transaccion es una vista de administracion (formulario de
+  // edicion). Al residente se le oculta el boton: su comprobante ya se ve en el
+  // visor de imagenes de esta misma pantalla.
+  const isAdmin = contexto?.data?.permissions?.isAdmin === true;
+
   initReceiptViewer();
 
   const listEl = document.getElementById('history-list');
@@ -157,7 +162,7 @@ export default async function paymentHistoryController(contexto) {
               <img class="receipt-thumb" alt="" />
               <span class="receipt-preview-label">${t('paymentHistory.viewReceiptImage')}</span>
             </button>` : ''}
-            ${hasReceipt ? `
+            ${hasReceipt && isAdmin ? `
             <button type="button" class="btn-secondary history-receipt-btn" data-transaction-id="${escapeHtml(report.paymentTransactionId)}">
               <div class="icon-slot-sm" data-icon="receipt"></div>
               ${t('paymentHistory.viewReceipt')}
