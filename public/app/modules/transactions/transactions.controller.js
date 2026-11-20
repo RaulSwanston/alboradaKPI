@@ -696,9 +696,11 @@ export default async function transactionsController(contexto) {
                     </span>
                 </div>
                 <div class="conciliation-debt-info">
-                    <span class="conciliation-debt-title">${item.description}</span>
+                    <div class="conciliation-debt-title-row">
+                        <span class="conciliation-debt-title">${item.description}</span>
+                        <span class="conciliation-debt-flag" hidden></span>
+                    </div>
                     <span class="conciliation-debt-voucher">${item.voucherNumber}</span>
-                    <span class="conciliation-debt-flag" hidden></span>
                 </div>
                 <span class="conciliation-debt-amount"></span>
             `;

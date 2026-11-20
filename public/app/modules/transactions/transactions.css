@@ -662,6 +662,14 @@
   gap: 0.1rem;
 }
 
+/* Título + píldora de sobre-aplicación en la MISMA fila (sin subir la altura). */
+.conciliation-debt-title-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
 .conciliation-debt-title {
   font-size: 0.8125rem;
   font-weight: 700;
@@ -669,6 +677,8 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  flex: 1;
+  min-width: 0;
 }
 
 .conciliation-debt-voucher {
@@ -687,8 +697,8 @@
   border-radius: 0.5rem;
   padding: 0.15rem 0.5rem;
   line-height: 1.25;
-  align-self: flex-start;
-  white-space: normal;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .conciliation-debt-amount {
