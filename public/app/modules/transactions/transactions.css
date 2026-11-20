@@ -711,6 +711,13 @@
   white-space: nowrap;
 }
 
+/* Pago compartido (la factura queda cubierta entre dos recibos, sin sobre-pago). */
+.conciliation-debt-flag.shared {
+  color: var(--color-gurkha-700);
+  background: var(--color-gurkha-50);
+  border-color: var(--color-gurkha-200);
+}
+
 /* Mobile: la píldora pasa ARRIBA del título (no al lado) para no romper la fila. */
 @media (max-width: 900px) {
   .conciliation-debt-info {
@@ -884,6 +891,8 @@
 }
 
 .receipt-body {
+  box-sizing: border-box;
+  width: 100%;
   background: #fafafa;
   border-radius: 8px;
   padding: 20px;

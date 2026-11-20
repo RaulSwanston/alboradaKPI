@@ -765,10 +765,17 @@ export default async function transactionsController(contexto) {
                             const num = voucherByPayment[p.paymentId] || String(p.paymentId).split('_').pop();
                             return `REC #${num} +$${p.amount.toFixed(2)}`;
                         }).join('  ·  ');
-                        flagEl.textContent = `Sobrepagada — ${pills}`;
+                        // Solo es SOBRE-pago si la suma supera la factura. Si entre
+                        // dos recibos la cubren justa (p. ej. $13 + $2 de $15), es
+                        // un pago compartido: no hay nada que corregir.
+                        const totalAppliedNow = item.amount + item.otherTotal;
+                        const overpaid = totalAppliedNow > item.invoiceTotal + 0.005;
+                        flagEl.textContent = `${overpaid ? 'Sobrepagada' : 'También la paga'} — ${pills}`;
+                        flagEl.classList.toggle('shared', !overpaid);
                         flagEl.hidden = false;
                     } else {
                         flagEl.hidden = true;
+                        flagEl.classList.remove('shared');
                     }
                 }
 
