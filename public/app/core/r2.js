@@ -3,16 +3,20 @@
  *
  * Worker: /api/v1/r2/{condominio}/{clave}
  *  - POST  sube el archivo (multipart) y devuelve { propertyId, key, storedKey, size, contentType, url }
- *  - GET   descarga el objeto (requiere Authorization: Bearer <API key>)
- *  - DELETE elimina el objeto
+ *  - GET   descarga el objeto (requiere Authorization: Bearer <ID token>)
+ *  - DELETE elimina el objeto (solo admin)
  *
- * Las imágenes NO pueden usarse en <img src> directo (el GET exige la key).
+ * Las imágenes NO pueden usarse en <img src> directo (el GET exige token).
  * Para mostrarlas usa getAuthObjectURL() → blob → URL.createObjectURL.
+ *
+ * La API key del condominio ya NO viaja en el navegador: la identidad es el
+ * ID token de Firebase (mismo que usa core/api.js).
  */
+
+import { authHeaders } from './authToken.js';
 
 const R2_BASE_URL = 'https://gestionph.synch.workers.dev/api/v1/r2';
 const R2_SLUG = 'residencial-alborada';
-const R2_API_KEY = 'gest_9Fvi1DLQEKIkLY206k2oO1byRvnncxgE9Gw0ws4p1tE';
 
 const objectUrlCache = new Map();
 
@@ -67,7 +71,7 @@ export async function uploadFileToR2(file, key) {
   form.append('file', file, file.name || key);
   const res = await fetch(`${R2_BASE_URL}/${R2_SLUG}/${key}`, {
     method: 'POST',
-    headers: { Authorization: `Bearer ${R2_API_KEY}` },
+    headers: await authHeaders(),
     body: form
   });
   if (!res.ok) {
@@ -99,7 +103,7 @@ export function getAuthObjectURL(refUrl) {
 
   const url = /^https?:\/\//i.test(refUrl) ? refUrl : `${R2_BASE_URL}/${R2_SLUG}/${refUrl}`;
   const promise = (async () => {
-    const res = await fetch(url, { headers: { Authorization: `Bearer ${R2_API_KEY}` } });
+    const res = await fetch(url, { headers: await authHeaders() });
     if (!res.ok) throw new Error(`R2 ${res.status}`);
     const blob = await res.blob();
     return URL.createObjectURL(blob);
@@ -122,5 +126,5 @@ export function revokeAuthObjectURLs() {
   objectUrlCache.clear();
 }
 
-// Exposición para el cliente de datos (core/api.js): mismo Worker, misma key.
-export { R2_BASE_URL, R2_SLUG, R2_API_KEY };
+// Exposición para el cliente de datos (core/api.js): mismo Worker.
+export { R2_BASE_URL, R2_SLUG };

@@ -2,6 +2,7 @@ import Property from '../../models/Property.js';
 import Transaction from '../../models/Transaction.js';
 import User from '../../models/User.js';
 import { t } from '../../core/i18n.js';
+import { isD1, d1GetStats } from '../../core/api.js';
 
 /**
  * Controlador para el módulo de Resumen Financiero (financialSummary).
@@ -50,11 +51,10 @@ export default async function financialSummary(contexto) {
     return `${monthNames[mIdx]} ${year}`;
   };
 
-  const buildPeriodOptions = () => {
+  const buildPeriodOptions = (stats) => {
     periodAccum.clear();
     if (!periodWrapEl || !periodSelectEl) return false;
 
-    const stats = contexto.data.appConfig.stats;
     const map = stats?.saldoPorPeriodo;
     const hasMap = map && typeof map === 'object';
 
@@ -95,9 +95,9 @@ export default async function financialSummary(contexto) {
     }
   };
 
-  const initPeriodSelector = () => {
+  const initPeriodSelector = (stats) => {
     if (!permissions.isAdmin) return;
-    buildPeriodOptions();
+    buildPeriodOptions(stats);
     if (periodWrapEl) periodWrapEl.classList.remove('hidden');
     applyPeriodValue();
   };
@@ -139,8 +139,7 @@ export default async function financialSummary(contexto) {
    */
   const loadLastPayment = async (propertyId) => {
     try {
-      const list = await Transaction.getByPropertyId(propertyId);
-      const lastPay = list.find((t) => t.type === 'PAYMENT');
+      const lastPay = await Transaction.getLatestPayment(propertyId);
       if (lastPay) {
         if (creditBalanceAmountEl) creditBalanceAmountEl.textContent = formatCurrency(lastPay.amount);
         if (lastPaymentDateEl) lastPaymentDateEl.textContent = `Realizado el ${formatDate(lastPay.effectiveDate)}`;
@@ -159,7 +158,7 @@ export default async function financialSummary(contexto) {
   /**
    * Carga la info del usuario en la tarjeta Dark
    */
-  const loadUserInfo = async (propId = null) => {
+  const loadUserInfo = async (propId = null, propPreloaded = null) => {
     const role = permissions.role;
     const user = contexto.data.user;
     const userProfile = contexto.data.userProfile;
@@ -167,7 +166,9 @@ export default async function financialSummary(contexto) {
     if (userRoleEl) userRoleEl.textContent = role === 'admin' ? t('roles.admin') : t('financialSummary.residentTitular');
     
     if (propId) {
-      const prop = await Property.getById(propId);
+      // `propPreloaded` evita una segunda descarga de /units (ya la hicimos en
+      // loadPropertySummary); si no viene, se pide una sola vez.
+      const prop = propPreloaded ?? await Property.getById(propId);
       if (propertyNameEl) propertyNameEl.textContent = prop?.name || `Unidad ${propId}`;
       
       const ownerName = prop?.ownerInfo?.name || user?.displayName || user?.email.split('@')[0];
@@ -215,11 +216,30 @@ export default async function financialSummary(contexto) {
   /**
    * Carga el resumen global para administradores usando la caché de appConfig
    */
+  // Carga las estadísticas del Worker y las publica en `appConfig.stats` para
+  // que los módulos que viven en esta vista (apexCharts vía Analytics, etc.)
+  // lean los gráficos desde el mismo contexto.
+  const cacheStats = async () => {
+    if (!isD1()) return contexto.data.appConfig.stats ?? null;
+    try {
+      const stats = await d1GetStats();
+      if (stats) {
+        const cfg = contexto.data.appConfig;
+        cfg.stats = stats;
+        contexto.data.appConfig = cfg;
+      }
+      return stats;
+    } catch (error) {
+      console.warn('[financialSummary] No se pudieron cargar las estadísticas:', error);
+      return null;
+    }
+  };
+
   const loadGlobalSummary = async () => {
     try {
-      const stats = contexto.data.appConfig.stats;
-      
-      if (stats) {
+      const stats = await cacheStats();
+
+      if (stats && (stats.totalUnidades ?? 0) > 0) {
         // Tarjeta 1: Saldo Real en Banco/Caja
         if (totalReceivableEl) totalReceivableEl.textContent = formatCurrency(stats.saldoCajaDisponible || 0);
         
@@ -243,10 +263,13 @@ export default async function financialSummary(contexto) {
         if (lastPaymentDateEl) lastPaymentDateEl.textContent = 'Pendiente de sincronización';
       }
 
-      initPeriodSelector();
+      initPeriodSelector(stats);
       await loadUserInfo();
     } catch (error) {
       console.error("Error al cargar resumen global:", error);
+      if (totalReceivableEl) totalReceivableEl.textContent = formatCurrency(0);
+      if (creditBalanceAmountEl) creditBalanceAmountEl.textContent = formatCurrency(0);
+      if (lastPaymentDateEl) lastPaymentDateEl.textContent = 'Pendiente de sincronización';
     }
   };
 
@@ -267,7 +290,7 @@ export default async function financialSummary(contexto) {
         if (creditBalanceAmountEl) creditBalanceAmountEl.textContent = formatCurrency(balance > 0 ? balance : 0);
         
         await loadLastPayment(propertyId);
-        await loadUserInfo(propertyId);
+        await loadUserInfo(propertyId, prop);
       }
     } catch (error) {
       console.error("Error al cargar resumen de propiedad:", error);
@@ -373,6 +396,8 @@ export default async function financialSummary(contexto) {
   } else if (permissions.isResident) {
     if (adminControls) adminControls.classList.add('hidden');
     if (propertyNameEl) propertyNameEl.classList.remove('hidden');
+    // Puebla appConfig.stats (gráficos) para apexCharts del residente.
+    await cacheStats();
     const myProperties = userProfile.propertyIds || [];
     if (myProperties.length > 0) {
       await loadPropertySummary(myProperties[0]);

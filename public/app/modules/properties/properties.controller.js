@@ -3,12 +3,17 @@ import Transaction from "../../models/Transaction.js";
 
 /**
  * properties.controller.js
- * 
+ *
  * Controlador autosuficiente para el listado de propiedades.
- * Carga datos reales de Firestore y gestiona filtros combinados (Chips + Búsqueda).
+ * Carga datos reales de Firestore/D1 y gestiona filtros combinados
+ * (Chips + Búsqueda) con paginación por lotes de tarjetas.
  */
+
+const PER_PAGE = 12;
+
 export default async function propertiesController(contexto) {
   const listContainer = document.getElementById('properties-list-container');
+  const paginationContainer = document.getElementById('properties-pagination');
   const totalDebtEl = document.getElementById('prop-total-debt');
   const propCountEl = document.getElementById('prop-count');
   const filterChips = document.querySelectorAll('.filter-chip');
@@ -18,6 +23,7 @@ export default async function propertiesController(contexto) {
   let allProperties = []; // Almacén para el total de datos cargados
   let currentFilter = 'all';
   let currentSearchQuery = '';
+  let currentPage = 1;
 
   /**
    * Formatea moneda
@@ -30,7 +36,64 @@ export default async function propertiesController(contexto) {
   };
 
   /**
-   * Renderiza las tarjetas aplicando filtros y búsqueda de forma combinada.
+   * Renderiza la barra de paginación (patrón generalExpenses: prev/next +
+   * ventana de números con elipsis).
+   */
+  const renderPagination = (totalItems) => {
+    if (!paginationContainer) return;
+
+    const totalPages = Math.ceil(totalItems / PER_PAGE);
+    if (totalPages <= 1) {
+      paginationContainer.innerHTML = '';
+      return;
+    }
+
+    let html = '';
+
+    // Prev
+    const prevDisabled = currentPage === 1 ? 'disabled' : '';
+    html += `<button class="prop-btn-pagination ${prevDisabled}" data-page="${currentPage - 1}" ${prevDisabled ? 'disabled' : ''} aria-label="Anterior">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0"/></svg>
+    </button>`;
+
+    // Primera página
+    html += `<button class="prop-btn-pagination ${currentPage === 1 ? 'active' : ''}" data-page="1">1</button>`;
+
+    if (currentPage > 3) {
+      html += `<span class="prop-pagination-ellipsis">...</span>`;
+    }
+
+    for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+      const active = i === currentPage ? 'active' : '';
+      html += `<button class="prop-btn-pagination ${active}" data-page="${i}">${i}</button>`;
+    }
+
+    if (currentPage < totalPages - 2) {
+      html += `<span class="prop-pagination-ellipsis">...</span>`;
+    }
+
+    if (totalPages > 1) {
+      html += `<button class="prop-btn-pagination ${currentPage === totalPages ? 'active' : ''}" data-page="${totalPages}">${totalPages}</button>`;
+    }
+
+    // Next
+    const nextDisabled = currentPage === totalPages ? 'disabled' : '';
+    html += `<button class="prop-btn-pagination ${nextDisabled}" data-page="${currentPage + 1}" ${nextDisabled ? 'disabled' : ''} aria-label="Siguiente">
+      <svg viewBox="0 0 16 16" fill="currentColor"><path fill-rule="evenodd" d="M4.646 1.646a.5.5 0 0 1 .708 0l6 6a.5.5 0 0 1 0 .708l-6 6a.5.5 0 0 1-.708-.708L10.293 8 4.646 2.354a.5.5 0 0 1 0-.708"/></svg>
+    </button>`;
+
+    paginationContainer.innerHTML = html;
+
+    paginationContainer.querySelectorAll('.prop-btn-pagination:not(.disabled):not([disabled])').forEach(btn => {
+      btn.addEventListener('click', () => {
+        currentPage = parseInt(btn.dataset.page, 10);
+        renderProperties();
+      });
+    });
+  };
+
+  /**
+   * Renderiza las tarjetas aplicando filtros, búsqueda y paginación de forma combinada.
    */
   const renderProperties = () => {
     // 1. Filtrar por tipo (Chip)
@@ -50,17 +113,27 @@ export default async function propertiesController(contexto) {
         );
     }
 
-    // 3. Mostrar resultados
+    // El contador refleja el TOTAL de coincidencias (no solo la página actual).
+    if (propCountEl) propCountEl.textContent = String(filtered.length);
+
+    // 3. Sin resultados
     if (filtered.length === 0) {
       listContainer.innerHTML = `
         <div class="empty-services" style="grid-column: 1/-1; width: 100%;">
             <p>No se encontraron resultados.</p>
         </div>`;
-      if (propCountEl) propCountEl.textContent = '0';
+      renderPagination(0);
       return;
     }
 
-    const html = filtered.map(prop => {
+    // 4. Paginación
+    const totalPages = Math.ceil(filtered.length / PER_PAGE);
+    if (currentPage > totalPages) currentPage = totalPages;
+    if (currentPage < 1) currentPage = 1;
+    const start = (currentPage - 1) * PER_PAGE;
+    const page = filtered.slice(start, start + PER_PAGE);
+
+    const html = page.map(prop => {
       const balance = prop.balance || 0;
       const isDebt = balance < 0;
       const ownerName = prop.ownerInfo?.name || 'Propietario no registrado';
@@ -90,11 +163,11 @@ export default async function propertiesController(contexto) {
     }).join('');
 
     listContainer.innerHTML = html;
-    if (propCountEl) propCountEl.textContent = filtered.length;
+    renderPagination(filtered.length);
   };
 
   /**
-   * Carga inicial de datos desde Firestore
+   * Carga inicial de datos
    */
   const loadData = async () => {
     try {
@@ -140,14 +213,15 @@ export default async function propertiesController(contexto) {
         filterChips.forEach(c => c.classList.remove('active'));
         chip.classList.add('active');
         currentFilter = chip.dataset.filter;
+        currentPage = 1; // El filtro cambia el conjunto: volver a la primera página
         renderProperties();
     });
   });
 
   // 2. Evento del Módulo de Búsqueda Reutilizable
-  // Escuchamos el evento personalizado 'app:search' que emite el módulo search
   document.addEventListener('app:search', (e) => {
     currentSearchQuery = e.detail.query;
+    currentPage = 1; // La búsqueda cambia el conjunto: volver a la primera página
     renderProperties();
   });
 

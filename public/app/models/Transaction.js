@@ -1054,6 +1054,36 @@ export default class Transaction {
   }
 
   /**
+   * Último pago de una unidad (sin leer el ledger completo).
+   */
+  static async getLatestPayment(unitId) {
+    if (isD1()) {
+      try {
+        const { movements } = await d1Movements({ kind: 'payment', unitId, limit: 1 });
+        return movements[0] || null;
+      } catch (error) {
+        console.error(`[Transaction] Error D1 al obtener último pago de ${unitId}:`, error);
+        throw error;
+      }
+    }
+    try {
+      const q = query(
+        collection(db, "transactions"),
+        where("propertyId", "==", unitId),
+        where("type", "==", "PAYMENT")
+      );
+      const querySnapshot = await getDocs(q);
+      const list = [];
+      querySnapshot.forEach((doc) => list.push({ id: doc.id, ...doc.data() }));
+      const sorted = sortTransactionsByDateDesc(list);
+      return sorted[0] || null;
+    } catch (error) {
+      console.error(`[Transaction] Error al obtener último pago de ${unitId}:`, error);
+      throw error;
+    }
+  }
+
+  /**
    * Obtiene todos los movimientos vinculados a una unidad.
    */
   static async getByPropertyId(propertyId) {

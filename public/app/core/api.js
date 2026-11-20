@@ -14,9 +14,9 @@
  * forma que la app vieja ya entiende (dólares float, Date, campos camelCase)
  * para que los controladores no cambien.
  */
-import { R2_BASE_URL, R2_API_KEY } from './r2.js';
+import { R2_BASE_URL } from './r2.js';
 import { INCOME_TYPE_IDS } from './incomeTypes.js';
-import { auth, waitForAuth } from './firebase.js';
+import { authHeaders } from './authToken.js';
 
 const PROPERTY_ID = () => window.GPH_PROPERTY_ID || 'residencial-alborada';
 
@@ -27,54 +27,8 @@ const apiRoot = () =>
 
 const apiBase = () => `${apiRoot()}/properties/${PROPERTY_ID()}`;
 
-/**
- * ID token de Firebase del usuario en sesión.
- *
- * Es la credencial de PERSONA: el Worker verifica la firma contra las llaves
- * públicas de Google y saca de ahí el uid y el rol. La API key del condominio
- * sigue viajando solo como respaldo/transición (y para R2), pero ya no es la
- * que identifica a quien llama.
- *
- * `getIdToken()` devuelve el token cacheado y lo renueva solo cuando está por
- * vencer, así que no hay que persistirlo ni refrescarlo a mano.
- */
-let cachedToken = null; // { value, expMs }
-
-function decodeJwtPayload(token) {
-  try {
-    const part = token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/');
-    const bin = atob(part + '='.repeat((4 - (part.length % 4)) % 4));
-    const bytes = Uint8Array.from(bin, (ch) => ch.charCodeAt(0));
-    return JSON.parse(new TextDecoder().decode(bytes));
-  } catch {
-    return null;
-  }
-}
-
-async function currentIdToken() {
-  if (cachedToken && cachedToken.expMs - 60_000 > Date.now()) return cachedToken.value;
-  const user = auth.currentUser || await waitForAuth();
-  if (!user) return null;
-  try {
-    const value = await user.getIdToken();
-    const payload = decodeJwtPayload(value);
-    cachedToken = { value, expMs: (payload?.exp || 0) * 1000 };
-    return value;
-  } catch (error) {
-    console.warn('[api] No se pudo obtener el ID token:', error?.message);
-    return null;
-  }
-}
-
-/** Cabeceras de la API: identidad de persona (si hay) + llave de respaldo. */
-async function apiHeaders(extra = {}) {
-  const token = await currentIdToken();
-  return {
-    ...(token ? { Authorization: `Bearer ${token}` } : {}),
-    'x-api-key': R2_API_KEY,
-    ...extra
-  };
-}
+// `authHeaders` (en authToken.js) aporta el `Authorization: Bearer <idToken>`.
+// Ya no se envía la API key del condominio: el Worker la rechaza en datos.
 
 /**
  * ¿Los modelos deben leer de D1 en lugar de Firestore?
@@ -102,7 +56,7 @@ export function isD1() {
 
 async function apiGet(path) {
   const res = await fetch(`${apiBase()}/${path}`, {
-    headers: await apiHeaders()
+    headers: await authHeaders()
   });
   if (!res.ok) {
     let msg = `D1 ${res.status}`;
@@ -118,7 +72,7 @@ async function apiGet(path) {
 async function apiSend(method, path, body) {
   const res = await fetch(`${apiBase()}/${path}`, {
     method,
-    headers: await apiHeaders({ 'Content-Type': 'application/json' }),
+    headers: await authHeaders({ 'Content-Type': 'application/json' }),
     body: body == null ? undefined : JSON.stringify(body)
   });
   const j = await res.json().catch(() => ({}));
@@ -127,7 +81,7 @@ async function apiSend(method, path, body) {
 }
 
 async function apiGetRoot(path) {
-  const res = await fetch(`${apiRoot()}/${path}`, { headers: await apiHeaders() });
+  const res = await fetch(`${apiRoot()}/${path}`, { headers: await authHeaders() });
   if (!res.ok) {
     let msg = `D1 ${res.status}`;
     try { const j = await res.json(); if (j?.error) msg = j.error; } catch { /* sin cuerpo */ }
@@ -139,7 +93,7 @@ async function apiGetRoot(path) {
 async function apiSendRoot(method, path, body) {
   const res = await fetch(`${apiRoot()}/${path}`, {
     method,
-    headers: await apiHeaders({ 'Content-Type': 'application/json' }),
+    headers: await authHeaders({ 'Content-Type': 'application/json' }),
     body: body == null ? undefined : JSON.stringify(body)
   });
   const j = await res.json().catch(() => ({}));
@@ -164,8 +118,15 @@ function mapUnit(row) {
       fullAddress: row.full_address || ''
     },
     currency: 'USD',
-    ownerInfo: {},
-    residentUids: [],
+    ownerInfo: {
+      name: row.owner_name || null,
+      phone: row.owner_phone || null,
+      mobile: row.owner_mobile || null,
+      email: row.owner_email || null,
+    },
+    residentUids: row.resident_uids
+      ? String(row.resident_uids).split(',').filter(Boolean)
+      : [],
     balance:
       Number(row.overpaid_cents ?? 0) > 0
         ? cents(row.overpaid_cents)
@@ -183,9 +144,14 @@ export async function d1GetAllUnits(sortBy = 'name') {
 }
 
 export async function d1GetUnit(id) {
-  const { units } = await apiGet('units');
-  const row = units.find((u) => u.id === id);
-  return row ? mapUnit(row) : null;
+  const j = await apiGet(`units/${encodeURIComponent(id)}`);
+  return j.unit ? mapUnit(j.unit) : null;
+}
+
+/* Agregados del Resumen Financiero (admin). */
+export async function d1GetStats() {
+  const { stats } = await apiGet('stats');
+  return stats ?? null;
 }
 
 /* ------------------------------------------------------------------ */
@@ -927,7 +893,7 @@ export async function d1SetVoucherCounter(name, next) {
 export async function d1GetUserSession(user) {
   const res = await fetch(`${apiRoot()}/users/session`, {
     method: 'POST',
-    headers: await apiHeaders({ 'Content-Type': 'application/json' }),
+    headers: await authHeaders({ 'Content-Type': 'application/json' }),
     body: JSON.stringify({
       uid: user.uid,
       email: user.email || null,

@@ -1,7 +1,7 @@
 import { db, collection, getDocs, query, doc, getDoc, updateDoc, where, setDoc, orderBy } from "../core/firebase.js";
 import { aggregateIncomeByType } from "../core/incomeTypes.js";
 import { buildChartsData } from "./ChartsData.js";
-import { isD1, d1GetAllUnits, d1GetUnit, d1ImportUnits, d1RebuildProjections } from "../core/api.js";
+import { isD1, d1GetAllUnits, d1GetUnit, d1GetStats, d1ImportUnits, d1RebuildProjections } from "../core/api.js";
 
 /**
  * Movimientos que nunca forman parte del saldo individual de una unidad:
@@ -177,23 +177,11 @@ export default class Property {
   static async recalculateAllBalances(onProgress = null) {
     if (isD1()) {
       try {
-        await d1RebuildProjections();
+        // El Worker regenera las proyecciones y devuelve los agregados ya
+        // calculados (saldo de caja, por periodo, deudores, etc.).
+        const result = await d1RebuildProjections();
         if (onProgress) onProgress(1, 1);
-        const units = await d1GetAllUnits('id');
-        const stats = {
-          saldoCajaDisponible: 0,
-          saldoPorPeriodo: {},
-          totalCuentasPorCobrar: 0,
-          totalSaldosAFavor: 0,
-          ultimoPagoMonto: 0,
-          ultimoPagoFecha: null,
-          unidadesAlDiaCount: 0,
-          totalUnidades: units.length
-        };
-        for (const u of units) {
-          if (u.balance < 0) stats.totalCuentasPorCobrar += Math.abs(u.balance);
-          else if (u.balance > 0) stats.totalSaldosAFavor += u.balance;
-        }
+        const stats = result?.stats ?? await d1GetStats();
         return { success: true, stats };
       } catch (error) {
         console.error("Error D1 en la sincronización masiva de saldos:", error);
