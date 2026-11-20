@@ -658,16 +658,9 @@
   flex: 1;
   min-width: 0;
   display: flex;
-  flex-direction: column;
-  gap: 0.1rem;
-}
-
-/* Título + píldora de sobre-aplicación en la MISMA fila (sin subir la altura). */
-.conciliation-debt-title-row {
-  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
-  min-width: 0;
+  gap: 0.1rem 0.5rem;
 }
 
 .conciliation-debt-title {
@@ -688,6 +681,7 @@
   font-size: 0.6875rem;
   color: var(--color-gurkha-500);
   font-weight: 600;
+  flex-basis: 100%;
 }
 
 /* Aviso de sobre-aplicación: esta factura ya la paga(n) otro(s) recibo(s). */
@@ -702,6 +696,23 @@
   line-height: 1.25;
   flex-shrink: 0;
   white-space: nowrap;
+}
+
+/* Mobile: la píldora pasa ARRIBA del título (no al lado) para no romper la fila. */
+@media (max-width: 900px) {
+  .conciliation-debt-info {
+    flex-direction: column;
+    align-items: flex-start;
+    flex-wrap: nowrap;
+    gap: 0.1rem;
+  }
+  .conciliation-debt-flag {
+    order: -1;
+    white-space: normal;
+  }
+  .conciliation-debt-voucher {
+    flex-basis: auto;
+  }
 }
 
 .conciliation-debt-amount {
