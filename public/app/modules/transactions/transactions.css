@@ -557,6 +557,19 @@
   padding: 1.5rem 0;
 }
 
+/* Error de guardado: queda visible dentro del panel (el toast dura 5 s). */
+.conciliation-error {
+  margin: 0 0 0.25rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--color-solid-pink-700);
+  background: #ffebee;
+  border: 1px solid #f8c9cf;
+  border-radius: 0.5rem;
+  line-height: 1.35;
+}
+
 .conciliation-debt-card {
   display: flex;
   align-items: center;

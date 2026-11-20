@@ -516,13 +516,30 @@ export default async function transactionsController(contexto) {
         }
     };
 
+    // Deja el panel como recién creado: sin tarjetas, sin token de carga previo
+    // y sin el `appliedTo` del pago en memoria. Así, al reabrir, siempre se
+    // consulta el ledger de nuevo en vez de reusar el estado del guardado.
+    const resetDebtsPanel = (container) => {
+        if (!container) return;
+        container._loadToken = (container._loadToken || 0) + 1; // invalida fetch en vuelo
+        container._knownDebtIds = null;
+        container.innerHTML = '';
+    };
+
     const closeConciliation = (id) => {
         expandedRows.delete(id);
         const wrapper = els.list.querySelector(`.transaction-row-wrapper[data-id="${id}"]`);
         if (!wrapper) return;
         wrapper.classList.remove('expanded');
         const panel = wrapper.querySelector('.conciliation-panel');
-        if (panel) panel.classList.add('hidden');
+        if (panel) {
+            panel.classList.add('hidden');
+            const actions = panel.querySelector('.conciliation-actions');
+            if (actions) actions.classList.add('hidden');
+            resetDebtsPanel(panel.querySelector('.conciliation-debts'));
+        }
+        const tx = allData.find(item => item.id === id);
+        if (tx) delete tx.appliedTo;
     };
 
     const loadDebtsForPanel = async (wrapper, paymentId) => {
@@ -726,6 +743,17 @@ export default async function transactionsController(contexto) {
         update();
     };
 
+    const showPanelError = (container, message) => {
+        if (!container) return;
+        let el = container.querySelector('.conciliation-error');
+        if (!el) {
+            el = document.createElement('p');
+            el.className = 'conciliation-error';
+            container.prepend(el);
+        }
+        el.textContent = message;
+    };
+
     const saveConciliation = async (paymentId) => {
         const tx = allData.find(item => item.id === paymentId);
         if (!tx) return;
@@ -771,15 +799,32 @@ export default async function transactionsController(contexto) {
                 appliedTo: newAppliedTo
             });
 
-            // Actualizar caché local
-            tx.appliedTo = newAppliedTo;
+            // Cerrar limpia el panel (y borra `tx.appliedTo`): se repone con lo
+            // guardado antes de repintar.
             closeConciliation(paymentId);
-
-            // Recargar fila para reflejar el badge actualizado
+            tx.appliedTo = newAppliedTo;
             render(true);
             showToast('Conciliación guardada correctamente', 'success');
+
+            // Refresco real desde el servidor (1 lectura): los chips y montos de
+            // la fila no quedan viejos hasta recargar la página.
+            try {
+                const { debts, appliedTo } = await Transaction.getPaymentReconciliation(tx.propertyId, tx.id);
+                tx.appliedTo = appliedTo;
+                const byId = new Map(allData.map(item => [item.id, item]));
+                for (const debt of debts) {
+                    const charge = byId.get(debt.id);
+                    if (!charge) continue;
+                    if (debt.pendingAmount !== undefined) charge.pendingAmount = debt.pendingAmount;
+                    if (Array.isArray(debt.paidBy)) charge.paidBy = debt.paidBy;
+                }
+                render(true);
+            } catch (refreshErr) {
+                console.warn('[TX] No se pudo refrescar la fila tras conciliar:', refreshErr);
+            }
         } catch (err) {
             console.error('[TX] Error saving conciliation:', err);
+            showPanelError(debtsContainer, 'Error al guardar conciliación: ' + err.message);
             showToast('Error al guardar conciliación: ' + err.message, 'error');
         }
     };

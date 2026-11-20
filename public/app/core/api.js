@@ -387,7 +387,9 @@ export async function d1PendingDebts(unitId, { includeIds = [] } = {}) {
  * lados para que el panel de conciliación marque lo ya seleccionado.
  */
 export async function d1PaymentReconciliation(unitId, paymentId) {
-  const j = await apiGet(`units/${encodeURIComponent(unitId)}/ledger`);
+  // Cache-buster: el panel debe ver el estado real tras cada guardado, no una
+  // respuesta cacheada por el navegador.
+  const j = await apiGet(`units/${encodeURIComponent(unitId)}/ledger?fresh=${Date.now()}`);
   const byCharge = new Map(j.allocations.map((a) => [a.charge_id, []]));
   for (const a of j.allocations) byCharge.get(a.charge_id)?.push(a);
 
