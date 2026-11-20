@@ -450,6 +450,16 @@ export async function d1ExpenseAccounts() {
 /* ------------------------------------------------------------------ */
 
 function mapActivity(row, audience) {
+  // `details` viaja como JSON string desde D1; Firestore lo entregaba objeto.
+  // Se normaliza a objeto y se expone `amount` (dólares) desde `amountCents`.
+  let details = row.details;
+  if (typeof details === 'string') {
+    try { details = JSON.parse(details); } catch { details = null; }
+  }
+  if (details && typeof details === 'object' && details.amountCents != null && details.amount == null) {
+    details = { ...details, amount: cents(details.amountCents) };
+  }
+
   return {
     id: row.id,
     type: row.type,
@@ -462,7 +472,7 @@ function mapActivity(row, audience) {
     targetType: row.target_type,
     targetId: row.target_id,
     targetName: row.target_name,
-    details: row.details,
+    details,
     __cursor: row.__cursor ?? null
   };
 }

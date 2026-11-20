@@ -130,7 +130,10 @@ export default async function recentActivityController(contexto) {
         
         mainText.textContent = activity.description || config.label;
         
-        const date = activity.timestamp ? activity.timestamp.toDate() : new Date();
+        // `timestamp` es un Firestore Timestamp (con .toDate) o un Date plano
+        // (D1). Se normaliza a Date sin romper en ninguno de los dos.
+        const ts = activity.timestamp;
+        const date = ts ? (typeof ts.toDate === 'function' ? ts.toDate() : new Date(ts)) : new Date();
         const formattedDate = date.toLocaleDateString('es-VE', { day: '2-digit', month: 'short' });
         
         // Construir subtexto: Fecha • Categoría [• Monto]
