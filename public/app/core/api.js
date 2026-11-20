@@ -663,6 +663,11 @@ export async function d1PaymentNotifications({ status = null, residentUid = null
     const n = byId.get(a.notification_id);
     if (n) n.appliedTo.push({ transactionId: a.charge_id, amount: cents(a.amount_cents), description: a.description || '' });
   }
+  // Comprobante: el r2_key del attachment (incluye el slug del condominio).
+  for (const att of j.attachments ?? []) {
+    const n = byId.get(att.notification_id);
+    if (n && att.r2_key) n.receiptUrl = `${R2_BASE_URL}/${att.r2_key}`;
+  }
   return [...byId.values()];
 }
 function mapNotification(n) {
