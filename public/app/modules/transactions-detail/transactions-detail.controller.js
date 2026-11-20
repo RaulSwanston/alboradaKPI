@@ -48,6 +48,9 @@ export default async function transactionsDetailController(contexto) {
   const propertyHint = document.getElementById('td-property-hint');
 
   const typeRadios = document.querySelectorAll('input[name="td-type"]');
+  const typeGrid = document.getElementById('td-type-grid');
+  const typeLocked = document.getElementById('td-type-locked');
+  const typeLockedBadge = document.getElementById('td-type-locked-badge');
 
   const debtsSection = document.getElementById('td-debts-section');
   const debtsContainer = document.getElementById('td-debts-container');
@@ -1041,12 +1044,8 @@ export default async function transactionsDetailController(contexto) {
         return;
       }
 
-      // En edición no se permite convertir una transacción existente en nota de
-      // crédito (solo se crean desde cero).
-      const creditNoteRadio = document.querySelector('input[name="td-type"][value="CREDIT_NOTE"]');
-      if (creditNoteRadio) {
-        creditNoteRadio.closest('.td-type-option')?.classList.add('hidden');
-      }
+      // El tipo queda bloqueado en edición (ver más abajo): en D1 el tipo es la
+      // tabla donde vive el movimiento, no un campo que se pueda reescribir.
 
       headerTitle.textContent = 'Editar Transacción';
       headerSubtitle.textContent = `#${trans.voucherNumber || id.slice(0, 8)}`;
@@ -1064,6 +1063,19 @@ export default async function transactionsDetailController(contexto) {
           radio.checked = true;
           break;
         }
+      }
+
+      // Tipo fijo: cambiarlo implicaría mover el movimiento de tabla (payments,
+      // charges, expenses, other_incomes, credit_notes), con otras columnas,
+      // folios y efecto en el saldo. Se muestra como dato y se deshabilitan los
+      // radios para que el formulario no cambie de forma engañosa.
+      typeRadios.forEach(radio => { radio.disabled = true; });
+      if (typeGrid) typeGrid.classList.add('hidden');
+      if (typeLocked) {
+        const checked = document.querySelector('input[name="td-type"]:checked');
+        const label = checked?.closest('.td-type-option')?.querySelector('.td-type-name')?.textContent?.trim();
+        if (typeLockedBadge) typeLockedBadge.textContent = label || type;
+        typeLocked.classList.remove('hidden');
       }
 
       if (type === 'OTHER_INCOME') {

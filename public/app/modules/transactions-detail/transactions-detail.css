@@ -246,6 +246,37 @@
   gap: 0.625rem;
 }
 
+/* Tipo fijo en edición: en D1 el tipo es la tabla del movimiento. */
+.td-type-locked {
+  align-items: center;
+  gap: 0.625rem;
+  flex-wrap: wrap;
+  padding: 0.75rem 0.875rem;
+  border: 1.5px solid var(--color-gurkha-200);
+  border-radius: 0.875rem;
+  background: var(--color-gurkha-50);
+}
+
+.td-type-locked:not(.hidden) {
+  display: flex;
+}
+
+.td-type-locked-badge {
+  font-size: 0.8125rem;
+  font-weight: 800;
+  color: var(--color-gurkha-800);
+  background: white;
+  border: 1px solid var(--color-gurkha-200);
+  border-radius: 999px;
+  padding: 0.2rem 0.75rem;
+}
+
+.td-type-locked-hint {
+  font-size: 0.75rem;
+  color: var(--color-gurkha-600);
+  line-height: 1.35;
+}
+
 .td-type-option {
   position: relative;
   cursor: pointer;

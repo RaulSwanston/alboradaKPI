@@ -630,21 +630,23 @@ input[type='button'] {
   gap: 1rem;
 }
 
-.toast {
+/* Aislar el toast de las transiciones globales de opacity/transform
+   que aplican a .sectionView, .module y otros componentes. */
+#toast-container > .toast {
   padding: 1rem 1.5rem;
   border-radius: 0.5rem;
   color: var(--color-text-on-primary);
   font-weight: 600;
   box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-  animation: toast-fade-in 0.5s, toast-fade-out 0.5s 4.5s;
+  animation: toast-fade-in 0.5s ease-out forwards, toast-fade-out 0.5s ease-in 4.5s forwards;
   opacity: 0;
 }
 
-.toast.success {
+#toast-container > .toast.success {
   background-color: var(--color-kaitoke-green-700);
 }
 
-.toast.error {
+#toast-container > .toast.error {
   background-color: var(--color-solid-pink-700);
 }
 

@@ -209,6 +209,13 @@ function mapCharge(row, allocationsByCharge, unitIdFallback) {
 
 function mapPayment(row, allocationsByPayment) {
   const linked = allocationsByPayment.get(row.id) ?? [];
+
+  // Comprobante: el Worker incluye `attachments[]` cuando el movimiento viene
+  // de `/movements/:id` (ruta individual). Cada attachment tiene `r2_key`.
+  const receiptURL = (row.attachments && row.attachments.length > 0)
+    ? `${R2_BASE_URL}/${row.attachments[0].r2_key}`
+    : null;
+
   return {
     id: row.id,
     type: 'PAYMENT',
@@ -230,7 +237,13 @@ function mapPayment(row, allocationsByPayment) {
     // cuota. Si algun dia la tabla gana `income_type_id`, ese valor manda.
     incomeTypeId: row.income_type_id || INCOME_TYPE_IDS.CUOTA_AREA_SOCIAL,
     status: row.status ?? 'verified',
-    createdAt: toDate(row.created_at ?? row.received_at)
+    createdAt: toDate(row.created_at ?? row.received_at),
+    // El controller de transactions-detail lee metadata.bankReference y
+    // metadata.receiptURL para poblar los campos de edición del pago.
+    metadata: {
+      bankReference: row.reference ?? null,
+      receiptURL
+    }
   };
 }
 
