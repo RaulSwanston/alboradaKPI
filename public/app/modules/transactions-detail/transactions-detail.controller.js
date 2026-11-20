@@ -403,8 +403,11 @@ export default async function transactionsDetailController(contexto) {
    * @param {Array<{transactionId:string, amount:number}>} [appliedEntries]
    *        Vínculos actuales del pago (modo edición). Se incluyen en la consulta
    *        aunque ya estén saldados para poder mostrarlos seleccionados.
+   * @param {Array|null} [prefetchedDebts]
+   *        Cargos ya obtenidos por el llamador (modo edición, vía
+   *        `getPaymentReconciliation`) para no repetir la lectura del ledger.
    */
-  const loadDebts = async (propertyId, appliedEntries = []) => {
+  const loadDebts = async (propertyId, appliedEntries = [], prefetchedDebts = null) => {
     const token = ++debtsLoadToken;
     try {
       debtsContainer.innerHTML = '<p class="td-empty-hint">Buscando deudas pendientes...</p>';
@@ -427,7 +430,7 @@ export default async function transactionsDetailController(contexto) {
           .filter(a => a && a.transactionId)
           .map(a => [a.transactionId, a])
       );
-      const debts = await Transaction.getPendingDebts(propertyId, {
+      const debts = prefetchedDebts ?? await Transaction.getPendingDebts(propertyId, {
         includeIds: [...appliedById.keys()]
       });
       if (token !== debtsLoadToken) return;
@@ -1134,7 +1137,30 @@ export default async function transactionsDetailController(contexto) {
       handleTypeChange(type, { skipDebts: true });
 
       if (type === 'PAYMENT' && currentPropertyId) {
-        await loadDebts(currentPropertyId, trans.appliedTo || []);
+        // `getById` viene de la vista delgada (`/movements/:id`), que NO trae las
+        // asignaciones: sin recuperarlas, el panel salía sin ninguna factura
+        // marcada y al guardar se podían borrar los vínculos existentes. Se piden
+        // al ledger junto con los cargos, en una sola lectura.
+        let appliedTo = trans.appliedTo || [];
+        let prefetchedDebts = null;
+        try {
+          const rec = await Transaction.getPaymentReconciliation(currentPropertyId, id);
+          appliedTo = rec.appliedTo || [];
+          prefetchedDebts = rec.debts || null;
+        } catch (err) {
+          console.warn('[TD] No se pudieron recuperar los vínculos del pago:', err);
+        }
+
+        await loadDebts(currentPropertyId, appliedTo, prefetchedDebts);
+
+        // Enriquecer con folio/descripción (los vínculos del ledger solo traen
+        // id + monto) para la tarjeta de conciliación.
+        trans.appliedTo = appliedTo.map(link => {
+          const debt = debtsCache.find(d => d.id === link.transactionId);
+          return debt
+            ? { ...link, description: debt.description, voucherNumber: debt.voucherNumber }
+            : link;
+        });
       }
 
       // Reconciliation
