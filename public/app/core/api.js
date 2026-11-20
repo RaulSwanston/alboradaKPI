@@ -909,8 +909,11 @@ export async function d1DeleteCommunityEvent(id) {
 /* Configuración del condominio */
 // condominium_settings (plano) <-> appConfig (anidado). El controller espera la
 // forma anidada (branding/systemDefaults/moduleRegistry); D1 la guarda plana.
+// Cuando module_registry es NULL en D1, no se incluye en el objeto devuelto para
+// que la fusión en auth.js ({ ...default, ...cloud }) preserve el moduleRegistry
+// del default local (paymentMethods, apexCharts, capabilities, etc.).
 function settingsToAppConfig(s) {
-  return {
+  const obj = {
     branding: {
       appName: s.display_name ?? '',
       logoUrl: s.logo_url ?? null,
@@ -929,9 +932,14 @@ function settingsToAppConfig(s) {
       adminSignatureEmail: s.admin_signature_email ?? ''
     },
     adminSignatureUid: s.admin_signature_uid ?? '',
-    adminSignatureEmail: s.admin_signature_email ?? '',
-    moduleRegistry: s.module_registry ?? {}
+    adminSignatureEmail: s.admin_signature_email ?? ''
   };
+  // Solo incluir moduleRegistry si D1 tiene datos reales. Un objeto vacío o null
+  // sobrescribiría el default local en la fusión de auth.js.
+  if (s.module_registry && typeof s.module_registry === 'object' && Object.keys(s.module_registry).length > 0) {
+    obj.moduleRegistry = s.module_registry;
+  }
+  return obj;
 }
 
 function appConfigToSettings(c) {
