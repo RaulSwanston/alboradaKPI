@@ -401,7 +401,13 @@ export async function d1PaymentReconciliation(unitId, paymentId) {
     .map((c) => mapCharge(c, byCharge, unitId))
     .sort((a, b) => (a.effectiveDate?.getTime?.() || 0) - (b.effectiveDate?.getTime?.() || 0));
 
-  return { debts, appliedTo };
+  // nº de recibo por pago, para las píldoras de "quién más paga esta factura".
+  const voucherByPayment = {};
+  for (const p of j.payments ?? []) {
+    voucherByPayment[p.id] = p.number ?? p.reference ?? null;
+  }
+
+  return { debts, appliedTo, voucherByPayment };
 }
 
 /** Movimientos planos (legacy: getByPeriod(s), getAll, getByType, getByDateRange...). */

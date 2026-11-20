@@ -542,10 +542,10 @@ export default async function transactionsController(contexto) {
             // En D1 el listado no trae `appliedTo`; se recupera junto con los
             // cargos desde el ledger. Se guarda en `tx` para que el guardado
             // (saveConciliation) sepa cuáles vínculos ya existían.
-            const { debts, appliedTo } = await Transaction.getPaymentReconciliation(tx.propertyId, tx.id);
+            const { debts, appliedTo, voucherByPayment } = await Transaction.getPaymentReconciliation(tx.propertyId, tx.id);
             if (loadToken !== debtsContainer._loadToken) return;
             tx.appliedTo = appliedTo;
-            renderDebtsInPanel(debtsContainer, debts, tx);
+            renderDebtsInPanel(debtsContainer, debts, tx, voucherByPayment);
         } catch (e) {
             if (loadToken !== debtsContainer._loadToken) return;
             console.error('[TX] Error loading debts for conciliation:', e);
@@ -553,7 +553,7 @@ export default async function transactionsController(contexto) {
         }
     };
 
-    const renderDebtsInPanel = (container, debts, paymentTx) => {
+    const renderDebtsInPanel = (container, debts, paymentTx, voucherByPayment = {}) => {
         const paymentAmount = Math.abs(Number(paymentTx.amount) || 0);
         const appliedById = new Map(
             (paymentTx.appliedTo || [])
@@ -587,6 +587,14 @@ export default async function transactionsController(contexto) {
                 linkedAmount = Math.min(basePending || Math.abs(Number(debt.amount) || 0), paymentAmount);
             }
 
+            // Pagos de OTROS recibos que también cubren esta factura: señal de
+            // sobre-aplicación (error humano). Se muestran como píldora.
+            const otherPaid = (debt.paidBy || [])
+                .filter(p => p && p.paymentId && p.paymentId !== paymentTx.id)
+                .map(p => ({ paymentId: p.paymentId, amount: Math.abs(Number(p.amount) || 0) }));
+            const otherTotal = otherPaid.reduce((sum, p) => sum + p.amount, 0);
+            const invoiceTotal = Math.abs(Number(debt.amount) || 0);
+
             return {
                 id: debt.id,
                 description: debt.description || 'Cargo sin descripción',
@@ -594,7 +602,10 @@ export default async function transactionsController(contexto) {
                 basePending,
                 fullAmount: basePending + linkedAmount,
                 selected: !!applied,
-                amount: applied ? linkedAmount : 0
+                amount: applied ? linkedAmount : 0,
+                otherPaid,
+                otherTotal,
+                invoiceTotal
             };
         });
 
@@ -634,15 +645,36 @@ export default async function transactionsController(contexto) {
                 // si el pago quedó totalmente asignado, solo los ya vinculados.
                 const show = item.selected || remaining > 0;
                 const isPartial = item.selected && item.amount < item.fullAmount - 0.005;
-                const amountLabel = isPartial
-                    ? `$${item.amount.toFixed(2)} ${partialOf} $${item.fullAmount.toFixed(2)}`
-                    : `$${item.fullAmount.toFixed(2)}`;
+
+                // Si otros pagos ya cubren esta factura, el monto se desglosa para
+                // evidenciar la sobre-aplicación: "$13.00 + $15.00 de $15.00".
+                const amountLabel = item.otherTotal > 0
+                    ? `$${item.amount.toFixed(2)} + $${item.otherTotal.toFixed(2)} ${partialOf} $${item.invoiceTotal.toFixed(2)}`
+                    : (isPartial
+                        ? `$${item.amount.toFixed(2)} ${partialOf} $${item.fullAmount.toFixed(2)}`
+                        : `$${item.fullAmount.toFixed(2)}`);
                 const dataAmount = item.selected ? item.amount : item.fullAmount;
 
                 card.classList.toggle('selected', item.selected);
                 card.dataset.amount = dataAmount.toFixed(2);
                 card.querySelector('.conciliation-debt-amount').textContent = amountLabel;
                 card.querySelector('input[type="checkbox"]').checked = item.selected;
+
+                // Píldora de sobre-aplicación: recibo(s) que ya pagan esta factura.
+                const flagEl = card.querySelector('.conciliation-debt-flag');
+                if (flagEl) {
+                    if (item.otherTotal > 0) {
+                        const pills = item.otherPaid.map(p => {
+                            const num = voucherByPayment[p.paymentId] || String(p.paymentId).split('_').pop();
+                            return `REC #${num} +$${p.amount.toFixed(2)}`;
+                        }).join('  ·  ');
+                        flagEl.textContent = `Sobrepagada — ${pills}`;
+                        flagEl.hidden = false;
+                    } else {
+                        flagEl.hidden = true;
+                    }
+                }
+
                 card.hidden = !show;
                 if (show) anyVisible = true;
             });
@@ -666,6 +698,7 @@ export default async function transactionsController(contexto) {
                 <div class="conciliation-debt-info">
                     <span class="conciliation-debt-title">${item.description}</span>
                     <span class="conciliation-debt-voucher">${item.voucherNumber}</span>
+                    <span class="conciliation-debt-flag" hidden></span>
                 </div>
                 <span class="conciliation-debt-amount"></span>
             `;

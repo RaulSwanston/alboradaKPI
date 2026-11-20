@@ -677,6 +677,20 @@
   font-weight: 600;
 }
 
+/* Aviso de sobre-aplicación: esta factura ya la paga(n) otro(s) recibo(s). */
+.conciliation-debt-flag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  color: var(--color-solid-pink-700);
+  background: #ffebee;
+  border: 1px solid #f8c9cf;
+  border-radius: 0.5rem;
+  padding: 0.15rem 0.5rem;
+  line-height: 1.25;
+  align-self: flex-start;
+  white-space: normal;
+}
+
 .conciliation-debt-amount {
   font-size: 0.875rem;
   font-weight: 800;
