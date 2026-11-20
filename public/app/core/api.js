@@ -378,6 +378,32 @@ export async function d1PendingDebts(unitId, { includeIds = [] } = {}) {
     .sort((a, b) => (a.effectiveDate?.getTime?.() || 0) - (b.effectiveDate?.getTime?.() || 0));
 }
 
+/**
+ * Conciliación de un pago: cargos pendientes de su unidad (incluidos los que
+ * este pago ya cubre, aunque estén saldados) y el `appliedTo` real del pago.
+ *
+ * El listado de transacciones (`/movements?kind=all`) no trae asignaciones, así
+ * que `tx.appliedTo` llega vacío. Este fetch único del ledger devuelve ambos
+ * lados para que el panel de conciliación marque lo ya seleccionado.
+ */
+export async function d1PaymentReconciliation(unitId, paymentId) {
+  const j = await apiGet(`units/${encodeURIComponent(unitId)}/ledger`);
+  const byCharge = new Map(j.allocations.map((a) => [a.charge_id, []]));
+  for (const a of j.allocations) byCharge.get(a.charge_id)?.push(a);
+
+  const appliedTo = (j.allocations ?? [])
+    .filter((a) => a.payment_id === paymentId)
+    .map((a) => ({ transactionId: a.charge_id, amount: cents(a.amount_cents) }));
+  const linkedIds = new Set(appliedTo.map((a) => a.transactionId));
+
+  const debts = j.charges
+    .filter((c) => linkedIds.has(c.id) || c.amount_cents - (c.paid_cents ?? 0) - (c.credited_cents ?? 0) > 0)
+    .map((c) => mapCharge(c, byCharge, unitId))
+    .sort((a, b) => (a.effectiveDate?.getTime?.() || 0) - (b.effectiveDate?.getTime?.() || 0));
+
+  return { debts, appliedTo };
+}
+
 /** Movimientos planos (legacy: getByPeriod(s), getAll, getByType, getByDateRange...). */
 export async function d1Movements({ kind = 'all', period = null, unitId = null, status = null, from = null, to = null, limit = 100, cursor = null } = {}) {
   const params = new URLSearchParams();

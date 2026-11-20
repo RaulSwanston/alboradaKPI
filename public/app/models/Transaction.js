@@ -1,7 +1,7 @@
 import { db, collection, addDoc, updateDoc, deleteDoc, doc, getDoc, getDocs, query, where, orderBy, limit, startAfter, serverTimestamp, runTransaction, writeBatch } from "../core/firebase.js";
 import { createActivity } from "./Activities.js";
 import AppConfig from "./AppConfig.js";
-import { isD1, d1UnitTransactions, d1PendingDebts, d1Movements, d1GetMovement, d1CreateCharge, d1CreatePayment, d1CreateExpense, d1CreateOtherIncome, d1CreateCreditNote, d1ApplyPayment, d1VoidMovement, d1UpdateMovement, TYPE_TO_KIND } from "../core/api.js";
+import { isD1, d1UnitTransactions, d1PendingDebts, d1PaymentReconciliation, d1Movements, d1GetMovement, d1CreateCharge, d1CreatePayment, d1CreateExpense, d1CreateOtherIncome, d1CreateCreditNote, d1ApplyPayment, d1VoidMovement, d1UpdateMovement, TYPE_TO_KIND } from "../core/api.js";
 
 /** Tipos que nunca representan una deuda de una unidad, aunque su monto sea negativo. */
 const NON_DEBT_TYPES = new Set(['EXPENSE', 'ADMIN_EXPENSE', 'OTHER']);
@@ -787,6 +787,27 @@ export default class Transaction {
       console.error(`[Transaction] Error al obtener deudas de ${propertyId}:`, error);
       throw error;
     }
+  }
+
+  /**
+   * Conciliación de un pago: devuelve los cargos de su unidad (incluidos los ya
+   * cubiertos por ese pago) junto con el `appliedTo` real. En D1 el listado de
+   * movimientos no trae asignaciones, así que aquí se recuperan desde el ledger.
+   */
+  static async getPaymentReconciliation(propertyId, paymentId) {
+    if (isD1()) {
+      try {
+        return await d1PaymentReconciliation(propertyId, paymentId);
+      } catch (error) {
+        console.error(`[Transaction] Error D1 al conciliar pago ${paymentId}:`, error);
+        throw error;
+      }
+    }
+    const paymentDoc = await getDoc(doc(db, "transactions", paymentId));
+    const appliedTo = paymentDoc.exists() ? (paymentDoc.data().appliedTo || []) : [];
+    const includeIds = (appliedTo || []).map((a) => a?.transactionId).filter(Boolean);
+    const debts = await Transaction.getPendingDebts(propertyId, { includeIds });
+    return { debts, appliedTo };
   }
 
   /**

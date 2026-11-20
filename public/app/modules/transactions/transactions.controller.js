@@ -539,11 +539,12 @@ export default async function transactionsController(contexto) {
         debtsContainer._loadToken = loadToken;
 
         try {
-            // Incluir los cargos que este pago ya cubre, aunque estén saldados, para
-            // que aparezcan seleccionados y se puedan desvincular.
-            const includeIds = (tx.appliedTo || []).map(a => a?.transactionId).filter(Boolean);
-            const debts = await Transaction.getPendingDebts(tx.propertyId, { includeIds });
+            // En D1 el listado no trae `appliedTo`; se recupera junto con los
+            // cargos desde el ledger. Se guarda en `tx` para que el guardado
+            // (saveConciliation) sepa cuáles vínculos ya existían.
+            const { debts, appliedTo } = await Transaction.getPaymentReconciliation(tx.propertyId, tx.id);
             if (loadToken !== debtsContainer._loadToken) return;
+            tx.appliedTo = appliedTo;
             renderDebtsInPanel(debtsContainer, debts, tx);
         } catch (e) {
             if (loadToken !== debtsContainer._loadToken) return;
