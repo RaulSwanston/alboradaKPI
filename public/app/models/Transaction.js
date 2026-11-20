@@ -1,7 +1,7 @@
 import { db, collection, addDoc, updateDoc, deleteDoc, doc, getDoc, getDocs, query, where, orderBy, limit, startAfter, serverTimestamp, runTransaction, writeBatch } from "../core/firebase.js";
 import { createActivity } from "./Activities.js";
 import AppConfig from "./AppConfig.js";
-import { isD1, d1UnitTransactions, d1PendingDebts, d1PaymentReconciliation, d1Movements, d1GetMovement, d1CreateCharge, d1CreatePayment, d1CreateExpense, d1CreateOtherIncome, d1CreateCreditNote, d1ApplyPayment, d1VoidMovement, d1UpdateMovement, TYPE_TO_KIND } from "../core/api.js";
+import { isD1, d1UnitTransactions, d1PendingDebts, d1PaymentReconciliation, d1Movements, d1MovementLinks, d1GetMovement, d1CreateCharge, d1CreatePayment, d1CreateExpense, d1CreateOtherIncome, d1CreateCreditNote, d1ApplyPayment, d1VoidMovement, d1UpdateMovement, TYPE_TO_KIND } from "../core/api.js";
 
 /** Tipos que nunca representan una deuda de una unidad, aunque su monto sea negativo. */
 const NON_DEBT_TYPES = new Set(['EXPENSE', 'ADMIN_EXPENSE', 'OTHER']);
@@ -1070,6 +1070,20 @@ export default class Transaction {
       return docSnap.exists() ? { id: docSnap.id, ...docSnap.data() } : null;
     } catch (error) {
       console.error(`[Transaction] Error al obtener transacción ${id}:`, error);
+      throw error;
+    }
+  }
+
+  /**
+   * Asignaciones pago↔cargo de una página del listado (solo D1).
+   * El listado no las transporta; se piden aparte para los chips FAC/REC.
+   */
+  static async getMovementLinks(ids) {
+    if (!isD1()) return [];
+    try {
+      return await d1MovementLinks(ids);
+    } catch (error) {
+      console.error("[Transaction] Error D1 al obtener vínculos de la página:", error);
       throw error;
     }
   }

@@ -46,6 +46,10 @@ export default async function transactionsController(contexto) {
     let allData = [];
     let expandedRows = new Set();
     let conciliationDataCache = new Map();
+    // Ids cuya asignación pago↔cargo ya se consultó (evita repetir la llamada
+    // en cada repintado de la misma página).
+    let hydratedLinks = new Set();
+    let refsHydrating = false;
     // Caché de documentos vinculados (id -> {voucherNumber, description, type})
     // para resolver chips FAC/REC sin lecturas repetidas a Firestore.
     let linkCache = new Map();
@@ -190,12 +194,71 @@ export default async function transactionsController(contexto) {
     };
 
     /**
+     * Hidrata los chips FAC/REC de la página visible (solo admin).
+     *
+     * El listado de admin (`/movements`) usa la vista delgada y no trae
+     * asignaciones, así que `appliedTo`/`paidBy` llegan vacíos. Se piden una
+     * sola vez por página (≤45 ids) al endpoint ligero, se parchea `allData` y
+     * se guardan los folios en `linkCache` para no resolver cada chip aparte.
+     */
+    const hydrateVisibleRefs = async (pageItems) => {
+        if (!isAdmin || refsHydrating) return;
+        const needsLinks = (t) =>
+            (t.type === 'PAYMENT' || t.type === 'FEE' || t.type === 'FINE') &&
+            !hydratedLinks.has(t.id) &&
+            ((t.type === 'PAYMENT' ? (t.appliedTo || []) : (t.paidBy || [])).length === 0);
+
+        const pending = pageItems.filter(needsLinks);
+        if (pending.length === 0) return;
+
+        const ids = pending.map(t => t.id).slice(0, 45);
+        ids.forEach(id => hydratedLinks.add(id)); // marca antes: evita duplicados
+        refsHydrating = true;
+
+        try {
+            const links = await Transaction.getMovementLinks(ids);
+            if (links.length === 0) return;
+
+            const byId = new Map(allData.map(t => [t.id, t]));
+            for (const link of links) {
+                const charge = byId.get(link.chargeId);
+                if (charge) {
+                    const arr = Array.isArray(charge.paidBy) ? charge.paidBy : [];
+                    if (!arr.some(p => p && p.paymentId === link.paymentId)) {
+                        charge.paidBy = [...arr, { paymentId: link.paymentId, amount: link.amount }];
+                    }
+                }
+                const payment = byId.get(link.paymentId);
+                if (payment) {
+                    const arr = Array.isArray(payment.appliedTo) ? payment.appliedTo : [];
+                    if (!arr.some(a => a && a.transactionId === link.chargeId)) {
+                        payment.appliedTo = [...arr, { transactionId: link.chargeId, amount: link.amount }];
+                    }
+                }
+                // Folios para el chip (sin lecturas extra en resolveRefs).
+                if (link.chargeId && link.chargeNumber && !linkCache.has(link.chargeId)) {
+                    linkCache.set(link.chargeId, { id: link.chargeId, voucherNumber: link.chargeNumber, type: 'FEE' });
+                }
+                if (link.paymentId && link.paymentNumber && !linkCache.has(link.paymentId)) {
+                    linkCache.set(link.paymentId, { id: link.paymentId, voucherNumber: link.paymentNumber, type: 'PAYMENT' });
+                }
+            }
+
+            refsHydrating = false;
+            render(true);
+        } catch (e) {
+            console.warn('[TX] No se pudieron cargar los vínculos de la página:', e);
+        } finally {
+            refsHydrating = false;
+        }
+    };
+
+    /**
      * Referencias de una transacción: PAYMENT -> facturas (FAC) en appliedTo,
      * FEE/FINE -> recibos (REC) en paidBy. El label visible es el voucherNumber
      * (fallback description / id). Vacío si no hay vínculos.
      */
-    const refsFor = (tx, byId) => {
-        const refs = [];
+    const refsFor = (tx, byId) => {        const refs = [];
         const links = tx.type === 'PAYMENT'
             ? (tx.appliedTo || [])
             : (tx.type === 'FEE' || tx.type === 'FINE' ? (tx.paidBy || []) : []);
@@ -384,10 +447,23 @@ export default async function transactionsController(contexto) {
         // Chips de documentos vinculados (FAC/REC): abren el comprobante de la
         // transacción referenciada, igual que el botón "Ver Comprobante".
         els.list.querySelectorAll('.ref-chip').forEach(chip => {
-            chip.addEventListener('click', (e) => {
+            chip.addEventListener('click', async (e) => {
                 e.stopPropagation();
                 const refId = chip.dataset.refId;
-                const refTx = allData.find(item => item.id === refId) || linkCache.get(refId);
+                let refTx = allData.find(item => item.id === refId) || linkCache.get(refId);
+                // Los chips hidratados solo traen id/folio (sin monto ni fecha):
+                // el comprobante necesita la transacción completa.
+                if (refTx && refTx.type && refTx.amount === undefined) {
+                    try {
+                        const full = await Transaction.getById(refId);
+                        if (full) {
+                            linkCache.set(refId, full);
+                            refTx = full;
+                        }
+                    } catch (err) {
+                        console.warn('[TX] No se pudo cargar el comprobante vinculado:', refId, err);
+                    }
+                }
                 if (refTx && refTx.type) showReceiptModal(refTx);
             });
         });
@@ -451,6 +527,10 @@ export default async function transactionsController(contexto) {
         });
 
         renderPagination(filtered.length);
+
+        // Chips FAC/REC: la vista de admin no recibe las asignaciones en el
+        // listado, así que se piden aparte solo para esta página.
+        hydrateVisibleRefs(pageItems);
     };
 
     const renderPagination = (totalItems) => {
@@ -803,6 +883,7 @@ export default async function transactionsController(contexto) {
             // guardado antes de repintar.
             closeConciliation(paymentId);
             tx.appliedTo = newAppliedTo;
+            hydratedLinks.clear(); // los vínculos cambiaron: rehidratar la página
             render(true);
             showToast('Conciliación guardada correctamente', 'success');
 
@@ -882,6 +963,7 @@ export default async function transactionsController(contexto) {
 
         expandedRows.clear();
         conciliationDataCache.clear();
+        hydratedLinks.clear(); // `allData` se recarga: los vínculos se piden otra vez
 
         state.smartFilter = val !== 'all';
 
@@ -914,6 +996,7 @@ export default async function transactionsController(contexto) {
         els.list.innerHTML = `<div style="text-align: center; padding: 4rem;">${t('modules.transactions.loadingDb')}</div>`;
         expandedRows.clear();
         conciliationDataCache.clear();
+        hydratedLinks.clear();
         state.smartFilter = false;
         allData = isAdmin ? await Transaction.getByDateRange(state.range.start, state.range.end) : await loadResidentTransactions();
         state.pagination.current = 1;
@@ -944,6 +1027,7 @@ export default async function transactionsController(contexto) {
                 end: now.getTime()
             }
             : { start: null, end: now.getTime() };
+        hydratedLinks.clear();
         if (isAdmin) {
             allData = await Transaction.getByDateRange(state.range.start, state.range.end);
         } else {

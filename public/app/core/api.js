@@ -436,6 +436,24 @@ export async function d1GetMovement(id) {
   return mapMovement(j.movement);
 }
 
+/**
+ * Asignaciones pago↔cargo de los movimientos de la página visible.
+ * El listado (`/movements`) usa la vista delgada y no las trae; este endpoint
+ * ligero devuelve también los folios para pintar los chips sin más lecturas.
+ */
+export async function d1MovementLinks(ids) {
+  const list = Array.from(new Set((ids || []).filter(Boolean))).slice(0, 45);
+  if (!list.length) return [];
+  const j = await apiGet(`movements/links?ids=${encodeURIComponent(list.join(','))}`);
+  return (j.links ?? []).map((r) => ({
+    chargeId: r.charge_id,
+    paymentId: r.payment_id,
+    amount: cents(r.amount_cents),
+    chargeNumber: r.charge_number ?? null,
+    paymentNumber: r.payment_number ?? null,
+  }));
+}
+
 /* ------------------------------------------------------------------ */
 /* Catálogos                                                           */
 /* ------------------------------------------------------------------ */
