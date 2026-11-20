@@ -677,7 +677,10 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  flex: 1;
+  /* No crece para llenar la fila: la píldora queda pegada a la derecha del
+     título (grupo justificado a la izquierda). Solo se encoge (ellipsis) si
+     ambos no caben. */
+  flex: 0 1 auto;
   min-width: 0;
 }
 
