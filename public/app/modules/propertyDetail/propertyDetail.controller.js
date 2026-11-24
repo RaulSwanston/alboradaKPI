@@ -42,6 +42,14 @@ export default async function propertyDetailController(contexto) {
     return isNaN(date.getTime()) ? '---' : date.toLocaleDateString('es-ES', { day: '2-digit', month: 'short', year: 'numeric' });
   };
 
+  /** `2026-12` → `dic 2026` (para notas de cuotas futuras). */
+  const periodLabel = (period) => {
+    const m = /^(\d{4})-(\d{2})$/.exec(period || '');
+    if (!m) return '';
+    const months = ['ene', 'feb', 'mar', 'abr', 'may', 'jun', 'jul', 'ago', 'sep', 'oct', 'nov', 'dic'];
+    return `${months[Number(m[2]) - 1] || m[2]} ${m[1]}`;
+  };
+
   // --- Recibo físico (idéntico al que ve el administrador) ---
   const openResidentReceipt = async (tx) => {
     if (!receiptModal || !receiptBody || !tx) return;
@@ -332,10 +340,19 @@ doc.text(formatDate(t.effectiveDate), margin + 2, y);
     }
 
     const visible = transactions.filter(t => !isHiddenFutureCharge(t));
+    const hiddenFuture = transactions.filter(isHiddenFutureCharge);
     const sorted = [...visible].sort(byDateAsc);
     let running = 0;
     allMovements = sorted.map(t => { running -= (Number(t.amount) || 0); return { ...t, currentBalance: running }; }).reverse();
-    totalBalance = allMovements.length > 0 ? allMovements[0].currentBalance : 0;
+
+    // El saldo de la cabecera sale de la proyección de D1 (`units.pending_cents`
+    // / `overpaid_cents`), la MISMA fuente que la tarjeta "Saldo Actual" del
+    // Resumen Financiero. Derivarlo del listado filtrado daba otro número,
+    // porque aquí se ocultan las cuotas de periodos futuros (isHiddenFutureCharge).
+    // Convención: deuda positiva (en `mapUnit` la deuda es negativa).
+    const futureTotal = hiddenFuture.reduce((sum, t) => sum + Math.abs(Number(t.amount) || 0), 0);
+    const projectedBalance = typeof prop?.balance === 'number' ? -prop.balance : null;
+    totalBalance = projectedBalance ?? (allMovements.length > 0 ? allMovements[0].currentBalance : 0);
 
     // Actualizar contador de transacciones
     const transactionsCountEl = getEl('detail-transactions-count');
@@ -344,6 +361,25 @@ doc.text(formatDate(t.effectiveDate), margin + 2, y);
     }
 
     if (getEl('detail-property-balance')) getEl('detail-property-balance').textContent = formatCurrency(totalBalance);
+
+    // Desglose de cuotas aún no vencidas: explica la diferencia entre el saldo
+    // total (cabecera, igual que el Resumen Financiero) y el último saldo de la
+    // tabla, que solo llega hasta el mes en curso.
+    const balanceNoteEl = getEl('detail-balance-note');
+    if (balanceNoteEl) {
+      if (futureTotal > 0.005) {
+        const periods = [...new Set(hiddenFuture.map(t => t.period).filter(Boolean))].sort();
+        const first = periodLabel(periods[0]);
+        const last = periodLabel(periods[periods.length - 1]);
+        const when = first ? (first === last ? first : `${first} – ${last}`) : '';
+        const n = hiddenFuture.length;
+        balanceNoteEl.textContent = `Incluye ${formatCurrency(futureTotal)} en ${n} cuota${n === 1 ? '' : 's'} aún no vencida${n === 1 ? '' : 's'}${when ? ` (${when})` : ''}`;
+        balanceNoteEl.classList.remove('hidden');
+      } else {
+        balanceNoteEl.textContent = '';
+        balanceNoteEl.classList.add('hidden');
+      }
+    }
     
     // --- ACTUALIZACIÓN DE ESTADO Y ÚLTIMO PAGO ---
     const statusBadgeEl = getEl('detail-property-status-badge');
