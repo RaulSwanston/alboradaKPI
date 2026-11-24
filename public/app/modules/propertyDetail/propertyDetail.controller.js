@@ -98,6 +98,32 @@ export default async function propertyDetailController(contexto) {
   };
 
   /**
+   * Normaliza una fecha a epoch ms. D1 entrega `Date` (vía `toDate`), pero el
+   * código histórico esperaba `Timestamp` de Firestore (`.seconds`). Comparar
+   * `.seconds` contra un `Date` da `undefined → 0` y el `sort` se vuelve un
+   * no-op silencioso.
+   * @param {*} value
+   * @returns {number}
+   */
+  const tsMs = (value) => {
+    if (!value) return 0;
+    if (value instanceof Date) return value.getTime();
+    if (typeof value.toDate === 'function') return value.toDate().getTime();
+    if (typeof value.seconds === 'number') return value.seconds * 1000;
+    const ms = new Date(value).getTime();
+    return Number.isNaN(ms) ? 0 : ms;
+  };
+
+  /**
+   * Orden ascendente (más antiguo primero) con desempate por creación, espejo
+   * de `byDateDesc` de `api.js`. El desempate importa para el saldo corrido:
+   * si un cargo y un pago caen el mismo día, el cargo debe ir primero.
+   */
+  const byDateAsc = (a, b) =>
+    tsMs(a.effectiveDate) - tsMs(b.effectiveDate) ||
+    tsMs(a.createdAt) - tsMs(b.createdAt);
+
+  /**
    * Carga el logo del condominio (branding.logoUrl) y lo convierte a PNG
    * vía canvas (soporta SVG por defecto y PNG/JPG subidos a R2).
    * @returns {Promise<{dataUrl:string, w:number, h:number}|null>}
@@ -306,7 +332,7 @@ doc.text(formatDate(t.effectiveDate), margin + 2, y);
     }
 
     const visible = transactions.filter(t => !isHiddenFutureCharge(t));
-    const sorted = [...visible].sort((a, b) => (a.effectiveDate?.seconds || 0) - (b.effectiveDate?.seconds || 0));
+    const sorted = [...visible].sort(byDateAsc);
     let running = 0;
     allMovements = sorted.map(t => { running -= (Number(t.amount) || 0); return { ...t, currentBalance: running }; }).reverse();
     totalBalance = allMovements.length > 0 ? allMovements[0].currentBalance : 0;
@@ -344,11 +370,10 @@ doc.text(formatDate(t.effectiveDate), margin + 2, y);
     }
 
     // 2. Último Pago
-    const lastPayment = transactions.filter(t => t.amount > 0).sort((a, b) => {
-      const dateA = a.effectiveDate?.seconds || 0;
-      const dateB = b.effectiveDate?.seconds || 0;
-      return dateB - dateA;
-    })[0];
+    const lastPayment = transactions.filter(t => t.amount > 0).sort((a, b) =>
+      tsMs(b.effectiveDate) - tsMs(a.effectiveDate) ||
+      tsMs(b.createdAt) - tsMs(a.createdAt)
+    )[0];
 
     if (lastPayment) {
       if (lastPaymentAmountEl) lastPaymentAmountEl.textContent = formatCurrency(lastPayment.amount);
