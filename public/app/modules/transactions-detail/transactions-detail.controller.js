@@ -3,7 +3,7 @@ import Property from "../../models/Property.js";
 import ExpenseAccount from "../../models/ExpenseAccount.js";
 import { t } from "../../core/i18n.js";
 import { activeIncomeTypes, resolveIncomeTypeId, INCOME_TYPE_IDS } from "../../core/incomeTypes.js";
-import { uploadFileToR2, buildPropertyUploadKey, buildExpenseReceiptKey, getAuthObjectURL, revokeAuthObjectURLs } from "../../core/r2.js";
+import { uploadFileToR2WithKey, buildPropertyUploadKey, buildExpenseReceiptKey, getAuthObjectURL, revokeAuthObjectURLs } from "../../core/r2.js";
 import { compressImageFile } from "../../core/imageCompress.js";
 
 /** Fecha local en formato YYYY-MM-DD para <input type="date">. */
@@ -745,7 +745,14 @@ export default async function transactionsDetailController(contexto) {
     const key = type === 'EXPENSE'
       ? buildExpenseReceiptKey(uid, ext)
       : buildPropertyUploadKey(propertyId, uid, 'comprobante', ext);
-    return await uploadFileToR2(blob, key);
+    const uploaded = await uploadFileToR2WithKey(blob, key);
+    return {
+      url: uploaded.url,
+      key: uploaded.key,
+      name: receiptFile.name,
+      mime: receiptFile.type || null,
+      size: receiptFile.size || null,
+    };
   };
 
   // =============================================
@@ -905,6 +912,27 @@ export default async function transactionsDetailController(contexto) {
       data.appliedTo = selectedDebts;
     }
 
+    // Subir el comprobante ANTES de escribir el movimiento para que la clave
+    // viaje en el mismo request (create o update) y el Worker la registre y
+    // enlace en `attachments`. Es non-fatal: si falla la subida, se guarda el
+    // movimiento sin comprobante y se avisa por consola.
+    let uploadedReceipt = null;
+    if (receiptFile && (type === 'PAYMENT' || type === 'EXPENSE')) {
+      try {
+        uploadedReceipt = await uploadReceipt(currentPropertyId);
+        if (uploadedReceipt) {
+          data.attachments = [{
+            key: uploadedReceipt.key,
+            name: uploadedReceipt.name,
+            mime: uploadedReceipt.mime,
+            size: uploadedReceipt.size,
+          }];
+        }
+      } catch (uploadErr) {
+        console.warn('[TD] Receipt upload failed (non-fatal):', uploadErr);
+      }
+    }
+
     // Fuera del `try` a propósito: el `catch` necesita saber si el pago llegó a
     // escribirse, para no informar una conciliación fallida como si nada se hubiera guardado.
     let savedId = null;
@@ -961,17 +989,6 @@ export default async function transactionsDetailController(contexto) {
               balanceDelta: absAmount - oldAmount
             });
           }
-        }
-      }
-
-      if (receiptFile && savedId) {
-        try {
-          const receiptURL = await uploadReceipt(currentPropertyId);
-          if (receiptURL) {
-            await Transaction.update(savedId, { metadata: { receiptURL } });
-          }
-        } catch (uploadErr) {
-          console.warn('[TD] Receipt upload failed (non-fatal):', uploadErr);
         }
       }
 

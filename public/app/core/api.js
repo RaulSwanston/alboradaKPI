@@ -605,7 +605,8 @@ export async function d1CreatePayment(data) {
     reference: data.reference || null,
     note: data.description || data.note || null,
     idempotencyKey: data.idempotencyKey || null,
-    receivedAt: (data.effectiveDate?.getTime?.() ?? data.effectiveDate) || Date.now()
+    receivedAt: (data.effectiveDate?.getTime?.() ?? data.effectiveDate) || Date.now(),
+    attachments: data.attachments || null,
   });
 }
 
@@ -618,7 +619,8 @@ export async function d1CreateExpense(data) {
     number: data.voucherNumber || null,
     vendor: data.vendor || null,
     note: data.description || data.note || null,
-    paidAt: (data.effectiveDate?.getTime?.() ?? data.effectiveDate) || Date.now()
+    paidAt: (data.effectiveDate?.getTime?.() ?? data.effectiveDate) || Date.now(),
+    attachments: data.attachments || null,
   });
 }
 
@@ -661,7 +663,9 @@ export async function d1UpdateMovement(id, data) {
     reference: data.reference !== undefined ? data.reference : undefined,
     number: data.voucherNumber !== undefined ? data.voucherNumber : undefined,
     conceptId: data.concept !== undefined ? data.concept : undefined,
-    expenseAccountId: data.expenseAccountId !== undefined ? data.expenseAccountId : undefined
+    expenseAccountId: data.expenseAccountId !== undefined ? data.expenseAccountId : undefined,
+    attachments: data.attachments || null,
+    receiptKey: data.receiptKey || null,
   });
 }
 
@@ -714,7 +718,8 @@ export async function d1CreatePaymentNotification(data) {
     paymentDate: (data.paymentDate?.getTime?.() ?? data.paymentDate) || undefined,
     method: data.paymentMethod || null,
     notes: data.notes || null,
-    appliedTo: (data.appliedTo || []).map((l) => ({ chargeId: l.transactionId, amountCents: toCents(l.amount), description: l.description }))
+    appliedTo: (data.appliedTo || []).map((l) => ({ chargeId: l.transactionId, amountCents: toCents(l.amount), description: l.description })),
+    attachments: data.attachments || null,
   });
 }
 export async function d1PaymentNotifications({ status = null, residentUid = null } = {}) {

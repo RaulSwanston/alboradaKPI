@@ -86,6 +86,36 @@ export async function uploadFileToR2(file, key) {
   return data.url || `${R2_BASE_URL}/${R2_SLUG}/${key}`;
 }
 
+/**
+ * Igual que `uploadFileToR2`, pero devuelve también la clave (y la storedKey
+ * completa con el slug del condominio) para que el llamador pueda registrarla
+ * en `attachments` del Worker.
+ * Devuelve { url, key, storedKey }.
+ */
+export async function uploadFileToR2WithKey(file, key) {
+  const form = new FormData();
+  form.append('file', file, file.name || key);
+  const res = await fetch(`${R2_BASE_URL}/${R2_SLUG}/${key}`, {
+    method: 'POST',
+    headers: await authHeaders(),
+    body: form
+  });
+  if (!res.ok) {
+    let msg = `R2 ${res.status}`;
+    try {
+      const j = await res.json();
+      if (j?.error) msg = j.error;
+    } catch (e) { /* sin cuerpo JSON */ }
+    throw new Error(msg);
+  }
+  const data = await res.json();
+  return {
+    url: data.url || `${R2_BASE_URL}/${R2_SLUG}/${key}`,
+    key: data.key || `${R2_SLUG}/${key}`,
+    storedKey: data.storedKey || `${R2_SLUG}/${key}`,
+  };
+}
+
 const isDirectUsable = (refUrl) =>
   refUrl.startsWith('data:') || refUrl.startsWith('/') || refUrl.startsWith('blob:');
 

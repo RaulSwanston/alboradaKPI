@@ -1,4 +1,4 @@
-import { uploadFileToR2, buildPropertyUploadKey } from '../../core/r2.js';
+import { uploadFileToR2, uploadFileToR2WithKey, buildPropertyUploadKey } from '../../core/r2.js';
 import { compressImageFile } from '../../core/imageCompress.js';
 import Property from "../../models/Property.js";
 import Transaction from "../../models/Transaction.js";
@@ -649,7 +649,7 @@ export default async function paymentReportController(contexto) {
       // 1. Subir Imagen
       const { blob, ext } = await compressImageFile(selectedFile);
       const key = buildPropertyUploadKey(currentPropertyId, user.uid, 'comprobante', ext);
-      const downloadUrl = await uploadFileToR2(blob, key);
+      const { url: downloadUrl, key: receiptKey } = await uploadFileToR2WithKey(blob, key);
 
       // 2. Crear Notificación con el desglose ya validado
       const reportData = {
@@ -659,6 +659,7 @@ export default async function paymentReportController(contexto) {
         paymentDate: dateInput.value,
         status: 'pending_verification',
         receiptUrl: downloadUrl,
+        attachments: [{ key: receiptKey, name: selectedFile.name, mime: selectedFile.type || null, size: selectedFile.size || null }],
         appliedTo: appliedTo,
         excessAmount: Math.max(0, remainingToApply),
         paymentMethod: document.getElementById('paymentMethod').value || 'transfer',

@@ -436,11 +436,22 @@ export default async function transactionsController(contexto) {
 
         // Botón "Ver Recibo"
         els.list.querySelectorAll('.btn-receipt').forEach(btn => {
-            btn.addEventListener('click', (e) => {
+            btn.addEventListener('click', async (e) => {
                 e.stopPropagation();
                 const id = e.currentTarget.dataset.id;
-                const tx = allData.find(item => item.id === id);
+                let tx = allData.find(item => item.id === id);
                 if (tx) showReceiptModal(tx);
+                // La fila del listado es una vista delgada sin adjuntos. Si el
+                // recibo no trae comprobante, pedimos la ficha completa (1
+                // lectura) para que "Ver Recibo" muestre el vínculo al archivo.
+                if (tx && !tx.metadata?.receiptURL) {
+                    try {
+                        const full = await Transaction.getById(id);
+                        if (full) showReceiptModal(full);
+                    } catch (err) {
+                        console.warn('[Transactions] No se pudo cargar la ficha completa del comprobante', err);
+                    }
+                }
             });
         });
 
