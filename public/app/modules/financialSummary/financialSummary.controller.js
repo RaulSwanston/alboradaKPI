@@ -3,6 +3,7 @@ import Transaction from '../../models/Transaction.js';
 import User from '../../models/User.js';
 import { t } from '../../core/i18n.js';
 import { isD1, d1GetStats } from '../../core/api.js';
+import { visibleBalance, latestPayment } from '../../core/balances.js';
 
 /**
  * Controlador para el módulo de Resumen Financiero (financialSummary).
@@ -135,18 +136,26 @@ export default async function financialSummary(contexto) {
   };
 
   /**
+   * Pinta la tarjeta "Último Pago" con un pago ya obtenido.
+   * @param {Object|null} lastPay
+   */
+  const renderLastPayment = (lastPay) => {
+    if (lastPay) {
+      if (creditBalanceAmountEl) creditBalanceAmountEl.textContent = formatCurrency(lastPay.amount);
+      if (lastPaymentDateEl) lastPaymentDateEl.textContent = `Realizado el ${formatDate(lastPay.effectiveDate)}`;
+    } else {
+      if (creditBalanceAmountEl) creditBalanceAmountEl.textContent = formatCurrency(0);
+      if (lastPaymentDateEl) lastPaymentDateEl.textContent = 'Sin pagos registrados';
+    }
+  };
+
+  /**
    * Obtiene el último pago registrado para una propiedad
    */
   const loadLastPayment = async (propertyId) => {
     try {
       const lastPay = await Transaction.getLatestPayment(propertyId);
-      if (lastPay) {
-        if (creditBalanceAmountEl) creditBalanceAmountEl.textContent = formatCurrency(lastPay.amount);
-        if (lastPaymentDateEl) lastPaymentDateEl.textContent = `Realizado el ${formatDate(lastPay.effectiveDate)}`;
-      } else {
-        if (creditBalanceAmountEl) creditBalanceAmountEl.textContent = formatCurrency(0);
-        if (lastPaymentDateEl) lastPaymentDateEl.textContent = 'Sin pagos registrados';
-      }
+      renderLastPayment(lastPay);
     } catch (e) {
       console.warn("Error al cargar último pago:", e);
     }
@@ -284,12 +293,29 @@ export default async function financialSummary(contexto) {
       if (periodWrapEl) periodWrapEl.classList.add('hidden');
 
       if (prop) {
-        const balance = prop.balance || 0;
+        // "Saldo Actual": la misma cifra que el estado de cuenta de la unidad
+        // (lo vencido + lo que el cliente cubrió por adelantado). La proyección
+        // `prop.balance` (units.pending_cents) cuenta TODAS las facturas
+        // emitidas, incluidas las cuotas de meses que aún no llegan, así que
+        // sobrestima la deuda de quien no ha pagado por adelantado.
+        let balance = prop.balance || 0;
+        let movements = null;
+        try {
+          movements = await Transaction.getByPropertyId(propertyId);
+        } catch (err) {
+          console.warn('[financialSummary] Sin ledger de la unidad; se usa la proyección de saldo:', err);
+        }
+
+        if (movements) {
+          balance = -visibleBalance(movements);
+          // El ledger ya trae los pagos: evita una petición extra para el
+          // "último pago".
+          renderLastPayment(latestPayment(movements));
+        }
+
         updateBalanceUI(balance);
-        
-        if (creditBalanceAmountEl) creditBalanceAmountEl.textContent = formatCurrency(balance > 0 ? balance : 0);
-        
-        await loadLastPayment(propertyId);
+
+        if (!movements) await loadLastPayment(propertyId);
         await loadUserInfo(propertyId, prop);
       }
     } catch (error) {
